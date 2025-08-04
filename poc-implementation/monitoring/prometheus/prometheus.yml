@@ -1,0 +1,63 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'nen-monitor'
+
+rule_files:
+  - "rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Nen Backend Application
+  - job_name: 'nen-backend'
+    static_configs:
+      - targets: ['host.docker.internal:3001']  # Adjust port if different
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    params:
+      format: ['prometheus']
+
+  # Node Exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # cAdvisor for container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+  # Additional backend instances (if running multiple)
+  - job_name: 'nen-backend-cluster'
+    static_configs:
+      - targets: 
+          - 'host.docker.internal:3001'
+          - 'host.docker.internal:3002'  # Add more instances as needed
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+    
+  # Health checks
+  - job_name: 'nen-health'
+    static_configs:
+      - targets: ['host.docker.internal:3001']
+    metrics_path: '/health'
+    scrape_interval: 30s
+
+  # WebSocket metrics (if separate endpoint)
+  - job_name: 'nen-websocket'
+    static_configs:
+      - targets: ['host.docker.internal:3001']
+    metrics_path: '/ws-metrics'
+    scrape_interval: 20s

@@ -1,0 +1,44 @@
+# CI/CD Configuration
+
+# Base image for Node.js projects
+image: node:erb
+
+# Define stages of the CI/CD pipeline
+stages:
+  - build
+  - test
+  - deploy
+
+# Cache dependencies between builds to speed up execution
+cache:
+  paths:
+    - node_modules/
+
+# Build stage
+build-job:
+  stage: build
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+
+# Test stage
+unit-tests:
+  stage: test
+  script:
+    - npm install
+    - npm run test
+  artifacts:
+    reports:
+      junit: reports/test-results.xml
+
+# Deploy stage
+production-deployment:
+  stage: deploy
+  only:
+    - master
+  script:
+    - echo 'Deploying to production server'
+    - ./scripts/deploy-production-complete.sh

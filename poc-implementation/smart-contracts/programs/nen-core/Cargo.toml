@@ -1,0 +1,26 @@
+[package]
+name = "nen-core"
+version = "0.1.0"
+description = "Nen Platform Core Program - Enhanced POC Implementation with Security Frameworks"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "nen_core"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+security = []
+compliance = []
+
+[dependencies]
+anchor-lang = { version = "0.31.0", features = ["init-if-needed"] }
+anchor-spl = "0.31.0"
+borsh = "0.10.3"
+sha2 = "0.10.8"
+rand = "0.8.5"
+thiserror = "1.0.50"

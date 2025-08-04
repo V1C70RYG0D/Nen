@@ -1,0 +1,112 @@
+groups:
+  - name: nen-error-rates
+    rules:
+      # High error rate alert
+      - alert: HighErrorRate
+        expr: (rate(application_errors_total[5m]) / rate(http_requests_total[5m])) * 100 > 5
+        for: 2m
+        labels:
+          severity: warning
+          service: nen-backend
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }}% over the last 5 minutes, which is above the 5% threshold"
+
+      # Critical error rate alert
+      - alert: CriticalErrorRate
+        expr: (rate(application_errors_total[5m]) / rate(http_requests_total[5m])) * 100 > 15
+        for: 1m
+        labels:
+          severity: critical
+          service: nen-backend
+        annotations:
+          summary: "Critical error rate detected"
+          description: "Error rate is {{ $value }}% over the last 5 minutes, which is above the 15% critical threshold"
+
+      # High 5xx error rate
+      - alert: HighServerErrorRate
+        expr: rate(http_errors_total{error_type="server_error"}[5m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+          service: nen-backend
+        annotations:
+          summary: "High server error rate"
+          description: "Server error (5xx) rate is {{ $value }} errors per second over the last 5 minutes"
+
+      # Application unavailable
+      - alert: ApplicationDown
+        expr: up{job="nen-backend"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: nen-backend
+        annotations:
+          summary: "Nen backend application is down"
+          description: "The Nen backend application has been down for more than 30 seconds"
+
+      # High log volume indicating potential issues
+      - alert: HighLogVolume
+        expr: rate(log_entries_total[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: nen-backend
+        annotations:
+          summary: "High log volume detected"
+          description: "Log volume is {{ $value }} logs per second, which may indicate issues"
+
+      # Database connection errors
+      - alert: DatabaseErrors
+        expr: rate(application_errors_total{error_type="database_error"}[5m]) > 1
+        for: 2m
+        labels:
+          severity: warning
+          service: nen-backend
+        annotations:
+          summary: "Database errors detected"
+          description: "Database error rate is {{ $value }} errors per second over the last 5 minutes"
+
+      # Authentication errors spike
+      - alert: AuthenticationErrorSpike
+        expr: rate(application_errors_total{error_type="auth_error"}[5m]) > 5
+        for: 1m
+        labels:
+          severity: warning
+          service: nen-backend
+        annotations:
+          summary: "Authentication error spike"
+          description: "Authentication error rate is {{ $value }} errors per second, which may indicate an attack"
+
+      # WebSocket connection issues
+      - alert: WebSocketErrors
+        expr: rate(websocket_errors_total[5m]) > 2
+        for: 2m
+        labels:
+          severity: warning
+          service: nen-backend
+        annotations:
+          summary: "WebSocket errors detected"
+          description: "WebSocket error rate is {{ $value }} errors per second over the last 5 minutes"
+
+      # Business logic errors
+      - alert: BusinessLogicErrors
+        expr: rate(business_logic_errors_total[5m]) > 1
+        for: 3m
+        labels:
+          severity: warning
+          service: nen-backend
+        annotations:
+          summary: "Business logic errors detected"
+          description: "Business logic error rate is {{ $value }} errors per second over the last 5 minutes"
+
+      # Low disk space for logs
+      - alert: LogDiskSpaceLow
+        expr: (node_filesystem_avail_bytes{mountpoint="/logs"} / node_filesystem_size_bytes{mountpoint="/logs"}) * 100 < 10
+        for: 5m
+        labels:
+          severity: warning
+          service: nen-backend
+        annotations:
+          summary: "Low disk space for logs"
+          description: "Log disk space is below 10% ({{ $value }}% remaining)"

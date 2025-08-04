@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-08-01T12:41:12.423436",
+  "mode": "quick",
+  "results": {
+    "success": true,
+    "standalone": {
+      "success": true,
+      "returncode": 0,
+      "stdout": "============================================================\nAI MANAGER INTEGRATION TESTING SUITE\nFollowing GI.md guidelines for comprehensive testing\n============================================================\n\n=== Agent Management ===\n\u2713 Successfully loaded 12 unique agents\n\u2713 Agent retrieval by difficulty/personality working correctly\n\u2713 Random agent selection working, got 14 unique agents from 20 requests\n\u2713 Agent instance isolation working correctly\n\n=== Match Management ===\n\u2713 Matchmaking successful, created game 749cfcee-cd03-4b63-b2cc-b01aff29389a\n\u2713 Concurrent matches working, completed 5/5 test games\n\u2713 Match state persistence working correctly\n\u2713 Match cleanup working correctly\n\n=== Performance Integration ===\nStarting 100 concurrent AI games test...\n\u2713 100 concurrent games test passed:\n  - Completed: 100/100 games\n  - Success rate: 100.0%\n  - Average duration: 0.01s\n  - Range: 0.00s - 0.02s\n  - Total time: 0.10s\n\u2713 Agent pool efficiency test passed:\n  - Total agents created: 58\n  - Games completed: 10\n  - Pool utilization rates: [0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n\u2713 Memory scaling test passed:\n  - Baseline: 21.8MB\n  - Peak: 22.5MB (+0.8MB)\n  - After cleanup: 22.5MB\n  - Memory recovery: 0.0%\n  - Games processed: 50\n\n=== Additional Critical Tests ===\n\u2713 Thread safety test passed with 50 games across 5 threads\n\u2713 Error handling and recovery test passed\n\u2713 Performance metrics accuracy verified\n  - Total games: 5\n  - Completed: 5\n  - Success rate: 100.0%\n\u2713 Cleanup and shutdown test passed\n  - Cleaned up 3 completed games\n  - Shutdown cancelled 2 active games\n\n============================================================\nTEST RESULTS:\n\u2705 Passed: 15\n\u274c Failed: 0\n\ud83d\udcca Success Rate: 100.0%\n============================================================\n\ud83c\udf89 ALL TESTS PASSED! AI Manager is ready for production.\n",
+      "stderr": "",
+      "duration": 0.38590073585510254,
+      "command": "/home/codespace/.python/current/bin/python test_ai_manager_simple.py"
+    },
+    "pytest_fast": {
+      "success": true,
+      "returncode": 0,
+      "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.1, pytest-8.4.1, pluggy-1.6.0 -- /home/codespace/.python/current/bin/python\ncachedir: .pytest_cache\nrootdir: /workspaces/Nen/backend/tests/ai\nconfigfile: pytest.ini\nplugins: anyio-4.9.0, asyncio-1.1.0, timeout-2.4.0, cov-6.2.1, mock-3.14.1\nasyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected 15 items / 2 deselected / 13 selected\n\ntest_ai_manager_pytest.py::TestAIManager::test_all_agents_load_successfully PASSED [  7%]\ntest_ai_manager_pytest.py::TestAIManager::test_agent_retrieval_by_difficulty_personality PASSED [ 15%]\ntest_ai_manager_pytest.py::TestAIManager::test_random_agent_selection PASSED [ 23%]\ntest_ai_manager_pytest.py::TestAIManager::test_agent_instance_isolation PASSED [ 30%]\ntest_ai_manager_pytest.py::TestAIManager::test_agent_matchmaking PASSED  [ 38%]\ntest_ai_manager_pytest.py::TestAIManager::test_concurrent_matches PASSED [ 46%]\ntest_ai_manager_pytest.py::TestAIManager::test_match_state_persistence PASSED [ 53%]\ntest_ai_manager_pytest.py::TestAIManager::test_match_cleanup PASSED      [ 61%]\ntest_ai_manager_pytest.py::TestAIManager::test_agent_pool_efficiency PASSED [ 69%]\ntest_ai_manager_pytest.py::TestAIManager::test_thread_safety PASSED      [ 76%]\ntest_ai_manager_pytest.py::TestAIManager::test_error_handling_and_recovery PASSED [ 84%]\ntest_ai_manager_pytest.py::TestAIManager::test_performance_metrics_accuracy PASSED [ 92%]\ntest_ai_manager_pytest.py::TestAIManager::test_cleanup_and_shutdown PASSED [100%]\n\n=============================== warnings summary ===============================\ntest_ai_manager_pytest.py:244\n  /workspaces/Nen/backend/tests/ai/test_ai_manager_pytest.py:244: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.slow\n\ntest_ai_manager_pytest.py:316\n  /workspaces/Nen/backend/tests/ai/test_ai_manager_pytest.py:316: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.slow\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n================= 13 passed, 2 deselected, 2 warnings in 0.11s =================\n",
+      "stderr": "",
+      "duration": 0.49190187454223633,
+      "command": "/home/codespace/.python/current/bin/python -m pytest test_ai_manager_pytest.py -v -m not slow --tb=short"
+    },
+    "total_duration": 0.8778026103973389
+  },
+  "environment": {
+    "python_version": "3.12.1 (main, Jul 10 2025, 11:57:50) [GCC 13.3.0]",
+    "platform": "linux",
+    "cwd": "/workspaces/Nen/backend/tests/ai"
+  },
+  "summary": {
+    "success": true,
+    "total_duration": 0.8778026103973389,
+    "mode": "quick"
+  }
+}

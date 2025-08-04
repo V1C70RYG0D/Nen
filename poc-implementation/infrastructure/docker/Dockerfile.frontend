@@ -1,0 +1,37 @@
+# Frontend Service Dockerfile
+# React 18 with TypeScript
+
+FROM node:24-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install serve for production builds
+RUN npm install -g serve
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S frontend -u 1001
+
+# Change ownership
+RUN chown -R frontend:nodejs /app
+USER frontend
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000 || exit 1
+
+# Development command (will be overridden in docker-compose)
+CMD ["npm", "start"]

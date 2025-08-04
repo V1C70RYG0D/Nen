@@ -1,0 +1,70 @@
+{
+  "__inputs": [],
+  "id": null,
+  "title": "Nen Backend Error Rates",
+  "tags": [],
+  "style": "dark",
+  "timezone": "browser",
+  "version": 1,
+  "refresh": "5s",
+  "schemaVersion": 16,
+  "time": {
+    "from": "now-12h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "type": "graph",
+      "title": "HTTP Error Rates",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "targets": [
+        {
+          "expr": "(rate(application_errors_total[5m]) / rate(http_requests_total[5m])) * 100",
+          "legendFormat": "Error Rate"
+        }
+      ],
+      "xaxis": {
+        "show": true,
+        "mode": "time",
+        "name": null,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "show": true,
+          "format": "percent",
+          "min": 0
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Recent Error Logs",
+      "gridPos": { "x": 0, "y": 8, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "expr": "rate(log_entries_total[5m])",
+          "legendFormat": "{{ level }}:{{ status }}",
+          "start": "30m ago",
+          "labels": "*",
+          "interval": "5s"
+        }
+      ],
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "pattern": "Value",
+          "type": "number",
+          "unit": "short"
+        }
+      ]
+    }
+  ]
+}

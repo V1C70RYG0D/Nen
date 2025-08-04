@@ -1,0 +1,28 @@
+[workspace]
+members = [
+    "programs/*"
+]
+resolver = "2"
+
+# Enhanced security dependencies for POC Master Plan
+[workspace.dependencies]
+anchor-lang = "0.31.0"
+anchor-spl = "0.31.0"
+solana-program = "1.18.22"
+spl-token = "4.0.0"
+spl-associated-token-account = "2.3.0"
+borsh = "0.10.3"
+sha2 = "0.10.8"
+rand = "0.8.5"
+thiserror = "1.0.50"
+
+[profile.release]
+overflow-checks = true
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+
+[profile.release.build-override]
+opt-level = 3
+incremental = false
+codegen-units = 1

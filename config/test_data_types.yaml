@@ -1,0 +1,130 @@
+test_data_types:
+  unit_tests:
+    count: ${UNIT_TEST_DATA_COUNT:-500}
+    complexity_levels:
+      - level: basic
+        percentage: 40
+        description: Simple game states with few pieces
+      - level: intermediate
+        percentage: 40
+        description: Mid-game scenarios with moderate complexity
+      - level: advanced
+        percentage: 20
+        description: Complex endgame and edge cases
+    constraints:
+      max_execution_time: ${UNIT_TEST_MAX_TIME:-1000}
+      memory_limit_mb: ${UNIT_TEST_MEMORY_LIMIT:-128}
+      parallelization: ${UNIT_TEST_PARALLEL:-true}
+
+  integration_tests:
+    count: ${INTEGRATION_TEST_DATA_COUNT:-200}
+    scenarios:
+      - type: ai_vs_ai
+        count: ${AI_VS_AI_TEST_COUNT:-100}
+        personalities: [strategic, aggressive, defensive, adaptive]
+        game_length: full
+      - type: ai_vs_human_simulation
+        count: ${AI_VS_HUMAN_TEST_COUNT:-50}
+        personalities: [strategic, adaptive]
+        game_length: variable
+      - type: network_resilience
+        count: ${NETWORK_TEST_COUNT:-25}
+        conditions: [high_latency, packet_loss, disconnection]
+        recovery_testing: true
+      - type: blockchain_integration
+        count: ${BLOCKCHAIN_TEST_COUNT:-25}
+        networks: [devnet, testnet]
+        transaction_types: [game_creation, move_submission, game_completion]
+    constraints:
+      max_execution_time: ${INTEGRATION_TEST_MAX_TIME:-30000}
+      memory_limit_mb: ${INTEGRATION_TEST_MEMORY_LIMIT:-512}
+      concurrent_tests: ${INTEGRATION_TEST_CONCURRENT:-4}
+
+  performance_tests:
+    count: ${PERFORMANCE_TEST_DATA_COUNT:-100}
+    load_patterns:
+      - type: steady_load
+        duration: ${STEADY_LOAD_DURATION:-300}
+        concurrent_games: ${STEADY_LOAD_GAMES:-50}
+        ramp_up_time: ${STEADY_LOAD_RAMP_UP:-30}
+      - type: spike_load
+        duration: ${SPIKE_LOAD_DURATION:-60}
+        concurrent_games: ${SPIKE_LOAD_GAMES:-200}
+        spike_frequency: ${SPIKE_LOAD_FREQUENCY:-10}
+      - type: stress_test
+        duration: ${STRESS_TEST_DURATION:-600}
+        concurrent_games: ${STRESS_TEST_GAMES:-500}
+        resource_monitoring: true
+    metrics:
+      response_time_threshold: ${RESPONSE_TIME_THRESHOLD:-1000}
+      error_rate_threshold: ${ERROR_RATE_THRESHOLD:-0.01}
+      cpu_usage_threshold: ${CPU_USAGE_THRESHOLD:-80}
+      memory_usage_threshold: ${MEMORY_USAGE_THRESHOLD:-85}
+
+  e2e_tests:
+    count: ${E2E_TEST_DATA_COUNT:-50}
+    user_journeys:
+      - journey: new_user_registration
+        steps: [signup, email_verification, profile_setup, first_game]
+        data_requirements:
+          user_count: ${NEW_USER_COUNT:-20}
+          email_providers: [gmail, yahoo, outlook, custom]
+      - journey: competitive_play
+        steps: [login, matchmaking, game_play, result_processing, ranking_update]
+        data_requirements:
+          skill_levels: [beginner, intermediate, advanced, expert]
+          game_variants: [standard, blitz, tournament]
+      - journey: wallet_integration
+        steps: [wallet_connect, transaction_signing, game_entry_fee, reward_distribution]
+        data_requirements:
+          wallet_types: [phantom, solflare, backpack]
+          transaction_amounts: [${MIN_GAME_FEE:-0.01}, ${MAX_GAME_FEE:-1.0}]
+    browser_matrix:
+      browsers: [chrome, firefox, safari, edge]
+      devices: [desktop, tablet, mobile]
+      screen_resolutions: [1920x1080, 1366x768, 768x1024, 375x667]
+
+  ai_training_data:
+    count: ${AI_TRAINING_DATA_COUNT:-10000}
+    data_sources:
+      - type: self_play
+        percentage: 70
+        personality_distribution:
+          strategic: 25
+          aggressive: 25
+          defensive: 20
+          adaptive: 20
+          creative: 5
+          endgame_specialist: 5
+      - type: historical_games
+        percentage: 20
+        sources: [tournament_records, expert_games, community_submissions]
+      - type: synthetic_positions
+        percentage: 10
+        generation_rules: [tactical_puzzles, endgame_studies, opening_variations]
+    quality_filters:
+      min_game_length: ${AI_TRAINING_MIN_LENGTH:-15}
+      max_game_length: ${AI_TRAINING_MAX_LENGTH:-150}
+      position_evaluation_threshold: ${AI_TRAINING_EVAL_THRESHOLD:-0.1}
+      duplicate_detection: true
+
+global_constraints:
+  max_total_data_size_gb: ${MAX_TEST_DATA_SIZE:-10}
+  data_retention_days: ${TEST_DATA_RETENTION:-30}
+  backup_frequency_hours: ${TEST_DATA_BACKUP_FREQUENCY:-24}
+  compression_enabled: ${TEST_DATA_COMPRESSION:-true}
+  encryption_enabled: ${TEST_DATA_ENCRYPTION:-true}
+
+environment_specific:
+  development:
+    data_scale_factor: 0.1
+    fast_generation: true
+    debug_logging: true
+  staging:
+    data_scale_factor: 0.5
+    production_like_data: true
+    performance_monitoring: true
+  production:
+    data_scale_factor: 1.0
+    high_quality_only: true
+    audit_logging: true

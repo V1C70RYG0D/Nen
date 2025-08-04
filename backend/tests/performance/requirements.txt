@@ -1,0 +1,59 @@
+# Performance Testing Dependencies for MagicBlock Compliance
+# Core testing framework
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-benchmark>=4.0.0
+pytest-xdist>=3.3.0  # Parallel test execution
+pytest-html>=3.2.0  # HTML test reports
+pytest-cov>=4.1.0   # Coverage reporting
+
+# Performance and statistics
+numpy>=1.24.0
+scipy>=1.11.0
+matplotlib>=3.7.0  # For performance graphs
+seaborn>=0.12.0    # Advanced plotting
+
+# Async and concurrency testing
+aiohttp>=3.8.0
+asyncio-mqtt>=0.13.0
+websockets>=11.0.0
+
+# Load testing and monitoring
+locust>=2.15.0     # Load testing framework
+psutil>=5.9.0      # System monitoring
+memory-profiler>=0.60.0  # Memory profiling
+
+# Data handling and reporting
+pandas>=2.0.0      # Data analysis
+openpyxl>=3.1.0    # Excel reporting
+jinja2>=3.1.0      # Report templating
+
+# Database testing
+sqlalchemy>=2.0.0
+sqlite3-utils>=3.34.0
+alembic>=1.11.0
+
+# API testing
+requests>=2.31.0
+httpx>=0.24.0
+fastapi>=0.100.0   # If testing FastAPI endpoints
+
+# Configuration and environment
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+pyyaml>=6.0.0
+
+# AI/ML related (if needed for agent testing)
+torch>=2.0.0
+transformers>=4.30.0
+
+# Blockchain/Solana related (if needed)
+solana>=0.30.0
+solders>=0.17.0
+
+# Development and debugging
+ipython>=8.14.0
+jupyter>=1.0.0
+black>=23.0.0      # Code formatting
+flake8>=6.0.0      # Linting
+mypy>=1.4.0        # Type checking

@@ -1,0 +1,15 @@
+{
+  "testId": "phase2_5000_users_2025-08-04T07-10-54-621Z",
+  "phase": "Phase 2",
+  "targetUsers": 5000,
+  "testDurationHours": 3,
+  "targetResponseTime": 100,
+  "targetErrorRate": 0.01,
+  "config": null,
+  "summary": null,
+  "detailedMetrics": [],
+  "bottlenecks": [],
+  "recommendations": [],
+  "success": false,
+  "error": "Failed to load UltraPerformanceLoadTestingService: Redis not initialized. Call initializeRedis() first."
+}

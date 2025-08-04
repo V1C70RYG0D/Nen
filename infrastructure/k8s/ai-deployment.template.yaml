@@ -1,0 +1,248 @@
+# AI Service Deployment Template for Nen Platform POC
+# Phase 4.2: Production Deployment - AI Service with GPU Support
+# 
+# Implements Python FastAPI service with PyTorch/Stable Baselines3,
+# GPU acceleration, and comprehensive monitoring
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nen-ai
+  namespace: nen-production
+  labels:
+    app: nen-ai
+    version: "1.0"
+    component: ai-service
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: nen-ai
+  template:
+    metadata:
+      labels:
+        app: nen-ai
+        version: "1.0"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8001"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: nen-ai
+        image: nen-ai:IMAGE_TAG
+        ports:
+        - containerPort: 8001
+          name: http
+        - containerPort: 9091
+          name: metrics
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: PORT
+          value: "8001"
+        - name: PYTHONPATH
+          value: "/app"
+        - name: MODEL_CACHE_DIR
+          value: "/app/models"
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0"
+        - name: PYTORCH_CUDA_ALLOC_CONF
+          value: "max_split_size_mb:128"
+        - name: LOG_LEVEL
+          value: "INFO"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+            nvidia.com/gpu: 1
+          limits:
+            memory: "4Gi"
+            cpu: "2"
+            nvidia.com/gpu: 1
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - name: model-cache
+          mountPath: /app/models
+        - name: tmp
+          mountPath: /tmp
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: model-cache
+        persistentVolumeClaim:
+          claimName: nen-ai-models
+      - name: tmp
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+      nodeSelector:
+        accelerator: nvidia-tesla-t4
+      tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Exists"
+        effect: "NoSchedule"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nen-ai
+  namespace: nen-production
+  labels:
+    app: nen-ai
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8001
+    targetPort: http
+    protocol: TCP
+    name: http
+  - port: 9091
+    targetPort: metrics
+    protocol: TCP
+    name: metrics
+  selector:
+    app: nen-ai
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nen-ai-hpa
+  namespace: nen-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nen-ai
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 75
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 600  # Longer for AI models
+      policies:
+      - type: Percent
+        value: 25
+        periodSeconds: 120
+    scaleUp:
+      stabilizationWindowSeconds: 120
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 60
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nen-ai-models
+  namespace: nen-production
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nen-ai-model-download
+  namespace: nen-production
+spec:
+  template:
+    spec:
+      containers:
+      - name: model-downloader
+        image: nen-ai:IMAGE_TAG
+        command: ["/bin/sh"]
+        args:
+          - -c
+          - |
+            echo "Downloading AI models..."
+            python download_models.py
+            echo "Model download completed"
+        volumeMounts:
+        - name: model-cache
+          mountPath: /app/models
+        env:
+        - name: MODEL_CACHE_DIR
+          value: "/app/models"
+      volumes:
+      - name: model-cache
+        persistentVolumeClaim:
+          claimName: nen-ai-models
+      restartPolicy: OnFailure
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nen-ai-config
+  namespace: nen-production
+data:
+  model-config.yaml: |
+    models:
+      gungi_ai:
+        type: "pytorch"
+        architecture: "transformer"
+        checkpoint: "gungi_v1.0.pth"
+        device: "cuda"
+        batch_size: 32
+      personality_models:
+        aggressive:
+          weights: "aggressive_v1.0.pth"
+        defensive:
+          weights: "defensive_v1.0.pth"
+        balanced:
+          weights: "balanced_v1.0.pth"
+    inference:
+      max_thinking_time: 5.0
+      temperature: 0.8
+      beam_search: true
+      beam_width: 4
+    performance:
+      model_cache_size: 3
+      prediction_timeout: 2.0
+      batch_timeout: 0.1

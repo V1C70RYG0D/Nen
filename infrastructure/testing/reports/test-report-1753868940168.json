@@ -1,0 +1,96 @@
+{
+  "timestamp": "2025-07-30T09:48:59.010Z",
+  "environment": "development",
+  "services": {
+    "Backend API": {
+      "status": "offline",
+      "error": "connect ECONNREFUSED ::1:3001"
+    },
+    "Frontend App": {
+      "status": "online",
+      "code": 200
+    },
+    "Game API": {
+      "status": "offline",
+      "error": "connect ECONNREFUSED ::1:3001"
+    },
+    "Betting API": {
+      "status": "offline",
+      "error": "connect ECONNREFUSED ::1:3001"
+    },
+    "AI Service": {
+      "status": "offline",
+      "error": "connect ECONNREFUSED ::1:3001"
+    },
+    "WebSocket": {
+      "status": "offline",
+      "error": "connect ECONNREFUSED ::1:3001"
+    }
+  },
+  "performance": {
+    "Health Check": {
+      "latency": "1.57",
+      "status": "error",
+      "error": "connect ECONNREFUSED ::1:3001"
+    },
+    "Game Matches": {
+      "latency": "1.34",
+      "status": "error",
+      "error": "connect ECONNREFUSED ::1:3001"
+    },
+    "AI Agents": {
+      "latency": "1.64",
+      "status": "error",
+      "error": "connect ECONNREFUSED ::1:3001"
+    },
+    "Betting Status": {
+      "latency": "2.10",
+      "status": "error",
+      "error": "connect ECONNREFUSED ::1:3001"
+    },
+    "Load Test": {
+      "concurrent_requests": 50,
+      "successful": 0,
+      "failed": 50,
+      "total_time": "40.59",
+      "average_per_request": "0.81"
+    }
+  },
+  "functionality": {
+    "Create Game Match": {
+      "status": "error",
+      "error": "connect ECONNREFUSED ::1:3001"
+    },
+    "AI Agent Generation": {
+      "status": "error",
+      "error": "connect ECONNREFUSED ::1:3001"
+    },
+    "Betting System": {
+      "status": "error",
+      "error": "connect ECONNREFUSED ::1:3001"
+    },
+    "Real-time Updates": {
+      "status": "error",
+      "error": "connect ECONNREFUSED ::1:3001"
+    }
+  },
+  "security": {
+    "Rate Limiting": {
+      "status": "secure"
+    },
+    "CORS Headers": {
+      "status": "warning",
+      "issue": "connect ECONNREFUSED ::1:3001"
+    },
+    "Security Headers": {
+      "status": "warning",
+      "issue": "connect ECONNREFUSED ::1:3001"
+    }
+  },
+  "summary": {
+    "total_tests": 18,
+    "passed": 2,
+    "failed": 14,
+    "warnings": 2
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "timestamp": "2025-08-03T11:10:37.024Z",
+  "environment": "development",
+  "services": {
+    "Backend API": {
+      "status": "offline",
+      "error": "Invalid URL"
+    },
+    "Frontend App": {
+      "status": "offline",
+      "error": "Invalid URL"
+    },
+    "Game API": {
+      "status": "offline",
+      "error": "Invalid URL"
+    },
+    "Betting API": {
+      "status": "offline",
+      "error": "Invalid URL"
+    },
+    "AI Service": {
+      "status": "offline",
+      "error": "Invalid URL"
+    },
+    "WebSocket": {
+      "status": "offline",
+      "error": "Invalid URL: undefined"
+    }
+  },
+  "performance": {
+    "Health Check": {
+      "latency": "0.25",
+      "status": "error",
+      "error": "Invalid URL"
+    },
+    "Game Matches": {
+      "latency": "0.21",
+      "status": "error",
+      "error": "Invalid URL"
+    },
+    "AI Agents": {
+      "latency": "0.19",
+      "status": "error",
+      "error": "Invalid URL"
+    },
+    "Betting Status": {
+      "latency": "0.62",
+      "status": "error",
+      "error": "Invalid URL"
+    },
+    "Load Test": {
+      "concurrent_requests": 50,
+      "successful": 0,
+      "failed": 50,
+      "total_time": "4.89",
+      "average_per_request": "0.10"
+    }
+  },
+  "functionality": {
+    "Create Game Match": {
+      "status": "error",
+      "error": "Invalid URL"
+    },
+    "AI Agent Generation": {
+      "status": "error",
+      "error": "Invalid URL"
+    },
+    "Betting System": {
+      "status": "error",
+      "error": "Invalid URL"
+    },
+    "Real-time Updates": {
+      "status": "error",
+      "error": "Invalid URL: undefined"
+    }
+  },
+  "security": {
+    "Rate Limiting": {
+      "status": "secure"
+    },
+    "CORS Headers": {
+      "status": "warning",
+      "issue": "Invalid URL"
+    },
+    "Security Headers": {
+      "status": "warning",
+      "issue": "Invalid URL"
+    }
+  },
+  "summary": {
+    "total_tests": 18,
+    "passed": 1,
+    "failed": 15,
+    "warnings": 2
+  }
+}

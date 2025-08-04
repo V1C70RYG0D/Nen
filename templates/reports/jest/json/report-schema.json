@@ -1,0 +1,23 @@
+/* JSON report schema example */
+{
+    "reportTitle": "${REPORT_TITLE}",
+    "testDate": "${REPORT_TIMESTAMP}",
+    "platform": {
+        "name": "${PLATFORM_NAME}",
+        "url": "${PLATFORM_URL}"
+    },
+    "summary": {
+        "totalTests": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "duration": "0ms"
+    },
+    "tests": [
+        {
+            "name": "Example Test",
+            "status": "passed",
+            "duration": "50ms"
+        }
+    ]
+}

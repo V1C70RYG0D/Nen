@@ -1,0 +1,89 @@
+config:
+  target: "{{ $processEnvironment.API_URL }}"  # GI-18 Compliant: No hardcoded fallback
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 50
+      name: "Ramp up load"
+    - duration: 300
+      arrivalRate: 100
+      name: "Sustained high load"
+    - duration: 60
+      arrivalRate: 200
+      name: "Peak load test"
+  defaults:
+    headers:
+      User-Agent: "Artillery Load Test"
+      Accept: "application/json"
+      Content-Type: "application/json"
+  processor: "./artillery-processor.js"
+
+scenarios:
+  - name: "Health Check Performance"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/health"
+          capture:
+            - json: "$.status"
+              as: "healthStatus"
+          expect:
+            - statusCode: 200
+            - hasProperty: "status"
+
+  - name: "API Route Performance"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/v1/health"
+          expect:
+            - statusCode: 200
+            - contentType: json
+      - get:
+          url: "/api/metrics"
+          expect:
+            - statusCode: 200
+      - post:
+          url: "/api/test"
+          json:
+            testData: "performance test"
+          expect:
+            - statusCode: [200, 201]
+
+  - name: "Geographic Routing"
+    weight: 25
+    flow:
+      - get:
+          url: "/api/geographic/routing"
+          headers:
+            X-User-Location: "37.7749,-122.4194"
+          expect:
+            - statusCode: 200
+
+  - name: "WebSocket Connection Test"
+    weight: 15
+    engine: ws
+    flow:
+      - connect:
+          url: "{{ $processEnvironment.WEBSOCKET_URL }}"  # GI-18 Compliant: No hardcoded fallback
+      - send:
+          payload: '{"type": "ping", "timestamp": "{{ $timestamp }}"}'
+      - think: 1
+      - send:
+          payload: '{"type": "test-message", "data": "load test"}'
+
+  - name: "Error Handling Test"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/nonexistent"
+          expect:
+            - statusCode: 404
+      - post:
+          url: "/api/invalid"
+          json:
+            malformed: "{{ $randomString() }}"
+          expect:
+            - statusCode: [400, 422, 500]

@@ -1,0 +1,116 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'nen-platform'
+    environment: 'performance-testing'
+
+rule_files:
+  - "alerts.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+scrape_configs:
+  # AI Agent Metrics
+  - job_name: 'ai-agents'
+    scrape_interval: 10s
+    scrape_timeout: 8s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['ai-service-monitor:9092']
+        labels:
+          service: 'ai-service'
+          component: 'ai-agent'
+
+  # Backend Service Metrics
+  - job_name: 'backend-service'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['backend-monitor:9091']
+        labels:
+          service: 'backend'
+          component: 'application'
+
+  # System Metrics via Node Exporter
+  - job_name: 'node-exporter'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'system'
+          component: 'node'
+
+  # Redis Metrics
+  - job_name: 'redis-exporter'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+          component: 'cache'
+
+  # PostgreSQL Metrics
+  - job_name: 'postgres-exporter'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgres'
+          component: 'database'
+
+  # Prometheus Self-Monitoring
+  - job_name: 'prometheus'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+          component: 'monitoring'
+
+  # AI Model Performance Metrics (Custom endpoint)
+  - job_name: 'ai-model-performance'
+    scrape_interval: 30s
+    scrape_timeout: 20s
+    metrics_path: '/ai/metrics'
+    static_configs:
+      - targets: ['backend-monitor:3001']
+        labels:
+          service: 'ai-models'
+          component: 'inference'
+
+  # Load Testing Metrics from K6
+  - job_name: 'k6-loadtest'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    honor_labels: true
+    static_configs:
+      - targets: []
+    # K6 will push metrics via remote_write
+
+# Remote write configuration for external storage
+remote_write:
+  - url: "http://localhost:9090/api/v1/write"
+    write_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'ai_agent_.*|nen_platform_.*'
+        target_label: __tmp_keep
+        replacement: 'true'
+      - source_labels: [__tmp_keep]
+        regex: 'true'
+        action: keep
+
+# Storage configuration
+storage:
+  tsdb:
+    retention.time: 30d
+    retention.size: 10GB
+    wal-compression: true

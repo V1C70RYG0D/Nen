@@ -1,0 +1,96 @@
+{
+  "timestamp": "2025-07-30T16:10:12.367Z",
+  "environment": "development",
+  "services": {
+    "Backend API": {
+      "status": "offline",
+      "error": "timeout of 5000ms exceeded"
+    },
+    "Frontend App": {
+      "status": "online",
+      "code": 200
+    },
+    "Game API": {
+      "status": "offline",
+      "error": "timeout of 5000ms exceeded"
+    },
+    "Betting API": {
+      "status": "offline",
+      "error": "timeout of 5000ms exceeded"
+    },
+    "AI Service": {
+      "status": "offline",
+      "error": "timeout of 5000ms exceeded"
+    },
+    "WebSocket": {
+      "status": "offline",
+      "error": "socket hang up"
+    }
+  },
+  "performance": {
+    "Health Check": {
+      "latency": "1173.25",
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "Game Matches": {
+      "latency": "67.79",
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "AI Agents": {
+      "latency": "40.40",
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "Betting Status": {
+      "latency": "18.12",
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "Load Test": {
+      "concurrent_requests": 50,
+      "successful": 0,
+      "failed": 50,
+      "total_time": "536.83",
+      "average_per_request": "10.74"
+    }
+  },
+  "functionality": {
+    "Create Game Match": {
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "AI Agent Generation": {
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "Betting System": {
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "Real-time Updates": {
+      "status": "error",
+      "error": "socket hang up"
+    }
+  },
+  "security": {
+    "Rate Limiting": {
+      "status": "secure"
+    },
+    "CORS Headers": {
+      "status": "warning",
+      "issue": "Request failed with status code 404"
+    },
+    "Security Headers": {
+      "status": "warning",
+      "issue": "Request failed with status code 404"
+    }
+  },
+  "summary": {
+    "total_tests": 18,
+    "passed": 2,
+    "failed": 14,
+    "warnings": 2
+  }
+}

@@ -1,0 +1,294 @@
+# Grafana Dashboard Configuration for Nen Platform POC
+# Phase 4.2: Production Deployment - Comprehensive Observability Stack
+# 
+# Real-time analytics dashboard showing API performance, game metrics,
+# user activity, and system health
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: nen-production
+data:
+  nen-platform-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Nen Platform POC - Production Dashboard",
+        "tags": ["nen", "poc", "gaming"],
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "API Performance (<100ms Target)",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"nen-backend\"}[5m]))",
+                "legendFormat": "95th Percentile API Latency"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "s",
+                "thresholds": {
+                  "steps": [
+                    {"color": "green", "value": 0},
+                    {"color": "yellow", "value": 0.05},
+                    {"color": "red", "value": 0.1}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Game Move Performance (<50ms Target)",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(game_move_duration_seconds_bucket[5m]))",
+                "legendFormat": "95th Percentile Move Time"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "s",
+                "thresholds": {
+                  "steps": [
+                    {"color": "green", "value": 0},
+                    {"color": "yellow", "value": 0.025},
+                    {"color": "red", "value": 0.05}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Active Users & Game Sessions",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "nen_active_users",
+                "legendFormat": "Active Users"
+              },
+              {
+                "expr": "nen_active_game_sessions",
+                "legendFormat": "Active Games"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+          },
+          {
+            "id": 4,
+            "title": "Request Rate & Error Rate",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(http_requests_total[5m])",
+                "legendFormat": "Requests/sec"
+              },
+              {
+                "expr": "rate(http_requests_total{status=~\"5..\"}[5m])",
+                "legendFormat": "Errors/sec"
+              }
+            ],
+            "yAxes": [
+              {"label": "Requests/sec", "min": 0},
+              {"label": "Errors/sec", "min": 0}
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+          },
+          {
+            "id": 5,
+            "title": "System Resources",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(container_cpu_usage_seconds_total{pod=~\"nen-.*\"}[5m])",
+                "legendFormat": "CPU Usage - {{pod}}"
+              },
+              {
+                "expr": "container_memory_usage_bytes{pod=~\"nen-.*\"} / 1024 / 1024",
+                "legendFormat": "Memory Usage - {{pod}}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+          },
+          {
+            "id": 6,
+            "title": "AI Agent Performance",
+            "type": "table",
+            "targets": [
+              {
+                "expr": "avg_over_time(ai_agent_win_rate[1h])",
+                "legendFormat": "Win Rate",
+                "format": "table"
+              },
+              {
+                "expr": "avg_over_time(ai_agent_move_time[1h])",
+                "legendFormat": "Avg Move Time",
+                "format": "table"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+          },
+          {
+            "id": 7,
+            "title": "Betting & Economics",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "nen_total_bets_placed",
+                "legendFormat": "Total Bets"
+              },
+              {
+                "expr": "nen_total_betting_volume",
+                "legendFormat": "Betting Volume (SOL)"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+          }
+        ],
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "refresh": "5s"
+      }
+    }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: nen-production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:10.0.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: grafana-secrets
+              key: admin-password
+        - name: GF_INSTALL_PLUGINS
+          value: "grafana-piechart-panel,grafana-worldmap-panel"
+        volumeMounts:
+        - name: grafana-storage
+          mountPath: /var/lib/grafana
+        - name: grafana-config
+          mountPath: /etc/grafana/provisioning/datasources/
+        - name: grafana-dashboards-config
+          mountPath: /etc/grafana/provisioning/dashboards/
+        - name: grafana-dashboards
+          mountPath: /var/lib/grafana/dashboards/
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: grafana-storage
+        persistentVolumeClaim:
+          claimName: grafana-storage
+      - name: grafana-config
+        configMap:
+          name: grafana-config
+      - name: grafana-dashboards-config
+        configMap:
+          name: grafana-dashboards-config
+      - name: grafana-dashboards
+        configMap:
+          name: grafana-dashboards
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: nen-production
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+  selector:
+    app: grafana
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-storage
+  namespace: nen-production
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+  namespace: nen-production
+data:
+  datasource.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus:9090
+        isDefault: true
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-config
+  namespace: nen-production
+data:
+  dashboard.yaml: |
+    apiVersion: 1
+    providers:
+      - name: 'nen-platform'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-secrets
+  namespace: nen-production
+type: Opaque
+data:
+  admin-password: bmVuLWFkbWluLXBhc3N3b3Jk  # base64 encoded password

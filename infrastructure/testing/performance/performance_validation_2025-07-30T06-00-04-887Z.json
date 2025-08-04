@@ -1,0 +1,46 @@
+{
+  "api_tests": [
+    {
+      "name": "Health Check",
+      "success": true,
+      "latency": 3.257000000000005,
+      "error": null,
+      "passed": true
+    },
+    {
+      "name": "Get AI Agents",
+      "success": false,
+      "latency": 15.36160000000001,
+      "error": "Request failed with status code 404",
+      "passed": false
+    },
+    {
+      "name": "Game Status",
+      "success": false,
+      "latency": 6.008699999999976,
+      "error": "Request failed with status code 404",
+      "passed": false
+    },
+    {
+      "name": "Performance Metrics",
+      "success": false,
+      "latency": 6.049699999999916,
+      "error": "Request failed with status code 404",
+      "passed": false
+    },
+    {
+      "name": "Leaderboard",
+      "success": false,
+      "latency": 5.5493999999999915,
+      "error": "Request failed with status code 404",
+      "passed": false
+    }
+  ],
+  "gaming_tests": [],
+  "summary": {
+    "api_passed": 1,
+    "api_failed": 4,
+    "gaming_passed": 0,
+    "gaming_failed": 1
+  }
+}

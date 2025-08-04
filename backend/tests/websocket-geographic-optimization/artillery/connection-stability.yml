@@ -1,0 +1,202 @@
+config:
+  target: 'ws://localhost:3001'
+  phases:
+    # Ramp-up phase
+    - duration: 30
+      arrivalRate: 5
+      name: "Warmup"
+    # Sustained load phase
+    - duration: 120
+      arrivalRate: 20
+      name: "Sustained Load"
+    # Peak load phase
+    - duration: 60
+      arrivalRate: 50
+      name: "Peak Load"
+    # Spike test
+    - duration: 30
+      arrivalRate: 100
+      name: "Spike Test"
+    # Cool down
+    - duration: 30
+      arrivalRate: 10
+      name: "Cool Down"
+  environments:
+    production:
+      target: 'wss://{{ $processEnvironment.PRODUCTION_WS_URL }}'
+    staging:
+      target: 'wss://{{ $processEnvironment.STAGING_WS_URL }}'
+  defaults:
+    headers:
+      'User-Agent': 'Artillery/WS-Geographic-Test'
+  plugins:
+    expect: {}
+    metrics-by-endpoint: {}
+  processor: './websocket-stability-processor.js'
+
+scenarios:
+  - name: "Connection Stability Test"
+    weight: 40
+    engine: ws
+    flow:
+      - connect:
+          url: "/game"
+          headers:
+            authorization: "Bearer {{ generateJWT() }}"
+          subprotocols:
+            - "gungi-protocol-v1"
+      - think: 1
+      - send:
+          payload: |
+            {
+              "type": "ping",
+              "timestamp": {{ $timestamp }},
+              "region": "{{ selectRegion() }}"
+            }
+      - expect:
+          - json: "$.type"
+            equals: "pong"
+      - loop:
+          - think: 2
+          - send:
+              payload: |
+                {
+                  "type": "heartbeat",
+                  "timestamp": {{ $timestamp }},
+                  "connectionId": "{{ $uuid }}"
+                }
+          - expect:
+              - json: "$.type"
+                equals: "heartbeat_ack"
+        count: 10
+      - think: 5
+      - send:
+          payload: |
+            {
+              "type": "create_game_session",
+              "gameType": "gungi",
+              "timeControl": 600000,
+              "region": "{{ selectRegion() }}",
+              "allowSpectators": true
+            }
+      - expect:
+          - json: "$.success"
+            equals: true
+          - json: "$.sessionId"
+            exists: true
+      - think: 3
+      - send:
+          payload: |
+            {
+              "type": "disconnect_graceful",
+              "reason": "test_completion"
+            }
+
+  - name: "Connection Clustering Test"
+    weight: 30
+    engine: ws
+    flow:
+      - connect:
+          url: "/game"
+          headers:
+            authorization: "Bearer {{ generateJWT() }}"
+            x-preferred-region: "{{ selectRegion() }}"
+      - think: 1
+      - send:
+          payload: |
+            {
+              "type": "join_cluster",
+              "region": "{{ selectRegion() }}",
+              "capacity": "high"
+            }
+      - expect:
+          - json: "$.clusterAssigned"
+            equals: true
+          - json: "$.region"
+            exists: true
+      - loop:
+          - send:
+              payload: |
+                {
+                  "type": "cluster_heartbeat",
+                  "timestamp": {{ $timestamp }}
+                }
+          - think: 1
+        count: 20
+      - send:
+          payload: |
+            {
+              "type": "leave_cluster"
+            }
+
+  - name: "Failover Testing"
+    weight: 20
+    engine: ws
+    flow:
+      - connect:
+          url: "/game"
+          headers:
+            authorization: "Bearer {{ generateJWT() }}"
+      - think: 1
+      - send:
+          payload: |
+            {
+              "type": "request_failover_test",
+              "primaryRegion": "us-east-1",
+              "fallbackRegion": "us-west-2"
+            }
+      - expect:
+          - json: "$.failoverReady"
+            equals: true
+      - think: 2
+      - send:
+          payload: |
+            {
+              "type": "simulate_primary_failure"
+            }
+      - expect:
+          - json: "$.failedOver"
+            equals: true
+          - json: "$.newRegion"
+            equals: "us-west-2"
+      - think: 5
+      - send:
+          payload: |
+            {
+              "type": "test_connection_post_failover"
+            }
+      - expect:
+          - json: "$.connectionStable"
+            equals: true
+
+  - name: "Latency Optimization Test"
+    weight: 10
+    engine: ws
+    flow:
+      - connect:
+          url: "/game"
+          headers:
+            authorization: "Bearer {{ generateJWT() }}"
+            x-test-latency: "true"
+      - think: 1
+      - loop:
+          - send:
+              payload: |
+                {
+                  "type": "latency_probe",
+                  "timestamp": {{ $timestamp }},
+                  "sequence": {{ $loopCount }}
+                }
+          - expect:
+              - json: "$.latency"
+                lt: 100
+              - json: "$.region"
+                exists: true
+          - think: 0.5
+        count: 50
+
+expectations:
+  - http.response_time.p95: 200
+  - http.response_time.p99: 500
+  - ws.connection_time.p95: 1000
+  - ws.messages.failed: 0

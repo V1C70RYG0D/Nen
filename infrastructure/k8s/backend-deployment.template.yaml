@@ -1,0 +1,242 @@
+# Backend Deployment Template for Nen Platform POC
+# Phase 4.2: Production Deployment - Kubernetes with Auto-scaling
+# 
+# Implements advanced deployment with auto-scaling, health checks,
+# resource limits, and comprehensive monitoring
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nen-backend
+  namespace: nen-production
+  labels:
+    app: nen-backend
+    version: "1.0"
+    component: api
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+  selector:
+    matchLabels:
+      app: nen-backend
+  template:
+    metadata:
+      labels:
+        app: nen-backend
+        version: "1.0"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5001"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: nen-backend
+        image: nen-backend:IMAGE_TAG
+        ports:
+        - containerPort: 5001
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "5001"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: nen-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: nen-secrets
+              key: redis-url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: nen-secrets
+              key: jwt-secret
+        - name: SOLANA_RPC_URL
+          valueFrom:
+            configMapKeyRef:
+              name: nen-config
+              key: solana-rpc-url
+        - name: MAGICBLOCK_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: nen-secrets
+              key: magicblock-api-key
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/ready
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+      securityContext:
+        fsGroup: 1000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nen-backend
+  namespace: nen-production
+  labels:
+    app: nen-backend
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+  - port: 9090
+    targetPort: metrics
+    protocol: TCP
+    name: metrics
+  selector:
+    app: nen-backend
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nen-backend-hpa
+  namespace: nen-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nen-backend
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 30
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nen-config
+  namespace: nen-production
+data:
+  solana-rpc-url: "https://api.devnet.solana.com"
+  magicblock-rpc-url: "https://devnet.magicblock.app"
+  api-rate-limit: "1000"
+  cors-origins: "https://nen-platform.vercel.app"
+  log-level: "info"
+  metrics-enabled: "true"
+  cache-ttl: "300"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nen-secrets
+  namespace: nen-production
+type: Opaque
+data:
+  # Base64 encoded secrets (replace with actual values)
+  database-url: cG9zdGdyZXNxbDovL3VzZXI6cGFzc0Bsb2NhbGhvc3Q6NTQzMi9kYg==
+  redis-url: cmVkaXM6Ly9sb2NhbGhvc3Q6NjM3OQ==
+  jwt-secret: eW91ci1qd3Qtc2VjcmV0LWhlcmU=
+  magicblock-api-key: eW91ci1tYWdpY2Jsb2NrLWFwaS1rZXk=
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: nen-backend-netpol
+  namespace: nen-production
+spec:
+  podSelector:
+    matchLabels:
+      app: nen-backend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: nen-production
+    - podSelector:
+        matchLabels:
+          app: nen-frontend
+    ports:
+    - protocol: TCP
+      port: 5001
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 5432  # PostgreSQL
+    - protocol: TCP
+      port: 6379  # Redis
+    - protocol: TCP
+      port: 443   # HTTPS
+    - protocol: TCP
+      port: 80    # HTTP

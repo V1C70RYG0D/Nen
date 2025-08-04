@@ -1,0 +1,35 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "jsdom",
+  "transform": {
+    "^.+\\.(ts|tsx|js|jsx)$": "babel-jest"
+  },
+  "setupFiles": [
+    "<rootDir>/jest.polyfills.ts"
+  ],
+"setupFilesAfterEnv": [
+    "<rootDir>/jest.setup.ts",
+    "<rootDir>/jest-axe.config.js"
+  ],
+  "transformIgnorePatterns": [
+    "node_modules/(?!@solana|@project-serum)/"
+  ],
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/$1",
+    "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+  },
+  "collectCoverageFrom": [
+    "src/**/*.{ts,tsx}"
+  ],
+  "coverageReporters": ["text", "lcov"],
+  "testPathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/.next/"],
+  "testTimeout": 30000,
+  "globals": {
+    "ts-jest": {
+      "tsconfig": {
+        "jsx": "react-jsx"
+      }
+    }
+  }
+}
+

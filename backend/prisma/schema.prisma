@@ -1,0 +1,191 @@
+// Prisma Schema for Nen Platform
+// Following GI Guideline #2: Real implementations over mocks
+// Following GI Guideline #18: No hardcoding, externalized configuration
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(cuid())
+  username        String    @unique
+  email           String    @unique
+  password        String?   // Optional for OAuth users
+  publicKey       String?   // For Solana wallet
+  address         String?   // Solana wallet address
+  level           Int       @default(1)
+  experience      Int       @default(0)
+  winRate         Float     @default(0.0)
+  totalGames      Int       @default(0)
+  oauthProvider   String?   // google, facebook, etc.
+  oauthId         String?   // OAuth provider user ID
+  isActive        Boolean   @default(true)
+  lastLoginAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  gamesAsPlayer1  Game[]    @relation("Player1Games")
+  gamesAsPlayer2  Game[]    @relation("Player2Games")
+  wonGames        Game[]    @relation("WinnerGames")
+  bets            Bet[]
+  nfts            NFT[]
+  notifications   Notification[]
+  trainingResults TrainingResult[]
+
+  @@map("users")
+}
+
+model Game {
+  id            String      @id @default(cuid())
+  status        GameStatus  @default(WAITING)
+  player1Id     String
+  player2Id     String?
+  winnerId      String?
+  aiDifficulty  String?     // easy, medium, hard, expert
+  betAmount     Float       @default(0)
+  boardState    Json        @default("{}")
+  moveHistory   Json        @default("[]")
+  startedAt     DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  player1       User        @relation("Player1Games", fields: [player1Id], references: [id])
+  player2       User?       @relation("Player2Games", fields: [player2Id], references: [id])
+  winner        User?       @relation("WinnerGames", fields: [winnerId], references: [id])
+  bets          Bet[]
+  moves         Move[]
+
+  @@map("games")
+}
+
+model Move {
+  id          String    @id @default(cuid())
+  gameId      String
+  playerId    String
+  fromX       Int
+  fromY       Int
+  toX         Int
+  toY         Int
+  piece       String
+  moveNumber  Int
+  timestamp   DateTime  @default(now())
+
+  // Relations
+  game        Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@map("moves")
+}
+
+model TrainingResult {
+  id                 String          @id @default(cuid())
+  sessionId          String
+  aiAgentId          String
+  userId             String
+  configuration      Json
+  gameOutcome        Json
+  performanceMetrics Json
+  createdAt          DateTime  @default(now())
+
+  // Relations
+  agent   User        @relation(fields: [userId], references: [id])
+
+  @@map("training_results")
+}
+
+model Bet {
+  id          String      @id @default(cuid())
+  userId      String
+  gameId      String
+  agentId     String?     // For AI betting
+  amount      Float
+  odds        Float       @default(1.0)
+  status      BetStatus   @default(PENDING)
+  payout      Float?
+  placedAt    DateTime    @default(now())
+  settledAt   DateTime?
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id])
+  game        Game        @relation(fields: [gameId], references: [id])
+
+  @@map("bets")
+}
+
+model NFT {
+  id          String    @id @default(cuid())
+  tokenId     String    @unique
+  ownerId     String
+  name        String
+  description String
+  image       String
+  attributes  Json      @default("{}")
+  mintedAt    DateTime  @default(now())
+  listedAt    DateTime?
+  price       Float?
+  isListed    Boolean   @default(false)
+
+  // Relations
+  owner       User      @relation(fields: [ownerId], references: [id])
+
+  @@map("nfts")
+}
+
+model Notification {
+  id          String            @id @default(cuid())
+  userId      String
+  type        NotificationType
+  title       String
+  message     String
+  data        Json              @default("{}")
+  isRead      Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+
+  // Relations
+  user        User              @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model Session {
+  id          String    @id @default(cuid())
+  userId      String
+  token       String    @unique
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  @@map("sessions")
+}
+
+// Enums
+enum GameStatus {
+  WAITING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum BetStatus {
+  PENDING
+  WON
+  LOST
+  CANCELLED
+}
+
+enum NotificationType {
+  GAME_INVITE
+  GAME_START
+  GAME_END
+  BET_WON
+  BET_LOST
+  LEVEL_UP
+  ACHIEVEMENT
+  SYSTEM
+}

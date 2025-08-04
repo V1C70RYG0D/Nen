@@ -1,0 +1,12 @@
+{
+  "network": "localnet",
+  "timestamp": "2025-08-01T09:49:00.141Z",
+  "tests": [],
+  "overall": "passed",
+  "summary": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "coverage": 0
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "phase": "Phase 1: 1,000 Users Load Test",
+  "timestamp": "2025-08-04T01:59:36.696Z",
+  "summary": {
+    "totalRequests": 63523,
+    "successfulRequests": 19084,
+    "failedRequests": 44439,
+    "successRate": 30.04,
+    "durationMs": 336647,
+    "durationMinutes": 5.61,
+    "requestsPerSecond": 188.69
+  },
+  "performance": {
+    "averageResponseTime": 4.44,
+    "minResponseTime": 0.59,
+    "maxResponseTime": 41.83,
+    "p50": 3.67,
+    "p95": 10.15
+  },
+  "requirements": {
+    "responseTimeUnder50ms": 30.04,
+    "errorRate": 69.96,
+    "targetErrorRate": 0,
+    "targetResponseTime": 50
+  },
+  "errors": {
+    "HTTP_429": 44439
+  },
+  "compliance": {
+    "responseTimeCompliant": true,
+    "errorRateCompliant": false,
+    "overallCompliant": false
+  }
+}

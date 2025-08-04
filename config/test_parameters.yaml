@@ -1,0 +1,11 @@
+testParameters:
+  count: 100
+  aiPersonalities:
+    - name: StrategicAI
+      description: "Focuses on long-term planning and strategy."
+    - name: AggressiveAI
+      description: "Prioritizes rapid advancements and high-risk plays."
+  constraints:
+    timeLimit: 5m
+    maxDepth: 5
+

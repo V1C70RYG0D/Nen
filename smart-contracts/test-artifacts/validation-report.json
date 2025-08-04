@@ -1,0 +1,101 @@
+{
+  "timestamp": "2025-08-01T10:50:26.361Z",
+  "results": {
+    "fileValidation": [
+      {
+        "file": "tests/unit/core-initialization.test.ts",
+        "exists": true,
+        "status": "FOUND"
+      },
+      {
+        "file": "tests/config/core-initialization-config.ts",
+        "exists": true,
+        "status": "FOUND"
+      },
+      {
+        "file": "scripts/run-core-initialization-tests.js",
+        "exists": true,
+        "status": "FOUND"
+      },
+      {
+        "file": "tests/unit/CORE_INITIALIZATION_TESTS_README.md",
+        "exists": true,
+        "status": "FOUND"
+      },
+      {
+        "file": "package.json",
+        "exists": true,
+        "status": "FOUND"
+      },
+      {
+        "file": "tsconfig.json",
+        "exists": true,
+        "status": "FOUND"
+      }
+    ],
+    "syntaxValidation": [
+      {
+        "file": "tests/unit/core-initialization.test.ts",
+        "status": "VALID"
+      },
+      {
+        "file": "tests/config/core-initialization-config.ts",
+        "status": "VALID"
+      }
+    ],
+    "configValidation": [
+      {
+        "section": "CORE_INIT_TEST_CONFIG",
+        "status": "FOUND"
+      },
+      {
+        "section": "CORE_INIT_TEST_SCENARIOS",
+        "status": "FOUND"
+      },
+      {
+        "section": "PDA_CONFIG",
+        "status": "FOUND"
+      },
+      {
+        "section": "EXPECTED_ACCOUNT_STATES",
+        "status": "FOUND"
+      }
+    ],
+    "dependencyValidation": [
+      {
+        "dependency": "@coral-xyz/anchor",
+        "version": "^0.31.0",
+        "status": "FOUND"
+      },
+      {
+        "dependency": "@solana/web3.js",
+        "version": "^1.95.0",
+        "status": "FOUND"
+      },
+      {
+        "dependency": "mocha",
+        "version": "^10.2.0",
+        "status": "FOUND"
+      },
+      {
+        "dependency": "chai",
+        "version": "^4.4.1",
+        "status": "FOUND"
+      },
+      {
+        "dependency": "ts-node",
+        "version": "^10.9.2",
+        "status": "FOUND"
+      }
+    ],
+    "errors": [],
+    "warnings": [
+      "Possible hardcoded values detected in config"
+    ]
+  },
+  "summary": {
+    "totalErrors": 0,
+    "totalWarnings": 1,
+    "isValid": true
+  }
+}

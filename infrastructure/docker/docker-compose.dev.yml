@@ -1,0 +1,130 @@
+# Nen Platform POC - Development Environment
+# Docker Compose configuration for local development
+
+version: '3.8'
+
+services:
+  # ==========================================
+  # DATABASE SERVICES
+  # ==========================================
+  postgres:
+    image: postgres:18-beta
+    container_name: nen-postgres-dev
+    environment:
+      POSTGRES_DB: nen_poc
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nen_poc"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - nen-network
+
+  redis:
+    image: redis:8.2-alpine
+    container_name: nen-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - nen-network
+
+  # ==========================================
+  # APPLICATION SERVICES
+  # ==========================================
+  backend:
+    build:
+      context: ../backend
+      dockerfile: ../docker/Dockerfile.backend
+    container_name: nen-backend-dev
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/nen_poc
+      REDIS_URL: redis://redis:6379
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - ../backend:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nen-network
+    command: npm run dev
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    container_name: nen-frontend-dev
+    environment:
+      NODE_ENV: development
+      REACT_APP_API_URL: http://localhost:3001
+      REACT_APP_SOLANA_NETWORK: devnet
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - nen-network
+    command: npm start
+
+  # ==========================================
+  # AI SERVICES
+  # ==========================================
+  ai-service:
+    build:
+      context: ../ai
+      dockerfile: ../docker/Dockerfile.ai
+    container_name: nen-ai-dev
+    environment:
+      PYTHONPATH: /app
+      REDIS_URL: redis://redis:6379
+      AI_MODEL_PATH: /app/models
+    volumes:
+      - ../ai:/app
+      - ai_models:/app/models
+    depends_on:
+      - redis
+    networks:
+      - nen-network
+    command: python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+# ==========================================
+# NETWORKS
+# ==========================================
+networks:
+  nen-network:
+    driver: bridge
+
+# ==========================================
+# VOLUMES
+# ==========================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  ai_models:
+    driver: local

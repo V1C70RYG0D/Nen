@@ -1,0 +1,333 @@
+{
+  "testAccounts": {
+    "platform": {
+      "description": "Main platform configuration account",
+      "expectedFields": [
+        "admin_authority",
+        "platform_fee_percentage", 
+        "total_matches",
+        "total_bets",
+        "total_volume",
+        "created_at",
+        "is_paused",
+        "max_bet_amount",
+        "min_bet_amount",
+        "treasury_address",
+        "emergency_address"
+      ],
+      "security": {
+        "requiresAdmin": true,
+        "canPause": true,
+        "feeRangeBps": [0, 1000],
+        "maxBetLimitSol": 1000,
+        "minBetLimitSol": 0.001
+      },
+      "validation": {
+        "feePercentageMax": 1000,
+        "emergencyWithdrawEnabled": true,
+        "pauseRequiresMultisig": false
+      }
+    },
+    "userAccounts": [
+      {
+        "name": "authority",
+        "role": "admin",
+        "kycLevel": 3,
+        "initialBalance": 10.0,
+        "permissions": ["all"],
+        "testScenarios": ["admin_operations", "emergency_procedures", "platform_config"]
+      },
+      {
+        "name": "treasury",
+        "role": "treasury",
+        "kycLevel": 3,
+        "initialBalance": 0.0,
+        "permissions": ["receive_fees", "emergency_withdraw"],
+        "testScenarios": ["fee_collection", "emergency_withdrawal"]
+      },
+      {
+        "name": "user1",
+        "role": "player",
+        "kycLevel": 1,
+        "initialBalance": 5.0,
+        "permissions": ["place_small_bets", "view_matches"],
+        "testScenarios": ["basic_betting", "kyc_limits", "small_transactions"],
+        "restrictions": {
+          "maxBetAmount": 1.0,
+          "dailyLimit": 5.0,
+          "withdrawalLimit": 2.0
+        }
+      },
+      {
+        "name": "user2", 
+        "role": "player",
+        "kycLevel": 2,
+        "initialBalance": 3.0,
+        "permissions": ["place_medium_bets", "create_matches", "withdraw_funds"],
+        "testScenarios": ["medium_betting", "match_creation", "withdrawals"],
+        "restrictions": {
+          "maxBetAmount": 10.0,
+          "dailyLimit": 50.0,
+          "withdrawalLimit": 25.0
+        }
+      },
+      {
+        "name": "bettor1",
+        "role": "bettor",
+        "kycLevel": 2,
+        "initialBalance": 2.0,
+        "permissions": ["place_medium_bets", "view_matches"],
+        "testScenarios": ["competitive_betting", "multiple_matches"],
+        "restrictions": {
+          "maxBetAmount": 5.0,
+          "dailyLimit": 20.0,
+          "withdrawalLimit": 10.0
+        }
+      },
+      {
+        "name": "bettor2",
+        "role": "bettor", 
+        "kycLevel": 1,
+        "initialBalance": 1.5,
+        "permissions": ["place_small_bets", "view_matches"],
+        "testScenarios": ["casual_betting", "low_stakes"],
+        "restrictions": {
+          "maxBetAmount": 2.0,
+          "dailyLimit": 10.0,
+          "withdrawalLimit": 5.0
+        }
+      }
+    ],
+    "matchAccounts": [
+      {
+        "matchId": "test_match_001",
+        "type": "standard",
+        "agent1": "Lightning Strategist",
+        "agent2": "Defensive Master",
+        "entryFee": 0.1,
+        "maxParticipants": 100,
+        "duration": 1800,
+        "status": "created",
+        "expectedPools": {
+          "agent1": 0.0,
+          "agent2": 0.0
+        }
+      },
+      {
+        "matchId": "test_match_002",
+        "type": "tournament",
+        "agent1": "Adaptive Learner",
+        "agent2": "Experimental Bot",
+        "entryFee": 0.5,
+        "maxParticipants": 50,
+        "duration": 3600,
+        "status": "active",
+        "expectedPools": {
+          "agent1": 10.0,
+          "agent2": 5.0
+        }
+      }
+    ],
+    "tokenAccounts": {
+      "usdc": {
+        "decimals": 6,
+        "initialSupply": 1000000,
+        "distributionPerUser": 1000
+      },
+      "gameToken": {
+        "decimals": 9,
+        "initialSupply": 10000000,
+        "distributionPerUser": 100
+      }
+    },
+    "agentAccounts": [
+      {
+        "name": "Lightning Strategist",
+        "aiModel": "GPT-4-TURBO",
+        "traits": {
+          "strategy": 85,
+          "speed": 92,
+          "aggression": 78,
+          "defense": 90,
+          "adaptability": 88
+        },
+        "winRate": 72.5,
+        "totalMatches": 150,
+        "reputation": 850,
+        "mintPrice": 2.0,
+        "royaltyPercentage": 5.0,
+        "metadataUri": "https://metadata.nenplatform.com/agents/lightning-strategist.json"
+      },
+      {
+        "name": "Defensive Master",
+        "aiModel": "CLAUDE-3-OPUS",
+        "traits": {
+          "strategy": 90,
+          "speed": 70,
+          "aggression": 60,
+          "defense": 95,
+          "adaptability": 85
+        },
+        "winRate": 68.3,
+        "totalMatches": 200,
+        "reputation": 920,
+        "mintPrice": 1.5,
+        "royaltyPercentage": 4.0,
+        "metadataUri": "https://metadata.nenplatform.com/agents/defensive-master.json"
+      },
+      {
+        "name": "Adaptive Learner",
+        "aiModel": "GEMINI-PRO",
+        "traits": {
+          "strategy": 80,
+          "speed": 85,
+          "aggression": 75,
+          "defense": 80,
+          "adaptability": 98
+        },
+        "winRate": 75.1,
+        "totalMatches": 100,
+        "reputation": 750,
+        "mintPrice": 3.0,
+        "royaltyPercentage": 6.0,
+        "metadataUri": "https://metadata.nenplatform.com/agents/adaptive-learner.json"
+      }
+    ]
+  },
+  "testScenarios": {
+    "bettingScenarios": [
+      {
+        "name": "small_bet_on_favorite",
+        "bettor": "user1",
+        "match": "test_match_001", 
+        "agent": 1,
+        "amount": 0.1,
+        "expectedOdds": 1.5,
+        "shouldSucceed": true
+      },
+      {
+        "name": "large_bet_exceeds_kyc",
+        "bettor": "user1",
+        "match": "test_match_001",
+        "agent": 1,
+        "amount": 2.0,
+        "expectedOdds": 1.5,
+        "shouldSucceed": false,
+        "expectedError": "KYC_LIMIT_EXCEEDED"
+      },
+      {
+        "name": "bet_on_ended_match",
+        "bettor": "user2",
+        "match": "ended_match",
+        "agent": 1,
+        "amount": 0.5,
+        "shouldSucceed": false,
+        "expectedError": "MATCH_ENDED"
+      }
+    ],
+    "securityScenarios": [
+      {
+        "name": "unauthorized_platform_admin",
+        "attacker": "user1",
+        "action": "pause_platform",
+        "shouldSucceed": false,
+        "expectedError": "UNAUTHORIZED"
+      },
+      {
+        "name": "withdraw_other_user_funds",
+        "attacker": "user1",
+        "victim": "user2",
+        "action": "withdraw_funds",
+        "amount": 1.0,
+        "shouldSucceed": false,
+        "expectedError": "UNAUTHORIZED"
+      },
+      {
+        "name": "overflow_bet_amount",
+        "bettor": "user2",
+        "match": "test_match_001",
+        "amount": "18446744073709551615",
+        "shouldSucceed": false,
+        "expectedError": "OVERFLOW"
+      }
+    ],
+    "performanceScenarios": [
+      {
+        "name": "concurrent_betting",
+        "userCount": 10,
+        "betsPerUser": 5,
+        "match": "test_match_002",
+        "maxLatency": 2000,
+        "minThroughput": 25
+      },
+      {
+        "name": "bulk_user_creation",
+        "userCount": 50,
+        "maxLatency": 1000,
+        "minThroughput": 50
+      },
+      {
+        "name": "high_frequency_betting",
+        "userCount": 5,
+        "betsPerUser": 20,
+        "interval": 100,
+        "maxLatency": 500,
+        "minThroughput": 100
+      }
+    ]
+  },
+  "validationRules": {
+    "betAmount": {
+      "min": 0.01,
+      "max": 10.0,
+      "kycLimits": {
+        "1": 0.1,
+        "2": 1.0,
+        "3": 10.0
+      }
+    },
+    "platformFee": {
+      "min": 0,
+      "max": 1000,
+      "default": 250
+    },
+    "matchDuration": {
+      "min": 300,
+      "max": 7200,
+      "default": 1800
+    },
+    "agentTraits": {
+      "min": 1,
+      "max": 100,
+      "required": ["strategy", "speed", "aggression", "defense", "adaptability"]
+    }
+  },
+  "expectedErrors": {
+    "UNAUTHORIZED": "Unauthorized access attempt",
+    "INSUFFICIENT_BALANCE": "Insufficient account balance",
+    "KYC_LIMIT_EXCEEDED": "Bet amount exceeds KYC level limit",
+    "MATCH_NOT_FOUND": "Match does not exist",
+    "MATCH_ENDED": "Match has already ended",
+    "INVALID_AGENT": "Invalid agent selection",
+    "PLATFORM_PAUSED": "Platform is paused",
+    "OVERFLOW": "Numeric overflow detected",
+    "INVALID_FEE": "Invalid fee percentage",
+    "MINIMUM_BET": "Bet below minimum amount",
+    "MAXIMUM_BET": "Bet exceeds maximum amount"
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "createdAt": "2025-08-01T00:00:00Z",
+    "description": "Test fixture data for Nen Platform smart contract testing",
+    "compliance": {
+      "giGuidelines": [
+        "Real implementations over simulations (#2)",
+        "Production readiness (#3)", 
+        "Modular design (#4)",
+        "Security measures (#13)",
+        "Robust error handling (#20)",
+        "100% test coverage (#8)"
+      ]
+    }
+  }
+}

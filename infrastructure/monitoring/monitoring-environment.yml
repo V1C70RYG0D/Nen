@@ -1,0 +1,363 @@
+# Nen Platform Monitoring Environment Configuration
+# Mirrors production setup for accurate performance baseline metrics
+# Following GI-18: All values externalized, no hardcoding
+
+version: '3.8'
+
+services:
+  # Core Application Services (Production Mirror)
+  postgres-monitor:
+    image: postgres:15-alpine
+    container_name: nen-postgres-monitor
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nen_platform_monitor}
+      POSTGRES_USER: ${POSTGRES_USER:-nen_monitor}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nen_monitor_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_monitor_data:/var/lib/postgresql/data
+      - ./monitoring/sql/init-monitoring-db.sql:/docker-entrypoint-initdb.d/init-monitoring-db.sql:ro
+    ports:
+      - "${POSTGRES_MONITOR_PORT:-5433}:5432"
+    networks:
+      - nen-monitoring-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nen_monitor} -d ${POSTGRES_DB:-nen_platform_monitor}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  redis-monitor:
+    image: redis:7-alpine
+    container_name: nen-redis-monitor
+    restart: unless-stopped
+    command: redis-server --appendonly yes --replica-read-only no --maxmemory ${REDIS_MAX_MEMORY:-1gb} --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_monitor_data:/data
+    ports:
+      - "${REDIS_MONITOR_PORT:-6380}:6379"
+    networks:
+      - nen-monitoring-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Backend Service for Performance Testing
+  backend-monitor:
+    build:
+      context: ./backend
+      dockerfile: ../infrastructure/docker/Dockerfile.backend
+      args:
+        NODE_ENV: performance-testing
+    container_name: nen-backend-monitor
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=${NODE_ENV:-performance-testing}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-nen_monitor}:${POSTGRES_PASSWORD:-nen_monitor_password}@postgres-monitor:5432/${POSTGRES_DB:-nen_platform_monitor}
+      - REDIS_URL=redis://redis-monitor:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - SOLANA_RPC_URL=${SOLANA_RPC_URL}
+      - MAGICBLOCK_API_KEY=${MAGICBLOCK_API_KEY}
+      - MAGICBLOCK_ENDPOINT=${MAGICBLOCK_ENDPOINT}
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
+      - METRICS_ENABLED=${METRICS_ENABLED:-true}
+      - METRICS_PORT=${METRICS_PORT:-9091}
+      - PERFORMANCE_MODE=true
+      - TRACE_ENABLED=true
+      - DETAILED_METRICS=true
+    ports:
+      - "${BACKEND_MONITOR_PORT:-3011}:3001"
+      - "${BACKEND_METRICS_PORT:-9091}:9091"
+    networks:
+      - nen-monitoring-network
+    depends_on:
+      postgres-monitor:
+        condition: service_healthy
+      redis-monitor:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '${BACKEND_CPU_LIMIT:-2.0}'
+          memory: ${BACKEND_MEMORY_LIMIT:-4G}
+        reservations:
+          cpus: '${BACKEND_CPU_RESERVATION:-1.0}'
+          memory: ${BACKEND_MEMORY_RESERVATION:-2G}
+
+  # AI Service for Performance Testing
+  ai-service-monitor:
+    build:
+      context: ./backend/ai-services
+      dockerfile: ../../infrastructure/docker/Dockerfile.ai
+    container_name: nen-ai-service-monitor
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=${NODE_ENV:-performance-testing}
+      - REDIS_URL=redis://redis-monitor:6379
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-nen_monitor}:${POSTGRES_PASSWORD:-nen_monitor_password}@postgres-monitor:5432/${POSTGRES_DB:-nen_platform_monitor}
+      - AI_SERVICE_PORT=${AI_SERVICE_PORT:-8011}
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
+      - METRICS_ENABLED=true
+      - PERFORMANCE_MODE=true
+      - AI_INFERENCE_TIMEOUT=${AI_INFERENCE_TIMEOUT:-5000}
+    ports:
+      - "${AI_SERVICE_MONITOR_PORT:-8011}:8011"
+      - "${AI_METRICS_PORT:-9092}:9092"
+    networks:
+      - nen-monitoring-network
+    depends_on:
+      - redis-monitor
+      - postgres-monitor
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8011/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '${AI_CPU_LIMIT:-4.0}'
+          memory: ${AI_MEMORY_LIMIT:-8G}
+        reservations:
+          cpus: '${AI_CPU_RESERVATION:-2.0}'
+          memory: ${AI_MEMORY_RESERVATION:-4G}
+
+  # Prometheus for Metrics Collection
+  prometheus-monitor:
+    image: prom/prometheus:v2.48.0
+    container_name: nen-prometheus-monitor
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-30d}'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+      - '--storage.tsdb.max-block-duration=2h'
+      - '--storage.tsdb.min-block-duration=2h'
+    volumes:
+      - ./monitoring/config/prometheus-monitor.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/config/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_monitor_data:/prometheus
+    ports:
+      - "${PROMETHEUS_MONITOR_PORT:-9190}:9090"
+    networks:
+      - nen-monitoring-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Grafana for Monitoring Dashboards
+  grafana-monitor:
+    image: grafana/grafana:10.2.2
+    container_name: nen-grafana-monitor
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-monitor_admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/nen-performance-overview.json
+      - GF_FEATURE_TOGGLES_ENABLE=ngalert
+      - GF_UNIFIED_ALERTING_ENABLED=true
+    volumes:
+      - grafana_monitor_data:/var/lib/grafana
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/dashboard-configs:/var/lib/grafana/dashboards:ro
+    ports:
+      - "${GRAFANA_MONITOR_PORT:-3020}:3000"
+    networks:
+      - nen-monitoring-network
+    depends_on:
+      - prometheus-monitor
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Node Exporter for System Metrics
+  node-exporter:
+    image: prom/node-exporter:v1.6.1
+    container_name: nen-node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    ports:
+      - "${NODE_EXPORTER_PORT:-9100}:9100"
+    networks:
+      - nen-monitoring-network
+
+  # Redis Exporter for Redis Metrics
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.55.0
+    container_name: nen-redis-exporter
+    restart: unless-stopped
+    environment:
+      - REDIS_ADDR=redis://redis-monitor:6379
+      - REDIS_EXPORTER_LOG_FORMAT=json
+    ports:
+      - "${REDIS_EXPORTER_PORT:-9121}:9121"
+    networks:
+      - nen-monitoring-network
+    depends_on:
+      - redis-monitor
+
+  # Postgres Exporter for Database Metrics
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.13.2
+    container_name: nen-postgres-exporter
+    restart: unless-stopped
+    environment:
+      - DATA_SOURCE_NAME=postgresql://${POSTGRES_USER:-nen_monitor}:${POSTGRES_PASSWORD:-nen_monitor_password}@postgres-monitor:5432/${POSTGRES_DB:-nen_platform_monitor}?sslmode=disable
+      - PG_EXPORTER_EXTEND_QUERY_PATH=/etc/postgres_exporter/queries.yaml
+    volumes:
+      - ./monitoring/config/postgres-queries.yaml:/etc/postgres_exporter/queries.yaml:ro
+    ports:
+      - "${POSTGRES_EXPORTER_PORT:-9187}:9187"
+    networks:
+      - nen-monitoring-network
+    depends_on:
+      postgres-monitor:
+        condition: service_healthy
+
+  # Jaeger for Distributed Tracing
+  jaeger-monitor:
+    image: jaegertracing/all-in-one:1.50
+    container_name: nen-jaeger-monitor
+    restart: unless-stopped
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=memory
+      - MEMORY_MAX_TRACES=${JAEGER_MAX_TRACES:-100000}
+    ports:
+      - "${JAEGER_UI_PORT:-16686}:16686"
+      - "${JAEGER_COLLECTOR_PORT:-14268}:14268"
+      - "${JAEGER_AGENT_PORT:-6831}:6831/udp"
+      - "${JAEGER_AGENT_COMPACT_PORT:-6832}:6832/udp"
+    networks:
+      - nen-monitoring-network
+
+  # Loki for Log Aggregation
+  loki-monitor:
+    image: grafana/loki:2.9.2
+    container_name: nen-loki-monitor
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./monitoring/config/loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - loki_monitor_data:/loki
+    ports:
+      - "${LOKI_PORT:-3100}:3100"
+    networks:
+      - nen-monitoring-network
+
+  # Promtail for Log Collection
+  promtail-monitor:
+    image: grafana/promtail:2.9.2
+    container_name: nen-promtail-monitor
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./monitoring/config/promtail-config.yaml:/etc/promtail/config.yml:ro
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - promtail_positions:/tmp/positions
+    networks:
+      - nen-monitoring-network
+    depends_on:
+      - loki-monitor
+
+  # K6 Load Testing Service
+  k6-loadtest:
+    image: grafana/k6:0.46.0
+    container_name: nen-k6-loadtest
+    restart: "no"
+    environment:
+      - K6_PROMETHEUS_RW_SERVER_URL=http://prometheus-monitor:9090/api/v1/write
+      - K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true
+    volumes:
+      - ./monitoring/k6-tests:/scripts:ro
+      - k6_results:/results
+    networks:
+      - nen-monitoring-network
+    depends_on:
+      - backend-monitor
+      - prometheus-monitor
+    profiles:
+      - loadtest
+
+  # Performance Test Orchestrator
+  test-orchestrator:
+    build:
+      context: ./monitoring/orchestrator
+      dockerfile: Dockerfile
+    container_name: nen-test-orchestrator
+    restart: "no"
+    environment:
+      - BACKEND_URL=http://backend-monitor:3001
+      - AI_SERVICE_URL=http://ai-service-monitor:8011
+      - PROMETHEUS_URL=http://prometheus-monitor:9090
+      - GRAFANA_URL=http://grafana-monitor:3000
+      - TEST_DURATION=${TEST_DURATION:-300}
+      - CONCURRENT_USERS=${CONCURRENT_USERS:-100}
+      - RAMP_UP_TIME=${RAMP_UP_TIME:-60}
+    volumes:
+      - ./monitoring/test-results:/results
+      - ./monitoring/test-configs:/configs:ro
+    networks:
+      - nen-monitoring-network
+    depends_on:
+      - backend-monitor
+      - ai-service-monitor
+      - prometheus-monitor
+    profiles:
+      - testing
+
+volumes:
+  postgres_monitor_data:
+    driver: local
+  redis_monitor_data:
+    driver: local
+  prometheus_monitor_data:
+    driver: local
+  grafana_monitor_data:
+    driver: local
+  loki_monitor_data:
+    driver: local
+  promtail_positions:
+    driver: local
+  k6_results:
+    driver: local
+
+networks:
+  nen-monitoring-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+          gateway: 172.30.0.1

@@ -9,6 +9,7 @@ interface AuthRequest extends Request {
     id: string;
     publicKey: string;
     address: string;
+    walletAddress: string;
     username?: string;
     email?: string;
     wallet?: string;
@@ -38,25 +39,31 @@ export const authMiddleware = async (
     const decoded = jwt.verify(token, jwtSecret) as any;
 
     // Validate that required fields are present in the token
-    if (!decoded.userId || !decoded.wallet) {
+    // Support both old and new token formats for backward compatibility
+    const userId = decoded.userId || decoded.id;
+    const wallet = decoded.wallet || decoded.publicKey || decoded.address;
+    
+    if (!userId || !wallet) {
       throw createError('Invalid token payload', 401);
     }
 
     // Validate wallet address format
     try {
-      new PublicKey(decoded.wallet);
+      new PublicKey(wallet);
     } catch {
       throw createError('Invalid wallet address in token', 401);
     }
 
-    // Set user information from token
+    // Set user information from token with backward compatibility
     req.user = {
-      id: decoded.userId,
-      publicKey: decoded.wallet,
-      address: decoded.wallet,
-      wallet: decoded.wallet,
+      id: userId,
+      publicKey: wallet,
+      address: wallet,
+      walletAddress: wallet,
+      wallet: wallet,
       username: decoded.username,
-      role: decoded.role
+      email: decoded.email,
+      role: decoded.role || 'user'
     };
 
     next();
@@ -137,6 +144,7 @@ export const solanaWalletAuth = async (
       id: publicKey,
       publicKey,
       address: publicKey,
+      walletAddress: publicKey,
       wallet: publicKey
     };
 

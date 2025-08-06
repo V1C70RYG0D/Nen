@@ -20,7 +20,7 @@ module.exports = {
     '<rootDir>/tests/fixtures/'
   ],
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
+    '^.+\\.(ts|tsx)$': 'ts-jest'
   },
   collectCoverageFrom: [
     'src*.(ts|js)',

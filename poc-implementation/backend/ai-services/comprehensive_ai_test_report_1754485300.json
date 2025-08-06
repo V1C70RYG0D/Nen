@@ -1,0 +1,181 @@
+{
+  "total_tests": 11,
+  "passed_tests": 6,
+  "failed_tests": 5,
+  "errors": 0,
+  "categories": {
+    "unit_tests": {
+      "passed": 3,
+      "total": 4
+    },
+    "integration_tests": {
+      "passed": 0,
+      "total": 2
+    },
+    "performance_tests": {
+      "passed": 0,
+      "total": 1
+    },
+    "security_tests": {
+      "passed": 2,
+      "total": 2
+    },
+    "magicblock_tests": {
+      "passed": 1,
+      "total": 1
+    },
+    "gi_compliance_tests": {
+      "passed": 0,
+      "total": 1
+    }
+  },
+  "detailed_results": [
+    {
+      "test_name": "BaseAgent Functionality",
+      "category": "unit_tests",
+      "success": true,
+      "duration_ms": 17333.171606063843,
+      "error_message": null,
+      "metrics": {},
+      "timestamp": "2025-08-06T13:01:32.770960"
+    },
+    {
+      "test_name": "Easy Agent Implementation",
+      "category": "unit_tests",
+      "success": false,
+      "duration_ms": 622.9805946350098,
+      "error_message": "Move time 19.22ms exceeds 10ms limit",
+      "metrics": {},
+      "timestamp": "2025-08-06T13:01:33.393941"
+    },
+    {
+      "test_name": "Medium Agent Implementation",
+      "category": "unit_tests",
+      "success": true,
+      "duration_ms": 51.810264587402344,
+      "error_message": null,
+      "metrics": {
+        "avg_move_time_ms": 9.48333740234375,
+        "max_move_time_ms": 18.564462661743164,
+        "search_depth": 2
+      },
+      "timestamp": "2025-08-06T13:01:33.457169"
+    },
+    {
+      "test_name": "Hard Agent Implementation",
+      "category": "unit_tests",
+      "success": true,
+      "duration_ms": 149.4619846343994,
+      "error_message": null,
+      "metrics": {
+        "avg_move_time_ms": 15.680742263793945,
+        "max_move_time_ms": 28.0306339263916,
+        "neural_network_loaded": true,
+        "magicblock_compliant": true
+      },
+      "timestamp": "2025-08-06T13:01:33.619359"
+    },
+    {
+      "test_name": "AI Manager Integration",
+      "category": "integration_tests",
+      "success": false,
+      "duration_ms": 358.28351974487305,
+      "error_message": "Shutdown failed: ThreadPoolExecutor.shutdown() got an unexpected keyword argument 'timeout'",
+      "metrics": {},
+      "timestamp": "2025-08-06T13:01:33.979142"
+    },
+    {
+      "test_name": "Concurrent Games Handling",
+      "category": "integration_tests",
+      "success": false,
+      "duration_ms": 791.8524742126465,
+      "error_message": "Shutdown failed: ThreadPoolExecutor.shutdown() got an unexpected keyword argument 'timeout'",
+      "metrics": {},
+      "timestamp": "2025-08-06T13:01:34.788655"
+    },
+    {
+      "test_name": "Throughput Requirements",
+      "category": "performance_tests",
+      "success": false,
+      "duration_ms": 5321.871519088745,
+      "error_message": "Shutdown failed: ThreadPoolExecutor.shutdown() got an unexpected keyword argument 'timeout'",
+      "metrics": {},
+      "timestamp": "2025-08-06T13:01:40.162757"
+    },
+    {
+      "test_name": "MagicBlock Compliance",
+      "category": "magicblock_tests",
+      "success": true,
+      "duration_ms": 181.90240859985352,
+      "error_message": null,
+      "metrics": {
+        "Easy": {
+          "avg_time_ms": 4.089689254760742,
+          "max_time_ms": 15.131473541259766,
+          "target_ms": 10.0,
+          "compliance_rate": 0.9,
+          "compliant": true
+        },
+        "Medium": {
+          "avg_time_ms": 2.6940345764160156,
+          "max_time_ms": 8.132219314575195,
+          "target_ms": 50.0,
+          "compliance_rate": 1.0,
+          "compliant": true
+        },
+        "Hard": {
+          "avg_time_ms": 10.201811790466309,
+          "max_time_ms": 37.67704963684082,
+          "target_ms": 90.0,
+          "compliance_rate": 1.0,
+          "compliant": true
+        }
+      },
+      "timestamp": "2025-08-06T13:01:40.370631"
+    },
+    {
+      "test_name": "Fraud Detection System",
+      "category": "security_tests",
+      "success": true,
+      "duration_ms": 110.78333854675293,
+      "error_message": null,
+      "metrics": {
+        "normal_fraud_score": 0.005550000000000001,
+        "suspicious_fraud_score": 0.016105550000000003,
+        "final_fraud_score": 0.005555555501610555,
+        "detection_working": true,
+        "decay_working": true
+      },
+      "timestamp": "2025-08-06T13:01:40.493564"
+    },
+    {
+      "test_name": "Move Validation Security",
+      "category": "security_tests",
+      "success": true,
+      "duration_ms": 17.723798751831055,
+      "error_message": null,
+      "metrics": {
+        "valid_move_generated": true,
+        "empty_moves_handled": true,
+        "malformed_input_handled": true
+      },
+      "timestamp": "2025-08-06T13:01:40.514928"
+    },
+    {
+      "test_name": "GI Compliance Implementation",
+      "category": "gi_compliance_tests",
+      "success": false,
+      "duration_ms": 15.999794006347656,
+      "error_message": "",
+      "metrics": {},
+      "timestamp": "2025-08-06T13:01:40.609885"
+    }
+  ],
+  "performance_metrics": {},
+  "recommendations": [
+    "Implement missing GI.md compliance features - error handling, logging, resource management",
+    "Optimize AI agent performance to meet MagicBlock sub-100ms requirements",
+    "Fix AI Manager integration issues for proper multi-agent coordination",
+    "Fix 1 unit test failures - core AI agent functionality needs attention"
+  ]
+}

@@ -159,7 +159,7 @@ export const mockEnhancedComplianceService = {
   })
 };
 
-// Mock the enhanced AI training service
+// Mock the enhanced AI training service V2
 export const mockEnhancedAITrainingService = {
   scheduleWeeklyTraining: jest.fn().mockResolvedValue(undefined),
   startSelfPlayTraining: jest.fn().mockImplementation((agentId, numberOfGames) => {
@@ -168,11 +168,14 @@ export const mockEnhancedAITrainingService = {
       agentId,
       opponentId: agentId,
       gamesPlayed: 0,
+      targetGames: numberOfGames,
       winRate: 0,
       averageGameLength: 0,
       eloChange: 0,
       started: new Date(),
-      status: 'running'
+      status: 'running',
+      learningData: [],
+      computeTime: 0
     });
   }),
   getTrainingMetrics: jest.fn().mockResolvedValue({
@@ -181,9 +184,90 @@ export const mockEnhancedAITrainingService = {
     averageWinRate: 0.52,
     eloImprovement: 50,
     lastUpdate: new Date(),
-    nextScheduledUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    nextScheduledUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    computeEfficiency: 0.85
   }),
   getActiveSessions: jest.fn().mockReturnValue([]),
   stopTraining: jest.fn().mockResolvedValue(undefined),
+  shutdown: jest.fn().mockResolvedValue(undefined),
+  startAdvancedSelfPlayTraining: jest.fn().mockResolvedValue({
+    id: `advanced_training_${Date.now()}`,
+    agentId: 'test-agent',
+    status: 'running',
+    gamesPlayed: 0,
+    targetGames: 100,
+    started: new Date()
+  }),
+  pauseTraining: jest.fn().mockResolvedValue(undefined),
+  resumeTraining: jest.fn().mockResolvedValue(undefined),
+  getComputeEfficiency: jest.fn().mockReturnValue(0.85)
+};
+
+// Mock Advanced Load Testing Service
+export const mockAdvancedLoadTestingService = {
+  runLoadTest: jest.fn().mockResolvedValue({
+    testId: `load_test_${Date.now()}`,
+    concurrent_users: 100,
+    duration: 300,
+    status: 'completed',
+    results: {
+      total_requests: 10000,
+      successful_requests: 9950,
+      failed_requests: 50,
+      average_response_time: 120,
+      max_response_time: 2500,
+      min_response_time: 45
+    }
+  }),
+  getMetrics: jest.fn().mockResolvedValue({
+    activeTests: 0,
+    totalTests: 5,
+    successRate: 0.995
+  }),
+  stopAllTests: jest.fn().mockResolvedValue(undefined),
+  shutdown: jest.fn().mockResolvedValue(undefined)
+};
+
+// Mock Enhanced Compliance Service
+export const mockEnhancedComplianceServiceV2 = {
+  initialize: jest.fn().mockResolvedValue(undefined),
+  detectFraud: jest.fn().mockImplementation((walletAddress, amount) => {
+    const isNewUser = walletAddress === 'new_user_wallet';
+    const isLargeAmount = amount > 50;
+    const isInvalidWallet = !walletAddress;
+
+    let riskScore = 10;
+    const flaggedReasons = [];
+
+    if (isInvalidWallet) {
+      riskScore = 100;
+      flaggedReasons.push('Invalid wallet address');
+    } else if (isNewUser && amount > 10) {
+      riskScore += 40;
+      flaggedReasons.push('Large amount for new user');
+    }
+
+    if (isLargeAmount) {
+      riskScore += 30;
+      flaggedReasons.push('Very large transaction amount');
+    }
+
+    return Promise.resolve({
+      riskScore,
+      isHighRisk: riskScore >= 80,
+      flaggedReasons,
+      recommendedAction: riskScore >= 80 ? 'block' : riskScore >= 60 ? 'review' : 'allow',
+      confidence: 0.8
+    });
+  }),
+  checkKYCCompliance: jest.fn().mockResolvedValue({
+    walletAddress: 'test_wallet',
+    isCompliant: true,
+    status: 'approved',
+    verificationLevel: 'basic',
+    lastCheck: new Date(),
+    expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    documents: []
+  }),
   shutdown: jest.fn().mockResolvedValue(undefined)
 };

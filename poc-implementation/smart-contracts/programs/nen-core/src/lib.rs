@@ -1,6 +1,9 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{TokenAccount, Token, Mint};
 
+mod errors;
+use errors::NenPlatformError;
+
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
 // Enhanced Nen Platform Core Smart Contract
@@ -74,15 +77,15 @@ pub mod nen_core {
         region: u8,
     ) -> Result<()> {
         require!(kyc_level <= 2, ErrorCode::InvalidKycLevel); // 0=None, 1=Basic, 2=Enhanced
-        require!(region <= 4, ErrorCode::InvalidRegion); // 0=Global, 1=NA, 2=EU, 3=APAC, 4=LATAM
-        require!(username.len() >= 3, ErrorCode::UsernameTooShort);
-        require!(username.len() <= 30, ErrorCode::UsernameTooLong);
+        require!(region <= 4, NenPlatformError::InvalidRegion); // 0=Global, 1=NA, 2=EU, 3=APAC, 4=LATAM
+        require!(username.len() >= 3, NenPlatformError::UsernameTooShort);
+        require!(username.len() <= 30, NenPlatformError::UsernameTooLong);
         
         // Validate username characters (alphanumeric, underscore, dash only)
         for ch in username.chars() {
             require!(
                 ch.is_alphanumeric() || ch == '_' || ch == '-',
-                ErrorCode::InvalidUsernameCharacters
+                NenPlatformError::InvalidUsernameCharacters
             );
         }
         

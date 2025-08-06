@@ -8,6 +8,18 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\" \"npm run ai:dev\"",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend && npm run dev",
+    "ai:dev": "cd ai && python app.py",
+    "start": "concurrently \"npm run backend:start\" \"npm run frontend:start\"",
+    "backend:start": "cd backend && npm start",
+    "frontend:start": "cd frontend && npm start",
+    "build": "npm run backend:build && npm run frontend:build",
+    "backend:build": "cd backend && npm run build",
+    "frontend:build": "cd frontend && npm run build",
+    "deploy": "echo 'Deploy script not implemented yet'",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
     "test:performance": "ts-node ./testing/performance/test-runner.ts",
     "test": "jest --config config/jest.config.js",
     "test:data-generators": "jest --selectProjects='Data Generator Tests' --config config/jest.config.js",
@@ -92,8 +104,7 @@
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "winston": "^3.11.0",
-    "winston-sentry-raven-transport": "^1.2.1",
+    "winston": "^3.17.0",
     "ws": "^8.18.3"
   },
   "repository": {

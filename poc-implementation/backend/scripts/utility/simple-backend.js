@@ -35,7 +35,7 @@ app.use(cors({
 app.use(express.json());
 
 // In-memory storage for demo (would be database in production)
-let matches = [];
+const matches = [];
 let matchCounter = 1;
 
 // Mock AI agents data
@@ -133,7 +133,7 @@ app.get('/api/v1/game/matches', (req, res) => {
 app.get('/api/v1/game/match/:matchId', (req, res) => {
   try {
     const { matchId } = req.params;
-    let match = matches.find(m => m.matchId === matchId);
+    const match = matches.find(m => m.matchId === matchId);
 
     if (!match) {
       return res.status(404).json({

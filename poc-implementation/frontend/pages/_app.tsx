@@ -1,128 +1,83 @@
-// Main App component with providers
-import '../styles/globals.css';
+import '@/styles/globals.css';
+import '@solana/wallet-adapter-react-ui/styles.css';
 import type { AppProps } from 'next/app';
-import React, { useEffect } from 'react';
-import Head from 'next/head';
-import { WalletContextProvider } from '@/components/WalletProvider/WalletProvider';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { clusterApiUrl } from '@solana/web3.js';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { Toaster } from 'react-hot-toast';
-import { initWebVitals } from '../utils/webVitals';
-import { reportWebVitals } from '../utils/webVitals';
-import mixpanel from 'mixpanel-browser';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
       refetchOnWindowFocus: false,
+      retry: 3,
     },
   },
 });
 
-// Initialize Mixpanel with your Project Token
-type MixpanelConfig = {
-  token: string;
-  debug: boolean;
-  api_host: string;
-};
+export default function App({ Component, pageProps, router }: AppProps) {
+  // Configure Solana RPC endpoint
+  const endpoint = useMemo(() => process.env.NEXT_PUBLIC_RPC_URL || clusterApiUrl('devnet'), []);
 
-const mixpanelConfig: MixpanelConfig = {
-  token: process.env.NEXT_PUBLIC_MIXPANEL_TOKEN || '',
-  debug: process.env.NODE_ENV !== 'production',
-  api_host: process.env.NEXT_PUBLIC_MIXPANEL_URL || 'https://api.mixpanel.com',
-};
+  // Configure wallets
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+    ],
+    []
+  );
 
-if (mixpanelConfig.token) {
-  mixpanel.init(mixpanelConfig.token, {
-    debug: mixpanelConfig.debug,
-    api_host: mixpanelConfig.api_host,
-  });
-}
-
-// Web Vitals Provider Component
-const WebVitalsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  useEffect(() => {
-    // Initialize Core Web Vitals tracking
-    initWebVitals({
-      enableLogging: process.env.NODE_ENV === 'development',
-      sampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0, // 10% sampling in production
-      endpoint: '/api/analytics/web-vitals',
-    });
-
-    // Track initial page load
-    const handleLoad = () => {
-      if (typeof window !== 'undefined') {
-        const loadTime = performance.now();
-        // Custom metric for initial page load
-        import('../utils/webVitals').then(({ trackCustomMetric }) => {
-          trackCustomMetric('page.initial.load', loadTime);
-        });
-      }
-    };
-
-    // Track if page is already loaded or wait for load event
-    if (document.readyState === 'complete') {
-      handleLoad();
-    } else {
-      window.addEventListener('load', handleLoad, { once: true });
-    }
-
-    return () => {
-      window.removeEventListener('load', handleLoad);
-    };
-  }, []);
-
-  return <>{children}</>;
-};
-
-// Export the reportWebVitals function for Next.js built-in support
-export { reportWebVitals };
-
-export default function App({ Component, pageProps }: AppProps) {
   return (
-    <>
-      <Head>
-        <html lang="en" />
-        <title>Nen Platform - AI Gaming Arena</title>
-        <meta name="description" content="Watch AI agents battle in real-time strategic games. Powered by MagicBlock on Solana blockchain." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
-      
-      <WebVitalsProvider>
-        <QueryClientProvider client={queryClient}>
-          <WalletContextProvider>
-            {/* Screen reader announcement region */}
-            <div id="sr-announcements" aria-live="polite" aria-atomic="true" className="sr-only"></div>
-            <div id="sr-alerts" aria-live="assertive" aria-atomic="true" className="sr-only"></div>
+    <ConnectionProvider endpoint={endpoint}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>
+          <QueryClientProvider client={queryClient}>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={router.asPath}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Component {...pageProps} />
+              </motion.div>
+            </AnimatePresence>
             
-            <Component {...pageProps} />
+            {/* Toast Notifications */}
             <Toaster
-              position="top-right"
+              position="bottom-right"
               toastOptions={{
                 duration: 4000,
                 style: {
-                  background: '#1A1F3A',
-                  color: '#fff',
-                  border: '1px solid #4ECDC4',
+                  background: 'linear-gradient(135deg, #1a1b23 0%, #0a0a0b 100%)',
+                  color: '#F0F0F2',
+                  border: '1px solid rgba(153, 69, 255, 0.3)',
+                  borderRadius: '0',
+                  clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 30%, 100% 100%, 0 100%)',
                 },
                 success: {
                   iconTheme: {
-                    primary: '#4ECDC4',
-                    secondary: '#1A1F3A',
+                    primary: '#14F195',
+                    secondary: '#0a0a0b',
                   },
                 },
                 error: {
                   iconTheme: {
                     primary: '#FF6B6B',
-                    secondary: '#1A1F3A',
+                    secondary: '#0a0a0b',
                   },
                 },
               }}
             />
-          </WalletContextProvider>
-        </QueryClientProvider>
-      </WebVitalsProvider>
-    </>
+          </QueryClientProvider>
+        </WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
   );
-}
+} 

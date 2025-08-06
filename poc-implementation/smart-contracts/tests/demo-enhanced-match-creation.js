@@ -96,7 +96,7 @@ const AI_CONFIG_LIMITS = {
 class TestDataGenerator {
     static generateValidAIConfig() {
         return {
-            name: "Test AI Agent",
+            name: 'Test AI Agent',
             personality: AI_CONFIG_LIMITS.PERSONALITY_TYPES.AGGRESSIVE,
             aggression: 85,
             risk_tolerance: 60,
@@ -136,26 +136,26 @@ class TestDataGenerator {
 
 // Validation Functions (matching the actual test file)
 function validateAIConfiguration(config) {
-    if (!config.name || config.name.trim() === "") {
-        throw new Error("AI name cannot be empty");
+    if (!config.name || config.name.trim() === '') {
+        throw new Error('AI name cannot be empty');
     }
     if (config.name.length < 2) {
-        throw new Error("AI name too short");
+        throw new Error('AI name too short');
     }
     if (config.skill_level < AI_CONFIG_LIMITS.SKILL_LEVEL_MIN) {
-        throw new Error("Skill level below minimum threshold");
+        throw new Error('Skill level below minimum threshold');
     }
     if (config.skill_level > AI_CONFIG_LIMITS.SKILL_LEVEL_MAX) {
-        throw new Error("Skill level above maximum threshold");
+        throw new Error('Skill level above maximum threshold');
     }
     if (!Object.values(AI_CONFIG_LIMITS.PERSONALITY_TYPES).includes(config.personality)) {
-        throw new Error("Invalid personality type");
+        throw new Error('Invalid personality type');
     }
     if (config.learning_rate < AI_CONFIG_LIMITS.LEARNING_RATE_MIN) {
-        throw new Error("Learning rate below minimum threshold");
+        throw new Error('Learning rate below minimum threshold');
     }
     if (config.learning_rate > AI_CONFIG_LIMITS.LEARNING_RATE_MAX) {
-        throw new Error("Learning rate above maximum threshold");
+        throw new Error('Learning rate above maximum threshold');
     }
 }
 
@@ -171,9 +171,9 @@ async function testInvalidSkillLevel() {
     const config = TestDataGenerator.generateInvalidAIConfig('skill_too_low');
     try {
         validateAIConfiguration(config);
-        throw new Error("Should have failed validation");
+        throw new Error('Should have failed validation');
     } catch (error) {
-        if (error.message.includes("minimum threshold")) {
+        if (error.message.includes('minimum threshold')) {
             return true; // Expected error
         }
         throw error;
@@ -184,9 +184,9 @@ async function testInvalidPersonality() {
     const config = TestDataGenerator.generateInvalidAIConfig('invalid_personality');
     try {
         validateAIConfiguration(config);
-        throw new Error("Should have failed validation");
+        throw new Error('Should have failed validation');
     } catch (error) {
-        if (error.message.includes("Invalid personality")) {
+        if (error.message.includes('Invalid personality')) {
             return true; // Expected error
         }
         throw error;
@@ -264,10 +264,10 @@ async function testSecurityAttackVectors() {
     try {
         validateAIConfiguration(xssConfig);
         // In the real implementation, this would be caught by name format validation
-        console.log("    XSS attempt passed basic validation (would be caught by format validation)");
+        console.log('    XSS attempt passed basic validation (would be caught by format validation)');
         return true;
     } catch (error) {
-        console.log("    XSS attempt correctly blocked");
+        console.log('    XSS attempt correctly blocked');
         return true;
     }
 }

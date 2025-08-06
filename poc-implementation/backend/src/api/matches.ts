@@ -1,5 +1,7 @@
 // Match routes for creating and managing matches
 import { Router, Request, Response } from 'express';
+import { getGameServiceInstance, bettingService } from '../services/ServiceFactory';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -165,7 +167,8 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     const gameServiceInstance = getGameServiceInstance();
-    const match = await gameServiceInstance.createMatch({
+    const players = [player1Id || aiAgent1Id, player2Id || aiAgent2Id].filter(Boolean);
+    const match = await gameServiceInstance.createMatch(players, {
       matchType,
       aiAgent1Id,
       aiAgent2Id,
@@ -308,7 +311,8 @@ router.get('/:matchId/history', async (req: Request, res: Response) => {
   try {
     const { matchId } = req.params;
 
-    const match = await gameService.getMatch(matchId);
+    const gameServiceInstance = getGameServiceInstance();
+    const match = await gameServiceInstance.getMatch(matchId);
     if (!match) {
       return res.status(404).json({
         success: false,

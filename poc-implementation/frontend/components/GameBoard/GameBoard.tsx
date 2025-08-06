@@ -1,460 +1,321 @@
-// Enhanced GameBoard component with 3D Gungi board and MagicBlock integration
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Canvas } from '@react-three/fiber';
+import { Text, Box, MeshDistortMaterial } from '@react-three/drei';
 import { useGameState } from '@/hooks/useGameState';
 import { useMagicBlockSession } from '@/hooks/useMagicBlockSession';
-import { getPieceSymbol, getConnectionStatus } from '@/utils/theme';
-import { validateMoveCoordinates } from '@/utils/validation';
-import { announceGameStateChange, announceFormError } from '@/utils/screenReader';
-import type { GamePiece, Move } from '@/types';
+import toast from 'react-hot-toast';
 
 interface GameBoardProps {
   matchId: string;
   isLive?: boolean;
   enableMagicBlock?: boolean;
-  className?: string;
 }
 
-interface SquareProps {
-  row: number;
-  col: number;
-  pieces: GamePiece[];
-  isSelected: boolean;
-  isValidMove: boolean;
-  onClick: (row: number, col: number) => void;
+interface Piece {
+  id: string;
+  type: string;
+  owner: 1 | 2;
+  position: [number, number];
+  stackLevel: number;
+  nenType?: string;
 }
 
-// Individual board square component
-const BoardSquare: React.FC<SquareProps> = ({ 
-  row, 
-  col, 
-  pieces, 
-  isSelected, 
-  isValidMove, 
-  onClick 
-}) => {
-  const isLightSquare = (row + col) % 2 === 0;
-  const topPiece = pieces[pieces.length - 1]; // Top piece in stack
-  
-  return (
-    <motion.div
-      className={`
-        gungi-board-square relative cursor-pointer w-8 h-8 flex-shrink-0
-        ${isSelected ? 'selected ring-2 ring-emission-400' : ''}
-        ${isValidMove ? 'ring-2 ring-manipulation-400 ring-opacity-50' : ''}
-        ${isLightSquare ? 'bg-yellow-600' : 'bg-yellow-800'}
-      `}
-      onClick={() => onClick(row, col)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClick(row, col);
-        }
-      }}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      style={{
-        background: isLightSquare 
-          ? 'linear-gradient(135deg, #F4A460, #D2691E)' 
-          : 'linear-gradient(135deg, #D2691E, #8B4513)',
-      }}
-      role="gridcell"
-      tabIndex={0}
-      aria-selected={isSelected}
-      aria-label={`Board square ${String.fromCharCode(65 + col)}${row + 1}${topPiece ? `, contains ${topPiece.type}` : ', empty'}${isValidMove ? ', valid move target' : ''}${pieces.length > 1 ? `, stack of ${pieces.length} pieces` : ''}`}
-    >
-      {/* Stack indicator */}
-      {pieces.length > 1 && (
-        <div className="absolute top-0 right-0 bg-enhancement-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-          {pieces.length}
-        </div>
-      )}
-
-      {/* Top piece */}
-      {topPiece && (
-        <motion.div
-          className={`
-            gungi-piece
-            ${topPiece.owner === 1 ? 'text-enhancement-400' : 'text-emission-400'}
-          `}
-          initial={{ scale: 0, rotate: 180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          exit={{ scale: 0, rotate: -180 }}
-          whileHover={{ scale: 1.2, y: -2 }}
-          style={{
-            filter: `drop-shadow(0 0 8px ${topPiece.owner === 1 ? '#FF6B6B' : '#4ECDC4'})`,
-          }}
-        >
-          {getPieceSymbol(topPiece.type)}
-        </motion.div>
-      )}
-
-      {/* Valid move indicator */}
-      {isValidMove && (
-        <motion.div
-          className="absolute inset-0 bg-manipulation-400 bg-opacity-30 rounded"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-        />
-      )}
-    </motion.div>
-  );
+const pieceData = {
+  Marshal: { symbol: '👑', nenType: 'specialization', power: 10 },
+  General: { symbol: '⚔️', nenType: 'enhancement', power: 9 },
+  Lieutenant: { symbol: '🛡️', nenType: 'enhancement', power: 8 },
+  Major: { symbol: '🗡️', nenType: 'emission', power: 7 },
+  Minor: { symbol: '🏹', nenType: 'emission', power: 6 },
+  Pawn: { symbol: '♟️', nenType: 'manipulation', power: 5 },
+  Bow: { symbol: '🎯', nenType: 'emission', power: 4 },
+  Cannon: { symbol: '💣', nenType: 'transmutation', power: 3 },
+  Fort: { symbol: '🏰', nenType: 'conjuration', power: 2 },
 };
 
-// Connection status indicator
-const ConnectionStatus: React.FC<{ 
-  isConnected: boolean; 
-  latency: number; 
-  enableMagicBlock: boolean;
-}> = ({ isConnected, latency, enableMagicBlock }) => {
-  const status = getConnectionStatus(isConnected, latency);
-  
-  return (
-    <div className="flex items-center gap-2 text-sm">
-      <div className={`w-2 h-2 rounded-full ${status.color.replace('text-', 'bg-')} animate-pulse`} />
-      <span className={status.color}>
-        {enableMagicBlock ? '⚡' : '🌐'} {status.text}
-      </span>
-      {enableMagicBlock && latency < 50 && (
-        <span className="text-xs text-emission-400 font-mono">OPTIMIZED</span>
-      )}
-    </div>
-  );
-};
-
-// Move history component
-const MoveHistory: React.FC<{ moves: Move[]; maxDisplay?: number }> = ({ 
-  moves, 
-  maxDisplay = 5 
-}) => {
-  const recentMoves = moves.slice(-maxDisplay);
-  
-  return (
-    <div className="bg-space-800 rounded-lg p-4 border border-space-600">
-      <h3 className="text-sm font-bold text-gray-400 mb-3">Recent Moves</h3>
-      <div className="space-y-2 max-h-32 overflow-y-auto">
-        {recentMoves.length === 0 ? (
-          <p className="text-gray-500 text-sm">No moves yet</p>
-        ) : (
-          recentMoves.map((move, index) => (
-            <motion.div
-              key={`${move.timestamp}-${index}`}
-              className="flex items-center justify-between text-sm"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <span className={`font-mono ${move.player === 1 ? 'text-enhancement-400' : 'text-emission-400'}`}>
-                P{move.player}
-              </span>
-              <span className="text-gray-300">
-                {String.fromCharCode(65 + move.from[1])}{move.from[0] + 1} → {String.fromCharCode(65 + move.to[1])}{move.to[0] + 1}
-              </span>
-              <span className="text-xs text-gray-500">
-                {getPieceSymbol(move.piece.type)}
-              </span>
-            </motion.div>
-          ))
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Main GameBoard component
-export const GameBoard: React.FC<GameBoardProps> = ({
-  matchId,
+export const GameBoard: React.FC<GameBoardProps> = ({ 
+  matchId, 
   isLive = false,
-  enableMagicBlock = true,
-  className = '',
+  enableMagicBlock = true 
 }) => {
+  const { boardState, currentPlayer, isConnected, latency } = useGameState(matchId);
+  const { session, submitMove } = useMagicBlockSession(matchId, { enabled: enableMagicBlock && isLive });
   const [selectedSquare, setSelectedSquare] = useState<[number, number] | null>(null);
-  const [validMoves, setValidMoves] = useState<[number, number][]>([]);
-  const [moveHistory, setMoveHistory] = useState<Move[]>([]);
+  const [possibleMoves, setPossibleMoves] = useState<[number, number][]>([]);
+  const [isThinking, setIsThinking] = useState(false);
+  const [lastMove, setLastMove] = useState<{ from: [number, number]; to: [number, number] } | null>(null);
 
-  // Hooks
-  const { 
-    boardState, 
-    currentPlayer, 
-    gameHistory, 
-    isConnected, 
-    latency, 
-    error: gameError, 
-    submitMove 
-  } = useGameState(matchId, { enableMagicBlock });
+  const getPieceAt = (row: number, col: number): Piece | undefined => {
+    return boardState?.pieces.find(p => p.position[0] === row && p.position[1] === col);
+  };
 
-  const { 
-    session, 
-    isConnected: magicBlockConnected, 
-    error: magicBlockError 
-  } = useMagicBlockSession(matchId, { enabled: enableMagicBlock && isLive });
-
-  // Group pieces by position for rendering stacks
-  const piecesByPosition = useMemo(() => {
-    if (!boardState?.pieces) return new Map();
-    
-    const map = new Map<string, GamePiece[]>();
-    boardState.pieces.forEach(piece => {
-      const key = `${piece.position[0]}-${piece.position[1]}`;
-      if (!map.has(key)) {
-        map.set(key, []);
-      }
-      map.get(key)!.push(piece);
-    });
-    
-    // Sort pieces by stack level
-    map.forEach(pieces => pieces.sort((a, b) => a.stackLevel - b.stackLevel));
-    
-    return map;
-  }, [boardState?.pieces]);
-
-  // Calculate valid moves for selected piece
-  const calculateValidMoves = useCallback((piece: GamePiece): [number, number][] => {
-    if (!boardState) return [];
-    
+  const calculatePossibleMoves = (piece: Piece): [number, number][] => {
+    // Simplified movement calculation - in real implementation, this would be more complex
     const moves: [number, number][] = [];
     const [row, col] = piece.position;
     
-    // Basic movement patterns (simplified Gungi rules)
-    const directions = [
-      [-1, -1], [-1, 0], [-1, 1],
-      [0, -1],           [0, 1],
-      [1, -1],  [1, 0],  [1, 1],
-    ];
-    
-    directions.forEach(([dr, dc]) => {
-      const newRow = row + dr;
-      const newCol = col + dc;
-      
-      // Check bounds
-      if (newRow >= 0 && newRow < 9 && newCol >= 0 && newCol < 9) {
-        // Check if move is valid (simplified logic)
-        const targetKey = `${newRow}-${newCol}`;
-        const targetPieces = piecesByPosition.get(targetKey) || [];
-        const topPiece = targetPieces[targetPieces.length - 1];
-        
-        // Can move to empty square or capture opponent piece
-        if (!topPiece || topPiece.owner !== piece.owner) {
-          moves.push([newRow, newCol]);
-        }
-      }
-    });
-    
-    return moves;
-  }, [boardState, piecesByPosition]);
-
-  // Handle square click
-const handleSquareClick = useCallback(async (row: number, col: number) => {
-    if (!boardState || boardState.gamePhase === 'finished') return;
-    
-    const squareKey = `${row}-${col}`;
-    const piecesAtSquare = piecesByPosition.get(squareKey) || [];
-    const topPiece = piecesAtSquare[piecesAtSquare.length - 1];
-    
-    if (selectedSquare) {
-      // Attempting to move
-      const [fromRow, fromCol] = selectedSquare;
-      const fromKey = `${fromRow}-${fromCol}`;
-      const selectedPieces = piecesByPosition.get(fromKey) || [];
-      const selectedPiece = selectedPieces[selectedPieces.length - 1];
-      
-      if (selectedPiece && selectedPiece.owner === currentPlayer) {
-        // Validate move
-        const validation = validateMoveCoordinates([fromRow, fromCol], [row, col]);
-        if (!validation.isValid) {
-          console.warn('Invalid move:', validation.error);
-          setSelectedSquare(null);
-          setValidMoves([]);
-          announceFormError(`Invalid move from ${String.fromCharCode(65 + fromCol)}${fromRow + 1} to ${String.fromCharCode(65 + col)}${row + 1}`);
-          return;
-        }
-        
-        // Check if this is a valid move
-        const isValidMove = validMoves.some(([r, c]) => r === row && c === col);
-        if (isValidMove) {
-          try {
-            const move: Move = {
-              from: [fromRow, fromCol],
-              to: [row, col],
-              piece: selectedPiece,
-              timestamp: Date.now(),
-              player: currentPlayer,
-            };
-            
-            await submitMove(move);
-            setMoveHistory(prev => [...prev, move]);
-            announceGameStateChange(`Moved ${selectedPiece.type} from ${String.fromCharCode(65 + fromCol)}${fromRow + 1} to ${String.fromCharCode(65 + col)}${row + 1}`);
-          } catch (error) {
-            console.error('Failed to submit move:', error);
-            announceFormError('Failed to submit move');
+    // Check all adjacent squares
+    for (let r = row - 1; r <= row + 1; r++) {
+      for (let c = col - 1; c <= col + 1; c++) {
+        if (r >= 0 && r < 9 && c >= 0 && c < 9 && !(r === row && c === col)) {
+          const targetPiece = getPieceAt(r, c);
+          if (!targetPiece || targetPiece.owner !== piece.owner) {
+            moves.push([r, c]);
           }
         }
       }
+    }
+    
+    return moves;
+  };
+
+  const handleSquareClick = async (row: number, col: number) => {
+    if (isThinking || !isLive) return;
+
+    const clickedPiece = getPieceAt(row, col);
+    
+    if (selectedSquare) {
+      // If a piece is already selected, try to move it
+      const [fromRow, fromCol] = selectedSquare;
+      const selectedPiece = getPieceAt(fromRow, fromCol);
       
-      setSelectedSquare(null);
-      setValidMoves([]);
-    } else {
-      // Selecting a piece
-      if (topPiece && topPiece.owner === currentPlayer) {
-        setSelectedSquare([row, col]);
-        setValidMoves(calculateValidMoves(topPiece));
-        announceGameStateChange(`Selected ${topPiece.type} at ${String.fromCharCode(65 + col)}${row + 1}`);
+      if (selectedPiece && selectedPiece.owner === currentPlayer) {
+        const isPossibleMove = possibleMoves.some(([r, c]) => r === row && c === col);
+        
+        if (isPossibleMove) {
+          // Submit move
+          setIsThinking(true);
+          try {
+            const move = {
+              from: selectedSquare,
+              to: [row, col] as [number, number],
+              piece: selectedPiece,
+            };
+            
+            if (enableMagicBlock && session) {
+              await submitMove(move);
+            } else {
+              // Fallback to WebSocket
+              // await submitMoveViaWebSocket(move);
+            }
+            
+            setLastMove({ from: selectedSquare, to: [row, col] });
+            toast.success('Move submitted!');
+          } catch (error) {
+            console.error('Move submission failed:', error);
+            toast.error('Failed to submit move');
+          } finally {
+            setIsThinking(false);
+            setSelectedSquare(null);
+            setPossibleMoves([]);
+          }
+        } else {
+          // Clicked on invalid square, deselect
+          setSelectedSquare(null);
+          setPossibleMoves([]);
+        }
       }
+    } else if (clickedPiece && clickedPiece.owner === currentPlayer) {
+      // Select the piece
+      setSelectedSquare([row, col]);
+      setPossibleMoves(calculatePossibleMoves(clickedPiece));
     }
-  }, [boardState, currentPlayer, selectedSquare, piecesByPosition, validMoves, calculateValidMoves, submitMove]);
+  };
 
-  // Update move history when game history changes
-  useEffect(() => {
-    if (gameHistory && JSON.stringify(gameHistory) !== JSON.stringify(moveHistory)) {
-      setMoveHistory(gameHistory);
+  const getSquareStyle = (row: number, col: number) => {
+    const isSelected = selectedSquare?.[0] === row && selectedSquare?.[1] === col;
+    const isPossibleMove = possibleMoves.some(([r, c]) => r === row && c === col);
+    const isLastMoveFrom = lastMove?.from[0] === row && lastMove?.from[1] === col;
+    const isLastMoveTo = lastMove?.to[0] === row && lastMove?.to[1] === col;
+    
+    let baseClasses = 'gungi-square relative group';
+    
+    if (isSelected) {
+      baseClasses += ' ring-2 ring-solana-purple ring-offset-2 ring-offset-cyber-darker';
+    } else if (isPossibleMove) {
+      baseClasses += ' ring-1 ring-solana-green animate-pulse';
+    } else if (isLastMoveFrom || isLastMoveTo) {
+      baseClasses += ' bg-magicblock-primary/20';
     }
-  }, [gameHistory, moveHistory]);
-
-  const connectionError = gameError || magicBlockError;
+    
+    return baseClasses;
+  };
 
   return (
-    <div className={`bg-space-800 rounded-xl p-6 border border-space-600 ${className}`} role="application" aria-label="Gungi game board">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-emission-400 to-manipulation-400 bg-clip-text text-transparent">
-            Gungi Board
-          </h2>
-          {isLive && (
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-enhancement-500 rounded-full animate-pulse" />
-              <span className="text-sm text-enhancement-400 font-bold">LIVE</span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-4">
-          <ConnectionStatus 
-            isConnected={isConnected && (!enableMagicBlock || magicBlockConnected)}
-            latency={latency}
-            enableMagicBlock={enableMagicBlock}
-          />
-        </div>
-      </div>
-
-      {/* Error Display */}
-      {connectionError && (
-        <motion.div
-          className="bg-enhancement-500/20 border border-enhancement-500 rounded-lg p-3 mb-4"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-enhancement-400">⚠️</span>
-            <span className="text-sm text-enhancement-400">{connectionError}</span>
+    <div className="relative">
+      {/* Connection Status Bar */}
+      <div className="mb-4 flex items-center justify-between p-4 bg-cyber-dark/50 backdrop-blur-sm border border-solana-purple/30">
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-solana-green' : 'bg-red-500'} animate-pulse`} />
+            <span className="text-sm font-cyber text-gray-400">
+              {isConnected ? 'CONNECTED' : 'DISCONNECTED'}
+            </span>
           </div>
-        </motion.div>
-      )}
-
-      {/* Game Info */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-space-700 rounded-lg p-3">
-          <div className="text-sm text-gray-400">Current Turn</div>
-          <div className={`text-lg font-bold ${currentPlayer === 1 ? 'text-enhancement-400' : 'text-emission-400'}`}>
-            Player {currentPlayer}
-          </div>
-        </div>
-        <div className="bg-space-700 rounded-lg p-3">
-          <div className="text-sm text-gray-400">Move Count</div>
-          <div className="text-lg font-bold text-neural-400 font-mono">
-            {boardState?.moveCount || 0}
-          </div>
-        </div>
-      </div>
-
-      {/* Board Container */}
-      <div className="flex gap-6">
-        {/* Game Board */}
-        <div className="flex-1">
-          <div className="relative">
-            {/* Board Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-yellow-900 to-yellow-600 rounded-lg blur-sm opacity-50" />
-            
-            {/* Board Grid */}
-            <div className="relative bg-yellow-900 p-3 rounded-lg border-2 border-yellow-600" role="grid" aria-label="9x9 Gungi board">
-              {Array.from({ length: 9 }, (_, rowIndex) => (
-                <div key={`row-${rowIndex}`} className="flex gap-0.5" role="row">
-                  {Array.from({ length: 9 }, (_, colIndex) => {
-                    const squareKey = `${rowIndex}-${colIndex}`;
-                    const piecesAtSquare = piecesByPosition.get(squareKey) || [];
-                    const isSelected = selectedSquare?.[0] === rowIndex && selectedSquare?.[1] === colIndex;
-                    const isValidMove = validMoves.some(([r, c]) => r === rowIndex && c === colIndex);
-
-                    return (
-                      <BoardSquare
-                        key={`${rowIndex}-${colIndex}`}
-                        row={rowIndex}
-                        col={colIndex}
-                        pieces={piecesAtSquare}
-                        isSelected={isSelected}
-                        isValidMove={isValidMove}
-                        onClick={handleSquareClick}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-
-            {/* Coordinate Labels */}
-            <div className="absolute -left-8 top-0 h-full flex flex-col justify-around text-xs text-gray-400">
-              {Array.from({ length: 9 }, (_, i) => (
-                <span key={i}>{9 - i}</span>
-              ))}
-            </div>
-            <div className="absolute -bottom-8 left-0 w-full flex justify-around text-xs text-gray-400">
-              {Array.from({ length: 9 }, (_, i) => (
-                <span key={i}>{String.fromCharCode(65 + i)}</span>
-              ))}
-            </div>
-          </div>
-
-          {/* Instructions */}
-          <div className="mt-4 text-sm text-gray-400 text-center" role="status" aria-live="polite">
-            {selectedSquare ? (
-              <span className="text-emission-400">Click a highlighted square to move</span>
-            ) : (
-              <span>Click your pieces to see possible moves</span>
-            )}
-          </div>
-        </div>
-
-        {/* Side Panel */}
-        <div className="w-64 space-y-4">
-          <MoveHistory moves={moveHistory} />
           
-          {/* Performance Stats */}
-          {enableMagicBlock && session && (
-            <div className="bg-space-800 rounded-lg p-4 border border-space-600">
-              <h3 className="text-sm font-bold text-gray-400 mb-3">⚡ MagicBlock Stats</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Latency:</span>
-                  <span className={`font-mono ${latency < 50 ? 'text-emission-400' : 'text-yellow-400'}`}>
-                    {latency}ms
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Players:</span>
-                  <span className="font-mono text-neural-400">{session.playersConnected}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Session:</span>
-                  <span className="font-mono text-xs text-gray-500">
-                    {session.sessionId.slice(0, 8)}...
-                  </span>
-                </div>
-              </div>
+          {enableMagicBlock && (
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-magicblock-primary rounded-full" />
+              <span className="text-xs font-cyber text-magicblock-primary">MAGICBLOCK</span>
+            </div>
+          )}
+          
+          {latency > 0 && (
+            <div className="flex items-center space-x-1">
+              <span className="text-xs font-mono text-gray-400">LATENCY:</span>
+              <span className={`text-xs font-mono ${
+                latency < 50 ? 'text-solana-green' : 
+                latency < 100 ? 'text-yellow-500' : 'text-red-500'
+              }`}>
+                {latency}ms
+              </span>
             </div>
           )}
         </div>
+        
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-cyber text-gray-400">TURN:</span>
+          <span className={`text-sm font-bold ${
+            currentPlayer === 1 ? 'text-nen-enhancement' : 'text-nen-emission'
+          }`}>
+            PLAYER {currentPlayer}
+          </span>
+        </div>
       </div>
+
+      {/* 3D Board Container */}
+      <div className="relative aspect-square max-w-2xl mx-auto">
+        {/* Holographic Effect Overlay */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-t from-cyber-accent/10 via-transparent to-transparent animate-cyber-scan" />
+        </div>
+        
+        {/* Game Board Grid */}
+        <div className="absolute inset-0 p-2 bg-cyber-dark/80 backdrop-blur-xl border-2 border-solana-purple/50 shadow-2xl">
+          <div className="grid grid-cols-9 gap-0.5 h-full bg-solana-purple/10 p-1">
+            {Array.from({ length: 81 }).map((_, index) => {
+              const row = Math.floor(index / 9);
+              const col = index % 9;
+              const piece = getPieceAt(row, col);
+              const isEvenSquare = (row + col) % 2 === 0;
+              
+              return (
+                <motion.div
+                  key={`${row}-${col}`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleSquareClick(row, col)}
+                  className={getSquareStyle(row, col)}
+                  style={{
+                    background: isEvenSquare 
+                      ? 'linear-gradient(135deg, rgba(153, 69, 255, 0.1), rgba(20, 241, 149, 0.05))' 
+                      : 'linear-gradient(135deg, rgba(20, 241, 149, 0.05), rgba(153, 69, 255, 0.1))'
+                  }}
+                >
+                  {/* Stack Level Indicator */}
+                  {piece && piece.stackLevel > 0 && (
+                    <div className="absolute top-1 right-1 text-xs font-mono text-solana-green/80">
+                      L{piece.stackLevel}
+                    </div>
+                  )}
+                  
+                  {/* Piece */}
+                  <AnimatePresence mode="wait">
+                    {piece && (
+                      <motion.div
+                        key={piece.id}
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        exit={{ scale: 0, rotate: 180 }}
+                        transition={{ type: 'spring', stiffness: 200 }}
+                        className="relative z-10"
+                      >
+                        <div className={`
+                          text-3xl flex items-center justify-center
+                          ${piece.owner === 1 ? 'drop-shadow-[0_0_10px_#FF6B6B]' : 'drop-shadow-[0_0_10px_#4ECDC4]'}
+                        `}>
+                          <span className={`nen-${pieceData[piece.type].nenType}`}>
+                            {pieceData[piece.type].symbol}
+                          </span>
+                        </div>
+                        
+                        {/* Power Level */}
+                        <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
+                          <span className="text-xs font-mono text-white/80 bg-black/50 px-1 rounded">
+                            {pieceData[piece.type].power}
+                          </span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  
+                  {/* Coordinate Labels */}
+                  {col === 0 && (
+                    <div className="absolute -left-6 top-1/2 transform -translate-y-1/2 text-xs font-mono text-gray-500">
+                      {9 - row}
+                    </div>
+                  )}
+                  {row === 8 && (
+                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-mono text-gray-500">
+                      {String.fromCharCode(65 + col)}
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Thinking Indicator */}
+        {isThinking && (
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-20">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              className="nen-spinner"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Action Panel */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-4 p-4 bg-cyber-dark/50 backdrop-blur-sm border border-solana-purple/30"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            {selectedSquare && (
+              <motion.button
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                onClick={() => {
+                  setSelectedSquare(null);
+                  setPossibleMoves([]);
+                }}
+                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-400 font-cyber text-sm uppercase tracking-wider transition-all"
+              >
+                CANCEL
+              </motion.button>
+            )}
+            
+            <span className="text-sm text-gray-400 font-cyber">
+              {selectedSquare 
+                ? `SELECTED: ${String.fromCharCode(65 + selectedSquare[1])}${9 - selectedSquare[0]}`
+                : 'SELECT A PIECE TO MOVE'
+              }
+            </span>
+          </div>
+          
+          {isLive && (
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              <span className="text-xs font-cyber text-red-400 uppercase">LIVE MATCH</span>
+            </div>
+          )}
+        </div>
+      </motion.div>
     </div>
   );
-};
+}; 

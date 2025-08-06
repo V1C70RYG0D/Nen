@@ -15,7 +15,7 @@ const url = require('url');
 const PORT = process.env.PORT || 5002;
 
 // Mock match data that updates dynamically
-let matches = [
+const matches = [
   {
     matchId: 'live_match_1',
     status: 'in_progress',

@@ -15,21 +15,21 @@ const TEST_CONFIG = {
         localnet: process.env.LOCALNET_RPC_URL || (() => {
 
         })(),
-        devnet: process.env.DEVNET_RPC_URL || "https://api.devnet.solana.com",
-        testnet: process.env.TESTNET_RPC_URL || "https://api.testnet.solana.com"
+        devnet: process.env.DEVNET_RPC_URL || 'https://api.devnet.solana.com',
+        testnet: process.env.TESTNET_RPC_URL || 'https://api.testnet.solana.com'
     },
     testSuites: [
-        { name: "Unit Tests", command: "npm run test:unit", critical: true },
-        { name: "Integration Tests", command: "npm run test:integration", critical: true },
-        { name: "Security Tests", command: "npm run test:security", critical: false },
-        { name: "Performance Tests", command: "npm run test:performance", critical: false }
+        { name: 'Unit Tests', command: 'npm run test:unit', critical: true },
+        { name: 'Integration Tests', command: 'npm run test:integration', critical: true },
+        { name: 'Security Tests', command: 'npm run test:security', critical: false },
+        { name: 'Performance Tests', command: 'npm run test:performance', critical: false }
     ],
     coverage: {
         threshold: 80, // Minimum coverage percentage
-        outputFormat: ["text", "html", "lcov"]
+        outputFormat: ['text', 'html', 'lcov']
     },
     artifacts: {
-        directory: "./test-artifacts",
+        directory: './test-artifacts',
         preserve: true
     }
 };
@@ -76,12 +76,12 @@ class ComprehensiveTestRunner {
      * GI #8: 100% test coverage, GI #26: CI/CD integration
      */
     async runAllTests() {
-        console.log("🚀 Starting Comprehensive Smart Contract Testing");
-        console.log("=" * 60);
+        console.log('🚀 Starting Comprehensive Smart Contract Testing');
+        console.log('=' * 60);
         console.log(`📅 Started: ${this.results.startTime.toISOString()}`);
         console.log(`🌐 Network: ${process.env.TEST_NETWORK || 'localnet'}`);
         console.log(`📊 Coverage Threshold: ${TEST_CONFIG.coverage.threshold}%`);
-        console.log("=" * 60);
+        console.log('=' * 60);
 
         try {
             // Pre-test validation
@@ -100,7 +100,7 @@ class ComprehensiveTestRunner {
             await this.generateFinalReport();
 
         } catch (error) {
-            console.error("❌ Test runner failed:", error);
+            console.error('❌ Test runner failed:', error);
             process.exit(1);
         }
     }
@@ -110,22 +110,22 @@ class ComprehensiveTestRunner {
      * GI #14: Step-by-step validation
      */
     async validateEnvironment() {
-        console.log("\n🔍 Validating Test Environment...");
+        console.log('\n🔍 Validating Test Environment...');
 
         // Check Solana CLI
         try {
-            await this.runCommand("solana --version");
-            console.log("✅ Solana CLI available");
+            await this.runCommand('solana --version');
+            console.log('✅ Solana CLI available');
         } catch (error) {
-            throw new Error("Solana CLI not found. Please install Solana CLI.");
+            throw new Error('Solana CLI not found. Please install Solana CLI.');
         }
 
         // Check Anchor CLI
         try {
-            await this.runCommand("anchor --version");
-            console.log("✅ Anchor CLI available");
+            await this.runCommand('anchor --version');
+            console.log('✅ Anchor CLI available');
         } catch (error) {
-            throw new Error("Anchor CLI not found. Please install Anchor.");
+            throw new Error('Anchor CLI not found. Please install Anchor.');
         }
 
         // Check network connectivity
@@ -154,7 +154,7 @@ class ComprehensiveTestRunner {
             }
         }
 
-        console.log("✅ Environment validation complete");
+        console.log('✅ Environment validation complete');
     }
 
     /**
@@ -162,11 +162,11 @@ class ComprehensiveTestRunner {
      * GI #3: Production readiness
      */
     async buildContracts() {
-        console.log("\n🔨 Building Smart Contracts...");
+        console.log('\n🔨 Building Smart Contracts...');
 
         try {
-            await this.runCommand("anchor build");
-            console.log("✅ Smart contracts built successfully");
+            await this.runCommand('anchor build');
+            console.log('✅ Smart contracts built successfully');
 
             // Verify IDL files exist
             const idlDir = path.join('target', 'idl');
@@ -186,13 +186,13 @@ class ComprehensiveTestRunner {
      * GI #15: Error-free working systems
      */
     async executeTestSuites() {
-        console.log("\n🧪 Executing Test Suites...");
+        console.log('\n🧪 Executing Test Suites...');
 
         for (const suite of TEST_CONFIG.testSuites) {
             this.results.totalSuites++;
 
             console.log(`\n📋 Running: ${suite.name}`);
-            console.log("-" * 40);
+            console.log('-' * 40);
 
             const startTime = Date.now();
 
@@ -243,10 +243,10 @@ class ComprehensiveTestRunner {
      * GI #8: Achieve 100% test coverage
      */
     async generateCoverageReport() {
-        console.log("\n📊 Generating Coverage Report...");
+        console.log('\n📊 Generating Coverage Report...');
 
         try {
-            await this.runCommand("npm run test:coverage");
+            await this.runCommand('npm run test:coverage');
 
             // Parse coverage results if available
             const coverageFile = path.join('coverage', 'coverage-summary.json');
@@ -260,11 +260,11 @@ class ComprehensiveTestRunner {
                     console.warn(`⚠️ Coverage below threshold (${TEST_CONFIG.coverage.threshold}%)`);
                 }
             } else {
-                console.warn("⚠️ Coverage file not found");
+                console.warn('⚠️ Coverage file not found');
             }
 
         } catch (error) {
-            console.warn("⚠️ Coverage generation failed:", error.message);
+            console.warn('⚠️ Coverage generation failed:', error.message);
         }
     }
 
@@ -276,27 +276,27 @@ class ComprehensiveTestRunner {
         this.results.endTime = new Date();
         const duration = this.results.endTime - this.results.startTime;
 
-        console.log("\n📋 COMPREHENSIVE TEST REPORT");
-        console.log("=" * 60);
+        console.log('\n📋 COMPREHENSIVE TEST REPORT');
+        console.log('=' * 60);
         console.log(`📅 Started: ${this.results.startTime.toISOString()}`);
         console.log(`📅 Ended: ${this.results.endTime.toISOString()}`);
         console.log(`⏱️ Duration: ${Math.round(duration / 1000)}s`);
         console.log(`🌐 Network: ${process.env.TEST_NETWORK || 'localnet'}`);
-        console.log("");
-        console.log("📊 RESULTS SUMMARY:");
+        console.log('');
+        console.log('📊 RESULTS SUMMARY:');
         console.log(`   Total Suites: ${this.results.totalSuites}`);
         console.log(`   Passed: ${this.results.passedSuites}`);
         console.log(`   Failed: ${this.results.failedSuites}`);
         console.log(`   Critical Failures: ${this.results.criticalFailures}`);
         console.log(`   Coverage: ${this.results.coverage}%`);
-        console.log("");
+        console.log('');
 
         // Overall status
         const overallStatus = this.determineOverallStatus();
         console.log(`🎯 OVERALL STATUS: ${overallStatus.icon} ${overallStatus.text}`);
 
         if (overallStatus.code !== 0) {
-            console.log("\n⚠️ ISSUES FOUND:");
+            console.log('\n⚠️ ISSUES FOUND:');
             if (this.results.criticalFailures > 0) {
                 console.log(`   - ${this.results.criticalFailures} critical test failures`);
             }
@@ -318,18 +318,18 @@ class ComprehensiveTestRunner {
      */
     determineOverallStatus() {
         if (this.results.criticalFailures > 0) {
-            return { icon: "❌", text: "CRITICAL FAILURES", code: 1 };
+            return { icon: '❌', text: 'CRITICAL FAILURES', code: 1 };
         }
 
         if (this.results.failedSuites > 0) {
-            return { icon: "⚠️", text: "NON-CRITICAL FAILURES", code: 1 };
+            return { icon: '⚠️', text: 'NON-CRITICAL FAILURES', code: 1 };
         }
 
         if (this.results.coverage < TEST_CONFIG.coverage.threshold) {
-            return { icon: "⚠️", text: "INSUFFICIENT COVERAGE", code: 1 };
+            return { icon: '⚠️', text: 'INSUFFICIENT COVERAGE', code: 1 };
         }
 
-        return { icon: "✅", text: "ALL TESTS PASSED", code: 0 };
+        return { icon: '✅', text: 'ALL TESTS PASSED', code: 0 };
     }
 
     /**
@@ -347,9 +347,9 @@ class ComprehensiveTestRunner {
                 ci: process.env.CI || false
             },
             metadata: {
-                version: "1.0.0",
+                version: '1.0.0',
                 generated: new Date().toISOString(),
-                toolchain: "Anchor + Mocha + Chai"
+                toolchain: 'Anchor + Mocha + Chai'
             }
         };
 

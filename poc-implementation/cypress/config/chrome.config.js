@@ -24,10 +24,10 @@ module.exports = defineConfig({
         }
         return launchOptions;
       });
-    },
+    }
   },
   env: {
     BROWSER: 'Chrome 90+',
-    TEST_FEATURES: 'all',
-  },
+    TEST_FEATURES: 'all'
+  }
 });

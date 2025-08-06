@@ -3,7 +3,7 @@ import { jest } from '@jest/globals';
 import crypto from 'crypto';
 
 jest.mock('../../src/utils/redis');
-let cacheService = new CacheService();
+const cacheService = new CacheService();
 
 initializeRedis();
 

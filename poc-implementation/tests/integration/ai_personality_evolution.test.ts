@@ -10,7 +10,7 @@ async function initializeAI() {
     const response = await fetch(`${AI_SERVICE_URL}/initialize`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         model: process.env.AI_MODEL || 'gungi-engine-v1',
@@ -37,7 +37,7 @@ async function simulateInteraction(aiInstance, userInput) {
     const response = await fetch(`${AI_SERVICE_URL}/interact`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         sessionId: aiInstance.sessionId,
@@ -60,14 +60,14 @@ async function simulateInteraction(aiInstance, userInput) {
 async function evaluateMetrics(aiInstance) {
   // Logic to evaluate different personality metrics
   return {
-    consistencyScore: parseFloat(process.env.TEST_CONSISTENCY_SCORE || "85.0"), // Environment-based calculated metric
-    adaptabilityScore: parseFloat(process.env.TEST_ADAPTABILITY_SCORE || "75.0"),
-    empathyScore: parseFloat(process.env.TEST_EMPATHY_SCORE || "80.0"),
+    consistencyScore: parseFloat(process.env.TEST_CONSISTENCY_SCORE || '85.0'), // Environment-based calculated metric
+    adaptabilityScore: parseFloat(process.env.TEST_ADAPTABILITY_SCORE || '75.0'),
+    empathyScore: parseFloat(process.env.TEST_EMPATHY_SCORE || '80.0'),
     precisionRecall: {
-      precision: parseFloat(process.env.TEST_PRECISION || "0.85"),
-      recall: Math.random(),
+      precision: parseFloat(process.env.TEST_PRECISION || '0.85'),
+      recall: Math.random()
     },
-    engagementLevel: Math.random() * 100,
+    engagementLevel: Math.random() * 100
   };
 }
 

@@ -61,10 +61,10 @@ class CoreInitializationTestRunner {
      * GI #14: Step-by-step enhancement and iteration
      */
     async run() {
-        console.log("🚀 Core Program Initialization Test Suite");
-        console.log("=" .repeat(80));
-        console.log("Production-Ready Testing Framework");
-        console.log("=" .repeat(80));
+        console.log('🚀 Core Program Initialization Test Suite');
+        console.log('=' .repeat(80));
+        console.log('Production-Ready Testing Framework');
+        console.log('=' .repeat(80));
 
         try {
             // Step 1: Environment validation
@@ -88,10 +88,10 @@ class CoreInitializationTestRunner {
             // Step 7: Generate final report
             await this.generateReport();
 
-            console.log("\n✅ All tests completed successfully!");
+            console.log('\n✅ All tests completed successfully!');
 
         } catch (error) {
-            console.error("\n❌ Test suite failed:", error);
+            console.error('\n❌ Test suite failed:', error);
             this.results.errors.push({
                 type: 'FATAL',
                 message: error.message,
@@ -110,7 +110,7 @@ class CoreInitializationTestRunner {
      * GI #15: Thoroughly verify functionality
      */
     async validateEnvironment() {
-        console.log("\n🔍 Validating Test Environment...");
+        console.log('\n🔍 Validating Test Environment...');
 
         const requirements = [
             { command: 'node --version', name: 'Node.js' },
@@ -133,7 +133,7 @@ class CoreInitializationTestRunner {
             throw new Error(`Test file not found: ${this.testFilePath}`);
         }
 
-        console.log("✅ Environment validation complete");
+        console.log('✅ Environment validation complete');
     }
 
     /**
@@ -141,7 +141,7 @@ class CoreInitializationTestRunner {
      * GI #2: Prioritize real implementations
      */
     async setupTestEnvironment() {
-        console.log("\n🔧 Setting up Test Environment...");
+        console.log('\n🔧 Setting up Test Environment...');
 
         try {
             // Ensure test artifacts directory exists
@@ -151,7 +151,7 @@ class CoreInitializationTestRunner {
             }
 
             // Build smart contracts
-            console.log("🔨 Building smart contracts...");
+            console.log('🔨 Building smart contracts...');
             execSync('anchor build', {
                 cwd: path.join(__dirname, '..'),
                 stdio: 'inherit'
@@ -160,14 +160,14 @@ class CoreInitializationTestRunner {
             // Setup test keypairs if needed
             const setupScript = path.join(__dirname, 'setup-test-environment.js');
             if (fs.existsSync(setupScript)) {
-                console.log("🔑 Setting up test keypairs...");
+                console.log('🔑 Setting up test keypairs...');
                 execSync(`node ${setupScript}`, {
                     cwd: path.join(__dirname, '..'),
                     stdio: 'inherit'
                 });
             }
 
-            console.log("✅ Test environment setup complete");
+            console.log('✅ Test environment setup complete');
 
         } catch (error) {
             throw new Error(`Environment setup failed: ${error.message}`);
@@ -179,7 +179,7 @@ class CoreInitializationTestRunner {
      * GI #8: Test extensively at every stage
      */
     async runCoreInitializationTests() {
-        console.log("\n🧪 Running Core Initialization Tests...");
+        console.log('\n🧪 Running Core Initialization Tests...');
 
         const testCommand = [
             'npx', 'mocha',
@@ -203,7 +203,7 @@ class CoreInitializationTestRunner {
                 timestamp: new Date().toISOString()
             });
 
-            console.log("✅ Core initialization tests passed");
+            console.log('✅ Core initialization tests passed');
 
         } catch (error) {
             this.results.testSuites.push({
@@ -222,7 +222,7 @@ class CoreInitializationTestRunner {
      * GI #21: Optimize for performance and efficiency
      */
     async runPerformanceBenchmarks() {
-        console.log("\n⚡ Running Performance Benchmarks...");
+        console.log('\n⚡ Running Performance Benchmarks...');
 
         try {
             // Performance tests are integrated into the main test suite
@@ -235,12 +235,12 @@ class CoreInitializationTestRunner {
                 timestamp: new Date().toISOString()
             };
 
-            console.log("✅ Performance benchmarks completed");
+            console.log('✅ Performance benchmarks completed');
 
         } catch (error) {
             this.results.performance.status = 'FAILED';
             this.results.performance.error = error.message;
-            console.warn("⚠️ Performance benchmarks failed:", error.message);
+            console.warn('⚠️ Performance benchmarks failed:', error.message);
         }
     }
 
@@ -249,7 +249,7 @@ class CoreInitializationTestRunner {
      * GI #13: Secure and optimize for best practices
      */
     async runSecurityTests() {
-        console.log("\n🔒 Running Security Validation...");
+        console.log('\n🔒 Running Security Validation...');
 
         try {
             const securityChecks = [
@@ -270,12 +270,12 @@ class CoreInitializationTestRunner {
                 timestamp: new Date().toISOString()
             };
 
-            console.log("✅ Security validation completed");
+            console.log('✅ Security validation completed');
 
         } catch (error) {
             this.results.security.status = 'FAILED';
             this.results.security.error = error.message;
-            console.warn("⚠️ Security validation failed:", error.message);
+            console.warn('⚠️ Security validation failed:', error.message);
         }
     }
 
@@ -285,11 +285,11 @@ class CoreInitializationTestRunner {
      */
     async analyzeCoverage() {
         if (!TEST_CONFIG.coverage.enabled) {
-            console.log("\n📊 Coverage analysis disabled");
+            console.log('\n📊 Coverage analysis disabled');
             return;
         }
 
-        console.log("\n📊 Analyzing Test Coverage...");
+        console.log('\n📊 Analyzing Test Coverage...');
 
         try {
             // Coverage is generated by nyc during test run
@@ -316,14 +316,14 @@ class CoreInitializationTestRunner {
                     current.functions < thresholds.functions ||
                     current.lines < thresholds.lines) {
 
-                    console.warn("⚠️ Coverage below threshold");
+                    console.warn('⚠️ Coverage below threshold');
                 } else {
-                    console.log("✅ Coverage meets all thresholds");
+                    console.log('✅ Coverage meets all thresholds');
                 }
             }
 
         } catch (error) {
-            console.warn("⚠️ Coverage analysis failed:", error.message);
+            console.warn('⚠️ Coverage analysis failed:', error.message);
         }
     }
 
@@ -332,7 +332,7 @@ class CoreInitializationTestRunner {
      * GI #33: Maintain comprehensive project documentation
      */
     async generateReport() {
-        console.log("\n📋 Generating Test Report...");
+        console.log('\n📋 Generating Test Report...');
 
         const reportPath = path.join(__dirname, '..', 'test-artifacts', 'core-initialization-report.json');
         const mdReportPath = path.join(__dirname, '..', 'test-artifacts', 'CORE_INITIALIZATION_TEST_REPORT.md');
@@ -345,12 +345,12 @@ class CoreInitializationTestRunner {
             const mdReport = this.generateMarkdownReport();
             fs.writeFileSync(mdReportPath, mdReport);
 
-            console.log(`✅ Reports generated:`);
+            console.log('✅ Reports generated:');
             console.log(`   JSON: ${reportPath}`);
             console.log(`   Markdown: ${mdReportPath}`);
 
         } catch (error) {
-            console.error("❌ Report generation failed:", error);
+            console.error('❌ Report generation failed:', error);
         }
     }
 

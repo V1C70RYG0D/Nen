@@ -25,7 +25,7 @@ export const options = {
     realtime_moves: {
       executor: 'constant-vus',
       vus: 50,
-      duration: '3m',
+      duration: '3m'
     },
 
     // Stress test for concurrent games
@@ -36,9 +36,9 @@ export const options = {
         { duration: '30s', target: 10 },
         { duration: '1m', target: 25 },
         { duration: '1m', target: 50 },
-        { duration: '30s', target: 0 },
-      ],
-    },
+        { duration: '30s', target: 0 }
+      ]
+    }
   },
 
   thresholds: {
@@ -46,13 +46,13 @@ export const options = {
     'game_move_latency': [
       'p(90)<50',   // 90% under 50ms
       'p(95)<75',   // 95% under 75ms
-      'p(99)<100',  // 99% under 100ms
+      'p(99)<100'  // 99% under 100ms
     ],
     'magicblock_latency': ['p(95)<50'],
     'move_validation_time': ['p(95)<25'],
     'game_error_rate': ['rate<0.005'], // Less than 0.5% errors
-    'http_req_duration': ['p(95)<50'],
-  },
+    'http_req_duration': ['p(95)<50']
+  }
 };
 
 const BASE_URL = __ENV.API_BASE_URL || `http://${__ENV.API_HOST || 'localhost'}:${__ENV.PORT || '5001'}`;
@@ -64,44 +64,44 @@ const testMoves = [
     from_pos: { x: 0, y: 6, level: 0 },
     to_pos: { x: 0, y: 5, level: 0 },
     piece_type: 'pawn',
-    player: 1,
+    player: 1
   },
   {
     from_pos: { x: 1, y: 6, level: 0 },
     to_pos: { x: 1, y: 5, level: 0 },
     piece_type: 'pawn',
-    player: 1,
+    player: 1
   },
   {
     from_pos: { x: 2, y: 6, level: 0 },
     to_pos: { x: 2, y: 4, level: 0 },
     piece_type: 'pawn',
-    player: 1,
+    player: 1
   },
   {
     from_pos: { x: 4, y: 7, level: 0 },
     to_pos: { x: 4, y: 5, level: 0 },
     piece_type: 'general',
-    player: 1,
-  },
+    player: 1
+  }
 ];
 
 const aiAgents = [
   {
     agent_id: 'aggressive-ai',
     skill_level: 7,
-    personality: 'aggressive',
+    personality: 'aggressive'
   },
   {
     agent_id: 'defensive-ai',
     skill_level: 6,
-    personality: 'defensive',
+    personality: 'defensive'
   },
   {
     agent_id: 'balanced-ai',
     skill_level: 8,
-    personality: 'balanced',
-  },
+    personality: 'balanced'
+  }
 ];
 
 export function setup() {
@@ -111,12 +111,12 @@ export function setup() {
   // Health check
   const healthRes = http.get(`${BASE_URL}/api/health`);
   check(healthRes, {
-    'Service healthy': (r) => r.status === 200,
+    'Service healthy': (r) => r.status === 200
   });
 
   return {
     baseUrl: BASE_URL,
-    wsUrl: WS_URL,
+    wsUrl: WS_URL
   };
 }
 
@@ -136,7 +136,7 @@ export default function (data) {
 function testRealtimeGameMoves(data) {
   // Create authenticated session
   const authRes = http.post(`${data.baseUrl}/api/auth/login`, {
-    wallet_address: generateTestWallet(),
+    wallet_address: generateTestWallet()
   });
 
   if (!check(authRes, { 'Auth success': (r) => r.status === 200 })) {
@@ -147,7 +147,7 @@ function testRealtimeGameMoves(data) {
   const token = authRes.json('token');
   const headers = {
     'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json'
   };
 
   // Create game session with MagicBlock
@@ -157,8 +157,8 @@ function testRealtimeGameMoves(data) {
     magicblock_enabled: true,
     agents: {
       agent1: aiAgents[0],
-      agent2: aiAgents[1],
-    },
+      agent2: aiAgents[1]
+    }
   }, { headers });
 
   if (!check(sessionRes, { 'Session created': (r) => r.status === 200 })) {
@@ -209,14 +209,14 @@ function testSingleMove(baseUrl, sessionId, headers, moveIndex) {
     session_id: sessionId,
     board_state: generateTestBoardState(moveIndex),
     agent_config: aiAgents[moveIndex % aiAgents.length],
-    magicblock_session: true,
+    magicblock_session: true
   }, { headers });
   const aiMoveTime = Date.now() - aiMoveStart;
 
   const aiMoveSuccess = check(aiMoveRes, {
     'AI move generated': (r) => r.status === 200,
     'AI move <50ms': (r) => r.timings.duration < 50,
-    'Valid move': (r) => r.json('move') !== null,
+    'Valid move': (r) => r.json('move') !== null
   });
 
   gameMoveLatency.add(aiMoveTime);
@@ -231,14 +231,14 @@ function testSingleMove(baseUrl, sessionId, headers, moveIndex) {
   const submitRes = http.post(`${baseUrl}/api/game/submit-move`, {
     session_id: sessionId,
     move: aiMoveRes.json('move'),
-    magicblock_optimized: true,
+    magicblock_optimized: true
   }, { headers });
   const magicblockTime = Date.now() - magicblockStart;
 
   const submitSuccess = check(submitRes, {
     'Move submitted': (r) => r.status === 200,
     'MagicBlock <50ms': (r) => r.timings.duration < 50,
-    'Move confirmed': (r) => r.json('confirmed') === true,
+    'Move confirmed': (r) => r.json('confirmed') === true
   });
 
   magicblockLatency.add(magicblockTime);
@@ -252,13 +252,13 @@ function testSingleMove(baseUrl, sessionId, headers, moveIndex) {
   // Test move validation
   const validationStart = Date.now();
   const validationRes = http.get(`${baseUrl}/api/game/validate-move/${sessionId}`, {
-    headers,
+    headers
   });
   const validationTime = Date.now() - validationStart;
 
   const validationSuccess = check(validationRes, {
     'Validation success': (r) => r.status === 200,
-    'Validation <25ms': (r) => r.timings.duration < 25,
+    'Validation <25ms': (r) => r.timings.duration < 25
   });
 
   moveValidationTime.add(validationTime);
@@ -301,13 +301,13 @@ function generateTestBoardState(moveNumber) {
         id: `piece_${moveNumber}`,
         type: 'pawn',
         player: 1,
-        position: { x: 0, y: 6, level: 0 },
-      },
+        position: { x: 0, y: 6, level: 0 }
+      }
       // Add more pieces for realistic board state
     ],
     current_turn: (moveNumber % 2) + 1,
     move_number: moveNumber,
-    game_status: 'active',
+    game_status: 'active'
   };
 }
 

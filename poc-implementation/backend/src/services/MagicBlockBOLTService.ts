@@ -7,6 +7,20 @@ interface AnchorProvider {
   wallet: { publicKey: PublicKey };
 }
 
+// Geographic regions for enhanced performance clustering
+export enum GeographicRegion {
+  AMERICAS = 'us-east-1',
+  EUROPE = 'eu-west-1',
+  AUTO = 'auto'
+}
+
+// Performance optimization levels
+export enum PerformanceLevel {
+  STANDARD = 1,
+  ENHANCED = 2,
+  ULTRA = 3
+}
+
 // BOLT ECS Component interfaces
 export interface PositionComponent {
   x: number;
@@ -82,6 +96,8 @@ export class MagicBlockBOLTService {
   private logger: winston.Logger;
   private sessionCache: Map<string, any> = new Map();
   private performanceTracker: Map<string, PerformanceMetrics> = new Map();
+  private geographicRegion: GeographicRegion;
+  private performanceLevel: PerformanceLevel;
 
   constructor(
     connection: Connection,
@@ -137,6 +153,17 @@ export class MagicBlockBOLTService {
     const perfMetrics: { [key: string]: number } = {};
 
     try {
+      // Validate input parameters
+      if (!sessionId || sessionId.trim() === '') {
+        throw new Error('Session ID cannot be empty');
+      }
+      if (!player1) {
+        throw new Error('Player 1 public key is required');
+      }
+      if (!config) {
+        throw new Error('Session configuration is required');
+      }
+      
       // Step 1: Logging (optimize by reducing string conversions)
       const step1Start = performance.now();
       this.logger.debug('Creating enhanced MagicBlock session', {

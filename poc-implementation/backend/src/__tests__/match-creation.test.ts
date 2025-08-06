@@ -32,7 +32,7 @@ describe('Match Creation Tests', () => {
             const match = await gameService.createMatch({
                 matchType: 'ai_vs_ai',
                 aiAgent1Id: aiAgent1?.id,
-                aiAgent2Id: aiAgent2?.id,
+                aiAgent2Id: aiAgent2?.id
             });
 
             expect(match).toBeDefined();
@@ -53,7 +53,7 @@ describe('Match Creation Tests', () => {
         const match = await gameService.createMatch({
             matchType: 'ai_vs_ai',
             aiAgent1Id: aiAgent1?.id,
-            aiAgent2Id: aiAgent2?.id,
+            aiAgent2Id: aiAgent2?.id
         });
 
         expect(match.status).toBe('pending');
@@ -67,7 +67,7 @@ describe('Match Creation Tests', () => {
             return gameService.createMatch({
                 matchType: 'ai_vs_ai',
                 aiAgent1Id: `agent1-${i}`,
-                aiAgent2Id: `agent2-${i}`,
+                aiAgent2Id: `agent2-${i}`
             });
         });
 

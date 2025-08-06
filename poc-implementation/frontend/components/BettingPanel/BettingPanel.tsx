@@ -1,401 +1,406 @@
-// Betting panel component with Solana integration
-import React, { useState, useCallback, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useBetting } from '@/hooks/useBetting';
-import { formatSOL, formatPercentage, shortenAddress } from '@/utils/format';
-import { validateSOLAmount, validateBetAmount } from '@/utils/validation';
-import { getAuraGlow } from '@/utils/theme';
-import type { AIAgent } from '@/types';
+import { formatSOL } from '@/utils/format';
+import toast from 'react-hot-toast';
+import Confetti from 'react-confetti';
+
+interface Agent {
+  id: string;
+  name: string;
+  elo: number;
+  winRate: number;
+  nenType: string;
+  avatar?: string;
+  specialAbility?: string;
+}
 
 interface BettingPanelProps {
   matchId: string;
-  agent1: AIAgent;
-  agent2: AIAgent;
-  className?: string;
+  agent1: Agent;
+  agent2: Agent;
 }
 
-interface BetAmountButtonProps {
-  amount: string;
-  onClick: () => void;
-  disabled?: boolean;
-}
-
-// Quick bet amount buttons
-const BetAmountButton: React.FC<BetAmountButtonProps> = ({ amount, onClick, disabled }) => (
-  <motion.button
-    onClick={onClick}
-    disabled={disabled}
-    className="px-3 py-1 text-sm rounded-lg bg-space-700 border border-space-600 hover:border-emission-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-    whileHover={{ scale: disabled ? 1 : 1.05 }}
-    whileTap={{ scale: disabled ? 1 : 0.95 }}
-  >
-    {amount}
-  </motion.button>
-);
-
-// Agent selection card
-interface AgentCardProps {
-  agent: AIAgent;
-  isSelected: boolean;
-  odds: number;
-  pool: number;
-  onSelect: () => void;
-  playerNumber: 1 | 2;
-}
-
-const AgentCard: React.FC<AgentCardProps> = ({ 
-  agent, 
-  isSelected, 
-  odds, 
-  pool, 
-  onSelect, 
-  playerNumber 
-}) => {
-  const auraColor = playerNumber === 1 ? 'enhancement' : 'emission';
-  
-  return (
-    <motion.button
-      onClick={onSelect}
-      className={`
-        nen-card p-4 w-full text-left transition-all duration-300
-        ${isSelected ? `ring-2 ring-${auraColor}-400` : 'hover:ring-1 hover:ring-gray-500'}
-      `}
-      style={{
-        boxShadow: isSelected ? getAuraGlow(auraColor, 'medium') : undefined,
-      }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      role="radio"
-      aria-checked={isSelected}
-      aria-label={`Select ${agent.name} (${agent.elo} ELO, ${(agent.winRate * 100).toFixed(1)}% win rate)`}
-    >
-      {/* Agent Header */}
-      <div className="flex items-center gap-3 mb-3">
-        <div className={`w-12 h-12 rounded-full bg-gradient-to-br from-${auraColor}-600 to-${auraColor}-400 flex items-center justify-center`}>
-          <span className="text-xl" role="img" aria-label="AI Agent avatar">🤖</span>
-        </div>
-        <div className="flex-1">
-          <h3 className={`font-bold text-${auraColor}-400`}>{agent.name}</h3>
-          <p className="text-xs text-gray-400">#{shortenAddress(agent.id, 3)}</p>
-        </div>
-        {isSelected && (
-          <motion.div
-            className={`w-6 h-6 rounded-full bg-${auraColor}-400 flex items-center justify-center`}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-          >
-            ✓
-          </motion.div>
-        )}
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-2 text-sm mb-3">
-        <div>
-          <span className="text-gray-400">ELO:</span>
-          <span className="ml-1 font-mono font-bold">{agent.elo}</span>
-        </div>
-        <div>
-          <span className="text-gray-400">Win Rate:</span>
-          <span className="ml-1 font-mono">{formatPercentage(agent.winRate)}</span>
-        </div>
-      </div>
-
-      {/* Betting Info */}
-      <div className="border-t border-space-600 pt-3">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-400 text-sm">Pool:</span>
-          <span className="font-mono text-green-400 font-bold">{formatSOL(pool)}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-400 text-sm">Odds:</span>
-          <span className={`font-mono font-bold text-${auraColor}-400`}>{odds.toFixed(2)}x</span>
-        </div>
-      </div>
-    </motion.button>
-  );
-};
-
-// Main betting panel component
 export const BettingPanel: React.FC<BettingPanelProps> = ({
   matchId,
   agent1,
   agent2,
-  className = '',
 }) => {
   const { publicKey, connected } = useWallet();
-  const { pools, odds, userBets, placeBet, isLoading, error } = useBetting(matchId);
-  
+  const { placeBet, pools, userBets, isLoading, refetch } = useBetting(matchId);
   const [selectedAgent, setSelectedAgent] = useState<1 | 2 | null>(null);
   const [betAmount, setBetAmount] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [isPlacingBet, setIsPlacingBet] = useState(false);
 
-  // Quick bet amounts
-  const quickAmounts = ['0.1', '0.5', '1.0', '2.0'];
+  useEffect(() => {
+    // Refetch betting data every 5 seconds
+    const interval = setInterval(() => {
+      refetch();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [refetch]);
 
-  // Validation
-  const amountValidation = validateSOLAmount(betAmount);
-  const betValidation = amountValidation.isValid && amountValidation.sanitizedValue 
-    ? validateBetAmount(amountValidation.sanitizedValue, 10) // Assume 10 SOL balance for demo
-    : { isValid: false };
+  const calculateOdds = (pool1: number, pool2: number) => {
+    const total = pool1 + pool2;
+    if (total === 0) return { odds1: 2.0, odds2: 2.0 };
+    return {
+      odds1: total / pool1 || 2.0,
+      odds2: total / pool2 || 2.0,
+    };
+  };
 
-  // Calculate potential payout
-  const potentialPayout = useMemo(() => {
-    if (!selectedAgent || !amountValidation.isValid || !amountValidation.sanitizedValue) return 0;
-    const selectedOdds = selectedAgent === 1 ? odds.agent1 : odds.agent2;
-    return amountValidation.sanitizedValue * selectedOdds;
-  }, [selectedAgent, amountValidation, odds]);
+  const { odds1, odds2 } = calculateOdds(pools.agent1, pools.agent2);
 
-  // Handle bet submission
-  const handlePlaceBet = useCallback(async () => {
-    if (!selectedAgent || !amountValidation.isValid || !amountValidation.sanitizedValue || !connected) {
-      return;
-    }
+  const handlePlaceBet = async () => {
+    if (!selectedAgent || !betAmount || !publicKey) return;
 
-    setIsSubmitting(true);
+    setIsPlacingBet(true);
     try {
-      const signature = await placeBet({
+      await placeBet({
         matchId,
         agent: selectedAgent,
-        amount: amountValidation.sanitizedValue,
+        amount: parseFloat(betAmount) * LAMPORTS_PER_SOL,
       });
+
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 5000);
       
-      console.log('Bet placed successfully:', signature);
+      toast.success(`Bet placed on ${selectedAgent === 1 ? agent1.name : agent2.name}!`);
       
       // Reset form
       setSelectedAgent(null);
       setBetAmount('');
-      
-      // Show success notification (implement toast system)
-      alert('Bet placed successfully!');
-      
-    } catch (err: any) {
-      console.error('Bet placement failed:', err);
-      alert(err.message || 'Failed to place bet');
+    } catch (error) {
+      console.error('Betting failed:', error);
+      toast.error('Failed to place bet. Please try again.');
     } finally {
-      setIsSubmitting(false);
+      setIsPlacingBet(false);
     }
-  }, [selectedAgent, amountValidation, connected, placeBet, matchId]);
+  };
+
+  const quickBetAmounts = [0.1, 0.5, 1, 5, 10];
 
   return (
-    <motion.div
-      className={`nen-card ${className}`}
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold bg-gradient-to-r from-emission-400 to-manipulation-400 bg-clip-text text-transparent">
-          Place Your Bet
-        </h2>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-          <span className="text-sm text-green-400">Live Betting</span>
-        </div>
-      </div>
-
-      {/* Error Display */}
-      {error && (
-        <motion.div
-          className="bg-enhancement-500/20 border border-enhancement-500 rounded-lg p-3 mb-4"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-enhancement-400">⚠️</span>
-            <span className="text-sm text-enhancement-400">{error}</span>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Total Pool Display */}
-      <div className="bg-space-700 rounded-lg p-4 mb-6 text-center">
-        <div className="text-sm text-gray-400 mb-1">Total Pool</div>
-        <div className="text-3xl font-mono font-bold text-green-400">
-          {formatSOL(pools.total)}
-        </div>
-        <div className="text-xs text-gray-500 mt-1">
-          {(pools.total / LAMPORTS_PER_SOL).toFixed(0)} participants
-        </div>
-      </div>
-
-      {/* Agent Selection */}
-      <fieldset className="space-y-4 mb-6">
-        <legend className="text-lg font-bold text-gray-300">Choose Your Fighter</legend>
-        <div className="grid gap-4" role="radiogroup" aria-label="Select an AI agent to bet on">
-          <AgentCard
-            agent={agent1}
-            isSelected={selectedAgent === 1}
-            odds={odds.agent1}
-            pool={pools.agent1}
-            onSelect={() => setSelectedAgent(1)}
-            playerNumber={1}
-          />
-          <AgentCard
-            agent={agent2}
-            isSelected={selectedAgent === 2}
-            odds={odds.agent2}
-            pool={pools.agent2}
-            onSelect={() => setSelectedAgent(2)}
-            playerNumber={2}
-          />
-        </div>
-      </fieldset>
-
-      {/* Bet Amount Input */}
-      <div className="space-y-4 mb-6">
-        <h3 className="text-lg font-bold text-gray-300">Bet Amount</h3>
+    <>
+      {showConfetti && <Confetti recycle={false} numberOfPieces={200} />}
+      
+      <div className="relative overflow-hidden">
+        {/* Holographic Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-solana-purple/10 via-transparent to-magicblock-primary/10 animate-hologram" />
         
-        {/* Quick Amount Buttons */}
-        <div className="flex gap-2">
-          {quickAmounts.map((amount) => (
-            <BetAmountButton
-              key={amount}
-              amount={`${amount} SOL`}
-              onClick={() => setBetAmount(amount)}
-              disabled={!connected}
-            />
-          ))}
-        </div>
+        <div className="relative hunter-card p-6 space-y-6">
+          {/* Header */}
+          <div className="text-center">
+            <h2 className="text-2xl font-hunter text-transparent bg-clip-text bg-gradient-to-r from-solana-purple to-solana-green">
+              PLACE YOUR BET
+            </h2>
+            <p className="text-sm text-gray-400 font-cyber mt-1">
+              CHOOSE YOUR HUNTER • SET YOUR STAKE • WIN BIG
+            </p>
+          </div>
 
-        {/* Custom Amount Input */}
-        <div className="space-y-2">
-          <div className="relative">
-            <input
-              type="text"
-              value={betAmount}
-              onChange={(e) => setBetAmount(e.target.value)}
-              placeholder="Enter amount..."
-              disabled={!connected}
-              aria-label="Bet amount in SOL"
-              aria-describedby={betAmount && !amountValidation.isValid ? 'bet-amount-error' : undefined}
+          {/* Total Pool Display */}
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="relative p-4 bg-gradient-to-r from-cyber-dark/80 to-solana-dark/80 backdrop-blur-sm border border-solana-green/30 overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-solana-green/10 to-transparent animate-shimmer" />
+            <div className="relative text-center">
+              <div className="text-sm font-cyber text-solana-green uppercase tracking-wider">
+                Total Prize Pool
+              </div>
+              <div className="text-4xl font-bold font-mono text-white mt-1">
+                {formatSOL(pools.total)}
+                <span className="text-xl ml-2 text-solana-green">SOL</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Agent Selection */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Agent 1 */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setSelectedAgent(1)}
               className={`
-                w-full px-4 py-3 rounded-lg bg-space-700 border-2 transition-colors
-                ${amountValidation.isValid 
-                  ? 'border-emission-400 focus:border-emission-300' 
-                  : betAmount && !amountValidation.isValid
-                    ? 'border-enhancement-500'
-                    : 'border-space-600 focus:border-space-500'
+                relative p-6 transition-all duration-300 overflow-hidden group
+                ${selectedAgent === 1 
+                  ? 'hunter-card ring-2 ring-solana-purple shadow-lg shadow-solana-purple/50' 
+                  : 'hunter-card hover:shadow-lg hover:shadow-solana-purple/30'
                 }
-                text-white placeholder-gray-500 disabled:opacity-50 disabled:cursor-not-allowed
               `}
-            />
-            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-              SOL
-            </span>
-          </div>
-          
-          {/* Validation Message */}
-          {betAmount && !amountValidation.isValid && (
-            <motion.p
-              id="bet-amount-error"
-              className="text-sm text-enhancement-400"
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              role="alert"
             >
-              {amountValidation.error}
-            </motion.p>
-          )}
-        </div>
-      </div>
+              {/* Nen Aura Background */}
+              <div className={`absolute inset-0 opacity-20 nen-${agent1.nenType}`} />
+              
+              <div className="relative space-y-3">
+                {/* Agent Name & Type */}
+                <div>
+                  <h3 className="text-xl font-hunter text-nen-enhancement">{agent1.name}</h3>
+                  <p className="text-xs font-cyber text-gray-400 uppercase">
+                    {agent1.nenType} TYPE
+                  </p>
+                </div>
 
-      {/* Potential Payout */}
-      {selectedAgent && amountValidation.isValid && amountValidation.sanitizedValue && (
-        <motion.div
-          className="bg-gradient-to-r from-emission-500/20 to-manipulation-500/20 rounded-lg p-4 mb-6 border border-emission-500/50"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-        >
-          <div className="flex justify-between items-center">
-            <div>
-              <div className="text-sm text-gray-400">Potential Payout</div>
-              <div className="text-xl font-mono font-bold text-emission-400">
-                {formatSOL(potentialPayout * LAMPORTS_PER_SOL)}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-400">Profit</div>
-              <div className="text-lg font-mono font-bold text-green-400">
-                +{formatSOL((potentialPayout - amountValidation.sanitizedValue) * LAMPORTS_PER_SOL)}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Submit Button */}
-      <motion.button
-        onClick={handlePlaceBet}
-        disabled={!connected || !selectedAgent || !betValidation.isValid || isSubmitting || isLoading}
-        className={`
-          w-full py-4 rounded-lg font-bold text-lg transition-all duration-300
-          ${connected && selectedAgent && betValidation.isValid && !isSubmitting && !isLoading
-            ? 'nen-button bg-aura-gradient hover:shadow-aura' 
-            : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-          }
-        `}
-        whileHover={{ scale: connected && selectedAgent && betValidation.isValid ? 1.02 : 1 }}
-        whileTap={{ scale: connected && selectedAgent && betValidation.isValid ? 0.98 : 1 }}
-      >
-        {!connected ? (
-          'Connect Wallet to Bet'
-        ) : isSubmitting || isLoading ? (
-          <div className="flex items-center justify-center gap-2">
-            <div className="nen-spinner" />
-            <span>Placing Bet...</span>
-          </div>
-        ) : !selectedAgent ? (
-          'Select an Agent'
-        ) : !betValidation.isValid ? (
-          'Enter Valid Amount'
-        ) : (
-          `Place Bet (${formatSOL(amountValidation.sanitizedValue! * LAMPORTS_PER_SOL)})`
-        )}
-      </motion.button>
-
-      {/* Active Bets */}
-      {userBets.length > 0 && (
-        <div className="mt-6 pt-6 border-t border-space-600">
-          <h3 className="text-lg font-bold text-gray-300 mb-4">Your Active Bets</h3>
-          <div className="space-y-3 max-h-40 overflow-y-auto">
-            {userBets.map((bet) => (
-              <motion.div
-                key={bet.id}
-                className="bg-space-700 rounded-lg p-3"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-              >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <div className="text-sm font-medium">
-                      Agent {bet.agent} - {formatSOL(bet.amount)}
-                    </div>
-                    <div className="text-xs text-gray-400">
-                      {bet.odds.toFixed(2)}x odds • {bet.placedAt.toLocaleDateString()}
-                    </div>
+                {/* Stats */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">ELO Rating</span>
+                    <span className="font-mono font-bold">{agent1.elo}</span>
                   </div>
-                  <div className="text-right">
-                    <div className={`text-sm font-bold ${
-                      bet.status === 'active' ? 'text-yellow-400' :
-                      bet.status === 'won' ? 'text-green-400' :
-                      'text-red-400'
-                    }`}>
-                      {bet.status.toUpperCase()}
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Win Rate</span>
+                    <span className="font-mono font-bold text-solana-green">
+                      {(agent1.winRate * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  {agent1.specialAbility && (
+                    <div className="text-xs text-cyan-400 italic mt-2">
+                      Special: {agent1.specialAbility}
                     </div>
-                    <div className="text-xs text-gray-400">
-                      {formatSOL(bet.potentialPayout)}
+                  )}
+                </div>
+
+                {/* Odds Display */}
+                <div className="pt-3 border-t border-gray-700">
+                  <div className="text-center">
+                    <div className="text-xs text-gray-400 uppercase">Potential Return</div>
+                    <div className="text-2xl font-bold font-mono text-yellow-400 mt-1">
+                      {odds1.toFixed(2)}x
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            ))}
+
+                {/* Pool Amount */}
+                <div className="text-center text-xs text-gray-500">
+                  Pool: {formatSOL(pools.agent1)} SOL
+                </div>
+              </div>
+
+              {/* Selection Indicator */}
+              {selectedAgent === 1 && (
+                <motion.div
+                  layoutId="selection-indicator"
+                  className="absolute top-2 right-2 w-6 h-6 bg-solana-purple rounded-full flex items-center justify-center"
+                >
+                  <span className="text-white text-sm">✓</span>
+                </motion.div>
+              )}
+            </motion.button>
+
+            {/* Agent 2 */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setSelectedAgent(2)}
+              className={`
+                relative p-6 transition-all duration-300 overflow-hidden group
+                ${selectedAgent === 2 
+                  ? 'hunter-card ring-2 ring-solana-green shadow-lg shadow-solana-green/50' 
+                  : 'hunter-card hover:shadow-lg hover:shadow-solana-green/30'
+                }
+              `}
+            >
+              {/* Nen Aura Background */}
+              <div className={`absolute inset-0 opacity-20 nen-${agent2.nenType}`} />
+              
+              <div className="relative space-y-3">
+                {/* Agent Name & Type */}
+                <div>
+                  <h3 className="text-xl font-hunter text-nen-emission">{agent2.name}</h3>
+                  <p className="text-xs font-cyber text-gray-400 uppercase">
+                    {agent2.nenType} TYPE
+                  </p>
+                </div>
+
+                {/* Stats */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">ELO Rating</span>
+                    <span className="font-mono font-bold">{agent2.elo}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Win Rate</span>
+                    <span className="font-mono font-bold text-solana-green">
+                      {(agent2.winRate * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  {agent2.specialAbility && (
+                    <div className="text-xs text-cyan-400 italic mt-2">
+                      Special: {agent2.specialAbility}
+                    </div>
+                  )}
+                </div>
+
+                {/* Odds Display */}
+                <div className="pt-3 border-t border-gray-700">
+                  <div className="text-center">
+                    <div className="text-xs text-gray-400 uppercase">Potential Return</div>
+                    <div className="text-2xl font-bold font-mono text-yellow-400 mt-1">
+                      {odds2.toFixed(2)}x
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pool Amount */}
+                <div className="text-center text-xs text-gray-500">
+                  Pool: {formatSOL(pools.agent2)} SOL
+                </div>
+              </div>
+
+              {/* Selection Indicator */}
+              {selectedAgent === 2 && (
+                <motion.div
+                  layoutId="selection-indicator"
+                  className="absolute top-2 right-2 w-6 h-6 bg-solana-green rounded-full flex items-center justify-center"
+                >
+                  <span className="text-white text-sm">✓</span>
+                </motion.div>
+              )}
+            </motion.button>
           </div>
+
+          {/* Bet Amount Input */}
+          <AnimatePresence>
+            {selectedAgent && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="block text-sm font-cyber text-gray-400 uppercase tracking-wider mb-2">
+                    Bet Amount (SOL)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={betAmount}
+                      onChange={(e) => setBetAmount(e.target.value)}
+                      placeholder="0.0"
+                      step="0.1"
+                      min="0.01"
+                      max="1000"
+                      className="w-full px-4 py-3 bg-cyber-dark/50 border border-solana-purple/30 focus:border-solana-purple text-white font-mono text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-solana-purple/50 transition-all"
+                    />
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-solana-green font-cyber text-sm">
+                      SOL
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Bet Buttons */}
+                <div className="flex gap-2 flex-wrap">
+                  {quickBetAmounts.map((amount) => (
+                    <motion.button
+                      key={amount}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setBetAmount(amount.toString())}
+                      className="px-4 py-2 bg-solana-dark/50 hover:bg-solana-dark/70 border border-solana-purple/30 hover:border-solana-purple/50 text-white font-mono text-sm transition-all"
+                    >
+                      {amount} SOL
+                    </motion.button>
+                  ))}
+                </div>
+
+                {/* Potential Payout */}
+                {betAmount && parseFloat(betAmount) > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-500/30"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-cyber text-gray-400 uppercase">
+                        Potential Payout
+                      </span>
+                      <span className="text-2xl font-bold font-mono text-yellow-400">
+                        {(parseFloat(betAmount) * (selectedAgent === 1 ? odds1 : odds2)).toFixed(3)} SOL
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Action Button */}
+          <motion.button
+            whileHover={{ scale: connected && selectedAgent && betAmount ? 1.02 : 1 }}
+            whileTap={{ scale: connected && selectedAgent && betAmount ? 0.98 : 1 }}
+            onClick={handlePlaceBet}
+            disabled={!connected || !selectedAgent || !betAmount || isPlacingBet || isLoading}
+            className={`
+              w-full py-4 font-cyber font-bold uppercase tracking-wider transition-all duration-300
+              ${!connected || !selectedAgent || !betAmount || isPlacingBet
+                ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                : 'cyber-button text-white'
+              }
+            `}
+          >
+            {!connected ? (
+              'CONNECT WALLET TO BET'
+            ) : isPlacingBet ? (
+              <span className="flex items-center justify-center space-x-2">
+                <span>PLACING BET</span>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                />
+              </span>
+            ) : !selectedAgent ? (
+              'SELECT A HUNTER'
+            ) : !betAmount ? (
+              'ENTER BET AMOUNT'
+            ) : (
+              'PLACE BET'
+            )}
+          </motion.button>
+
+          {/* User's Active Bets */}
+          {userBets.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="pt-6 border-t border-solana-purple/30"
+            >
+              <h3 className="text-lg font-hunter text-solana-purple mb-4">YOUR ACTIVE BETS</h3>
+              <div className="space-y-2">
+                {userBets.map((bet, index) => (
+                  <motion.div
+                    key={bet.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex justify-between items-center p-3 bg-cyber-dark/50 border border-solana-purple/20 hover:border-solana-purple/40 transition-all"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-2 h-2 rounded-full ${
+                        bet.status === 'active' ? 'bg-yellow-500 animate-pulse' :
+                        bet.status === 'won' ? 'bg-solana-green' : 'bg-red-500'
+                      }`} />
+                      <span className="font-cyber text-sm">
+                        {bet.agent === 1 ? agent1.name : agent2.name}
+                      </span>
+                    </div>
+                    <span className="font-mono font-bold text-solana-green">
+                      {formatSOL(bet.amount)} SOL
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
-      )}
-    </motion.div>
+      </div>
+    </>
   );
-};
+}; 

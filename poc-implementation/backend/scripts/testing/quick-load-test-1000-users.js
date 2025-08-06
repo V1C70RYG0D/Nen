@@ -82,7 +82,7 @@ class QuickLoadTester {
         const rampUpInterval = this.config.rampUpMs / this.config.totalUsers;
 
         for (let i = 0; i < this.config.totalUsers; i++) {
-            if (!this.isRunning) break;
+            if (!this.isRunning) {break;}
 
             const userPromise = this.simulateUser(i);
             this.userPromises.push(userPromise);
@@ -190,7 +190,7 @@ class QuickLoadTester {
         const totalIntervals = this.config.durationMs / reportInterval;
 
         for (let i = 0; i < totalIntervals; i++) {
-            if (!this.isRunning) break;
+            if (!this.isRunning) {break;}
 
             await new Promise(resolve => setTimeout(resolve, reportInterval));
 
@@ -207,7 +207,7 @@ class QuickLoadTester {
      * Print interim performance metrics
      */
     printInterimMetrics() {
-        if (metrics.responseTimes.length === 0) return;
+        if (metrics.responseTimes.length === 0) {return;}
 
         const sortedTimes = [...metrics.responseTimes].sort((a, b) => a - b);
         const avgResponseTime = sortedTimes.reduce((a, b) => a + b, 0) / sortedTimes.length;

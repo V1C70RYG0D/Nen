@@ -489,7 +489,7 @@ class ProductionLoadTester {
      */
     async simulateGame(gameId) {
         const connections = Array.from(this.activeConnections.values()).slice(0, 2);
-        if (connections.length < 2) return;
+        if (connections.length < 2) {return;}
 
         const moves = 50; // Average game length
 

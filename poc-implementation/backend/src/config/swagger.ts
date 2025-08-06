@@ -8,30 +8,30 @@ const options = {
     info: {
       title: 'Nen Platform API',
       version: process.env.npm_package_version || '1.0.0',
-      description: 'RESTful API for the Nen platform game and betting system',
+      description: 'RESTful API for the Nen platform game and betting system'
     },
     servers: [
       {
         url: `http://${config.server.host}:${config.server.port}`,
-        description: `${config.server.environment} server`,
-      },
+        description: `${config.server.environment} server`
+      }
     ],
     components: {
       securitySchemes: {
         bearerAuth: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
-      },
-    },
+          bearerFormat: 'JWT'
+        }
+      }
+    }
   },
-  apis: ['./src/routes/*.ts'], // Path to the API docs
+  apis: ['./src/routes/*.ts'] // Path to the API docs
 };
 
 export const specs = swaggerJsdoc(options);
 export const swaggerUiOptions = {
-  explorer: true,
+  explorer: true
 };
 
 export { swaggerUi };

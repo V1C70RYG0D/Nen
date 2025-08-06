@@ -1,0 +1,143 @@
+{
+  "timestamp": 1754485434.5587728,
+  "tests_run": 8,
+  "tests_passed": 4,
+  "tests_failed": 4,
+  "categories": {
+    "imports": {
+      "passed": 1,
+      "total": 1
+    },
+    "functionality": {
+      "passed": 2,
+      "total": 3
+    },
+    "performance": {
+      "passed": 0,
+      "total": 1
+    },
+    "security": {
+      "passed": 1,
+      "total": 1
+    },
+    "compliance": {
+      "passed": 0,
+      "total": 1
+    },
+    "api": {
+      "passed": 0,
+      "total": 1
+    }
+  },
+  "performance_metrics": {},
+  "detailed_results": [
+    {
+      "name": "AI Module Imports",
+      "category": "imports",
+      "success": true,
+      "metrics": {},
+      "error": null,
+      "timestamp": 1754485450.412984
+    },
+    {
+      "name": "Basic AI Functionality",
+      "category": "functionality",
+      "success": true,
+      "metrics": {
+        "move_generated": true,
+        "move_valid": true,
+        "move_time_ms": 1.0061264038085938,
+        "fraud_score": 0.010000000000000002
+      },
+      "error": null,
+      "timestamp": 1754485450.4328604
+    },
+    {
+      "name": "AI Manager Functionality",
+      "category": "functionality",
+      "success": true,
+      "metrics": {
+        "total_agents": 27,
+        "agent_pools": 9,
+        "agent_retrieved": true,
+        "match_created": true,
+        "move_generated": true,
+        "performance_report_works": true
+      },
+      "error": null,
+      "timestamp": 1754485450.556995
+    },
+    {
+      "name": "AI Manager Functionality",
+      "category": "functionality",
+      "success": false,
+      "metrics": {},
+      "error": "Shutdown failed: ThreadPoolExecutor.shutdown() got an unexpected keyword argument 'timeout'",
+      "timestamp": 1754485450.5581868
+    },
+    {
+      "name": "Performance Requirements",
+      "category": "performance",
+      "success": false,
+      "metrics": {
+        "RandomAI": {
+          "avg_time_ms": 9.19184684753418,
+          "max_time_ms": 17.370939254760742,
+          "time_limit_ms": 10.0,
+          "meets_requirement": false
+        },
+        "MinimaxAI": {
+          "avg_time_ms": 1.1443614959716797,
+          "max_time_ms": 3.3750534057617188,
+          "time_limit_ms": 50.0,
+          "meets_requirement": true
+        },
+        "HardAgent": {
+          "avg_time_ms": 0.8148193359375,
+          "max_time_ms": 1.0693073272705078,
+          "time_limit_ms": 90.0,
+          "meets_requirement": true
+        }
+      },
+      "error": null,
+      "timestamp": 1754485450.62952
+    },
+    {
+      "name": "Fraud Detection",
+      "category": "security",
+      "success": true,
+      "metrics": {
+        "normal_fraud_score": 0.005550000000000001,
+        "suspicious_fraud_score": 0.016105550000000003,
+        "detection_working": true
+      },
+      "error": null,
+      "timestamp": 1754485450.6402905
+    },
+    {
+      "name": "GI Compliance",
+      "category": "compliance",
+      "success": false,
+      "metrics": {
+        "environment_config": true,
+        "logging_configured": true,
+        "error_handling": true,
+        "resource_management": false
+      },
+      "error": null,
+      "timestamp": 1754485450.8966508
+    },
+    {
+      "name": "AI Service Endpoints",
+      "category": "api",
+      "success": false,
+      "metrics": {
+        "health_endpoint": false,
+        "move_endpoint": false,
+        "personalities_endpoint": true
+      },
+      "error": null,
+      "timestamp": 1754485457.2900155
+    }
+  ]
+}

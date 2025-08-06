@@ -82,7 +82,7 @@ test('Above maximum (101 SOL) should be invalid',
 console.log('\n🧪 Test 2: Odds Calculation');
 
 function calculateBasicOdds(totalPool, agentPool) {
-  if (totalPool === 0 || agentPool === 0) return 2.0; // Default odds
+  if (totalPool === 0 || agentPool === 0) {return 2.0;} // Default odds
   const odds = Math.max(1.01, Math.min(10.0, totalPool / agentPool));
   return odds;
 }

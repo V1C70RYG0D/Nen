@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-08-06T19:36:19.261053",
+  "test_type": "Quick Status Check",
+  "results": {
+    "imports": true,
+    "agent_creation": true,
+    "move_generation": {
+      "random": {
+        "move_generated": true,
+        "execution_time_ms": 0.0,
+        "magicblock_compliant": true
+      },
+      "minimax": {
+        "move_generated": true,
+        "execution_time_ms": 0.0,
+        "magicblock_compliant": true
+      },
+      "mcts": {
+        "move_generated": true,
+        "execution_time_ms": 0.0,
+        "magicblock_compliant": true
+      }
+    },
+    "basic_functionality": true,
+    "ai_manager": {
+      "initialized": true,
+      "agent_count": 27,
+      "agent_retrieval": true
+    },
+    "magicblock_compliance": true,
+    "overall_status": true
+  },
+  "summary": {
+    "system_operational": true,
+    "magicblock_compliant": true,
+    "ready_for_testing": true
+  }
+}

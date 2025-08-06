@@ -213,7 +213,7 @@ class EnhancedDatabaseService {
       `user:${walletAddress}`,
       async () => {
         return this.prisma.user.findUnique({
-          where: { wallet_address: walletAddress },
+          where: { address: walletAddress },
           include: {
             bets: {
               select: {
@@ -230,28 +230,28 @@ class EnhancedDatabaseService {
   }
 
   /**
-   * Optimized match operations with caching
+   * Optimized game operations with caching
    */
-  async getActiveMatches() {
+  async getActiveGames() {
     return this.cachedQuery(
-      'matches:active',
+      'games:active',
       async () => {
-        return this.prisma.match.findMany({
+        return this.prisma.game.findMany({
           where: {
-            status: 'in_progress'
+            status: 'IN_PROGRESS'
           },
           include: {
-            ai_agent_1: true,
-            ai_agent_2: true,
+            player1: true,
+            player2: true,
             bets: {
               select: {
                 amount: true,
-                agent_id: true
+                agentId: true
               }
             }
           },
           orderBy: {
-            created_at: 'desc'
+            createdAt: 'desc'
           }
         });
       },
@@ -269,16 +269,13 @@ class EnhancedDatabaseService {
       const result = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
         // Create bet
         const bet = await tx.bet.create({
-          data: betData
-        });
-
-        // Update user balance
-        await tx.user.update({
-          where: { id: betData.user_id },
           data: {
-            balance: {
-              decrement: betData.amount
-            }
+            userId: betData.userId,
+            gameId: betData.gameId,
+            amount: betData.amount,
+            agentId: betData.agentId,
+            odds: betData.odds || 1.0,
+            status: betData.status || 'PENDING'
           }
         });
 
@@ -286,7 +283,9 @@ class EnhancedDatabaseService {
       });
 
       // Clear related caches
-      await this.redis.del(`user:${betData.user_wallet}`, 'matches:active');
+      if (this.redis) {
+        await this.redis.del(`user:${betData.userWallet}`, 'games:active');
+      }
 
       const duration = Date.now() - startTime;
       if (duration > 10) {

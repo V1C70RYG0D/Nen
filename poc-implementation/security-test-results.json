@@ -1,0 +1,183 @@
+{
+  "title": "Comprehensive Security Testing Report",
+  "timestamp": "2025-08-06T13:35:45.629Z",
+  "summary": {
+    "totalTests": 23,
+    "passed": 11,
+    "failed": 12,
+    "warnings": 0,
+    "critical": 1,
+    "high": 2,
+    "medium": 8,
+    "low": 1
+  },
+  "details": {
+    "vulnerabilityScan": {
+      "pipAudit": {
+        "status": "FAIL",
+        "details": "Found 3 Python package vulnerabilities",
+        "severity": "high",
+        "timestamp": "2025-08-06T13:35:42.498Z"
+      }
+    },
+    "authenticationSecurity": {
+      "jwtValidation": {
+        "status": "SKIP",
+        "details": "Service offline",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:42.502Z"
+      },
+      "timestampValidation": {
+        "status": "PASS",
+        "details": "Timestamp validation implemented",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:42.527Z"
+      },
+      "signatureValidation": {
+        "status": "PASS",
+        "details": "Signature length validation present",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:42.527Z"
+      },
+      "walletAuth": {
+        "status": "SKIP",
+        "details": "Service offline",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:42.528Z"
+      }
+    },
+    "authorizationTests": {
+      "rbacImplemented": {
+        "status": "PASS",
+        "details": "RBAC system implemented",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:42.530Z"
+      },
+      "permissionValidation": {
+        "status": "PASS",
+        "details": "Permission validation methods present",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:42.530Z"
+      },
+      "resourceOwnership": {
+        "status": "PASS",
+        "details": "Resource ownership validation implemented",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:42.531Z"
+      }
+    },
+    "inputValidation": {
+      "sqlInjection": {
+        "status": "PASS",
+        "details": "SQL injection protection mechanisms found",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:42.951Z"
+      },
+      "xssProtection": {
+        "status": "SKIP",
+        "details": "Service offline",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:42.952Z"
+      },
+      "commandInjection": {
+        "status": "PASS",
+        "details": "No obvious command injection risks found",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:45.058Z"
+      }
+    },
+    "apiSecurity": {
+      "rateLimiting": {
+        "status": "SKIP",
+        "details": "Service offline",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:45.060Z"
+      },
+      "corsPolicy": {
+        "status": "SKIP",
+        "details": "Service offline",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:45.060Z"
+      },
+      "httpsEnforcement": {
+        "status": "PASS",
+        "details": "HTTPS enforcement mechanisms present",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:45.423Z"
+      }
+    },
+    "websocketSecurity": {
+      "messageValidation": {
+        "status": "PASS",
+        "details": "WebSocket message validation tests present",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:45.474Z"
+      },
+      "originChecking": {
+        "status": "PASS",
+        "details": "WebSocket origin checking implemented",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:45.621Z"
+      }
+    },
+    "environmentSecurity": {
+      "secretStrength": {
+        "status": "FAIL",
+        "details": "Weak or default secrets found in .env",
+        "severity": "critical",
+        "timestamp": "2025-08-06T13:35:45.624Z"
+      },
+      "jwtSecret": {
+        "status": "FAIL",
+        "details": "JWT secret not properly configured",
+        "severity": "high",
+        "timestamp": "2025-08-06T13:35:45.624Z"
+      },
+      "databaseConfig": {
+        "status": "PASS",
+        "details": "Database configuration present",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:45.624Z"
+      }
+    },
+    "encryptionTests": {
+      "dataAtRest": {
+        "status": "WARN",
+        "details": "No obvious encryption libraries found",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:45.627Z"
+      },
+      "dataInTransit": {
+        "status": "SKIP",
+        "details": "Service offline",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:45.628Z"
+      }
+    },
+    "securityHeaders": {
+      "headers": {
+        "status": "SKIP",
+        "details": "Service offline",
+        "severity": "medium",
+        "timestamp": "2025-08-06T13:35:45.628Z"
+      }
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "CRITICAL",
+      "title": "Address Critical Security Issues",
+      "description": "Critical security vulnerabilities detected that need immediate attention"
+    },
+    {
+      "priority": "HIGH",
+      "title": "Fix High Priority Security Issues",
+      "description": "High priority security issues that should be addressed soon"
+    },
+    {
+      "priority": "CRITICAL",
+      "title": "Configure JWT Secret",
+      "description": "Set a strong JWT secret in production environment"
+    }
+  ]
+}

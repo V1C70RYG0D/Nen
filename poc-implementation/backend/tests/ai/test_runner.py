@@ -11,7 +11,8 @@ import time
 from pathlib import Path
 
 # Add AI services to path
-sys.path.append(str(Path(__file__).parent.parent / "ai-services"))
+ai_services_path = str(Path(__file__).parent.parent.parent / "ai-services")
+sys.path.insert(0, ai_services_path)
 
 try:
     from agents.basic_ai_agents import (
@@ -22,6 +23,8 @@ try:
     print("✅ Successfully imported AI agent modules")
 except ImportError as e:
     print(f"❌ Failed to import AI modules: {e}")
+    print(f"AI services path: {ai_services_path}")
+    print(f"Available paths: {sys.path}")
     sys.exit(1)
 
 class TestBaseAIAgentCore(unittest.TestCase):

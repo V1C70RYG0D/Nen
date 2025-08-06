@@ -75,7 +75,7 @@ class OptimizedLoadTester {
         const rampUpInterval = this.config.rampUpMs / this.config.totalUsers;
 
         for (let i = 0; i < this.config.totalUsers; i++) {
-            if (!this.isRunning) break;
+            if (!this.isRunning) {break;}
 
             const userPromise = this.simulateUser(i);
             this.userPromises.push(userPromise);
@@ -179,7 +179,7 @@ class OptimizedLoadTester {
         const totalIntervals = this.config.durationMs / reportInterval;
 
         for (let i = 0; i < totalIntervals; i++) {
-            if (!this.isRunning) break;
+            if (!this.isRunning) {break;}
 
             await new Promise(resolve => setTimeout(resolve, reportInterval));
 
@@ -192,7 +192,7 @@ class OptimizedLoadTester {
     }
 
     printInterimMetrics() {
-        if (metrics.totalRequests === 0) return;
+        if (metrics.totalRequests === 0) {return;}
 
         const avgResponseTime = metrics.responseTimeSum / metrics.totalRequests;
         const errorRate = (metrics.failedRequests / metrics.totalRequests * 100).toFixed(2);

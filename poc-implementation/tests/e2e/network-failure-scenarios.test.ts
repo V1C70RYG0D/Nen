@@ -116,8 +116,8 @@ test.describe('Network Failure - Connection Loss', () => {
   test('User notification and graceful degradation', async ({ page }) => {
     // Simulate feature degradation
     await page.evaluate(() => {
-      const featureElement = document.querySelector('.feature')
-      if (featureElement) featureElement.remove();
+      const featureElement = document.querySelector('.feature');
+      if (featureElement) {featureElement.remove();}
     });
 
     // Verify user notification

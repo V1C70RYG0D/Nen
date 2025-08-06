@@ -5,8 +5,7 @@ use std::collections::HashMap;
 // Provides sub-50ms move execution with geographic clustering
 
 /// BOLT ECS Component for piece positions with stacking support
-#[account]
-#[derive(Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default, Copy)]
 pub struct PositionComponent {
     pub entity_id: u64,
     pub x: u8,        // 0-8 for 9x9 board
@@ -16,13 +15,8 @@ pub struct PositionComponent {
     pub last_updated: i64,
 }
 
-impl PositionComponent {
-    pub const LEN: usize = 8 + 1 + 1 + 1 + 1 + 8; // entity_id + x + y + level + is_active + last_updated
-}
-
 /// BOLT ECS Component for piece data
-#[account]
-#[derive(Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
 pub struct PieceComponent {
     pub entity_id: u64,
     pub piece_type: PieceType,
@@ -34,13 +28,8 @@ pub struct PieceComponent {
     pub last_move_turn: u32,
 }
 
-impl PieceComponent {
-    pub const LEN: usize = 8 + 1 + 1 + 1 + 1 + 1 + 2 + 4;
-}
-
 /// BOLT ECS Component for AI agents with personality
-#[account]
-#[derive(Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
 pub struct AIAgentComponent {
     pub entity_id: u64,
     pub personality: PersonalityType,
@@ -51,10 +40,6 @@ pub struct AIAgentComponent {
     pub draw: u32,
     pub learning_rate: u16,  // How quickly AI adapts
     pub last_updated: i64,
-}
-
-impl AIAgentComponent {
-    pub const LEN: usize = 8 + 1 + 2 + 4 + 4 + 4 + 4 + 2 + 8;
 }
 
 /// Enhanced piece types for complete Gungi implementation

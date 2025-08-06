@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { sign } from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 import { createError } from '../middleware/errorHandler';
 import { PublicKey } from '@solana/web3.js';
 import bs58 from 'bs58';
@@ -80,12 +80,19 @@ router.post('/wallet', async (req, res, next) => {
       throw createError('JWT secret not configured', 500);
     }
 
+    // Generate consistent token payload
+    const tokenPayload = {
+      userId: publicKey, // For backward compatibility
+      id: publicKey,
+      publicKey,
+      address: publicKey,
+      wallet: publicKey,
+      role: 'user',
+      iat: Math.floor(Date.now() / 1000)
+    };
+
     const token = sign(
-      {
-        id: publicKey,
-        publicKey,
-        address: publicKey
-      },
+      tokenPayload,
       jwtSecret,
       { expiresIn: '7d' }
     );
@@ -96,7 +103,9 @@ router.post('/wallet', async (req, res, next) => {
       user: {
         id: publicKey,
         publicKey,
-        address: publicKey
+        address: publicKey,
+        wallet: publicKey,
+        role: 'user'
       }
     });
   } catch (error) {
@@ -118,7 +127,7 @@ router.post('/verify', async (req, res, next) => {
       throw createError('JWT secret not configured', 500);
     }
 
-    const decoded = sign(token, jwtSecret) as any;
+    const decoded = verify(token, jwtSecret) as any;
 
     res.json({
       success: true,

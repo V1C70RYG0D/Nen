@@ -13,7 +13,7 @@ export default defineConfig({
   testDir: './specs',
   timeout: 60 * 1000, // 60 seconds for integration tests
   expect: {
-    timeout: 10000, // 10 seconds for assertions
+    timeout: 10000 // 10 seconds for assertions
   },
   fullyParallel: false, // Sequential execution for integration tests
   forbidOnly: !!process.env.CI,
@@ -38,7 +38,7 @@ export default defineConfig({
     navigationTimeout: 30000,
     // Additional context options for blockchain testing
     ignoreHTTPSErrors: true,
-    bypassCSP: true,
+    bypassCSP: true
   },
   projects: [
     // Desktop browsers for comprehensive testing
@@ -54,7 +54,7 @@ export default defineConfig({
             '--disable-blink-features=AutomationControlled'
           ]
         }
-      },
+      }
     },
     {
       name: 'firefox-desktop',
@@ -66,7 +66,7 @@ export default defineConfig({
             'network.stricttransportsecurity.preloadlist': false
           }
         }
-      },
+      }
     },
     // Mobile testing for wallet connections
     {
@@ -79,8 +79,8 @@ export default defineConfig({
             '--allow-running-insecure-content'
           ]
         }
-      },
-    },
+      }
+    }
   ],
   // Global setup and teardown
   globalSetup: require.resolve('./setup/global-setup.ts'),
@@ -93,17 +93,17 @@ export default defineConfig({
       url: process.env.BACKEND_URL || process.env.DEFAULT_BACKEND_URL || process.env.TEST_API_BASE_URL,
       reuseExistingServer: !process.env.CI,
       timeout: 60000,
-      cwd: '../backend',
+      cwd: '../backend'
     },
     {
       command: 'npm run frontend:dev',
       url: process.env.FRONTEND_URL || process.env.DEFAULT_FRONTEND_URL || process.env.TEST_FRONTEND_URL,
       reuseExistingServer: !process.env.CI,
       timeout: 60000,
-      cwd: '../frontend',
+      cwd: '../frontend'
     }
   ],
 
   // Test output directories
-  outputDir: 'test-results/',
+  outputDir: 'test-results/'
 });

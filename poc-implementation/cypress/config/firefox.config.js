@@ -13,7 +13,7 @@ module.exports = defineConfig({
     viewportHeight: 1080,
     firefoxGcInterval: {
       runMode: 1,
-      openMode: null,
+      openMode: null
     },
     setupNodeEvents(on, config) {
       // Firefox-specific configurations
@@ -24,10 +24,10 @@ module.exports = defineConfig({
         }
         return launchOptions;
       });
-    },
+    }
   },
   env: {
     BROWSER: 'Firefox 88+',
-    TEST_FOCUS: 'wallet-integration',
-  },
+    TEST_FOCUS: 'wallet-integration'
+  }
 });

@@ -30,16 +30,16 @@ export const options = {
         { duration: '5m', target: 50 },   // Stay at 50 VUs
         { duration: '2m', target: 100 },  // Ramp to 100 VUs
         { duration: '5m', target: 100 },  // Stay at 100 VUs
-        { duration: '2m', target: 0 },    // Ramp down
-      ],
+        { duration: '2m', target: 0 }    // Ramp down
+      ]
     },
 
     // Game Move Test - Target <50ms
     game_moves: {
       executor: 'constant-vus',
       vus: 25,
-      duration: '10m',
-    },
+      duration: '10m'
+    }
   },
 
   thresholds: {
@@ -53,8 +53,8 @@ export const options = {
 
     // Error rate targets
     'http_req_failed': ['rate<0.01'], // Less than 1% errors
-    'error_rate': ['rate<0.01'],
-  },
+    'error_rate': ['rate<0.01']
+  }
 };
 
 const BASE_URL = __ENV.API_BASE_URL || __ENV.API_URL;
@@ -64,18 +64,18 @@ const WS_URL = __ENV.WS_URL;
 const testUsers = [
   { wallet: '4Zw1fXuYuJhWhu9KLEYMhiPEiqcpKd6akw3WRqzNkm4S' },
   { wallet: '7YfB5pWrCqYuPXGF9KLEYMhiPEiqcpKd6akw3WRqzNkm4T' },
-  { wallet: '9XvD8qWtEuYjQXHK2MEYMhiPEiqcpKd6akw3WRqzNkm4U' },
+  { wallet: '9XvD8qWtEuYjQXHK2MEYMhiPEiqcpKd6akw3WRqzNkm4U' }
 ];
 
 export function setup() {
   console.log('🚀 Starting Nen Platform Performance Tests');
-  console.log(`📊 Target: API <100ms, Game Moves <50ms`);
+  console.log('📊 Target: API <100ms, Game Moves <50ms');
   console.log(`🌐 Base URL: ${BASE_URL}`);
 
   // Health check
   const healthRes = http.get(`${BASE_URL}/api/health`);
   check(healthRes, {
-    'Health check passes': (r) => r.status === 200,
+    'Health check passes': (r) => r.status === 200
   });
 
   return { baseUrl: BASE_URL };
@@ -100,36 +100,36 @@ function testAPIPerformance(data) {
   // Test user authentication
   const authStart = Date.now();
   const authRes = http.post(`${data.baseUrl}/api/auth/login`, {
-    wallet_address: user.wallet,
+    wallet_address: user.wallet
   });
   const authTime = Date.now() - authStart;
 
   const authSuccess = check(authRes, {
     'Auth API status 200': (r) => r.status === 200,
-    'Auth API <100ms': (r) => r.timings.duration < 100,
+    'Auth API <100ms': (r) => r.timings.duration < 100
   });
 
   apiResponseTime.add(authTime);
   errorRate.add(!authSuccess);
 
-  if (!authSuccess) return;
+  if (!authSuccess) {return;}
 
   // Test game session creation
   const sessionStart = Date.now();
   const sessionRes = http.post(`${data.baseUrl}/api/game/create-session`, {
     game_type: 'ai_vs_ai',
-    betting_enabled: true,
+    betting_enabled: true
   }, {
     headers: {
       'Authorization': `Bearer ${authRes.json('token')}`,
-      'Content-Type': 'application/json',
-    },
+      'Content-Type': 'application/json'
+    }
   });
   const sessionTime = Date.now() - sessionStart;
 
   const sessionSuccess = check(sessionRes, {
     'Session API status 200': (r) => r.status === 200,
-    'Session API <100ms': (r) => r.timings.duration < 100,
+    'Session API <100ms': (r) => r.timings.duration < 100
   });
 
   apiResponseTime.add(sessionTime);
@@ -139,14 +139,14 @@ function testAPIPerformance(data) {
   const agentsStart = Date.now();
   const agentsRes = http.get(`${data.baseUrl}/api/ai/agents`, {
     headers: {
-      'Authorization': `Bearer ${authRes.json('token')}`,
-    },
+      'Authorization': `Bearer ${authRes.json('token')}`
+    }
   });
   const agentsTime = Date.now() - agentsStart;
 
   const agentsSuccess = check(agentsRes, {
     'Agents API status 200': (r) => r.status === 200,
-    'Agents API <100ms': (r) => r.timings.duration < 100,
+    'Agents API <100ms': (r) => r.timings.duration < 100
   });
 
   apiResponseTime.add(agentsTime);
@@ -159,14 +159,14 @@ function testAPIPerformance(data) {
     const bettingStart = Date.now();
     const bettingRes = http.get(`${data.baseUrl}/api/betting/pool/${sessionId}`, {
       headers: {
-        'Authorization': `Bearer ${authRes.json('token')}`,
-      },
+        'Authorization': `Bearer ${authRes.json('token')}`
+      }
     });
     const bettingTime = Date.now() - bettingStart;
 
     const bettingSuccess = check(bettingRes, {
       'Betting API status 200': (r) => r.status === 200,
-      'Betting API <100ms': (r) => r.timings.duration < 100,
+      'Betting API <100ms': (r) => r.timings.duration < 100
     });
 
     apiResponseTime.add(bettingTime);
@@ -184,7 +184,7 @@ function testGameMovePerformance(data) {
 
   // Authenticate first
   const authRes = http.post(`${data.baseUrl}/api/auth/login`, {
-    wallet_address: user.wallet,
+    wallet_address: user.wallet
   });
 
   if (!check(authRes, { 'Auth success': (r) => r.status === 200 })) {
@@ -194,12 +194,12 @@ function testGameMovePerformance(data) {
   // Create a test game session
   const sessionRes = http.post(`${data.baseUrl}/api/game/create-session`, {
     game_type: 'ai_vs_ai',
-    magicblock_enabled: true,
+    magicblock_enabled: true
   }, {
     headers: {
       'Authorization': `Bearer ${authRes.json('token')}`,
-      'Content-Type': 'application/json',
-    },
+      'Content-Type': 'application/json'
+    }
   });
 
   if (!check(sessionRes, { 'Session created': (r) => r.status === 200 })) {
@@ -216,25 +216,25 @@ function testGameMovePerformance(data) {
       pieces: [],
       current_turn: 1,
       move_number: 1,
-      game_status: 'active',
+      game_status: 'active'
     },
     agent_config: {
       agent_id: 'test-agent',
       skill_level: 5,
-      personality: 'balanced',
-    },
+      personality: 'balanced'
+    }
   }, {
     headers: {
       'Authorization': `Bearer ${authRes.json('token')}`,
-      'Content-Type': 'application/json',
-    },
+      'Content-Type': 'application/json'
+    }
   });
   const moveTime = Date.now() - moveStart;
 
   const moveSuccess = check(moveRes, {
     'Move API status 200': (r) => r.status === 200,
     'Move API <50ms': (r) => r.timings.duration < 50,
-    'Valid move returned': (r) => r.json('move') !== null,
+    'Valid move returned': (r) => r.json('move') !== null
   });
 
   gameMoveTime.add(moveTime);
@@ -245,18 +245,18 @@ function testGameMovePerformance(data) {
     const submitStart = Date.now();
     const submitRes = http.post(`${data.baseUrl}/api/game/submit-move`, {
       session_id: sessionId,
-      move: moveRes.json('move'),
+      move: moveRes.json('move')
     }, {
       headers: {
         'Authorization': `Bearer ${authRes.json('token')}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     const submitTime = Date.now() - submitStart;
 
     const submitSuccess = check(submitRes, {
       'Submit status 200': (r) => r.status === 200,
-      'Submit <50ms': (r) => r.timings.duration < 50,
+      'Submit <50ms': (r) => r.timings.duration < 50
     });
 
     gameMoveTime.add(submitTime);

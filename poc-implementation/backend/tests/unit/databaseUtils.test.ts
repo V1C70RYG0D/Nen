@@ -6,11 +6,11 @@ jest.mock('pg', () => ({
   Pool: jest.fn().mockImplementation(() => ({
     connect: jest.fn().mockResolvedValue({
       query: jest.fn().mockResolvedValue({ rows: [{ now: new Date() }] }),
-      release: jest.fn(),
+      release: jest.fn()
     }),
     query: jest.fn().mockResolvedValue({ rows: [{ healthy: 1 }] }),
-    end: jest.fn().mockResolvedValue(undefined),
-  })),
+    end: jest.fn().mockResolvedValue(undefined)
+  }))
 }));
 
 jest.mock('../../src/utils/logger');

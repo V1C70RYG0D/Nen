@@ -439,13 +439,13 @@ class EnhancedComplianceService {
     const transactions = await this.dbService.getPrismaClient().bet.findMany({
       where: {
         user: { wallet_address: walletAddress },
-        created_at: { gte: oneWeekAgo }
+        placedAt: { gte: oneWeekAgo }
       },
       select: {
         amount: true,
-        created_at: true
+        placedAt: true
       },
-      orderBy: { created_at: 'desc' }
+      orderBy: { placedAt: 'desc' }
     });
 
     if (transactions.length === 0) {
@@ -465,7 +465,7 @@ class EnhancedComplianceService {
     const averageAmount = totalVolume / transactions.length;
     const maxAmount = Math.max(...transactions.map((tx: any) => tx.amount));
 
-    const timeSpan = (transactions[0].created_at.getTime() - transactions[transactions.length - 1].created_at.getTime()) / (1000 * 60); // minutes
+    const timeSpan = (transactions[0].placedAt.getTime() - transactions[transactions.length - 1].placedAt.getTime()) / (1000 * 60); // minutes
     const frequency = timeSpan > 0 ? (transactions.length / timeSpan) * 60 : 0; // transactions per hour
 
     // Detect anomalous patterns

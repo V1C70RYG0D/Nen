@@ -1,244 +1,288 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom CSS Variables for Nen Platform */
-:root {
-  --enhancement-glow: rgba(255, 107, 107, 0.3);
-  --emission-glow: rgba(78, 205, 196, 0.3);
-  --manipulation-glow: rgba(108, 92, 231, 0.3);
-  --neural-glow: rgba(0, 188, 212, 0.3);
-}
-
 /* Base Styles */
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+@layer base {
+  :root {
+    --solana-purple: #9945FF;
+    --solana-green: #14F195;
+    --nen-glow: #9945FF;
+    --cyber-accent: #00D9FF;
+    --matrix-green: #00FF41;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-cyber-darker text-solana-light overflow-x-hidden;
+    background-image: 
+      radial-gradient(ellipse at top, rgba(153, 69, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom, rgba(20, 241, 149, 0.05) 0%, transparent 50%),
+      linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 50px 50px, 50px 50px;
+  }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-  font-family: 'Inter', system-ui, sans-serif;
-  background-color: #0A0E27;
-  color: white;
+/* Custom Components */
+@layer components {
+  /* Nen Aura Effect */
+  .nen-aura {
+    position: relative;
+    &::before {
+      content: '';
+      @apply absolute inset-0 -z-10 animate-nen-aura blur-xl;
+      background: radial-gradient(circle, var(--nen-glow) 0%, transparent 70%);
+    }
+  }
+
+  /* Cyber Button */
+  .cyber-button {
+    @apply relative px-6 py-3 font-cyber font-medium text-white uppercase tracking-wider overflow-hidden transition-all duration-300;
+    background: linear-gradient(45deg, theme('colors.solana.purple'), theme('colors.magicblock.primary'));
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%);
+    
+    &::before {
+      content: '';
+      @apply absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 transition-opacity duration-300;
+      transform: translateX(-100%);
+      animation: shimmer 2s infinite;
+    }
+    
+    &:hover::before {
+      @apply opacity-30;
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(153, 69, 255, 0.5);
+    }
+  }
+
+  /* Hunter Card */
+  .hunter-card {
+    @apply relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-md border border-solana-purple/30 overflow-hidden;
+    
+    &::before {
+      content: '';
+      @apply absolute inset-0 bg-gradient-to-r from-transparent via-solana-purple/10 to-transparent;
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+    
+    &:hover::before {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Glitch Text */
+  .glitch-text {
+    @apply relative inline-block font-hunter;
+    
+    &::before,
+    &::after {
+      content: attr(data-text);
+      @apply absolute top-0 left-0 w-full h-full;
+    }
+    
+    &::before {
+      animation: glitch-1 0.5s infinite;
+      @apply text-cyan-400;
+      z-index: -1;
+    }
+    
+    &::after {
+      animation: glitch-2 0.5s infinite;
+      @apply text-pink-500;
+      z-index: -2;
+    }
+  }
+
+  /* Hologram Effect */
+  .hologram {
+    @apply relative;
+    background: linear-gradient(45deg, transparent 30%, rgba(0, 217, 255, 0.1) 50%, transparent 70%);
+    background-size: 200% 200%;
+    animation: hologram-scan 4s ease-in-out infinite;
+    
+    &::after {
+      content: '';
+      @apply absolute inset-0 pointer-events-none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 217, 255, 0.03) 2px,
+        rgba(0, 217, 255, 0.03) 4px
+      );
+    }
+  }
+
+  /* Matrix Rain Background */
+  .matrix-rain {
+    @apply fixed inset-0 pointer-events-none overflow-hidden opacity-10;
+    
+    &::before {
+      content: '10101010101010101010101010101010101010101010';
+      @apply absolute text-cyber-matrix text-xs font-mono whitespace-pre animate-matrix;
+      text-shadow: 0 0 5px currentColor;
+    }
+  }
+
+  /* Gungi Board Square */
+  .gungi-square {
+    @apply relative aspect-square flex items-center justify-center cursor-pointer transition-all duration-200;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+    
+    &::before {
+      content: '';
+      @apply absolute inset-0 bg-gradient-to-br from-transparent to-transparent opacity-0 transition-opacity;
+    }
+    
+    &:hover::before {
+      @apply opacity-100;
+      background: linear-gradient(135deg, rgba(153, 69, 255, 0.2) 0%, rgba(20, 241, 149, 0.1) 100%);
+    }
+  }
+
+  /* Loading Spinner */
+  .nen-spinner {
+    @apply w-12 h-12 relative;
+    
+    &::before,
+    &::after {
+      content: '';
+      @apply absolute inset-0 rounded-full border-2 border-transparent;
+    }
+    
+    &::before {
+      @apply border-t-solana-purple border-r-solana-purple animate-spin;
+    }
+    
+    &::after {
+      @apply border-b-solana-green border-l-solana-green;
+      animation: spin 1.5s linear infinite reverse;
+    }
+  }
+
+  /* Wallet Button Override */
+  .wallet-adapter-button {
+    @apply !bg-gradient-to-r !from-solana-purple !to-magicblock-primary !border-0 !rounded-none;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+    
+    &:hover {
+      @apply !brightness-110;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(153, 69, 255, 0.5);
+    }
+  }
+}
+
+/* Utility Classes */
+@layer utilities {
+  /* Text Shadows */
+  .text-glow {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+  
+  .text-glow-sm {
+    text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+  }
+  
+  /* Nen Type Colors */
+  .nen-enhancement {
+    @apply text-nen-enhancement;
+    text-shadow: 0 0 20px theme('colors.nen.enhancement');
+  }
+  
+  .nen-emission {
+    @apply text-nen-emission;
+    text-shadow: 0 0 20px theme('colors.nen.emission');
+  }
+  
+  .nen-manipulation {
+    @apply text-nen-manipulation;
+    text-shadow: 0 0 20px theme('colors.nen.manipulation');
+  }
+  
+  .nen-transmutation {
+    @apply text-nen-transmutation;
+    text-shadow: 0 0 20px theme('colors.nen.transmutation');
+  }
+  
+  .nen-conjuration {
+    @apply text-nen-conjuration;
+    text-shadow: 0 0 20px theme('colors.nen.conjuration');
+  }
+  
+  .nen-specialization {
+    @apply text-nen-specialization;
+    text-shadow: 0 0 20px theme('colors.nen.specialization');
+  }
+}
+
+/* Animations */
+@keyframes glitch-1 {
+  0%, 100% { clip-path: inset(0 0 0 0); }
+  20% { clip-path: inset(100% 0 0 0); }
+  40% { clip-path: inset(0 0 100% 0); }
+  60% { clip-path: inset(0 100% 0 0); }
+  80% { clip-path: inset(0 0 0 100%); }
+}
+
+@keyframes glitch-2 {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+@keyframes hologram-scan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1A1F3A;
+  @apply bg-cyber-dark;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4ECDC4;
-  border-radius: 4px;
+  @apply bg-gradient-to-b from-solana-purple to-solana-green rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6C5CE7;
+  @apply brightness-110;
 }
 
-/* Custom Component Styles */
-@layer components {
-  .nen-card {
-    @apply bg-space-800 border border-space-600 rounded-xl p-6 backdrop-blur-sm;
-    background: linear-gradient(135deg, rgba(26, 31, 58, 0.8), rgba(42, 47, 74, 0.4));
-  }
-
-  .nen-button {
-    @apply px-6 py-3 rounded-lg font-bold transition-all duration-300 transform hover:scale-105;
-    background: linear-gradient(135deg, #4ECDC4, #6C5CE7);
-    box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
-  }
-
-  .nen-button:hover {
-    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.5);
-  }
-
-  .nen-button:active {
-    transform: translateY(1px) scale(0.98);
-  }
-
-  .aura-enhancement {
-    box-shadow: 0 0 20px var(--enhancement-glow);
-    border-color: #FF6B6B;
-  }
-
-  .aura-emission {
-    box-shadow: 0 0 20px var(--emission-glow);
-    border-color: #4ECDC4;
-  }
-
-  .aura-manipulation {
-    box-shadow: 0 0 20px var(--manipulation-glow);
-    border-color: #6C5CE7;
-  }
-
-  .neural-pattern {
-    background: linear-gradient(45deg, #00BCD4, #4ECDC4, #6C5CE7);
-    background-size: 400% 400%;
-    animation: neural-flow 4s ease infinite;
-  }
-
-  .holographic {
-    background: linear-gradient(45deg, #4ECDC4, #6C5CE7, #FF6B6B);
-    background-size: 200% 200%;
-    animation: holographic 3s ease-in-out infinite;
-  }
-
-  .glassmorphism {
-    background: rgba(26, 31, 58, 0.25);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(78, 205, 196, 0.2);
-  }
-
-  .energy-border {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .energy-border::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.6), transparent);
-    animation: energy-sweep 2s infinite;
-  }
-
-  .gungi-piece {
-    @apply w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold cursor-pointer transition-all duration-200;
-    background: radial-gradient(circle, #8B4513, #A0522D);
-    border: 2px solid #D2691E;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  }
-
-  .gungi-piece:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
-  }
-
-  .gungi-board-square {
-    @apply w-12 h-12 flex items-center justify-center relative transition-all duration-200;
-    background: linear-gradient(135deg, #D2691E, #8B4513);
-    border: 1px solid #654321;
-  }
-
-  .gungi-board-square:nth-child(odd) {
-    background: linear-gradient(135deg, #F4A460, #D2691E);
-  }
-
-  .gungi-board-square.selected {
-    background: linear-gradient(135deg, #4ECDC4, #6C5CE7);
-    box-shadow: 0 0 20px rgba(78, 205, 196, 0.6);
-  }
+/* Selection */
+::selection {
+  @apply bg-solana-purple/50 text-white;
 }
 
-@keyframes energy-sweep {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
+/* Custom Cursor */
+* {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="%239945FF" opacity="0.5"/><circle cx="10" cy="10" r="3" fill="%2314F195"/></svg>') 10 10, auto;
 }
 
-/* Loading Spinner with Nen Energy */
-.nen-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid transparent;
-  border-top: 3px solid #4ECDC4;
-  border-right: 3px solid #6C5CE7;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .nen-card {
-    @apply p-4;
-  }
-  
-  .gungi-board-square {
-    @apply w-8 h-8;
-  }
-  
-  .gungi-piece {
-    @apply w-6 h-6 text-sm;
-  }
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Focus styles for accessibility */
-:focus {
-  outline: 3px solid #FF6B6B;
-  outline-offset: 3px;
-}
-
-/* Skip link styling */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.sr-only.focus\:not-sr-only:focus {
-  position: fixed;
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: auto;
-  height: auto;
-  padding: 0.75rem 1.5rem;
-  margin: 0;
-  overflow: visible;
-  clip: auto;
-  white-space: normal;
-  background: #4ECDC4;
-  color: #0A0E27;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  z-index: 9999;
-  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.5);
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .nen-card {
-    border-width: 2px;
-  }
-  
-  .nen-button {
-    border: 2px solid currentColor;
-  }
-}
+a, button {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="%2314F195" opacity="0.5"/><circle cx="10" cy="10" r="3" fill="%239945FF"/></svg>') 10 10, pointer;
+} 

@@ -9,9 +9,10 @@ router.get('/profile', async (req, res, next) => {
     // For production: integrate with database service
     // For now: return dynamic data based on user session or wallet
     const userPublicKey = req.headers['x-wallet-address'] || 'demo_user';
+    const publicKeyStr = Array.isArray(userPublicKey) ? userPublicKey[0] : userPublicKey;
 
     const profile = {
-      id: `user_${Buffer.from(userPublicKey).toString('hex').slice(0, 8)}`,
+      id: `user_${Buffer.from(publicKeyStr).toString('hex').slice(0, 8)}`,
       publicKey: userPublicKey,
       username: `Player_${userPublicKey.slice(-4)}`,
       stats: {
@@ -44,11 +45,12 @@ router.put('/profile', async (req, res, next) => {
   try {
     const { username, preferences } = req.body;
     const userPublicKey = req.headers['x-wallet-address'] || 'demo_user';
+    const publicKeyStr = Array.isArray(userPublicKey) ? userPublicKey[0] : userPublicKey;
 
     // For production: save to database
     // For now: return confirmation with validated data
     const updatedProfile = {
-      id: `user_${Buffer.from(userPublicKey).toString('hex').slice(0, 8)}`,
+      id: `user_${Buffer.from(publicKeyStr).toString('hex').slice(0, 8)}`,
       username: username?.trim() || `Player_${userPublicKey.slice(-4)}`,
       preferences: {
         theme: preferences?.theme || 'dark',
@@ -105,10 +107,11 @@ router.get('/balance', async (req, res, next) => {
 router.get('/stats', async (req, res, next) => {
   try {
     const userPublicKey = req.headers['x-wallet-address'] || 'demo_user';
+    const publicKeyStr = Array.isArray(userPublicKey) ? userPublicKey[0] : userPublicKey;
 
     // For production: query database for user statistics
     // For now: generate dynamic stats based on user wallet
-    const hashValue = Buffer.from(userPublicKey).toString('hex').slice(0, 8);
+    const hashValue = Buffer.from(publicKeyStr).toString('hex').slice(0, 8);
     const seedValue = parseInt(hashValue, 16) % 1000;
 
     const totalGames = Math.floor(seedValue / 10) + 20;

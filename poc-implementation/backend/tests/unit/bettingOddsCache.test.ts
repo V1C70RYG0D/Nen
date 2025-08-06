@@ -2,7 +2,7 @@ import { CacheService, initializeRedis, closeRedis } from '../../src/utils/redis
 import { jest } from '@jest/globals';
 
 jest.mock('../../src/utils/redis');
-let cacheService = new CacheService();
+const cacheService = new CacheService();
 
 initializeRedis();
 

@@ -38,7 +38,7 @@ export default defineConfig({
     // API testing configuration
     extraHTTPHeaders: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
 
     // Visual testing
@@ -59,7 +59,7 @@ export default defineConfig({
     })()),
     navigationTimeout: parseInt(process.env.PLAYWRIGHT_NAVIGATION_TIMEOUT || process.env.DEFAULT_PLAYWRIGHT_NAVIGATION_TIMEOUT || (() => {
       throw new Error('PLAYWRIGHT_NAVIGATION_TIMEOUT or DEFAULT_PLAYWRIGHT_NAVIGATION_TIMEOUT must be set in environment variables. Environment variables required.');
-    })()),
+    })())
   },
 
   projects: [
@@ -67,13 +67,13 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
-      teardown: 'cleanup',
+      teardown: 'cleanup'
     },
 
     // Cleanup project
     {
       name: 'cleanup',
-      testMatch: /.*\.cleanup\.ts/,
+      testMatch: /.*\.cleanup\.ts/
     },
 
     // Desktop browsers
@@ -85,29 +85,29 @@ export default defineConfig({
           permissions: ['geolocation', 'notifications']
         }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
 
     // Mobile browsers
     {
       name: 'mobile-chrome',
       use: { ...devices['Pixel 5'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'mobile-safari',
       use: { ...devices['iPhone 12'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
 
     // API testing project
@@ -115,10 +115,10 @@ export default defineConfig({
       name: 'api',
       testMatch: /.*\.api\.spec\.ts/,
       use: {
-        baseURL: process.env.TEST_API_BASE_URL || process.env.PLAYWRIGHT_BASE_URL,
+        baseURL: process.env.TEST_API_BASE_URL || process.env.PLAYWRIGHT_BASE_URL
       },
-      dependencies: ['setup'],
-    },
+      dependencies: ['setup']
+    }
   ],
 
   // Web server configuration for local development
@@ -129,7 +129,7 @@ export default defineConfig({
         throw new Error('TEST_SERVER_PORT or DEFAULT_TEST_SERVER_PORT must be set in environment variables. Environment variables required.');
       })()),
       timeout: 120 * 1000,
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: !process.env.CI
     },
     {
       command: 'npm run frontend:dev',
@@ -137,7 +137,7 @@ export default defineConfig({
         throw new Error('FRONTEND_PORT or DEFAULT_FRONTEND_PORT must be set in environment variables. Environment variables required.');
       })()),
       timeout: 120 * 1000,
-      reuseExistingServer: !process.env.CI,
-    },
-  ],
+      reuseExistingServer: !process.env.CI
+    }
+  ]
 });

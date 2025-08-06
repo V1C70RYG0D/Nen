@@ -12,7 +12,7 @@ const httpServer = createServer();
 const io = new Server(httpServer, {
   cors: {
     origin: config.server.host,
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST']
   }
 });
 

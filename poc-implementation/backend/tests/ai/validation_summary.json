@@ -1,0 +1,17 @@
+{
+  "validation_timestamp": "2025-08-06T19:16:14.050603",
+  "requirements_met": 5,
+  "total_requirements": 6,
+  "compliance_rate": 83.33333333333334,
+  "system_ready": true,
+  "critical_issues": [
+    "Capture 70%\u00b110%"
+  ],
+  "performance_summary": {
+    "easy_ai_ms": 1.0507774353027344,
+    "medium_ai_ms": 1.019740104675293,
+    "hard_ai_ms": 1.0223706563313801,
+    "magicblock_max_ms": 5.998849868774414,
+    "capture_rate": 0.87
+  }
+}

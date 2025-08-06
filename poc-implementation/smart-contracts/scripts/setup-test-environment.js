@@ -23,8 +23,8 @@ const ENV_CONFIG = {
         localnet: process.env.LOCALNET_RPC_URL || (() => {
 
         })(),
-        devnet: "https://api.devnet.solana.com",
-        testnet: "https://api.testnet.solana.com"
+        devnet: 'https://api.devnet.solana.com',
+        testnet: 'https://api.testnet.solana.com'
     },
     directories: [
         'tests/fixtures',
@@ -43,8 +43,8 @@ class TestEnvironmentSetup {
      * GI #1: User-centric perspective, GI #10: File management
      */
     async setupEnvironment() {
-        console.log("🚀 Setting up Smart Contract Test Environment");
-        console.log("=" * 50);
+        console.log('🚀 Setting up Smart Contract Test Environment');
+        console.log('=' * 50);
 
         try {
             // Create required directories
@@ -59,11 +59,11 @@ class TestEnvironmentSetup {
             // Create environment configuration
             await this.createEnvironmentConfig();
 
-            console.log("\n✅ Test environment setup complete!");
-            console.log("🎯 Ready for comprehensive testing");
+            console.log('\n✅ Test environment setup complete!');
+            console.log('🎯 Ready for comprehensive testing');
 
         } catch (error) {
-            console.error("❌ Environment setup failed:", error);
+            console.error('❌ Environment setup failed:', error);
             process.exit(1);
         }
     }
@@ -73,7 +73,7 @@ class TestEnvironmentSetup {
      * GI #10: Manage files and repository cleanliness
      */
     async createDirectories() {
-        console.log("\n📁 Creating directories...");
+        console.log('\n📁 Creating directories...');
 
         for (const dir of ENV_CONFIG.directories) {
             const dirPath = path.join(process.cwd(), dir);
@@ -92,7 +92,7 @@ class TestEnvironmentSetup {
      * GI #13: Secure optimization, store secrets properly
      */
     async generateKeypairs() {
-        console.log("\n🔐 Generating test keypairs...");
+        console.log('\n🔐 Generating test keypairs...');
 
         for (const keypairName of ENV_CONFIG.keypairs) {
             const keypairPath = path.join(this.fixturesDir, keypairName);
@@ -136,7 +136,7 @@ class TestEnvironmentSetup {
      * GI #6: Handle integrations carefully
      */
     async validateNetworks() {
-        console.log("\n🌐 Validating network connectivity...");
+        console.log('\n🌐 Validating network connectivity...');
 
         for (const [networkName, endpoint] of Object.entries(ENV_CONFIG.networks)) {
             try {
@@ -174,7 +174,7 @@ class TestEnvironmentSetup {
      * GI #18: No hardcoding, externalize configuration
      */
     async createEnvironmentConfig() {
-        console.log("\n⚙️ Creating environment configuration...");
+        console.log('\n⚙️ Creating environment configuration...');
 
         const envConfig = {
             // Test Environment Variables
@@ -213,12 +213,12 @@ class TestEnvironmentSetup {
             .join('\n');
 
         fs.writeFileSync(envFile, envContent);
-        console.log(`✅ Environment config saved: .env.test`);
+        console.log('✅ Environment config saved: .env.test');
 
         // Save as JSON for programmatic access
         const jsonFile = path.join(this.fixturesDir, 'test-config.json');
         fs.writeFileSync(jsonFile, JSON.stringify(envConfig, null, 2));
-        console.log(`✅ JSON config saved: tests/fixtures/test-config.json`);
+        console.log('✅ JSON config saved: tests/fixtures/test-config.json');
     }
 
     /**
@@ -226,7 +226,7 @@ class TestEnvironmentSetup {
      * GI #15: Thoroughly verify functionality
      */
     async validateEnvironment() {
-        console.log("\n🔍 Validating existing environment...");
+        console.log('\n🔍 Validating existing environment...');
 
         const issues = [];
 
@@ -264,12 +264,12 @@ class TestEnvironmentSetup {
         }
 
         if (issues.length > 0) {
-            console.log("❌ Environment validation failed:");
+            console.log('❌ Environment validation failed:');
             issues.forEach(issue => console.log(`   - ${issue}`));
             console.log("\n💡 Run 'npm run setup-test-env' to fix issues");
             return false;
         } else {
-            console.log("✅ Environment validation passed");
+            console.log('✅ Environment validation passed');
             return true;
         }
     }
@@ -279,7 +279,7 @@ class TestEnvironmentSetup {
      * GI #10: Repository cleanliness
      */
     async cleanEnvironment() {
-        console.log("\n🧹 Cleaning test environment...");
+        console.log('\n🧹 Cleaning test environment...');
 
         const filesToClean = [
             'test-artifacts',
@@ -300,7 +300,7 @@ class TestEnvironmentSetup {
             }
         }
 
-        console.log("✅ Environment cleaned");
+        console.log('✅ Environment cleaned');
     }
 }
 
@@ -321,7 +321,7 @@ if (require.main === module) {
             setup.cleanEnvironment();
             break;
         default:
-            console.log("Usage: node setup-test-environment.js [setup|validate|clean]");
+            console.log('Usage: node setup-test-environment.js [setup|validate|clean]');
             process.exit(1);
     }
 }

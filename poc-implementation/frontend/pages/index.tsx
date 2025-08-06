@@ -1,341 +1,321 @@
-// Landing page with live matches and hero section
-'use client';
-import React, { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
-import { Layout } from '../components/Layout/Layout';
-import { MatchCard } from '../components/MatchCard/MatchCard';
-import { formatNumber, formatSOL } from '../utils/format';
-import { apiService } from '../services/api';
-import type { Match, Stats } from '../types';
+import React, { useEffect, useState } from 'react';
+import { Layout } from '@/components/Layout/Layout';
+import { MatchCard } from '@/components/MatchCard/MatchCard';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery } from 'react-query';
+import Link from 'next/link';
+import { formatNumber } from '@/utils/format';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
-// Hero section component
-const HeroSection = () => (
-  <div className="relative overflow-hidden">
-    {/* Background Effects */}
-    <div className="absolute inset-0">
-      <div className="absolute inset-0 bg-gradient-to-br from-space-900 via-space-800 to-space-900" />
-      <div className="absolute inset-0 opacity-30">
-        <div className="neural-pattern w-full h-full" />
-      </div>
-    </div>
-
-    <div className="relative max-w-7xl mx-auto px-4 py-20">
-      <div className="text-center">
-        {/* Main Title */}
-        <motion.h1
-          className="text-6xl md:text-8xl font-bold mb-6"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <span className="bg-gradient-to-r from-enhancement-400 via-emission-400 to-manipulation-400 bg-clip-text text-transparent">
-            念
-          </span>
-          <span className="text-white ml-4">Platform</span>
-        </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p
-          className="text-2xl md:text-3xl text-gray-300 mb-8 max-w-4xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          Where AI Warriors Battle in Real-Time
-          <br />
-          <span className="text-emission-400">Powered by MagicBlock • Built on Solana</span>
-        </motion.p>
-
-        {/* Features */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-4xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <div className="nen-card text-center">
-            <div className="text-4xl mb-3" role="img" aria-label="Lightning bolt">⚡</div>
-            <h2 className="text-xl font-bold text-emission-400 mb-2">Real-Time Gaming</h2>
-            <p className="text-gray-400">Sub-50ms latency with MagicBlock technology</p>
-          </div>
-          <div className="nen-card text-center">
-            <div className="text-4xl mb-3" role="img" aria-label="Robot">🤖</div>
-            <h2 className="text-xl font-bold text-manipulation-400 mb-2">AI Battles</h2>
-            <p className="text-gray-400">Neural networks compete in strategic Gungi matches</p>
-          </div>
-          <div className="nen-card text-center">
-            <div className="text-4xl mb-3" role="img" aria-label="Diamond">💎</div>
-            <h2 className="text-xl font-bold text-enhancement-400 mb-2">NFT Ownership</h2>
-            <p className="text-gray-400">Own, trade, and upgrade your AI fighters</p>
-          </div>
-        </motion.div>
-
-        {/* CTA Buttons */}
-        <motion.div
-          className="flex flex-col sm:flex-row gap-4 justify-center"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <button className="nen-button text-lg px-8 py-4">
-            Watch Live Matches
-          </button>
-          <button className="px-8 py-4 rounded-lg font-bold text-lg border-2 border-emission-400 text-emission-400 hover:bg-emission-400 hover:text-space-900 transition-colors">
-            Explore Marketplace
-          </button>
-        </motion.div>
-      </div>
-    </div>
-  </div>
-);
-
-// Stats section component
-const StatsSection = ({ stats }: { stats: Stats }) => (
-  <div className="bg-space-800 py-16">
-    <div className="max-w-7xl mx-auto px-4">
-      <motion.div
-        className="grid grid-cols-2 md:grid-cols-4 gap-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="text-center">
-          <div className="text-4xl font-mono font-bold text-enhancement-400 mb-2">
-            {stats.activeMatches}
-          </div>
-          <div className="text-gray-400">Live Matches</div>
-        </div>
-        <div className="text-center">
-          <div className="text-4xl font-mono font-bold text-emission-400 mb-2">
-            {formatSOL(stats.totalPool).split(' ')[0]}
-          </div>
-          <div className="text-gray-400">Total Pool (SOL)</div>
-        </div>
-        <div className="text-center">
-          <div className="text-4xl font-mono font-bold text-manipulation-400 mb-2">
-            {formatNumber(stats.playersOnline)}
-          </div>
-          <div className="text-gray-400">Players Online</div>
-        </div>
-        <div className="text-center">
-          <div className="text-4xl font-mono font-bold text-neural-400 mb-2">
-            {formatNumber(stats.totalBets)}
-          </div>
-          <div className="text-gray-400">Total Bets</div>
-        </div>
-      </motion.div>
-    </div>
-  </div>
-);
-
-// Main page component
-function HomePage() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [stats, setStats] = useState<Stats>({ activeMatches: 0, totalPool: 0, playersOnline: 0, totalBets: 0 });
-  const [filter, setFilter] = useState<'all' | 'live' | 'upcoming'>('all');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  // Ensure component is mounted on client side
+export default function HomePage() {
+  const [selectedTab, setSelectedTab] = useState<'live' | 'upcoming' | 'completed'>('live');
+  
   useEffect(() => {
-    setMounted(true);
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
   }, []);
 
-  // Load data from API - following GI-02: Real implementations only
-  useEffect(() => {
-    if (!mounted) return;
-    
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // Load matches and stats in parallel
-        const [matchesData, statsData] = await Promise.all([
-          apiService.getMatches(),
-          apiService.getStats(),
-        ]);
-        
-        setMatches(matchesData);
-        setStats(statsData);
-      } catch (err) {
-        console.error('Failed to load data:', err);
-        setError('Failed to load platform data. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [mounted]);
-
-  // Real-time updates for live data
-  useEffect(() => {
-    if (!mounted || loading) return;
-    
-    const interval = setInterval(async () => {
-      try {
-        // Update live matches and stats
-        const [liveMatches, updatedStats] = await Promise.all([
-          apiService.getLiveMatches(),
-          apiService.getStats(),
-        ]);
-        
-        // Update live matches in the current matches list
-        setMatches(prevMatches => {
-          const updatedMatches = [...prevMatches];
-          liveMatches.forEach((liveMatch: Match) => {
-            const index = updatedMatches.findIndex(m => m.id === liveMatch.id);
-            if (index !== -1) {
-              updatedMatches[index] = liveMatch;
-            }
-          });
-          return updatedMatches;
-        });
-        
-        setStats(updatedStats);
-      } catch (err) {
-        console.error('Failed to update live data:', err);
-      }
-    }, 5000); // Update every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [mounted, loading]);
-
-  // Filter matches
-  const filteredMatches = matches.filter(match => {
-    if (filter === 'all') return true;
-    return match.status === filter;
+  // Fetch matches
+  const { data: matches, isLoading } = useQuery('matches', async () => {
+    // In a real implementation, this would fetch from the API
+    return [
+      {
+        id: '1',
+        agent1: {
+          name: 'Gon Freecss',
+          elo: 2150,
+          nenType: 'enhancement',
+        },
+        agent2: {
+          name: 'Killua Zoldyck',
+          elo: 2280,
+          nenType: 'transmutation',
+        },
+        status: 'live' as const,
+        totalPool: 25000000000,
+        viewerCount: 1234,
+      },
+      {
+        id: '2',
+        agent1: {
+          name: 'Kurapika',
+          elo: 2350,
+          nenType: 'conjuration',
+        },
+        agent2: {
+          name: 'Hisoka',
+          elo: 2450,
+          nenType: 'transmutation',
+        },
+        status: 'upcoming' as const,
+        totalPool: 15000000000,
+        startTime: new Date(Date.now() + 3600000),
+      },
+      {
+        id: '3',
+        agent1: {
+          name: 'Leorio',
+          elo: 1850,
+          nenType: 'emission',
+        },
+        agent2: {
+          name: 'Illumi',
+          elo: 2380,
+          nenType: 'manipulation',
+        },
+        status: 'completed' as const,
+        totalPool: 18000000000,
+        winner: 2,
+      },
+    ];
   });
 
-  // Loading state
-  if (!mounted || loading) {
-    return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emission-400"></div>
-            <p className="mt-4 text-gray-400">Loading Nen Platform...</p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  const filteredMatches = matches?.filter(match => match.status === selectedTab) || [];
 
-  // Error state
-  if (error) {
-    return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-red-400 text-xl mb-4">⚠️</div>
-            <h2 className="text-xl font-bold text-white mb-2">Unable to Load Platform</h2>
-            <p className="text-gray-400 mb-4">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="nen-button"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  // Platform stats
+  const stats = {
+    totalMatches: 1234,
+    totalVolume: 456780000000,
+    activeAgents: 89,
+    activeUsers: 567,
+  };
 
   return (
     <Layout>
-      <a id="main-content" tabIndex={-1}></a>
       {/* Hero Section */}
-      <HeroSection />
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-solana-purple/20 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-solana-green/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-magicblock-primary/10 rounded-full blur-3xl animate-pulse-slow" />
+        </div>
 
-      {/* Stats Section with real data */}
-      <StatsSection stats={stats} />
-
-      {/* Matches Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">
-              <span className="bg-gradient-to-r from-emission-400 to-manipulation-400 bg-clip-text text-transparent">
-                Live Arena
+        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Title */}
+            <h1 
+              className="text-6xl md:text-8xl font-hunter mb-6 glitch-text" 
+              data-text="NEN PLATFORM"
+              data-aos="fade-up"
+            >
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-solana-purple via-solana-green to-magicblock-primary animate-gradient text-glow">
+                NEN PLATFORM
               </span>
-            </h2>
-            <p className="text-gray-400">
-              Watch AI agents battle in real-time Gungi matches
+            </h1>
+            
+            {/* Subtitle */}
+            <p className="text-xl md:text-2xl font-cyber text-gray-300 mb-8" data-aos="fade-up" data-aos-delay="200">
+              AI VS AI GUNGI BATTLES ON SOLANA BLOCKCHAIN
             </p>
-          </div>
-
-          {/* Filters */}
-          <div className="flex gap-2 mt-4 md:mt-0">
-            {(['all', 'live', 'upcoming'] as const).map((status) => (
-              <button
-                key={status}
-                onClick={() => setFilter(status)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === status
-                    ? 'bg-emission-500 text-white'
-                    : 'bg-space-700 text-gray-300 hover:bg-space-600'
-                }`}
+            
+            {/* Description */}
+            <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-12" data-aos="fade-up" data-aos-delay="400">
+              Experience the future of competitive gaming where AI hunters battle in strategic Gungi matches. 
+              Powered by MagicBlock's sub-50ms ephemeral rollups and Solana's lightning-fast blockchain.
+            </p>
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center" data-aos="fade-up" data-aos-delay="600">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="cyber-button text-lg px-8 py-4"
+                onClick={() => document.getElementById('matches')?.scrollIntoView({ behavior: 'smooth' })}
               >
-                {status === 'all' ? 'All Matches' : status === 'live' ? 'Live' : 'Upcoming'}
-              </button>
+                WATCH LIVE MATCHES
+              </motion.button>
+              
+              <Link href="/marketplace">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 bg-transparent border-2 border-solana-purple hover:bg-solana-purple/20 text-white font-cyber uppercase tracking-wider transition-all"
+                >
+                  EXPLORE HUNTERS
+                </motion.button>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <div className="w-6 h-10 border-2 border-solana-purple rounded-full flex justify-center">
+            <div className="w-1 h-2 bg-solana-purple rounded-full mt-2 animate-bounce" />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 relative">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[
+              { label: 'Total Matches', value: stats.totalMatches, icon: '⚔️', color: 'solana-purple' },
+              { label: 'Total Volume', value: `${formatNumber(stats.totalVolume / 1000000000)} SOL`, icon: '💰', color: 'solana-green' },
+              { label: 'Active AI Agents', value: stats.activeAgents, icon: '🤖', color: 'magicblock-primary' },
+              { label: 'Active Users', value: stats.activeUsers, icon: '👥', color: 'cyber-accent' },
+            ].map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="hunter-card p-6 text-center group hover:scale-105 transition-transform"
+              >
+                <div className="text-4xl mb-3">{stat.icon}</div>
+                <div className={`text-3xl font-bold font-mono text-${stat.color} mb-2`}>
+                  {stat.value}
+                </div>
+                <div className="text-sm font-cyber text-gray-400 uppercase tracking-wider">
+                  {stat.label}
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* Match Grid */}
-        <motion.div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-        >
-          {filteredMatches.map((match, index) => (
-            <motion.div
-              key={match.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <MatchCard match={match} />
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Empty State */}
-        {filteredMatches.length === 0 && (
+      {/* Matches Section */}
+      <section id="matches" className="py-20 relative">
+        <div className="max-w-7xl mx-auto px-4">
           <motion.div
-            className="text-center py-12"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            whileInView={{ opacity: 1 }}
+            className="text-center mb-12"
           >
-            <div className="text-6xl mb-4" role="img" aria-label="Game controller">🎮</div>
-            <h3 className="text-xl font-bold text-gray-400 mb-2">No matches found</h3>
-            <p className="text-gray-500">
-              {filter === 'live' 
-                ? 'No live matches at the moment. Check back soon!'
-                : 'No upcoming matches scheduled.'
-              }
+            <h2 className="text-4xl font-hunter text-white mb-4">
+              ACTIVE MATCHES
+            </h2>
+            <p className="text-gray-400 font-cyber">
+              WITNESS THE ULTIMATE AI SHOWDOWNS
             </p>
           </motion.div>
-        )}
-      </div>
+
+          {/* Tab Navigation */}
+          <div className="flex justify-center mb-8">
+            <div className="bg-cyber-dark/50 backdrop-blur-sm border border-solana-purple/30 p-1 rounded-full">
+              {(['live', 'upcoming', 'completed'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setSelectedTab(tab)}
+                  className={`
+                    px-6 py-2 font-cyber text-sm uppercase tracking-wider transition-all rounded-full
+                    ${selectedTab === tab 
+                      ? 'bg-gradient-to-r from-solana-purple to-magicblock-primary text-white' 
+                      : 'text-gray-400 hover:text-white'
+                    }
+                  `}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Match Grid */}
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <div className="nen-spinner" />
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedTab}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {filteredMatches.map((match, index) => (
+                  <motion.div
+                    key={match.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <MatchCard match={match} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          )}
+
+          {filteredMatches.length === 0 && !isLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12"
+            >
+              <p className="text-gray-400 font-cyber">
+                NO {selectedTab.toUpperCase()} MATCHES AVAILABLE
+              </p>
+            </motion.div>
+          )}
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 relative">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-hunter text-white mb-4">
+              POWERED BY CUTTING-EDGE TECHNOLOGY
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                title: 'SOLANA BLOCKCHAIN',
+                description: 'Lightning-fast transactions with minimal fees',
+                icon: '⚡',
+                color: 'solana-purple',
+              },
+              {
+                title: 'MAGICBLOCK ROLLUPS',
+                description: 'Sub-50ms game actions with ephemeral state',
+                icon: '🎮',
+                color: 'magicblock-primary',
+              },
+              {
+                title: 'AI HUNTER SYSTEM',
+                description: 'Advanced AI agents with unique Nen abilities',
+                icon: '🧠',
+                color: 'solana-green',
+              },
+            ].map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.2 }}
+                className="hunter-card p-8 text-center group"
+              >
+                <div className={`text-6xl mb-4 text-${feature.color}`}>{feature.icon}</div>
+                <h3 className="text-xl font-hunter text-white mb-3">{feature.title}</h3>
+                <p className="text-gray-400">{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
     </Layout>
   );
-}
-
-// Dynamic import to prevent SSR hydration issues
-export default dynamic(() => Promise.resolve(HomePage), {
-  ssr: false,
-  loading: () => (
-    <Layout>
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emission-400"></div>
-          <p className="mt-4 text-gray-400">Loading Nen Platform...</p>
-        </div>
-      </div>
-    </Layout>
-  ),
-});
+} 

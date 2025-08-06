@@ -306,7 +306,7 @@ class AccessibilityValidator {
 
     try {
       const scanDir = (dir) => {
-        if (!fs.existsSync(dir)) return;
+        if (!fs.existsSync(dir)) {return;}
 
         const items = fs.readdirSync(dir);
         for (const item of items) {

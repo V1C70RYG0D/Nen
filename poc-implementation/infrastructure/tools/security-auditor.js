@@ -67,10 +67,10 @@ class SecurityAuditor {
           }
         });
 
-        if (critical > 0) this.issues.push(`${critical} CRITICAL vulnerabilities found`);
-        if (high > 0) this.issues.push(`${high} HIGH severity vulnerabilities found`);
-        if (moderate > 0) this.warnings.push(`${moderate} MODERATE vulnerabilities found`);
-        if (low > 0) this.warnings.push(`${low} LOW severity vulnerabilities found`);
+        if (critical > 0) {this.issues.push(`${critical} CRITICAL vulnerabilities found`);}
+        if (high > 0) {this.issues.push(`${high} HIGH severity vulnerabilities found`);}
+        if (moderate > 0) {this.warnings.push(`${moderate} MODERATE vulnerabilities found`);}
+        if (low > 0) {this.warnings.push(`${low} LOW severity vulnerabilities found`);}
       } else {
         console.log('✅ No dependency vulnerabilities found');
       }
@@ -256,7 +256,7 @@ class SecurityAuditor {
     // Check for executable files that shouldn't be
     const codeFiles = this.findCodeFiles();
     for (const file of codeFiles.slice(0, 100)) { // Limit to avoid performance issues
-      if (file.includes('node_modules')) continue;
+      if (file.includes('node_modules')) {continue;}
 
       try {
         const stats = fs.statSync(file);
@@ -451,7 +451,7 @@ class SecurityAuditor {
     console.log('🛡️  Validating data privacy compliance...');
 
     const privacyFiles = this.findFiles(['**/privacy/**', '**/gdpr/**', '**/data/**']);
-    let privacyIssues = 0;
+    const privacyIssues = 0;
 
     // Check for GDPR compliance documentation
     const gdprFiles = ['PRIVACY_POLICY.md', 'GDPR_COMPLIANCE.md', 'DATA_PROTECTION.md'];
@@ -533,7 +533,7 @@ class SecurityAuditor {
     console.log('⛓️  Auditing smart contract security...');
 
     const contractFiles = this.findFiles(['**/programs*.rs', '**/contracts*.sol']);
-    let contractIssues = 0;
+    const contractIssues = 0;
 
     for (const file of contractFiles) {
       const content = fs.readFileSync(file, 'utf8');
@@ -605,7 +605,7 @@ class SecurityAuditor {
 
   findFiles(patterns) {
     const glob = require('glob');
-    let files = [];
+    const files = [];
 
     for (const pattern of patterns) {
       try {

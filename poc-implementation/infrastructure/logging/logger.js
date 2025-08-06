@@ -74,7 +74,7 @@ const secureFormat = winston.format.combine(
     const sensitiveFields = ['password', 'token', 'secret', 'key', 'authorization', 'cookie'];
 
     function sanitizeObject(obj) {
-      if (typeof obj !== 'object' || obj === null) return obj;
+      if (typeof obj !== 'object' || obj === null) {return obj;}
 
       const result = {};
       for (const [key, value] of Object.entries(obj)) {

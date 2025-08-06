@@ -140,7 +140,7 @@ class ErrorRateCalculator {
 const errorRateCalculator = new ErrorRateCalculator();
 
 // Enhanced metrics for business logic
-export const businessMetrics = {
+const businessMetrics = {
   recordBusinessError: (service: string, operation: string, category: string) => {
     businessErrors.inc({ service, operation, error_category: category });
   },

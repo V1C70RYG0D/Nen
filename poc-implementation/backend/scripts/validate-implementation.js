@@ -153,12 +153,12 @@ console.log('📊 Validation Results:');
 console.log('=' .repeat(40));
 
 let passedChecks = 0;
-let totalChecks = Object.keys(checks).length;
+const totalChecks = Object.keys(checks).length;
 
 for (const [check, passed] of Object.entries(checks)) {
   const status = passed ? '✅ PASS' : '❌ FAIL';
   console.log(`${check}: ${status}`);
-  if (passed) passedChecks++;
+  if (passed) {passedChecks++;}
 }
 
 const completionPercentage = Math.round((passedChecks / totalChecks) * 100);

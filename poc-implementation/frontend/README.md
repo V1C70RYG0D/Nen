@@ -1,274 +1,180 @@
-# Nen Platform Frontend
+# Nen Platform Frontend 🎮⚡
 
-A futuristic blockchain gaming platform where AI agents battle in real-time Gungi matches, inspired by Hunter x Hunter. Built with Next.js, Solana, and MagicBlock for sub-50ms gaming performance.
+A futuristic, Hunter x Hunter-inspired frontend for AI vs AI Gungi battles on Solana blockchain, featuring real-time gameplay powered by MagicBlock's sub-50ms ephemeral rollups.
 
-## 🎮 Features
+## 🌟 Features
 
-- **Real-Time Gaming**: Sub-50ms latency with MagicBlock integration
-- **AI Battles**: Neural network agents compete in strategic Gungi matches
-- **NFT Marketplace**: Own, trade, and upgrade AI fighters
-- **SOL Betting**: Place bets on matches with Solana integration
-- **Hunter x Hunter Theme**: Nen aura effects and anime-inspired design
+- **Futuristic Hunter x Hunter Theme**: Nen-inspired UI with cyberpunk aesthetics
+- **Solana Integration**: Full wallet support with Phantom, Solflare, and Backpack
+- **Real-time Gameplay**: WebSocket and MagicBlock integration for live matches
+- **Betting System**: Place bets on AI agents with dynamic odds
+- **AI Agent Marketplace**: Buy, sell, and collect unique AI hunters
+- **Responsive Design**: Mobile-friendly with adaptive layouts
+- **Advanced Animations**: Framer Motion, Three.js, and particle effects
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Node.js 18+
-- npm or yarn
-- Solana wallet (Phantom, Solflare, etc.)
-
-### Installation
-
 1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-2. **Setup environment**:
-   ```bash
-   cp .env.local.example .env.local
-   # Edit .env.local with your RPC URLs and program IDs
-   ```
+2. **Set up environment variables**:
+Create a `.env.local` file:
+```env
+NEXT_PUBLIC_RPC_URL=https://api.devnet.solana.com
+NEXT_PUBLIC_WS_URL=ws://localhost:3001
+NEXT_PUBLIC_PROGRAM_ID=YourProgramIdHere
+NEXT_PUBLIC_MAGICBLOCK_RPC=https://api.magicblock.app/v1/rpc
+NEXT_PUBLIC_MAGICBLOCK_WS=wss://api.magicblock.app/v1/ws
+```
 
-3. **Start development server**:
-   ```bash
-   npm run dev
-   ```
+3. **Run development server**:
+```bash
+npm run dev
+```
 
-4. **Open browser**:
-   ```
-   http://localhost:3000
-   ```
-
-## 🛠️ Tech Stack
-
-### Core
-- **Next.js 14** - React framework with App Router
-- **React 18** - UI library with hooks and suspense
-- **TypeScript 5** - Type-safe development
-- **Tailwind CSS** - Utility-first styling
-
-### Blockchain
-- **@solana/web3.js** - Solana blockchain integration
-- **@solana/wallet-adapter** - Wallet connection management
-- **Anchor** - Solana program framework
-
-### Real-Time & UI
-- **Socket.io** - WebSocket connections
-- **MagicBlock SDK** - Sub-50ms gaming infrastructure
-- **Framer Motion** - Smooth animations
-- **React Query** - Data fetching and caching
-
-### Performance
-- **Code Splitting** - Dynamic imports
-- **Image Optimization** - Next.js Image component
-- **Bundle Analysis** - Webpack optimization
+4. **Build for production**:
+```bash
+npm run build
+npm start
+```
 
 ## 📁 Project Structure
 
 ```
 frontend/
 ├── components/          # Reusable UI components
-│   ├── Layout/         # Main layout wrapper
-│   ├── GameBoard/      # 3D Gungi board with stacking
-│   ├── BettingPanel/   # SOL betting interface
+│   ├── Layout/         # Main layout with navigation
+│   ├── GameBoard/      # Gungi game visualization
+│   ├── BettingPanel/   # Betting interface
 │   ├── MatchCard/      # Match preview cards
-│   └── AIAgentCard/    # NFT agent displays
-├── hooks/              # Custom React hooks
-│   ├── useGameState.ts # Real-time game state
-│   ├── useBetting.ts   # Solana betting logic
-│   └── useMagicBlock.ts # MagicBlock session
+│   ├── AIAgentCard/    # AI agent display cards
+│   └── UI/             # Common UI elements
 ├── pages/              # Next.js pages
 │   ├── index.tsx       # Landing page
-│   ├── arena/[id].tsx  # Match viewing
-│   ├── marketplace/    # NFT marketplace
-│   └── profile/        # User dashboard
-├── types/              # TypeScript definitions
-├── utils/              # Helper functions
-│   ├── format.ts       # Number/date formatting
-│   ├── theme.ts        # Nen aura styling
-│   └── validation.ts   # Input validation
-└── styles/             # Global CSS and themes
+│   ├── arena/          # Match viewing pages
+│   ├── marketplace.tsx # AI agent marketplace
+│   ├── profile.tsx     # User profile
+│   └── leaderboard.tsx # Rankings
+├── hooks/              # Custom React hooks
+├── utils/              # Utility functions
+├── styles/             # Global styles
+└── public/             # Static assets
 ```
 
 ## 🎨 Design System
 
 ### Color Palette
-```css
-/* Nen Aura Types */
---enhancement: #FF6B6B  /* Red enhancement aura */
---emission: #4ECDC4     /* Cyan emission aura */
---manipulation: #6C5CE7 /* Purple manipulation aura */
---neural: #00BCD4       /* Blue AI neural patterns */
+- **Solana Purple**: `#9945FF`
+- **Solana Green**: `#14F195`
+- **MagicBlock Primary**: `#7C3AED`
+- **Nen Colors**: Enhancement (Red), Emission (Cyan), Manipulation (Yellow), etc.
 
-/* Platform Colors */
---solana: #4527A0       /* Solana brand purple */
---magicblock: #0277BD   /* MagicBlock lightning blue */
---space: #0A0E27        /* Deep space background */
-```
+### Typography
+- **Hunter Font**: Bebas Neue - For headings
+- **Cyber Font**: Orbitron - For tech elements
+- **Tech Font**: Rajdhani - For body text
+- **Mono Font**: Fira Code - For numbers/code
 
 ### Components
-- **Nen Cards**: Glassmorphism cards with aura glows
-- **Energy Buttons**: Gradient buttons with pulse animations
-- **Neural Patterns**: Animated background textures
-- **Holographic Effects**: Shifting color gradients
+- **Cyber Buttons**: Futuristic clip-path design
+- **Hunter Cards**: Glassmorphism with Nen auras
+- **Nen Loader**: Custom loading animation
+- **Particles Background**: Interactive particle system
 
-## 🎯 Core Pages
+## 🔧 Technology Stack
 
-### Landing (`/`)
-- Hero section with Nen branding
-- Live match grid with real-time updates
-- Platform statistics dashboard
-- Call-to-action for wallet connection
+- **Framework**: Next.js 14 with TypeScript
+- **Styling**: Tailwind CSS with custom animations
+- **State Management**: React Query + Context API
+- **Blockchain**: Solana Web3.js + Anchor
+- **Real-time**: Socket.io + MagicBlock SDK
+- **Animations**: Framer Motion + Three.js
+- **UI Components**: Headless UI + Custom components
 
-### Match Arena (`/arena/[matchId]`)
-- 3D Gungi board with piece stacking
-- Real-time move streaming via MagicBlock
-- Betting panel with odds calculation
-- Move history and game analysis
+## 🎮 Key Features
 
-### Marketplace (`/marketplace`)
-- AI agent NFT listings
-- Filter by personality/stats
-- Purchase flow with Solana transactions
-- Agent trait visualization
-
-### Profile (`/profile`)
-- User statistics and achievements
-- Owned AI agents collection
-- Betting history and winnings
-- Wallet management
-
-## ⚡ Real-Time Features
-
-### MagicBlock Integration
-```typescript
-// Sub-50ms game state updates
-const { session, submitMove, latency } = useMagicBlockSession(matchId);
-
-// Real-time move validation
-await submitMove(move); // < 50ms response time
-```
-
-### WebSocket Fallback
-```typescript
-// Automatic fallback for standard WebSocket
-const { boardState, isConnected } = useGameState(matchId, {
-  enableMagicBlock: true,
-  autoReconnect: true
-});
-```
-
-## 💰 Solana Integration
-
-### Wallet Connection
-```typescript
-// Multi-wallet support
-const wallets = [
-  new PhantomWalletAdapter(),
-  new SolflareWalletAdapter(),
-  new BackpackWalletAdapter(),
-];
-```
+### Game Board
+- 9x9 Gungi board visualization
+- Real-time piece movements
+- Stack level indicators
+- Nen type visualizations
+- MagicBlock integration for <50ms latency
 
 ### Betting System
-```typescript
-// Place bets on matches
-const { placeBet, claimWinnings } = useBetting(matchId);
+- Dynamic odds calculation
+- Real-time pool updates
+- Transaction confirmation
+- Bet history tracking
 
-await placeBet({
-  matchId,
-  agent: 1,
-  amount: 0.5 // SOL
-});
-```
+### AI Marketplace
+- Filter by rarity, Nen type, stats
+- Sort by ELO, price, win rate
+- Detailed agent profiles
+- Purchase with SOL
 
-### NFT Marketplace
-```typescript
-// AI agent trading
-const { buyAgent, listAgent } = useMarketplace();
+### User Profiles
+- Wallet integration
+- Betting statistics
+- AI agent collection
+- Performance tracking
 
-await buyAgent(agentId); // Purchase with SOL
-```
+## 🌐 Environment Setup
+
+### Required Services
+1. **Solana RPC**: Connection to Solana network
+2. **WebSocket Server**: For real-time game updates
+3. **MagicBlock Integration**: For ephemeral rollups
+
+### Wallet Setup
+1. Install Phantom/Solflare/Backpack wallet
+2. Switch to Devnet for testing
+3. Get test SOL from faucet
+
+## 📱 Responsive Design
+
+- **Desktop**: Full feature set with enhanced visuals
+- **Tablet**: Adapted layout with touch optimizations
+- **Mobile**: Streamlined interface with gesture support
+
+## 🚦 Performance Optimizations
+
+- Code splitting for faster initial load
+- Image optimization with Next.js Image
+- Bundle size optimization
+- React Query caching
+- Lazy loading for heavy components
+
+## 🛡️ Security Considerations
+
+- Environment variable protection
+- XSS prevention
+- CSRF protection
+- Secure wallet integration
+- Input validation
 
 ## 🧪 Testing
 
-### Unit Tests
 ```bash
-npm run test
-```
+# Run unit tests
+npm test
 
-### E2E Tests
-```bash
+# Run E2E tests
 npm run test:e2e
+
+# Run type checking
+npm run type-check
 ```
 
-### Performance Tests
-```bash
-npm run lighthouse
-```
+## 📈 Future Enhancements
 
-## 📱 Mobile Support
-
-- **Responsive Design**: Mobile-first Tailwind breakpoints
-- **Touch Gestures**: Optimized for mobile gameplay
-- **PWA Ready**: Installable progressive web app
-- **Offline Mode**: Limited functionality without connection
-
-## 🔧 Environment Variables
-
-```bash
-# Solana Configuration
-NEXT_PUBLIC_RPC_URL=https://api.devnet.solana.com
-NEXT_PUBLIC_PROGRAM_ID=YourProgramIdHere
-NEXT_PUBLIC_NETWORK=devnet
-
-# Real-Time Gaming
-NEXT_PUBLIC_WS_URL=ws://localhost:3001
-NEXT_PUBLIC_MAGICBLOCK_URL=wss://magicblock.dev
-
-# Analytics (Optional)
-NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
-```
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-```bash
-npm run build
-vercel --prod
-```
-
-### Docker
-```bash
-docker build -t nen-platform .
-docker run -p 3000:3000 nen-platform
-```
-
-### Self-Hosted
-```bash
-npm run build
-npm start
-```
-
-## 🔍 Performance Optimization
-
-### Bundle Analysis
-```bash
-npm run analyze
-```
-
-### Core Web Vitals
-- **LCP**: < 2.5s (Largest Contentful Paint)
-- **FID**: < 100ms (First Input Delay)
-- **CLS**: < 0.1 (Cumulative Layout Shift)
-
-### Optimizations Applied
-- Code splitting by route
-- Image optimization with Next.js
-- Tree shaking for unused code
-- Service worker caching
-- Critical CSS inlining
+- [ ] Tournament system
+- [ ] AI training interface
+- [ ] Social features
+- [ ] Mobile app
+- [ ] Advanced analytics
+- [ ] NFT integration
 
 ## 🤝 Contributing
 
@@ -280,15 +186,8 @@ npm run analyze
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Hunter x Hunter** - Inspiration for Nen system and Gungi game
-- **Solana** - High-performance blockchain infrastructure
-- **MagicBlock** - Real-time gaming technology
-- **Next.js Team** - Amazing React framework
+This project is licensed under the MIT License.
 
 ---
 
-**Built with ⚡ by hunters, for hunters.**
+Built with ⚡ by the Nen Platform team 

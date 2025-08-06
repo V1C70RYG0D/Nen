@@ -3,7 +3,7 @@ resolution = true
 skip-lint = false
 
 [toolchain]
-anchor_version = "0.31.1"
+anchor_version = "0.30.1"
 
 [programs.localnet]
 nen_core = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"

@@ -1,0 +1,128 @@
+{
+  "summary": {
+    "total": 15,
+    "passed": 8,
+    "failed": 7,
+    "successRate": 53.333333333333336,
+    "timestamp": "2025-08-06T13:54:05.728Z"
+  },
+  "tests": [
+    {
+      "name": "File System Access",
+      "passed": true,
+      "details": "All key configuration files accessible",
+      "timestamp": "2025-08-06T13:54:05.522Z"
+    },
+    {
+      "name": "Environment Configuration",
+      "passed": true,
+      "details": "All required environment variables configured",
+      "timestamp": "2025-08-06T13:54:05.526Z"
+    },
+    {
+      "name": "Backend Health Check",
+      "passed": false,
+      "details": "Status: 404, Body: {\"success\":false,\"error\":\"Route not found\",\"path\":\"/health\",\"timestamp\":\"2025-08-06T13:54:05.546Z\"}",
+      "timestamp": "2025-08-06T13:54:05.558Z"
+    },
+    {
+      "name": "Backend Basic API",
+      "passed": false,
+      "details": "Status: 404, Body: {\"success\":false,\"error\":\"Route not found\",\"path\":\"/\",\"timestamp\":\"2025-08-06T13:54:05.559Z\"}",
+      "timestamp": "2025-08-06T13:54:05.563Z"
+    },
+    {
+      "name": "Backend /api/matches",
+      "passed": true,
+      "details": "Endpoint responding correctly",
+      "timestamp": "2025-08-06T13:54:05.567Z"
+    },
+    {
+      "name": "Backend /api/agents",
+      "passed": false,
+      "details": "Expected: 200, Got: 404",
+      "timestamp": "2025-08-06T13:54:05.571Z"
+    },
+    {
+      "name": "Backend /api/stats",
+      "passed": true,
+      "details": "Endpoint responding correctly",
+      "timestamp": "2025-08-06T13:54:05.574Z"
+    },
+    {
+      "name": "Backend /api/auth/status",
+      "passed": false,
+      "details": "Expected: 200, Got: 404",
+      "timestamp": "2025-08-06T13:54:05.577Z"
+    },
+    {
+      "name": "Backend /api/users/me",
+      "passed": false,
+      "details": "Expected: 200, Got: 404",
+      "timestamp": "2025-08-06T13:54:05.580Z"
+    },
+    {
+      "name": "Backend /api/betting/pools",
+      "passed": false,
+      "details": "Expected: 200, Got: 404",
+      "timestamp": "2025-08-06T13:54:05.583Z"
+    },
+    {
+      "name": "AI Service Health Check",
+      "passed": true,
+      "details": "AI Service responding correctly",
+      "timestamp": "2025-08-06T13:54:05.607Z"
+    },
+    {
+      "name": "AI Service Basic API",
+      "passed": true,
+      "details": "AI Service root endpoint working",
+      "timestamp": "2025-08-06T13:54:05.641Z"
+    },
+    {
+      "name": "AI Move Generation",
+      "passed": {
+        "confidence": 0.6478346695358863,
+        "from": {
+          "col": 0,
+          "row": 0,
+          "tier": 0
+        },
+        "personality": "balanced",
+        "piece": "gungi_piece",
+        "processing_time_ms": 633,
+        "strategy": {
+          "adaptability": 0.7,
+          "priority": "positional",
+          "risk_tolerance": "medium",
+          "strategy": "balanced"
+        },
+        "to": {
+          "col": 0,
+          "row": 0,
+          "tier": 0
+        }
+      },
+      "details": "AI move generation working",
+      "timestamp": "2025-08-06T13:54:05.662Z"
+    },
+    {
+      "name": "AI Board Analysis",
+      "passed": false,
+      "details": "Status: 404, Body: {\"available_endpoints\":[\"/\",\"/health\",\"/ai/move\",\"/ai/analysis\",\"/ai/difficulty\"],\"error\":\"Not Found\",\"message\":\"AI service endpoint not found\",\"timestamp\":\"2025-08-06T13:54:05.679066\"}",
+      "timestamp": "2025-08-06T13:54:05.691Z"
+    },
+    {
+      "name": "AI Difficulty Setting",
+      "passed": true,
+      "details": "AI difficulty setting working",
+      "timestamp": "2025-08-06T13:54:05.727Z"
+    }
+  ],
+  "environment": {
+    "backendUrl": "http://127.0.0.1:3001",
+    "aiServiceUrl": "http://127.0.0.1:3003",
+    "nodeVersion": "v22.12.0",
+    "platform": "win32"
+  }
+}

@@ -96,14 +96,14 @@ const finalFiles = fs.readdirSync(backendDir).filter(item => {
   return stat.isFile() && !item.startsWith('.');
 });
 
-console.log(`\n📈 Cleanup Summary:`);
+console.log('\n📈 Cleanup Summary:');
 console.log(`   Files moved: ${movedCount}`);
 console.log(`   Files deleted: ${deletedCount}`);
 console.log(`   Files remaining in root: ${finalFiles.length}/10`);
 console.log(`   GI-10 Compliance: ${finalFiles.length <= 10 ? '✅ ACHIEVED' : '❌ NEEDS MORE WORK'}`);
 
 if (finalFiles.length <= 10) {
-  console.log(`\n🎉 GI-10 Compliance achieved! Remaining files:`);
+  console.log('\n🎉 GI-10 Compliance achieved! Remaining files:');
   finalFiles.forEach(file => console.log(`   - ${file}`));
 } else {
   console.log(`\n⚠️  Still ${finalFiles.length - 10} files over limit. Manual review needed.`);

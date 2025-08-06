@@ -174,7 +174,7 @@ class AdvancedLoadTester {
     const errorRate = this.calculateErrorRate();
     const throughput = this.metrics.totalRequests / ((endTime - startTime) / 1000);
 
-    console.log(`📊 Sustained Load Results:`);
+    console.log('📊 Sustained Load Results:');
     console.log(`   - Average Latency: ${avgLatency.toFixed(2)}ms (Target: <100ms)`);
     console.log(`   - Error Rate: ${(errorRate * 100).toFixed(2)}% (Target: <1%)`);
     console.log(`   - Throughput: ${throughput.toFixed(2)} req/sec`);
@@ -202,7 +202,7 @@ class AdvancedLoadTester {
     const p95Latency = this.calculatePercentileLatency(95);
     const errorRate = this.calculateErrorRate();
 
-    console.log(`📊 Peak Load Results:`);
+    console.log('📊 Peak Load Results:');
     console.log(`   - Average Latency: ${avgLatency.toFixed(2)}ms`);
     console.log(`   - P95 Latency: ${p95Latency.toFixed(2)}ms (Target: <100ms)`);
     console.log(`   - Error Rate: ${(errorRate * 100).toFixed(2)}% (Target: <1%)`);
@@ -238,7 +238,7 @@ class AdvancedLoadTester {
     const avgWsLatency = this.metrics.wsLatency.reduce((a, b) => a + b, 0) / this.metrics.wsLatency.length;
     const p95WsLatency = this.calculatePercentileLatency(95, this.metrics.wsLatency);
 
-    console.log(`📊 Real-time Results:`);
+    console.log('📊 Real-time Results:');
     console.log(`   - Average WebSocket Latency: ${avgWsLatency.toFixed(2)}ms`);
     console.log(`   - P95 WebSocket Latency: ${p95WsLatency.toFixed(2)}ms (Target: <50ms)`);
     console.log(`   - Active Connections: ${wsConnections}`);
@@ -269,7 +269,7 @@ class AdvancedLoadTester {
         console.log(`Scaling down to ${phase.users} concurrent users...`);
         await this.simulateConcurrentUsers(phase.users, phase.duration);
       } else {
-        console.log(`Graceful shutdown...`);
+        console.log('Graceful shutdown...');
         await this.sleep(phase.duration);
       }
     }
@@ -475,7 +475,7 @@ class AdvancedLoadTester {
    * Calculate average latency
    */
   calculateAverageLatency() {
-    if (this.metrics.apiLatency.length === 0) return 0;
+    if (this.metrics.apiLatency.length === 0) {return 0;}
     return this.metrics.apiLatency.reduce((a, b) => a + b, 0) / this.metrics.apiLatency.length;
   }
 
@@ -484,7 +484,7 @@ class AdvancedLoadTester {
    */
   calculatePercentileLatency(percentile, data = null) {
     const latencyData = data || this.metrics.apiLatency;
-    if (latencyData.length === 0) return 0;
+    if (latencyData.length === 0) {return 0;}
 
     const sorted = latencyData.slice().sort((a, b) => a - b);
     const index = Math.ceil((percentile / 100) * sorted.length) - 1;

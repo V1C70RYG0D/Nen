@@ -6,8 +6,10 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/main.js",
+    "db:seed": "npx tsx prisma/seed.ts",
     "start:production": "NODE_ENV=production node dist/main.js",
-    "dev": "tsx watch src/main.ts",
+    "start:test": "NODE_ENV=test PORT=3001 node dist/main.js",
+    "dev": "tsx watch src/minimal-server.ts",
     "dev:optimized": "tsx watch src/server-optimized.ts",
     "test": "jest --coverage",
     "test:optimized": "jest --testPathPattern=optimized --verbose",
@@ -16,11 +18,17 @@
     "test:load": "jest --testNamePattern=load",
     "test:unit": "jest --testPathPattern=unit --coverage",
     "test:integration": "jest --testPathPattern=integration --coverage",
-    "test:websocket": "jest --testPathPattern=websocket --verbose",
+    "test:websocket": "jest --config=jest.websocket.config.js --verbose",
+    "test:websocket:connection": "jest --config=jest.websocket.config.js --testPathPattern=connection-tests --verbose",
+    "test:websocket:load": "jest --config=jest.websocket.config.js --testPathPattern=load-tests --verbose",
+    "test:websocket:security": "jest --config=jest.websocket.config.js --testPathPattern=security-tests --verbose",
+    "test:websocket:coverage": "jest --config=jest.websocket.config.js --coverage --verbose",
+    "test:websocket:watch": "jest --config=jest.websocket.config.js --watch --verbose",
     "test:services": "jest --testPathPattern=services --coverage",
     "test:security": "jest --testPathPattern=security --coverage",
     "test:performance": "jest --testNamePattern=performance --verbose",
     "test:all": "jest --coverage --verbose",
+    "test:cov": "jest --coverage --ci --watchAll=false --maxWorkers=2",
     "test:ci": "jest --coverage --ci --watchAll=false --maxWorkers=2",
     "test:setup": "bash scripts/start-test-services.sh",
     "test:teardown": "bash scripts/stop-test-services.sh",
@@ -139,7 +147,7 @@
     "wait-on": "^8.0.4"
   },
   "engines": {
-    "node": ">=24.0.0",
+    "node": ">=22.0.0",
     "npm": ">=10.0.0"
   }
 }

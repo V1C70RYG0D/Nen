@@ -62,8 +62,8 @@ async function runCoreServerTests() {
     // Test 1: Server Module Loading
     runTest('Server Module Loading', () => {
         const app = require('../src/server-production-ready.ts');
-        if (!app) throw new Error('Server module failed to load');
-        if (!app._router) throw new Error('Express app not properly initialized');
+        if (!app) {throw new Error('Server module failed to load');}
+        if (!app._router) {throw new Error('Express app not properly initialized');}
         return `Express app loaded with ${app._router.stack.length} middleware layers`;
     });
 
@@ -233,8 +233,8 @@ async function generateReport() {
     const memoryPassed = results.performanceMetrics.memoryUsage.heapUsedMB < 512;
 
     console.log(`  🚀 Server startup: <5 seconds - ${startupPassed ? '✅ PASSED' : '❌ FAILED'}`);
-    console.log(`  ❤️ Health check response: <10ms - ✅ IMPLEMENTATION READY FOR TESTING`);
-    console.log(`  ⚙️ Middleware processing: <5ms per request - ✅ IMPLEMENTATION READY FOR TESTING`);
+    console.log('  ❤️ Health check response: <10ms - ✅ IMPLEMENTATION READY FOR TESTING');
+    console.log('  ⚙️ Middleware processing: <5ms per request - ✅ IMPLEMENTATION READY FOR TESTING');
     console.log(`  💾 Memory usage: <512MB initial - ${memoryPassed ? '✅ PASSED' : '❌ FAILED'}`);
 
     console.log('\n📁 Test Files Created:');

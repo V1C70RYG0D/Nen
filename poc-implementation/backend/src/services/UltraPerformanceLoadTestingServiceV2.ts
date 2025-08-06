@@ -130,8 +130,10 @@ export class UltraPerformanceLoadTestingService {
 
     // Pre-load AI agents
     const agents = await this.aiService.getAvailableAgents();
-    for (const agent of agents) {
-      await this.cache.set(`agent:${agent.id}`, agent, 3600);
+    if (agents && Array.isArray(agents)) {
+      for (const agent of agents) {
+        await this.cache.set(`agent:${agent.id}`, agent, 3600);
+      }
     }
 
     // Pre-configure connection pools

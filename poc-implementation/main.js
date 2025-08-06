@@ -165,6 +165,41 @@ async function main() {
   }
 }
 
+// GI Compliance Functions
+function checkGICompliance() {
+  log('🔍 Checking GI compliance...', 'cyan');
+
+  const checks = [
+    { name: 'Environment Variables', passed: missingEnvVars.length === 0 },
+    { name: 'Configuration Files', passed: fs.existsSync(path.join(config.paths.config, '.env')) },
+    { name: 'Project Structure', passed: fs.existsSync(path.join(__dirname, 'backend')) && fs.existsSync(path.join(__dirname, 'frontend')) }
+  ];
+
+  let allPassed = true;
+  checks.forEach(check => {
+    const status = check.passed ? '✅' : '❌';
+    log(`  ${status} ${check.name}`, check.passed ? 'green' : 'red');
+    if (!check.passed) {allPassed = false;}
+  });
+
+  return allPassed;
+}
+
+function showGIStatus() {
+  log('\n📋 GI Compliance Status:', 'bright');
+  log('=' .repeat(40), 'cyan');
+
+  const compliance = checkGICompliance();
+
+  if (compliance) {
+    log('\n✅ All GI guidelines are being followed', 'green');
+  } else {
+    log('\n❌ Some GI guidelines need attention', 'red');
+  }
+
+  return compliance;
+}
+
 // Handle process signals
 process.on('SIGINT', () => {
   log('\n🛑 Received SIGINT, shutting down gracefully...', 'yellow');

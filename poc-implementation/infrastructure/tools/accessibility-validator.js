@@ -386,7 +386,7 @@ class AccessibilityValidator {
     console.log('🌍 Checking internationalization support...');
 
     const componentFiles = this.findFiles(['**/*.tsx', '**/*.jsx'], ['node_modules']);
-    let i18nIssues = 0;
+    const i18nIssues = 0;
 
     // Check for lang attribute
     const layoutFiles = componentFiles.filter(file =>
@@ -416,7 +416,7 @@ class AccessibilityValidator {
 
   findFiles(patterns, excludeDirs = []) {
     const glob = require('glob');
-    let files = [];
+    const files = [];
 
     for (const pattern of patterns) {
       try {

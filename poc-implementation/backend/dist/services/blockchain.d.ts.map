@@ -1,0 +1,1 @@
+{"version":3,"file":"blockchain.d.ts","sourceRoot":"","sources":["../../src/services/blockchain.ts"],"names":[],"mappings":"AAIA,qBAAa,iBAAiB;IAC5B,OAAO,CAAC,UAAU,CAAa;;IAS/B;;OAEG;IACG,UAAU,CAAC,SAAS,EAAE,MAAM,GAAG,OAAO,CAAC,MAAM,CAAC;IAWpD;;OAEG;IACG,WAAW,CAAC,IAAI,EAAE,MAAM,EAAE,EAAE,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,MAAM,CAAC;CAkB7E"}

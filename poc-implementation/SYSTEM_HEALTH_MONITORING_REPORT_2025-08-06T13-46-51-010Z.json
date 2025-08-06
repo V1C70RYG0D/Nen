@@ -1,0 +1,269 @@
+{
+  "healthChecks": [
+    {
+      "name": "Backend Health",
+      "status": "PASS",
+      "details": {
+        "status": "healthy",
+        "timestamp": "2025-08-06T13:46:45.836Z",
+        "environment": "development",
+        "version": "0.1.0",
+        "uptime": 12376.1298142,
+        "memory": {
+          "rss": 15007744,
+          "heapTotal": 17297408,
+          "heapUsed": 14802560,
+          "external": 2901487,
+          "arrayBuffers": 90870
+        }
+      },
+      "required": true
+    },
+    {
+      "name": "Backend API Root",
+      "status": "PASS",
+      "details": {
+        "name": "Nen Platform API",
+        "version": "0.1.0",
+        "environment": "development",
+        "status": "running",
+        "endpoints": {
+          "health": "/health",
+          "api": "/api/*"
+        },
+        "timestamp": "2025-08-06T13:46:45.847Z"
+      },
+      "required": true
+    },
+    {
+      "name": "AI Service Health",
+      "status": "FAIL",
+      "error": "connect ECONNREFUSED 127.0.0.1:3003",
+      "required": true
+    },
+    {
+      "name": "AI Service Root",
+      "status": "FAIL",
+      "error": "connect ECONNREFUSED 127.0.0.1:3003",
+      "required": true
+    },
+    {
+      "name": "Backend Database Connectivity",
+      "status": "FAIL",
+      "error": "HTTP 404",
+      "required": false
+    }
+  ],
+  "logging": [
+    {
+      "name": "Backend Log Directory",
+      "status": "PASS",
+      "path": "./backend/logs",
+      "fileCount": 4
+    },
+    {
+      "name": "Backend Log Files",
+      "status": "FAIL",
+      "error": "Path not found",
+      "path": "./backend/logs/app.log"
+    },
+    {
+      "name": "Root Log Directory",
+      "status": "PASS",
+      "path": "./logs",
+      "fileCount": 6
+    },
+    {
+      "name": "Infrastructure Logs",
+      "status": "PASS",
+      "path": "./infrastructure/logging",
+      "fileCount": 0
+    },
+    {
+      "name": "Log Levels",
+      "status": "WARN",
+      "details": "Backend log endpoint returned non-success status"
+    },
+    {
+      "name": "Error Tracking",
+      "status": "PASS",
+      "details": "Error endpoint returned status 404"
+    }
+  ],
+  "monitoring": [
+    {
+      "name": "Prometheus",
+      "status": "FAIL",
+      "error": "connect ECONNREFUSED 127.0.0.1:9090"
+    },
+    {
+      "name": "Grafana",
+      "status": "FAIL",
+      "error": "Request timeout"
+    },
+    {
+      "name": "Alertmanager",
+      "status": "FAIL",
+      "error": "connect ECONNREFUSED 127.0.0.1:9093"
+    },
+    {
+      "name": "Backend Metrics Collection",
+      "status": "WARN",
+      "error": "Metrics endpoint not available"
+    }
+  ],
+  "errorHandling": [
+    {
+      "name": "Invalid Endpoint (404 Error)",
+      "status": "PASS",
+      "statusCode": 404,
+      "hasErrorMessage": true
+    },
+    {
+      "name": "Invalid JSON (400 Error)",
+      "status": "WARN",
+      "statusCode": 500,
+      "expectedStatus": 400
+    },
+    {
+      "name": "Missing Required Data",
+      "status": "WARN",
+      "statusCode": 404,
+      "expectedStatus": [
+        200,
+        400,
+        422
+      ]
+    },
+    {
+      "name": "Graceful Degradation",
+      "status": "PASS",
+      "details": "Backend operational despite AI service unavailability"
+    },
+    {
+      "name": "User-Friendly Error Messages",
+      "status": "PASS",
+      "sampleError": "Not Found"
+    }
+  ],
+  "backup": [
+    {
+      "name": "Database Backup Directory",
+      "status": "WARN",
+      "details": "No backup directories found in expected locations"
+    },
+    {
+      "name": "Environment Configuration",
+      "status": "PASS",
+      "path": "./.env",
+      "hasBackup": false
+    },
+    {
+      "name": "Backend Configuration",
+      "status": "PASS",
+      "path": "./backend/.env",
+      "hasBackup": false
+    },
+    {
+      "name": "Package Configuration",
+      "status": "PASS",
+      "path": "./package.json",
+      "hasBackup": false
+    },
+    {
+      "name": "Backend Package Configuration",
+      "status": "PASS",
+      "path": "./backend/package.json",
+      "hasBackup": false
+    },
+    {
+      "name": "Monitoring Configuration",
+      "status": "PASS",
+      "path": "./monitoring/docker-compose.yml",
+      "hasBackup": false
+    }
+  ],
+  "deployment": [
+    {
+      "name": "Environment Configuration",
+      "status": "FAIL",
+      "requiredFound": 0,
+      "totalRequired": 5,
+      "optionalFound": 0,
+      "totalOptional": 4,
+      "score": 0
+    },
+    {
+      "name": "Secret Management",
+      "status": "WARN",
+      "secureFilesFound": 1,
+      "hasHardcodedSecrets": true
+    },
+    {
+      "name": "CI/CD Pipeline",
+      "status": "PASS",
+      "path": ".github/workflows",
+      "type": "GitHub Actions"
+    },
+    {
+      "name": "Docker Configuration",
+      "status": "WARN",
+      "details": "No Docker configuration found"
+    }
+  ],
+  "summary": {
+    "timestamp": "2025-08-06T13:46:50.977Z",
+    "duration": 5.167,
+    "totalTests": 30,
+    "totalPassed": 15,
+    "totalWarnings": 7,
+    "totalFailed": 8,
+    "overallPassRate": 50,
+    "overallStatus": "️ FAIR",
+    "criticalIssues": 7,
+    "categories": [
+      {
+        "name": "Health Checks",
+        "total": 5,
+        "passed": 2,
+        "warnings": 0,
+        "failed": 3
+      },
+      {
+        "name": "Logging Systems",
+        "total": 6,
+        "passed": 4,
+        "warnings": 1,
+        "failed": 1
+      },
+      {
+        "name": "Monitoring Integration",
+        "total": 4,
+        "passed": 0,
+        "warnings": 1,
+        "failed": 3
+      },
+      {
+        "name": "Error Handling",
+        "total": 5,
+        "passed": 3,
+        "warnings": 2,
+        "failed": 0
+      },
+      {
+        "name": "Backup Systems",
+        "total": 6,
+        "passed": 5,
+        "warnings": 1,
+        "failed": 0
+      },
+      {
+        "name": "Deployment Readiness",
+        "total": 4,
+        "passed": 1,
+        "warnings": 2,
+        "failed": 1
+      }
+    ]
+  }
+}

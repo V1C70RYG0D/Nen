@@ -4,7 +4,7 @@ import { sleep } from 'k6';
 
 export const options = {
   vus: 1000, // Virtual users
-  duration: '1m', // Test duration
+  duration: '1m' // Test duration
 };
 
 export default function () {

@@ -160,7 +160,7 @@ class ComprehensiveTestSuite {
         // WebSocket test
         try {
             await this.testWebSocket();
-            console.log(`✅ WebSocket: Connected`);
+            console.log('✅ WebSocket: Connected');
             this.results.services['WebSocket'] = { status: 'online' };
             this.results.summary.passed++;
         } catch (error) {
@@ -378,7 +378,7 @@ class ComprehensiveTestSuite {
         const failed = results.filter(r => !r.success).length;
         const totalTime = endTime - startTime;
 
-        console.log(`📊 Load Test Results:`);
+        console.log('📊 Load Test Results:');
         console.log(`   Concurrent Requests: ${concurrentRequests}`);
         console.log(`   Successful: ${successful}`);
         console.log(`   Failed: ${failed}`);

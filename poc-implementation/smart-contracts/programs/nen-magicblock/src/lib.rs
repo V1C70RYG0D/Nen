@@ -1,11 +1,28 @@
 use anchor_lang::prelude::*;
 use std::collections::HashMap;
 
+declare_id!("389fjKeMujUy73oPg75ByLpoPA5caj5YTn84XT6zNBpe");
+
 // Import BOLT ECS components
 pub mod bolt_ecs;
 use bolt_ecs::*;
 
-declare_id!("389fjKeMujUy73oPg75ByLpoPA5caj5YTn84XT6zNBpe");
+// Test modules
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    // Include test files
+    include!("../../../tests/position_tests.rs");
+    include!("../../../tests/piece_tests.rs");
+    include!("../../../tests/ai_agent_tests.rs");
+    include!("../../../tests/move_system_tests.rs");
+    include!("../../../tests/ai_move_tests.rs");
+    include!("../../../tests/session_tests.rs");
+    include!("../../../tests/session_error_tests.rs");
+    include!("../../../tests/security_tests.rs");
+    include!("../../../tests/magicblock_integration.rs");
+}
 
 // Enhanced MagicBlock integration for real-time Gungi gaming
 // Implements BOLT ECS for high-performance gaming with <50ms latency
@@ -44,9 +61,28 @@ pub mod nen_magicblock {
         session.last_clock_update = 0;
         
         // Initialize BOLT ECS components
-        session.position_components = [[PositionComponent::default(); 9]; 9];
-        session.piece_components = Vec::new();
-        session.move_history = Vec::new();
+        let mut initial_positions = [[bolt_ecs::PositionComponent::default(); 9]; 9];
+        let mut initial_pieces = Vec::new();
+        let mut initial_move_history = Vec::new();
+        let current_time = Clock::get()?.unix_timestamp;
+        
+        // Initialize basic board positions
+        for x in 0..9 {
+            for y in 0..9 {
+                initial_positions[x][y] = bolt_ecs::PositionComponent {
+                    entity_id: (x * 9 + y) as u64,
+                    x: x as u8,
+                    y: y as u8,
+                    level: 0,
+                    is_active: false,
+                    last_updated: current_time,
+                };
+            }
+        }
+        
+        session.position_components = initial_positions;
+        session.piece_components = initial_pieces;
+        session.move_history = initial_move_history;
         session.board_state = bolt_ecs::BoardState {
             board: [[None; 9]; 9],
             stacks: HashMap::new(),
@@ -321,8 +357,8 @@ pub struct EnhancedGameSession {
     pub last_clock_update: i64,
     
     // BOLT ECS Components for high-performance gaming
-    pub position_components: [[PositionComponent; 9]; 9],
-    pub piece_components: Vec<PieceComponent>,
+    pub position_components: [[bolt_ecs::PositionComponent; 9]; 9],
+    pub piece_components: Vec<bolt_ecs::PieceComponent>,
     pub move_history: Vec<CompressedMove>,
     pub board_state: bolt_ecs::BoardState,
 }
@@ -502,63 +538,67 @@ fn verify_anti_fraud_token(token: &[u8; 32], player: &Pubkey) -> bool {
     token.len() == 32 && *player != Pubkey::default()
 }
 
-fn validate_move_bolt_ecs(session: &EnhancedGameSession, move_data: &MoveData) -> bool {
+fn validate_move_bolt_ecs(session: &EnhancedGameSession, move_data: &bolt_ecs::BoltMoveData) -> bool {
     // Advanced move validation using BOLT ECS
-    let from_pos = &move_data.from_position;
-    let to_pos = &move_data.to_position;
+    let from_x = move_data.from_x;
+    let from_y = move_data.from_y;
+    let to_x = move_data.to_x;
+    let to_y = move_data.to_y;
     
     // Basic bounds checking
-    if from_pos.x >= 9 || from_pos.y >= 9 || to_pos.x >= 9 || to_pos.y >= 9 {
+    if from_x >= 9 || from_y >= 9 || to_x >= 9 || to_y >= 9 {
         return false;
     }
     
     // Check if source position is occupied
-    let source_component = &session.position_components[from_pos.x as usize][from_pos.y as usize];
-    if !source_component.is_occupied {
+    let source_component = &session.position_components[from_x as usize][from_y as usize];
+    if !source_component.is_active {
         return false;
     }
     
     // Validate piece movement according to Gungi rules
-    validate_gungi_movement(move_data.piece_type, from_pos, to_pos)
+    validate_gungi_movement(move_data.piece_type, from_x, from_y, to_x, to_y)
 }
 
-fn validate_gungi_movement(piece_type: u8, from: &PositionComponent, to: &PositionComponent) -> bool {
-    let dx = (to.x as i8 - from.x as i8).abs();
-    let dy = (to.y as i8 - from.y as i8).abs();
+fn validate_gungi_movement(piece_type: bolt_ecs::PieceType, from_x: u8, from_y: u8, to_x: u8, to_y: u8) -> bool {
+    let dx = (to_x as i8 - from_x as i8).abs();
+    let dy = (to_y as i8 - from_y as i8).abs();
     
     // Simplified Gungi movement rules
     match piece_type {
-        1 => dx <= 1 && dy <= 1, // Marshal (King)
-        2 => dx == 0 || dy == 0,  // Fortress (Rook)
-        3 => dx == dy,            // Hidden Dragon (Bishop)
-        4 => (dx <= 1 && dy <= 1) || (dx == 0 && dy <= 2) || (dx <= 2 && dy == 0), // Phoenix
-        5 => dx <= 1 && dy <= 1,  // Prodigy
-        6 => dx <= 1 && dy <= 1,  // Bow
-        7 => dx <= 1 && dy <= 1,  // Samurai
-        8 => (dx == 1 && dy == 0) || (dx == 0 && dy == 1), // Pike
-        9 => dx <= 1 && dy <= 1,  // Clandestinite
-        10 => dx <= 1 && dy <= 1, // Lance
-        11 => dx <= 1 && dy <= 1, // Spy
-        12 => dx <= 1 && dy <= 1, // Catapult
-        13 => dx <= 1 && dy <= 1, // Pawn
-        _ => false,
+        bolt_ecs::PieceType::Marshal => dx <= 1 && dy <= 1, // Marshal (King)
+        bolt_ecs::PieceType::General => dx == 0 || dy == 0,  // General (Rook-like)
+        bolt_ecs::PieceType::Lieutenant => dx == dy,            // Lieutenant (Bishop-like)
+        bolt_ecs::PieceType::Major => {
+            // Major can move one square in any direction, or up to 2 squares orthogonally
+            (dx <= 1 && dy <= 1) || (dx == 0 && dy <= 2) || (dx <= 2 && dy == 0)
+        },
+        bolt_ecs::PieceType::Minor => dx <= 1 && dy <= 1,  // Minor
+        bolt_ecs::PieceType::Bow => dx <= 1 && dy <= 1,  // Bow
+        bolt_ecs::PieceType::Shinobi => (dx == 1 && dy == 0) || (dx == 0 && dy == 1), // Shinobi
+        bolt_ecs::PieceType::Lance => dx <= 1 && dy <= 1, // Lance
+        bolt_ecs::PieceType::Fortress => false, // Fortress cannot move
+        _ => dx <= 1 && dy <= 1,
     }
 }
 
-fn apply_move_to_bolt_ecs(session: &mut EnhancedGameSession, move_data: &MoveData) {
-    let from_pos = &move_data.from_position;
-    let to_pos = &move_data.to_position;
+fn apply_move_to_bolt_ecs(session: &mut EnhancedGameSession, move_data: &bolt_ecs::BoltMoveData) {
+    let from_x = move_data.from_x;
+    let from_y = move_data.from_y;
+    let to_x = move_data.to_x;
+    let to_y = move_data.to_y;
     
     // Update position components
-    session.position_components[from_pos.x as usize][from_pos.y as usize].is_occupied = false;
-    session.position_components[to_pos.x as usize][to_pos.y as usize] = *to_pos;
-    session.position_components[to_pos.x as usize][to_pos.y as usize].is_occupied = true;
+    session.position_components[from_x as usize][from_y as usize].is_active = false;
+    session.position_components[to_x as usize][to_y as usize].x = to_x;
+    session.position_components[to_x as usize][to_y as usize].y = to_y;
+    session.position_components[to_x as usize][to_y as usize].is_active = true;
     
     // Update piece components
     for piece in &mut session.piece_components {
-        if piece.position.x == from_pos.x && piece.position.y == from_pos.y {
-            piece.position = *to_pos;
-            piece.movement_history.push(*to_pos);
+        if piece.entity_id == move_data.entity_id {
+            piece.has_moved = true;
+            piece.last_move_turn += 1;
             break;
         }
     }
@@ -644,8 +684,8 @@ pub struct MoveExecutedBolt {
 // ==========================================
 
 fn check_game_end_bolt_ecs(
-    _position_components: &[[PositionComponent; 9]; 9],
-    _piece_components: &Vec<PieceComponent>,
+    _position_components: &[[bolt_ecs::PositionComponent; 9]; 9],
+    _piece_components: &Vec<bolt_ecs::PieceComponent>,
     _board_state: &bolt_ecs::BoardState,
 ) -> Option<GameResult> {
     // Simplified for POC - would check for actual game end conditions
@@ -653,8 +693,8 @@ fn check_game_end_bolt_ecs(
 }
 
 fn calculate_board_hash(
-    position_components: &[[PositionComponent; 9]; 9],
-    piece_components: &Vec<PieceComponent>,
+    position_components: &[[bolt_ecs::PositionComponent; 9]; 9],
+    piece_components: &Vec<bolt_ecs::PieceComponent>,
 ) -> [u8; 32] {
     // Simplified hash calculation
     let mut hash = [0u8; 32];

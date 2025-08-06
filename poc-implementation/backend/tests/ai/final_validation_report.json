@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-08-06T19:05:10.119654",
+  "overall_status": "READY",
+  "success_rate": 85.71428571428571,
+  "tests_passed": 6,
+  "total_tests": 7,
+  "detailed_results": {
+    "imports": {
+      "success": true
+    },
+    "agent_creation": {
+      "success": true,
+      "details": {
+        "easy": {
+          "created": true,
+          "agent": 

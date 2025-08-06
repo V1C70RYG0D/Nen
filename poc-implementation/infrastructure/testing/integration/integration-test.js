@@ -116,7 +116,7 @@ class IntegrationTester {
                     passed
                 });
 
-                if (passed) this.results.summary.apis_fast++;
+                if (passed) {this.results.summary.apis_fast++;}
 
                 console.log(`${passed ? '✅' : '❌'} ${endpoint.name}: ${latency.toFixed(2)}ms (${response.status})`);
 
@@ -247,7 +247,7 @@ class IntegrationTester {
             .reduce((sum, api) => sum + parseFloat(api.latency), 0) /
             this.results.api_performance.filter(api => api.passed).length;
 
-        console.log(`\n📈 Performance Metrics:`);
+        console.log('\n📈 Performance Metrics:');
         console.log(`   Average API latency: ${avgLatency.toFixed(2)}ms`);
         console.log(`   Target achievement: ${((this.results.summary.apis_fast / this.results.api_performance.length) * 100).toFixed(1)}%`);
 

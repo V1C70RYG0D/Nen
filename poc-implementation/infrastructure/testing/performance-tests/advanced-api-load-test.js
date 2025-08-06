@@ -47,7 +47,7 @@ export const options = {
     { duration: '5m', target: 1000 },
 
     // Ramp down
-    { duration: '2m', target: 0 },
+    { duration: '2m', target: 0 }
   ],
 
   thresholds: {
@@ -56,8 +56,8 @@ export const options = {
     'game_move_latency_ms': ['p(95)<50', 'p(99)<100'], // Target: <50ms
     'error_rate': ['rate<0.01'], // Target: <1% error rate
     'http_req_failed': ['rate<0.005'], // Target: <0.5% failure rate
-    'http_req_duration': ['p(95)<100'], // Overall latency target
-  },
+    'http_req_duration': ['p(95)<100'] // Overall latency target
+  }
 };
 
 const BASE_URL = __ENV.API_URL;
@@ -70,7 +70,7 @@ export default function() {
     testBettingAPI,
     testAIAgentAPI,
     testGameMoveAPI,
-    testRealTimeUpdates,
+    testRealTimeUpdates
   ];
 
   // Randomly select a test scenario (weighted distribution)
@@ -98,7 +98,7 @@ function testHealthEndpoint() {
   const startTime = Date.now();
 
   const response = http.get(`${BASE_URL}/health`, {
-    tags: { name: 'health_check' },
+    tags: { name: 'health_check' }
   });
 
   const latency = Date.now() - startTime;
@@ -107,7 +107,7 @@ function testHealthEndpoint() {
   const success = check(response, {
     'health check status 200': (r) => r.status === 200,
     'health check response time <50ms': () => latency < 50,
-    'health check has status': (r) => r.json('status') === 'healthy',
+    'health check has status': (r) => r.json('status') === 'healthy'
   });
 
   if (success) {
@@ -127,7 +127,7 @@ function testMatchAPI() {
   const startTime = Date.now();
 
   const response = http.get(`${BASE_URL}/api/game/match/${matchId}`, {
-    tags: { name: 'match_api' },
+    tags: { name: 'match_api' }
   });
 
   const latency = Date.now() - startTime;
@@ -143,7 +143,7 @@ function testMatchAPI() {
       } catch {
         return false;
       }
-    },
+    }
   });
 
   if (success) {
@@ -164,12 +164,12 @@ function testBettingAPI() {
   const payload = {
     matchId: `match_${Math.floor(Math.random() * 1000)}`,
     amount: Math.floor(Math.random() * 10) + 1,
-    side: Math.random() > 0.5 ? 'player1' : 'player2',
+    side: Math.random() > 0.5 ? 'player1' : 'player2'
   };
 
   const response = http.post(`${BASE_URL}/api/betting/place`, JSON.stringify(payload), {
     headers: { 'Content-Type': 'application/json' },
-    tags: { name: 'betting_api' },
+    tags: { name: 'betting_api' }
   });
 
   const latency = Date.now() - startTime;
@@ -185,7 +185,7 @@ function testBettingAPI() {
       } catch {
         return false;
       }
-    },
+    }
   });
 
   if (success) {
@@ -204,7 +204,7 @@ function testAIAgentAPI() {
   const startTime = Date.now();
 
   const response = http.get(`${BASE_URL}/api/ai/agents`, {
-    tags: { name: 'ai_agent_api' },
+    tags: { name: 'ai_agent_api' }
   });
 
   const latency = Date.now() - startTime;
@@ -220,7 +220,7 @@ function testAIAgentAPI() {
       } catch {
         return false;
       }
-    },
+    }
   });
 
   if (success) {
@@ -243,13 +243,13 @@ function testGameMoveAPI() {
     move: {
       from: { x: Math.floor(Math.random() * 9), y: Math.floor(Math.random() * 9) },
       to: { x: Math.floor(Math.random() * 9), y: Math.floor(Math.random() * 9) },
-      pieceType: 'commander',
-    },
+      pieceType: 'commander'
+    }
   };
 
   const response = http.post(`${BASE_URL}/api/game/move`, JSON.stringify(movePayload), {
     headers: { 'Content-Type': 'application/json' },
-    tags: { name: 'game_move_api' },
+    tags: { name: 'game_move_api' }
   });
 
   const latency = Date.now() - startTime;
@@ -265,7 +265,7 @@ function testGameMoveAPI() {
       } catch {
         return false;
       }
-    },
+    }
   });
 
   if (success) {
@@ -284,7 +284,7 @@ function testRealTimeUpdates() {
   const startTime = Date.now();
 
   const response = http.get(`${BASE_URL}/api/game/live-updates`, {
-    tags: { name: 'realtime_api' },
+    tags: { name: 'realtime_api' }
   });
 
   const latency = Date.now() - startTime;
@@ -300,7 +300,7 @@ function testRealTimeUpdates() {
       } catch {
         return false;
       }
-    },
+    }
   });
 
   if (success) {
@@ -315,7 +315,7 @@ function testRealTimeUpdates() {
 export function handleSummary(data) {
   return {
     'performance-test-results.json': JSON.stringify(data, null, 2),
-    stdout: generateTextSummary(data),
+    stdout: generateTextSummary(data)
   };
 }
 

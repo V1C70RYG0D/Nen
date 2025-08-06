@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 
-
 const fs = require('fs');
 const path = require('path');
 
@@ -39,7 +38,7 @@ class FinalGIVerification {
 
   countFilesInDirectory(relativePath) {
     const fullPath = path.join(this.projectRoot, relativePath);
-    if (!this.directoryExists(relativePath)) return 0;
+    if (!this.directoryExists(relativePath)) {return 0;}
     return fs.readdirSync(fullPath).filter(item =>
       fs.statSync(path.join(fullPath, item)).isFile()
     ).length;
@@ -55,9 +54,6 @@ class FinalGIVerification {
     } else {
 
     }
-
-
-
 
 
     const productionFiles = [
@@ -118,17 +114,11 @@ class FinalGIVerification {
     }
 
 
-
-
-
     if (this.fileExists('backend/.eslintrc.json') && this.fileExists('frontend/.eslintrc.json')) {
 
     } else {
 
     }
-
-
-
 
 
     if (this.fileExists('package-lock.json') && this.fileExists('backend/package-lock.json')) {
@@ -151,40 +141,6 @@ class FinalGIVerification {
 
     // Additional guidelines that are inherently compliant based on project structure
     const additionalCompliant = [
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     ];

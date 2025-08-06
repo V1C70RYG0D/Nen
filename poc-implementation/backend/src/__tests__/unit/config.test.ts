@@ -18,6 +18,14 @@ describe('ConfigManager', () => {
     process.env = originalEnv;
   });
 
+  beforeAll(() => {
+    // Set required environment variables for tests
+    process.env.NODE_ENV = process.env.NODE_ENV || 'test';
+    process.env.DB_USERNAME = process.env.DB_USERNAME || 'testuser';
+    process.env.DB_PASSWORD = process.env.DB_PASSWORD || 'testpass';
+    process.env.REDIS_HOST = process.env.REDIS_HOST || 'localhost';
+  });
+
   describe('Environment Configuration', () => {
     it('should use environment variables when provided', () => {
       process.env.PORT = '4000';
@@ -100,6 +108,11 @@ describe('ConfigManager', () => {
   describe('Utility Methods', () => {
     it('should detect production environment', () => {
       process.env.NODE_ENV = 'production';
+      process.env.JWT_SECRET = 'test-jwt-secret-for-production-test';
+      process.env.REDIS_HOST = 'localhost';
+      process.env.FRONTEND_URL = 'https://example.com';
+      process.env.AI_SERVICE_URL = 'https://ai.example.com';
+      
       const config = new (ConfigManager as any)();
 
       expect(config.isProduction()).toBe(true);

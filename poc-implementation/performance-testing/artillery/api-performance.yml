@@ -1,0 +1,482 @@
+config:
+  target: 'http://localhost:3001'
+  phases:
+    # API Performance Testing phases
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 300 
+      arrivalRate: 20
+      name: "Moderate load"
+    - duration: 180
+      arrivalRate: 50
+      name: "High load"
+    - duration: 60
+      arrivalRate: 100
+      name: "Peak load"
+    - duration: 120
+      arrivalRate: 10
+      name: "Cool down"
+
+  # HTTP configuration
+  http:
+    timeout: 30
+    pool: 100
+    maxSockets: 100
+
+  # Variables for dynamic testing
+  variables:
+    userIds:
+      - "user_1"
+      - "user_2" 
+      - "user_3"
+      - "user_4"
+      - "user_5"
+    gameTypes:
+      - "gungi"
+      - "chess"
+      - "blitz"
+    timeControls:
+      - "5+3"
+      - "10+5"
+      - "15+10"
+      - "30+0"
+
+  # Performance thresholds
+  ensure:
+    thresholds:
+      - http.response_time.p95: 1000  # 95th percentile under 1s
+      - http.response_time.p99: 2000  # 99th percentile under 2s
+      - http.request_rate: 50         # Minimum 50 RPS
+      - http.codes.200: 0.95          # 95% success rate
+      - http.codes.4xx: 0.03          # Max 3% client errors
+      - http.codes.5xx: 0.01          # Max 1% server errors
+
+  # Plugins for enhanced reporting
+  plugins:
+    metrics-by-endpoint:
+      useOnlyRequestNames: true
+    hdrhistogram:
+      enable: true
+    cloudwatch:
+      region: "us-east-1"  # Configure if using AWS monitoring
+
+scenarios:
+  # Scenario 1: User Authentication Flow
+  - name: "Authentication Performance"
+    weight: 15
+    flow:
+      # Health check
+      - get:
+          url: "/api/health"
+          name: "Health Check"
+          expect:
+            - statusCode: 200
+            - contentType: "application/json"
+      
+      # User registration
+      - post:
+          url: "/api/auth/register"
+          name: "User Registration"
+          json:
+            username: "loadtest_{{ $randomString() }}"
+            email: "{{ $randomString() }}@test.com"
+            password: "testpass123"
+            firstName: "Test"
+            lastName: "User"
+          expect:
+            - statusCode: [201, 409]
+          capture:
+            - json: "$.token"
+              as: "authToken"
+            - json: "$.user.id"  
+              as: "userId"
+      
+      # User login (for existing users)
+      - post:
+          url: "/api/auth/login"
+          name: "User Login"
+          json:
+            username: "loadtest_{{ $randomString() }}"
+            password: "testpass123"
+          expect:
+            - statusCode: [200, 401]
+          ifTrue: "{{ statusCode == 200 }}"
+          then:
+            - capture:
+                - json: "$.token"
+                  as: "authToken"
+      
+      # Token validation
+      - get:
+          url: "/api/auth/validate"
+          name: "Token Validation"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: [200, 401]
+
+  # Scenario 2: Game Management API
+  - name: "Game Management Performance"
+    weight: 25
+    flow:
+      # Authenticate first
+      - post:
+          url: "/api/auth/register"
+          json:
+            username: "gamer_{{ $randomString() }}"
+            email: "{{ $randomString() }}@game.com"
+            password: "gamepass123"
+          capture:
+            - json: "$.token"
+              as: "gameToken"
+      
+      # Create game
+      - post:
+          url: "/api/games"
+          name: "Create Game"
+          headers:
+            Authorization: "Bearer {{ gameToken }}"
+            Content-Type: "application/json"
+          json:
+            gameType: "{{ gameTypes }}"
+            timeControl: "{{ timeControls }}"
+            isPublic: "{{ $randomBoolean() }}"
+            difficulty: "medium"
+          expect:
+            - statusCode: 201
+          capture:
+            - json: "$.gameId"
+              as: "gameId"
+      
+      # Get game details
+      - get:
+          url: "/api/games/{{ gameId }}"
+          name: "Get Game Details"
+          headers:
+            Authorization: "Bearer {{ gameToken }}"
+          expect:
+            - statusCode: 200
+            - contentType: "application/json"
+      
+      # List active games
+      - get:
+          url: "/api/games/active"
+          name: "List Active Games"
+          headers:
+            Authorization: "Bearer {{ gameToken }}"
+          qs:
+            limit: 20
+            offset: 0
+            gameType: "{{ gameTypes }}"
+          expect:
+            - statusCode: 200
+      
+      # Join game (simulate)
+      - post:
+          url: "/api/games/{{ gameId }}/join"
+          name: "Join Game"
+          headers:
+            Authorization: "Bearer {{ gameToken }}"
+          expect:
+            - statusCode: [200, 409]  # 409 if already joined
+      
+      # Make moves
+      - loop:
+          count: "{{ $randomInt(3, 10) }}"
+          over:
+            - post:
+                url: "/api/games/{{ gameId }}/moves"
+                name: "Make Move"
+                headers:
+                  Authorization: "Bearer {{ gameToken }}"
+                json:
+                  move:
+                    from: "{{ $randomString() }}"
+                    to: "{{ $randomString() }}"
+                    piece: "pawn"
+                  timestamp: "{{ $timestamp }}"
+                expect:
+                  - statusCode: [200, 400]  # 400 for invalid moves
+            - think: 
+                min: 1
+                max: 5
+      
+      # Get game history
+      - get:
+          url: "/api/games/{{ gameId }}/moves"
+          name: "Get Game History"
+          headers:
+            Authorization: "Bearer {{ gameToken }}"
+          expect:
+            - statusCode: 200
+
+  # Scenario 3: AI Service Integration
+  - name: "AI Service Performance"
+    weight: 20
+    flow:
+      # Setup authentication
+      - post:
+          url: "/api/auth/register"
+          json:
+            username: "ai_user_{{ $randomString() }}"
+            email: "{{ $randomString() }}@ai.com"
+            password: "aipass123"
+          capture:
+            - json: "$.token"
+              as: "aiToken"
+      
+      # Create game for AI testing
+      - post:
+          url: "/api/games"
+          headers:
+            Authorization: "Bearer {{ aiToken }}"
+          json:
+            gameType: "gungi"
+            timeControl: "10+5"
+            vsAI: true
+            difficulty: "medium"
+          capture:
+            - json: "$.gameId"
+              as: "aiGameId"
+      
+      # Request AI move
+      - post:
+          url: "/api/ai/move"
+          name: "AI Move Generation"
+          headers:
+            Authorization: "Bearer {{ aiToken }}"
+          json:
+            gameId: "{{ aiGameId }}"
+            gameState:
+              board: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+              turn: "white"
+              moveHistory: []
+            difficulty: "medium"
+            timeLimit: 5000
+          expect:
+            - statusCode: 200
+            - hasProperty: "move"
+          capture:
+            - json: "$.move"
+              as: "aiMove"
+            - json: "$.analysisTime"
+              as: "analysisTime"
+      
+      # Request AI analysis
+      - post:
+          url: "/api/ai/analyze"
+          name: "AI Position Analysis"
+          headers:
+            Authorization: "Bearer {{ aiToken }}"
+          json:
+            gameId: "{{ aiGameId }}"
+            position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+            depth: "{{ $randomInt(5, 12) }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "evaluation"
+      
+      # AI training data request
+      - get:
+          url: "/api/ai/training/games"
+          name: "AI Training Data"
+          headers:
+            Authorization: "Bearer {{ aiToken }}"
+          qs:
+            limit: 100
+            difficulty: "medium"
+            completed: true
+          expect:
+            - statusCode: 200
+
+  # Scenario 4: Analytics and Leaderboard
+  - name: "Analytics Performance"
+    weight: 15
+    flow:
+      # Authentication
+      - post:
+          url: "/api/auth/login"
+          json:
+            username: "analytics_user"
+            password: "analyticspass"
+          capture:
+            - json: "$.token"
+              as: "analyticsToken"
+      
+      # User statistics
+      - get:
+          url: "/api/users/stats"
+          name: "User Statistics"
+          headers:
+            Authorization: "Bearer {{ analyticsToken }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "gamesPlayed"
+            - hasProperty: "winRate"
+      
+      # Leaderboard queries
+      - get:
+          url: "/api/leaderboard"
+          name: "Global Leaderboard"
+          qs:
+            limit: 50
+            timeframe: "week"
+            gameType: "gungi"
+          expect:
+            - statusCode: 200
+            - contentType: "application/json"
+      
+      # Game analytics
+      - get:
+          url: "/api/analytics/games"
+          name: "Game Analytics"
+          headers:
+            Authorization: "Bearer {{ analyticsToken }}"
+          qs:
+            timeframe: "month"
+            groupBy: "day"
+          expect:
+            - statusCode: 200
+      
+      # Performance metrics
+      - get:
+          url: "/api/analytics/performance"
+          name: "Performance Metrics"
+          headers:
+            Authorization: "Bearer {{ analyticsToken }}"
+          expect:
+            - statusCode: 200
+
+  # Scenario 5: Database Intensive Operations
+  - name: "Database Performance"
+    weight: 15
+    flow:
+      # Setup
+      - post:
+          url: "/api/auth/register"
+          json:
+            username: "db_user_{{ $randomString() }}"
+            email: "{{ $randomString() }}@db.com"
+            password: "dbpass123"
+          capture:
+            - json: "$.token"
+              as: "dbToken"
+      
+      # Complex search queries
+      - get:
+          url: "/api/games/search"
+          name: "Game Search"
+          headers:
+            Authorization: "Bearer {{ dbToken }}"
+          qs:
+            q: "gungi"
+            status: "completed"
+            minRating: 1200
+            maxRating: 2000
+            limit: 25
+            sortBy: "createdAt"
+            sortOrder: "desc"
+          expect:
+            - statusCode: 200
+      
+      # User profile with relationships
+      - get:
+          url: "/api/users/profile/detailed"
+          name: "Detailed User Profile"
+          headers:
+            Authorization: "Bearer {{ dbToken }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "gameHistory"
+            - hasProperty: "achievements"
+      
+      # Tournament data
+      - get:
+          url: "/api/tournaments"
+          name: "Tournament List"
+          qs:
+            status: "active"
+            limit: 20
+          expect:
+            - statusCode: 200
+      
+      # Batch operations
+      - post:
+          url: "/api/games/batch"
+          name: "Batch Game Operations"
+          headers:
+            Authorization: "Bearer {{ dbToken }}"
+          json:
+            operations:
+              - type: "create"
+                data:
+                  gameType: "gungi"
+                  timeControl: "15+10"
+              - type: "join"
+                gameId: "{{ $randomString() }}"
+          expect:
+            - statusCode: [200, 207]  # 207 for partial success
+      
+      # Connection pool test
+      - loop:
+          count: 5
+          over:
+            - get:
+                url: "/api/health/database"
+                name: "Database Health"
+                expect:
+                  - statusCode: 200
+                  - hasProperty: "connectionPool"
+            - think: 0.5
+
+  # Scenario 6: Error Handling and Edge Cases
+  - name: "Error Handling Performance"
+    weight: 10
+    flow:
+      # Invalid requests (should fail gracefully)
+      - post:
+          url: "/api/auth/register"
+          name: "Invalid Registration"
+          json:
+            username: ""  # Invalid empty username
+            email: "invalid-email"  # Invalid email format
+          expect:
+            - statusCode: 400
+      
+      # Unauthorized access
+      - get:
+          url: "/api/games"
+          name: "Unauthorized Access"
+          headers:
+            Authorization: "Bearer invalid_token"
+          expect:
+            - statusCode: 401
+      
+      # Non-existent resources
+      - get:
+          url: "/api/games/nonexistent-game-id"
+          name: "Non-existent Game"
+          expect:
+            - statusCode: 404
+      
+      # Rate limiting test
+      - loop:
+          count: 20
+          over:
+            - get:
+                url: "/api/health"
+                name: "Rate Limit Test"
+                expect:
+                  - statusCode: [200, 429]  # 429 for rate limited
+            - think: 0.1
+
+before:
+  flow:
+    - log: "Starting API performance testing"
+    - log: "Target: {{ target }}"
+
+after:
+  flow:
+    - log: "API performance testing completed"
+    - log: "Generating performance report..."

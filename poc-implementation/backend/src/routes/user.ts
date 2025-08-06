@@ -1,17 +1,34 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import config from '../config';
+import { authMiddleware } from '../middleware/auth.js';
+import { requireOwnershipOrAdmin } from '../middleware/guards.js';
+
+// Define authenticated request interface
+interface UserAuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    publicKey: string;
+    address: string;
+    walletAddress: string;
+    username?: string;
+    email?: string;
+    wallet?: string;
+    role?: string;
+  };
+}
 
 const router = Router();
 
 // GET /api/user/profile - Get user profile
-router.get('/profile', async (req, res, next) => {
+router.get('/profile', authMiddleware, async (req: UserAuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    // For production: integrate with database service
-    // For now: return dynamic data based on user session or wallet
-    const userPublicKey = req.headers['x-wallet-address'] || 'demo_user';
+    // Get user information from authenticated request
+    const user = req.user;
+    const userPublicKey = user?.publicKey || 'demo_user';
+    const publicKeyStr = Array.isArray(userPublicKey) ? userPublicKey[0] : userPublicKey;
 
     const profile = {
-      id: `user_${Buffer.from(userPublicKey).toString('hex').slice(0, 8)}`,
+      id: `user_${Buffer.from(publicKeyStr).toString('hex').slice(0, 8)}`,
       publicKey: userPublicKey,
       username: `Player_${userPublicKey.slice(-4)}`,
       stats: {
@@ -40,15 +57,17 @@ router.get('/profile', async (req, res, next) => {
 });
 
 // PUT /api/user/profile - Update user profile
-router.put('/profile', async (req, res, next) => {
+router.put('/profile', authMiddleware, async (req: UserAuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const { username, preferences } = req.body;
-    const userPublicKey = req.headers['x-wallet-address'] || 'demo_user';
+    const user = req.user;
+    const userPublicKey = user?.publicKey || 'demo_user';
+    const publicKeyStr = Array.isArray(userPublicKey) ? userPublicKey[0] : userPublicKey;
 
     // For production: save to database
     // For now: return confirmation with validated data
     const updatedProfile = {
-      id: `user_${Buffer.from(userPublicKey).toString('hex').slice(0, 8)}`,
+      id: `user_${Buffer.from(publicKeyStr).toString('hex').slice(0, 8)}`,
       username: username?.trim() || `Player_${userPublicKey.slice(-4)}`,
       preferences: {
         theme: preferences?.theme || 'dark',
@@ -69,14 +88,15 @@ router.put('/profile', async (req, res, next) => {
 });
 
 // GET /api/user/balance - Get user SOL balance
-router.get('/balance', async (req, res, next) => {
+router.get('/balance', authMiddleware, async (req: UserAuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const userPublicKey = req.headers['x-wallet-address'];
+    const user = req.user;
+    const userPublicKey = user?.publicKey;
 
     if (!userPublicKey) {
       return res.status(400).json({
         success: false,
-        error: 'Wallet address required'
+        error: 'User not authenticated'
       });
     }
 
@@ -102,13 +122,15 @@ router.get('/balance', async (req, res, next) => {
 });
 
 // GET /api/user/stats - Get detailed user statistics
-router.get('/stats', async (req, res, next) => {
+router.get('/stats', authMiddleware, async (req: UserAuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const userPublicKey = req.headers['x-wallet-address'] || 'demo_user';
+    const user = req.user;
+    const userPublicKey = user?.publicKey || 'demo_user';
+    const publicKeyStr = Array.isArray(userPublicKey) ? userPublicKey[0] : userPublicKey;
 
     // For production: query database for user statistics
     // For now: generate dynamic stats based on user wallet
-    const hashValue = Buffer.from(userPublicKey).toString('hex').slice(0, 8);
+    const hashValue = Buffer.from(publicKeyStr).toString('hex').slice(0, 8);
     const seedValue = parseInt(hashValue, 16) % 1000;
 
     const totalGames = Math.floor(seedValue / 10) + 20;

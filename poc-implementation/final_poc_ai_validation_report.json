@@ -1,0 +1,223 @@
+{
+  "timestamp": "2025-08-06T19:23:29.994958",
+  "validation_summary": {
+    "overall_status": "failed",
+    "total_tests": 6,
+    "passed_tests": 4,
+    "failed_tests": 2,
+    "success_rate": 66.66666666666666
+  },
+  "poc_requirements_compliance": {
+    "requirements": {
+      "capture_preference_70_percent": false,
+      "personality_differentiation": false,
+      "easy_ai_under_10ms": true,
+      "medium_ai_under_50ms": true,
+      "hard_ai_under_90ms": true,
+      "magicblock_under_100ms": true,
+      "fraud_detection_operational": true,
+      "ai_manager_functional": true,
+      "e2e_scenarios_working": true
+    },
+    "compliance_rate": 77.77777777777779,
+    "critical_requirements_met": 7,
+    "total_requirements": 9
+  },
+  "detailed_test_results": {
+    "capture_preference": {
+      "status": "failed",
+      "test_results": {
+        "50_iterations": {
+          "capture_rate": 0.84,
+          "within_tolerance": false,
+          "capture_count": 42,
+          "total_moves": 50
+        },
+        "100_iterations": {
+          "capture_rate": 0.85,
+          "within_tolerance": false,
+          "capture_count": 85,
+          "total_moves": 100
+        },
+        "200_iterations": {
+          "capture_rate": 0.85,
+          "within_tolerance": false,
+          "capture_count": 170,
+          "total_moves": 200
+        }
+      },
+      "overall_success": false,
+      "target_rate": 0.7,
+      "tolerance": 0.1
+    },
+    "personality_differentiation": {
+      "status": "failed",
+      "personality_results": {
+        "aggressive": {
+          "status": "passed",
+          "traits": {
+            "aggression": 0.5,
+            "risk_tolerance": 0.5,
+            "patience": 0.5,
+            "adaptability": 0.75
+          },
+          "capture_preference_rate": 0.9,
+          "aggression_level": 0.5
+        },
+        "defensive": {
+          "status": "passed",
+          "traits": {
+            "aggression": 0.5,
+            "risk_tolerance": 0.5,
+            "patience": 0.5,
+            "adaptability": 0.75
+          },
+          "capture_preference_rate": 0.8,
+          "aggression_level": 0.5
+        },
+        "balanced": {
+          "status": "passed",
+          "traits": {
+            "aggression": 0.5,
+            "risk_tolerance": 0.5,
+            "patience": 0.5,
+            "adaptability": 0.75
+          },
+          "capture_preference_rate": 0.8,
+          "aggression_level": 0.5
+        }
+      },
+      "differentiation_ok": false,
+      "all_personalities_working": true
+    },
+    "performance": {
+      "status": "passed",
+      "performance_data": {
+        "easy": {
+          "avg_time_ms": 3.518857955932617,
+          "max_time_ms": 23.470401763916016,
+          "p95_time_ms": 11.28758192062378,
+          "target_ms": 10,
+          "magicblock_ms": 100,
+          "target_compliant": true,
+          "magicblock_compliant": true,
+          "successful_moves": 50,
+          "total_tests": 50
+        },
+        "medium": {
+          "avg_time_ms": 2.045269012451172,
+          "max_time_ms": 7.998466491699219,
+          "p95_time_ms": 5.407047271728516,
+          "target_ms": 50,
+          "magicblock_ms": 100,
+          "target_compliant": true,
+          "magicblock_compliant": true,
+          "successful_moves": 50,
+          "total_tests": 50
+        },
+        "hard": {
+          "avg_time_ms": 4.187407493591309,
+          "max_time_ms": 17.70639419555664,
+          "p95_time_ms": 13.332271575927734,
+          "target_ms": 90,
+          "magicblock_ms": 100,
+          "target_compliant": true,
+          "magicblock_compliant": true,
+          "successful_moves": 50,
+          "total_tests": 50
+        }
+      },
+      "all_target_compliant": true,
+      "all_magicblock_compliant": true
+    },
+    "fraud_detection": {
+      "status": "passed",
+      "normal_fraud_score": 0.010000000000000002,
+      "suspicious_fraud_score": 0.016110000000000003,
+      "decay_fraud_score": 0.0016110000000000005,
+      "fraud_detected": true,
+      "fraud_decay_working": true
+    },
+    "ai_manager": {
+      "status": "passed",
+      "agent_retrieval": true,
+      "match_creation": true,
+      "move_generation": true,
+      "report_generation": true,
+      "match_cleanup": true,
+      "agents_retrieved_count": 9,
+      "total_agent_configs": 9
+    },
+    "end_to_end": {
+      "status": "passed",
+      "scenarios_tested": 3,
+      "successful_scenarios": 3,
+      "scenario_results": {
+        "easy_vs_medium": {
+          "success": true,
+          "moves_completed": 5,
+          "moves_requested": 5,
+          "avg_execution_time_ms": 0.39997100830078125,
+          "agent1_config": [
+            "easy",
+            "aggressive"
+          ],
+          "agent2_config": [
+            "medium",
+            "defensive"
+          ]
+        },
+        "medium_vs_hard": {
+          "success": true,
+          "moves_completed": 5,
+          "moves_requested": 5,
+          "avg_execution_time_ms": 8.600091934204102,
+          "agent1_config": [
+            "medium",
+            "balanced"
+          ],
+          "agent2_config": [
+            "hard",
+            "balanced"
+          ]
+        },
+        "personality_diff": {
+          "success": true,
+          "moves_completed": 3,
+          "moves_requested": 3,
+          "avg_execution_time_ms": 0.3333091735839844,
+          "agent1_config": [
+            "easy",
+            "aggressive"
+          ],
+          "agent2_config": [
+            "easy",
+            "defensive"
+          ]
+        }
+      }
+    }
+  },
+  "production_readiness": {
+    "ready_for_deployment": false,
+    "magicblock_compliant": true,
+    "performance_compliant": true,
+    "security_operational": true,
+    "integration_working": true
+  },
+  "recommendations": [
+    "\ud83d\udd27 Fine-tune Easy AI capture preference to target 70%\u00b110%",
+    "\ud83c\udfad Improve personality trait differentiation between AI types",
+    "\ud83d\udcca Set up production monitoring and performance dashboards",
+    "\ud83c\udfd7\ufe0f Implement automated testing pipeline for continuous validation",
+    "\ud83d\udcc8 Plan for neural network training data collection and model updates"
+  ],
+  "next_steps": [
+    "\ud83d\udd27 Fix 2 failing POC requirements",
+    "\ud83d\udccb Address specific issues identified in detailed results",
+    "\ud83e\uddea Re-run validation suite after implementing fixes",
+    "\u26a1 Ensure MagicBlock compliance before any deployment",
+    "\ud83d\udd12 Verify all security features are operational",
+    "\ud83d\udcca Conduct performance optimization if needed"
+  ]
+}

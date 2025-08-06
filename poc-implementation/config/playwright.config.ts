@@ -100,7 +100,7 @@ export default defineConfig({
 
     // Accessibility settings
     reducedMotion: 'no-preference',
-    forcedColors: 'none',
+    forcedColors: 'none'
   },
 
   // Comprehensive browser and device matrix
@@ -109,11 +109,11 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
-      teardown: 'cleanup',
+      teardown: 'cleanup'
     },
     {
       name: 'cleanup',
-      testMatch: /.*\.cleanup\.ts/,
+      testMatch: /.*\.cleanup\.ts/
     },
 
     // === DESKTOP BROWSERS - LATEST VERSIONS ===
@@ -126,7 +126,7 @@ export default defineConfig({
           permissions: ['geolocation', 'notifications', 'camera', 'microphone']
         }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'desktop-firefox-latest',
@@ -134,7 +134,7 @@ export default defineConfig({
         ...devices['Desktop Firefox'],
         viewport: { width: 1920, height: 1080 }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'desktop-safari-latest',
@@ -142,7 +142,7 @@ export default defineConfig({
         ...devices['Desktop Safari'],
         viewport: { width: 1920, height: 1080 }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'desktop-edge-latest',
@@ -150,7 +150,7 @@ export default defineConfig({
         ...devices['Desktop Edge'],
         viewport: { width: 1920, height: 1080 }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     // Tablet Landscape Mode
     {
@@ -159,7 +159,7 @@ export default defineConfig({
         ...devices['iPad Pro 11'],
         viewport: { width: 1024, height: 768 }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     // Tablet Portrait Mode
     {
@@ -168,15 +168,15 @@ export default defineConfig({
         ...devices['iPad Pro 11'],
         viewport: { width: 768, height: 1024 }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     // High DPI Display
     {
       name: 'desktop-chrome-high-dpi',
       use: {
         ...devices['Desktop Chrome'],
-        deviceScaleFactor: 2,
-      },
+        deviceScaleFactor: 2
+      }
     },
 
     // === DESKTOP BROWSERS - DIFFERENT RESOLUTIONS ===
@@ -186,7 +186,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         viewport: { width: 1366, height: 768 }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'desktop-chrome-1440x900',
@@ -194,7 +194,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         viewport: { width: 1440, height: 900 }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'desktop-chrome-2560x1440',
@@ -202,88 +202,88 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         viewport: { width: 2560, height: 1440 }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
 
     // === MOBILE DEVICES - iOS ===
     {
       name: 'iphone-12',
       use: { ...devices['iPhone 12'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'iphone-12-pro',
       use: { ...devices['iPhone 12 Pro'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'iphone-13',
       use: { ...devices['iPhone 13'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'iphone-13-pro',
       use: { ...devices['iPhone 13 Pro'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'iphone-14',
       use: { ...devices['iPhone 14'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'iphone-se',
       use: { ...devices['iPhone SE'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
 
     // === MOBILE DEVICES - Android ===
     {
       name: 'pixel-5',
       use: { ...devices['Pixel 5'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'pixel-7',
       use: { ...devices['Pixel 7'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'galaxy-s9-plus',
       use: { ...devices['Galaxy S9+'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'galaxy-note-2',
       use: { ...devices['Galaxy Note II'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'galaxy-tab-s4',
       use: { ...devices['Galaxy Tab S4'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
 
     // === TABLET DEVICES ===
     {
       name: 'ipad-air',
       use: { ...devices['iPad Air'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'ipad-gen-7',
       use: { ...devices['iPad (gen 7)'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'ipad-mini',
       use: { ...devices['iPad Mini'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'ipad-pro-11',
       use: { ...devices['iPad Pro 11'] },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
 
     // === ACCESSIBILITY TESTING ===
@@ -295,7 +295,7 @@ export default defineConfig({
         forcedColors: 'active',
         reducedMotion: 'reduce'
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'accessibility-reduced-motion',
@@ -303,7 +303,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         reducedMotion: 'reduce'
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'accessibility-screen-reader',
@@ -313,7 +313,7 @@ export default defineConfig({
           permissions: ['accessibility-events']
         }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
 
     // === DARK MODE TESTING ===
@@ -323,7 +323,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         colorScheme: 'dark'
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'mobile-safari-dark',
@@ -331,7 +331,7 @@ export default defineConfig({
         ...devices['iPhone 12'],
         colorScheme: 'dark'
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
 
     // === NETWORK CONDITIONS TESTING ===
@@ -346,7 +346,7 @@ export default defineConfig({
           latency: 300 // 300ms
         }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'fast-3g-mobile',
@@ -359,7 +359,7 @@ export default defineConfig({
           latency: 150 // 150ms
         }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
 
     // === API TESTING PROJECT ===
@@ -374,7 +374,7 @@ export default defineConfig({
           'User-Agent': 'Nen-Platform-API-Tests/1.0'
         }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
 
     // === PERFORMANCE TESTING ===
@@ -389,7 +389,7 @@ export default defineConfig({
           }
         }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'performance-mobile',
@@ -402,7 +402,7 @@ export default defineConfig({
           }
         }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
 
     // === VISUAL REGRESSION TESTING ===
@@ -412,7 +412,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         viewport: { width: 1280, height: 720 }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'visual-firefox',
@@ -420,7 +420,7 @@ export default defineConfig({
         ...devices['Desktop Firefox'],
         viewport: { width: 1280, height: 720 }
       },
-      dependencies: ['setup'],
+      dependencies: ['setup']
     },
     {
       name: 'visual-safari',
@@ -428,8 +428,8 @@ export default defineConfig({
         ...devices['Desktop Safari'],
         viewport: { width: 1280, height: 720 }
       },
-      dependencies: ['setup'],
-    },
+      dependencies: ['setup']
+    }
   ],
 
   // Web server configuration for local development

@@ -1,0 +1,4 @@
+numpy>=1.21.0
+torch>=1.9.0
+# Optional: only needed for neural network functionality
+# If PyTorch is not available, mock implementation will be used

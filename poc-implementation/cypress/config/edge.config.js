@@ -23,10 +23,10 @@ module.exports = defineConfig({
         }
         return launchOptions;
       });
-    },
+    }
   },
   env: {
     BROWSER: 'Edge 90+',
-    TEST_FOCUS: 'full-compatibility',
-  },
+    TEST_FOCUS: 'full-compatibility'
+  }
 });

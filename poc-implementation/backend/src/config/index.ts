@@ -134,8 +134,12 @@ export class ConfigManager {
     };
 
     // Security Configuration - All values must be explicitly configured
+    // Check environment directly to avoid circular dependency
+    const nodeEnv = process.env.NODE_ENV || 'development';
+    const isProduction = nodeEnv === 'production';
+    
     this.security = {
-      jwtSecret: process.env.JWT_SECRET || (this.isProduction() ? this.getRequiredEnv('JWT_SECRET') : 'dev-jwt-secret-not-for-production'),
+      jwtSecret: process.env.JWT_SECRET || (isProduction ? this.getRequiredEnv('JWT_SECRET') : 'dev-jwt-secret-not-for-production'),
       rateLimitWindowMs: parseInt(this.getRequiredEnv('RATE_LIMIT_WINDOW_MS')),
       rateLimitMaxRequests: parseInt(this.getRequiredEnv('RATE_LIMIT_MAX_REQUESTS')),
       corsOrigin: this.getRequiredEnv('CORS_ORIGIN'),

@@ -100,7 +100,7 @@ class IntegrationTestRunner {
       await this.cleanup();
 
     } catch (error) {
-      this.logError(`❌ Integration tests failed`, error);
+      this.logError('❌ Integration tests failed', error);
       process.exit(1);
     }
   }

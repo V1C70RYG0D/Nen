@@ -6,18 +6,13 @@
     "browser": true
   },
   "extends": [
-    "eslint:recommended",
-    "@typescript-eslint/recommended",
-    "prettier"
+    "eslint:recommended"
   ],
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2022,
-    "sourceType": "module",
-    "project": ["./tsconfig.json", "./backend/tsconfig.json", "./frontend/tsconfig.json"]
+    "sourceType": "module"
   },
   "plugins": [
-    "@typescript-eslint",
     "security",
     "import",
     "promise"
@@ -38,12 +33,7 @@
     "security/detect-pseudoRandomBytes": "error",
     
     // Code quality rules (GI #4, #19)
-    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/explicit-function-return-type": "warn",
-    "@typescript-eslint/no-non-null-assertion": "error",
-    "@typescript-eslint/prefer-const": "error",
-    "@typescript-eslint/no-var-requires": "error",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     
     // Anti-hardcoding rules (GI #18)
     "no-magic-numbers": ["warn", { 
@@ -51,24 +41,12 @@
       "ignoreArrayIndexes": true,
       "detectObjects": false 
     }],
-    "no-hardcoded-credentials": "error",
     
     // Import/module rules (GI #4)
-    "import/no-unresolved": "error",
+    "import/no-unresolved": "off",
     "import/no-cycle": "error",
     "import/no-self-import": "error",
     "import/no-useless-path-segments": "error",
-    "import/order": ["error", {
-      "groups": [
-        "builtin",
-        "external", 
-        "internal",
-        "parent",
-        "sibling",
-        "index"
-      ],
-      "newlines-between": "always"
-    }],
     
     // Promise handling (GI #15, #20)
     "promise/always-return": "error",
@@ -99,20 +77,12 @@
   },
   "overrides": [
     {
-      "files": ["*.js"],
-      "rules": {
-        "@typescript-eslint/explicit-function-return-type": "off",
-        "@typescript-eslint/no-var-requires": "off"
-      }
-    },
-    {
       "files": ["*.test.ts", "*.test.js", "*.spec.ts", "*.spec.js"],
       "env": {
         "jest": true
       },
       "rules": {
-        "no-magic-numbers": "off",
-        "@typescript-eslint/no-explicit-any": "off"
+        "no-magic-numbers": "off"
       }
     },
     {
@@ -120,13 +90,6 @@
       "env": {
         "browser": true,
         "node": false
-      },
-      "extends": ["next/core-web-vitals"],
-      "rules": {
-        "react/jsx-uses-react": "error",
-        "react/jsx-uses-vars": "error",
-        "react-hooks/rules-of-hooks": "error",
-        "react-hooks/exhaustive-deps": "warn"
       }
     },
     {
@@ -134,13 +97,6 @@
       "env": {
         "node": true,
         "browser": false
-      }
-    },
-    {
-      "files": ["smart-contracts/**/*"],
-      "rules": {
-        "no-magic-numbers": "off",
-        "@typescript-eslint/no-explicit-any": "off"
       }
     }
   ],

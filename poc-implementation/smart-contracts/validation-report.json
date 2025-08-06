@@ -1,0 +1,236 @@
+{
+  "smartContractFiles": [
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\programs\\nen-core\\src\\lib.rs",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\programs\\nen-magicblock\\src\\lib.rs"
+  ],
+  "testFiles": [
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\unit\\ai-system.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\unit\\betting-system.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\unit\\core-initialization.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\unit\\enhanced-match-creation.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\unit\\enhanced-user-creation.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\unit\\match-lifecycle.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\unit\\move-validation.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\unit\\platform-initialization.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\unit\\user-management.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\access-control-simplified.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\access-control.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\ai-performance-analytics.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\ai-system-tests.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\betting-workflow.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\comprehensive.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\e2e-user-journey.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\event-system.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\financial-security-core.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\financial-security-demo.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\financial-security.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\kyc-compliance.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\magicblock-integration-enhanced.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\magicblock-integration.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\monitoring-integration.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\multi-program-integration.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\realtime-performance.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\reentrancy-protection.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\resource-optimization.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\risk-management.test.ts",
+    "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\integration\\throughput-testing.test.ts"
+  ],
+  "implementations": {
+    "lib.rs": {
+      "functions": [
+        "create_enhanced_session",
+        "submit_move_bolt_ecs",
+        "update_session_config",
+        "migrate_session_geographic"
+      ],
+      "structs": [
+        "EnhancedGameSession"
+      ],
+      "events": [
+        "EnhancedSessionCreated",
+        "MoveSubmittedEnhanced",
+        "SessionConfigUpdated",
+        "SessionMigrated",
+        "SessionFinalized",
+        "GameCompleted",
+        "MoveExecutedBolt"
+      ],
+      "errorCodes": [
+        "#[msg(\"Invalid anti-fraud token\")]",
+        "#[msg(\"Move submitted too quickly\")]",
+        "#[msg(\"Invalid move according to game rules\")]",
+        "#[msg(\"Unauthorized to update session configuration\")]"
+      ],
+      "instructions": [],
+      "issues": []
+    }
+  },
+  "testCoverage": {
+    "core-initialization.test.ts": {
+      "exists": true,
+      "testCount": 14,
+      "suiteCount": 7,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "user-management.test.ts": {
+      "exists": true,
+      "testCount": 25,
+      "suiteCount": 7,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "enhanced-user-creation.test.ts": {
+      "exists": true,
+      "testCount": 23,
+      "suiteCount": 8,
+      "hasAsyncTests": true,
+      "hasAssertions": false,
+      "issues": []
+    },
+    "match-creation.test.ts": {
+      "exists": true,
+      "testCount": 13,
+      "suiteCount": 5,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "betting-system.test.ts": {
+      "exists": true,
+      "testCount": 20,
+      "suiteCount": 8,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "financial-security.test.ts": {
+      "exists": true,
+      "testCount": 15,
+      "suiteCount": 7,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "financial-security-core.test.ts": {
+      "exists": true,
+      "testCount": 12,
+      "suiteCount": 6,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "financial-security-demo.test.ts": {
+      "exists": true,
+      "testCount": 10,
+      "suiteCount": 6,
+      "hasAsyncTests": false,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "access-control.test.ts": {
+      "exists": true,
+      "testCount": 9,
+      "suiteCount": 5,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "reentrancy-protection.test.ts": {
+      "exists": true,
+      "testCount": 8,
+      "suiteCount": 4,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "performance.test.ts": {
+      "exists": true,
+      "testCount": 6,
+      "suiteCount": 4,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "magicblock-integration.test.ts": {
+      "exists": true,
+      "testCount": 15,
+      "suiteCount": 6,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "risk-management.test.ts": {
+      "exists": true,
+      "testCount": 11,
+      "suiteCount": 7,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    },
+    "resource-optimization.test.ts": {
+      "exists": true,
+      "testCount": 3,
+      "suiteCount": 3,
+      "hasAsyncTests": true,
+      "hasAssertions": true,
+      "issues": []
+    }
+  },
+  "issues": [
+    {
+      "severity": "MEDIUM",
+      "message": "Test directory not found: tests/security",
+      "location": "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\security",
+      "timestamp": "2025-08-06T15:02:22.346Z"
+    },
+    {
+      "severity": "MEDIUM",
+      "message": "Test directory not found: tests/performance",
+      "location": "A:\\Nen Platform\\Nen\\poc-implementation\\smart-contracts\\tests\\performance",
+      "timestamp": "2025-08-06T15:02:22.347Z"
+    },
+    {
+      "severity": "HIGH",
+      "message": "Missing feature implementation: Platform Initialization",
+      "location": null,
+      "timestamp": "2025-08-06T15:02:23.697Z"
+    },
+    {
+      "severity": "HIGH",
+      "message": "Missing feature implementation: User Management",
+      "location": null,
+      "timestamp": "2025-08-06T15:02:23.727Z"
+    },
+    {
+      "severity": "HIGH",
+      "message": "Missing feature implementation: Match Creation",
+      "location": null,
+      "timestamp": "2025-08-06T15:02:23.735Z"
+    },
+    {
+      "severity": "HIGH",
+      "message": "Missing feature implementation: Betting System",
+      "location": null,
+      "timestamp": "2025-08-06T15:02:23.783Z"
+    },
+    {
+      "severity": "HIGH",
+      "message": "Missing feature implementation: AI Agent NFT",
+      "location": null,
+      "timestamp": "2025-08-06T15:02:23.848Z"
+    }
+  ],
+  "recommendations": [],
+  "overallStatus": "MULTIPLE HIGH PRIORITY ISSUES",
+  "summary": {
+    "totalFiles": 32,
+    "implementationStatus": "MULTIPLE HIGH PRIORITY ISSUES",
+    "criticalIssues": 0,
+    "completionPercentage": 127
+  },
+  "generatedAt": "2025-08-06T15:02:24.308Z",
+  "validator": "ComprehensiveTestValidator v1.0.0"
+}

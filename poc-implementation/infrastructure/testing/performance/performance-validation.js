@@ -259,7 +259,7 @@ class PerformanceValidator {
         }
 
         // Overall Assessment
-        console.log(`\n🎯 Overall Assessment:`);
+        console.log('\n🎯 Overall Assessment:');
         const apiPassed = this.results.summary.api_passed > 0;
         const gamingPassed = this.results.summary.gaming_passed > 0;
 

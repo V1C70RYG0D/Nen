@@ -1,0 +1,1 @@
+{"version":3,"file":"NetworkUtils.d.ts","sourceRoot":"","sources":["../../src/shared/NetworkUtils.ts"],"names":[],"mappings":"AAEA,qBAAa,YAAY;IACvB,MAAM,CAAC,UAAU,CAAC,QAAQ,EAAE,MAAM,GAAG,OAAO,CAAC,MAAM,CAAC;IASpD,MAAM,CAAC,SAAS,CAAC,EAAE,EAAE,MAAM,GAAG,OAAO;CAItC;AAED,eAAe,YAAY,CAAC"}

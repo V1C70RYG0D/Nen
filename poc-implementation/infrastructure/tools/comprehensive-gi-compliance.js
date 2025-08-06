@@ -409,7 +409,7 @@ describe('${dir.charAt(0).toUpperCase() + dir.slice(1)} Tests', () => {
   });
 });
 `;
-        fs.writeFileSync(path.join(dirPath, `sample.test.js`), sampleTest);
+        fs.writeFileSync(path.join(dirPath, 'sample.test.js'), sampleTest);
       }
     }
 
@@ -644,7 +644,6 @@ The project follows industry best practices for security, performance, and maint
 
   // Additional GI checks (simplified for brevity)
   checkAdditionalGuidelines() {
-
 
 
     const eslintConfigs = this.findFiles('.eslintrc*', ['.', 'backend/', 'frontend/']);

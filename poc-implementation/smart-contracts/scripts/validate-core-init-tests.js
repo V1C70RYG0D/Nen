@@ -33,8 +33,8 @@ class CoreInitTestValidator {
      * GI #15: Thoroughly verify functionality
      */
     async validate() {
-        console.log("🔍 Core Initialization Test Validation");
-        console.log("=" .repeat(60));
+        console.log('🔍 Core Initialization Test Validation');
+        console.log('=' .repeat(60));
 
         try {
             // Step 1: File structure validation
@@ -53,8 +53,8 @@ class CoreInitTestValidator {
             this.generateValidationReport();
 
             if (this.results.errors.length === 0) {
-                console.log("\n✅ All validations passed successfully!");
-                console.log("🚀 Core initialization tests are ready to run.");
+                console.log('\n✅ All validations passed successfully!');
+                console.log('🚀 Core initialization tests are ready to run.');
                 return true;
             } else {
                 console.log(`\n❌ ${this.results.errors.length} validation errors found.`);
@@ -62,7 +62,7 @@ class CoreInitTestValidator {
             }
 
         } catch (error) {
-            console.error("\n💥 Validation failed:", error);
+            console.error('\n💥 Validation failed:', error);
             return false;
         }
     }
@@ -72,7 +72,7 @@ class CoreInitTestValidator {
      * GI #10: Manage files and repository cleanliness
      */
     async validateFileStructure() {
-        console.log("\n📁 Validating File Structure...");
+        console.log('\n📁 Validating File Structure...');
 
         const requiredFiles = [
             ...this.testFiles,
@@ -123,7 +123,7 @@ class CoreInitTestValidator {
      * GI #19: Enforce code style and consistency
      */
     async validateSyntax() {
-        console.log("\n🔍 Validating Syntax...");
+        console.log('\n🔍 Validating Syntax...');
 
         const tsFiles = this.testFiles.filter(f => f.endsWith('.ts'));
 
@@ -168,12 +168,12 @@ class CoreInitTestValidator {
      * GI #18: Prohibit hardcoding, externalize configuration
      */
     async validateConfiguration() {
-        console.log("\n⚙️ Validating Configuration...");
+        console.log('\n⚙️ Validating Configuration...');
 
         const configFile = path.join(this.basePath, 'tests/config/core-initialization-config.ts');
 
         if (!fs.existsSync(configFile)) {
-            this.results.errors.push("Configuration file missing");
+            this.results.errors.push('Configuration file missing');
             return;
         }
 
@@ -217,13 +217,13 @@ class CoreInitTestValidator {
                 const matches = configContent.match(pattern);
                 if (matches && matches.length > 5) { // Allow some reasonable defaults
                     hasHardcodedValues = true;
-                    this.results.warnings.push(`Possible hardcoded values detected in config`);
+                    this.results.warnings.push('Possible hardcoded values detected in config');
                     break;
                 }
             }
 
             if (!hasHardcodedValues) {
-                console.log("  ✅ Configuration properly externalized");
+                console.log('  ✅ Configuration properly externalized');
             }
 
         } catch (error) {
@@ -236,12 +236,12 @@ class CoreInitTestValidator {
      * GI #23: Manage dependencies securely
      */
     async validateDependencies() {
-        console.log("\n📦 Validating Dependencies...");
+        console.log('\n📦 Validating Dependencies...');
 
         try {
             const packageFile = path.join(this.basePath, 'package.json');
             if (!fs.existsSync(packageFile)) {
-                this.results.errors.push("package.json not found");
+                this.results.errors.push('package.json not found');
                 return;
             }
 
@@ -306,8 +306,8 @@ class CoreInitTestValidator {
      * GI #33: Maintain comprehensive documentation
      */
     generateValidationReport() {
-        console.log("\n📋 Validation Summary:");
-        console.log("-".repeat(40));
+        console.log('\n📋 Validation Summary:');
+        console.log('-'.repeat(40));
 
         console.log(`📁 Files: ${this.results.fileValidation.filter(f => f.exists).length}/${this.results.fileValidation.length} found`);
         console.log(`🔍 Syntax: ${this.results.syntaxValidation.filter(s => s.status === 'VALID').length}/${this.results.syntaxValidation.length} valid`);
@@ -315,12 +315,12 @@ class CoreInitTestValidator {
         console.log(`📦 Dependencies: ${this.results.dependencyValidation.filter(d => d.status === 'FOUND').length} available`);
 
         if (this.results.errors.length > 0) {
-            console.log("\n❌ Errors:");
+            console.log('\n❌ Errors:');
             this.results.errors.forEach(error => console.log(`   • ${error}`));
         }
 
         if (this.results.warnings.length > 0) {
-            console.log("\n⚠️ Warnings:");
+            console.log('\n⚠️ Warnings:');
             this.results.warnings.forEach(warning => console.log(`   • ${warning}`));
         }
 
@@ -355,7 +355,7 @@ if (require.main === module) {
     validator.validate().then(success => {
         process.exit(success ? 0 : 1);
     }).catch(error => {
-        console.error("Validation script error:", error);
+        console.error('Validation script error:', error);
         process.exit(1);
     });
 }

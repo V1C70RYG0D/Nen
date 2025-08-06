@@ -12,13 +12,13 @@ const path = require('path');
 // Validation Configuration - GI-3 & GI-18 Compliant: All values externalized
 const VALIDATION_CONFIG = {
     networks: {
-        localnet: process.env.LOCALNET_RPC_URL || process.env.DEFAULT_LOCALNET_RPC_URL || "http://localhost:8899",
-        devnet: process.env.DEVNET_RPC_URL || process.env.DEFAULT_DEVNET_RPC_URL || "https://api.devnet.solana.com",
-        testnet: process.env.TESTNET_RPC_URL || process.env.DEFAULT_TESTNET_RPC_URL || "https://api.testnet.solana.com"
+        localnet: process.env.LOCALNET_RPC_URL || process.env.DEFAULT_LOCALNET_RPC_URL || 'http://localhost:8899',
+        devnet: process.env.DEVNET_RPC_URL || process.env.DEFAULT_DEVNET_RPC_URL || 'https://api.devnet.solana.com',
+        testnet: process.env.TESTNET_RPC_URL || process.env.DEFAULT_TESTNET_RPC_URL || 'https://api.testnet.solana.com'
     },
     programs: {
-        nenCore: process.env.NEN_CORE_PROGRAM_ID || "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",
-        nenMagicBlock: process.env.NEN_MAGICBLOCK_PROGRAM_ID || "389fjKeMujUy73oPg75ByLpoPA5caj5YTn84XT6zNBpe"
+        nenCore: process.env.NEN_CORE_PROGRAM_ID || 'Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS',
+        nenMagicBlock: process.env.NEN_MAGICBLOCK_PROGRAM_ID || '389fjKeMujUy73oPg75ByLpoPA5caj5YTn84XT6zNBpe'
     },
     validationTests: [
         'program_deployment',
@@ -46,11 +46,11 @@ class DeploymentValidator {
      * GI #15: Thoroughly verify functionality
      */
     async validateDeployment() {
-        console.log("🔍 Smart Contract Deployment Validation");
-        console.log("=" * 50);
+        console.log('🔍 Smart Contract Deployment Validation');
+        console.log('=' * 50);
         console.log(`🌐 Network: ${this.network}`);
         console.log(`🔗 Endpoint: ${VALIDATION_CONFIG.networks[this.network]}`);
-        console.log("=" * 50);
+        console.log('=' * 50);
 
         try {
             // Test network connectivity
@@ -72,7 +72,7 @@ class DeploymentValidator {
             await this.generateValidationReport();
 
         } catch (error) {
-            console.error("❌ Validation failed:", error);
+            console.error('❌ Validation failed:', error);
             this.results.overall = 'failed';
             await this.generateValidationReport();
             process.exit(1);
@@ -84,7 +84,7 @@ class DeploymentValidator {
      * GI #6: Handle integrations carefully
      */
     async testNetworkConnectivity() {
-        console.log("\n🌐 Testing Network Connectivity...");
+        console.log('\n🌐 Testing Network Connectivity...');
 
         const test = {
             name: 'network_connectivity',
@@ -113,7 +113,7 @@ class DeploymentValidator {
                 blockHeight: blockHeight
             };
 
-            console.log(`✅ Network connectivity: OK`);
+            console.log('✅ Network connectivity: OK');
             console.log(`   Version: ${version['solana-core']}`);
             console.log(`   Latency: ${latency}ms`);
             console.log(`   Current Slot: ${slot}`);
@@ -123,7 +123,7 @@ class DeploymentValidator {
             test.status = 'failed';
             test.details = { error: error.message };
 
-            console.log(`❌ Network connectivity: FAILED`);
+            console.log('❌ Network connectivity: FAILED');
             console.log(`   Error: ${error.message}`);
             throw error;
         }
@@ -136,7 +136,7 @@ class DeploymentValidator {
      * GI #2: Real implementations over simulations
      */
     async validateProgramDeployments() {
-        console.log("\n📦 Validating Program Deployments...");
+        console.log('\n📦 Validating Program Deployments...');
 
         for (const [programName, programId] of Object.entries(VALIDATION_CONFIG.programs)) {
             const test = {
@@ -193,7 +193,7 @@ class DeploymentValidator {
      * GI #11: Update and refer to documentation
      */
     async validateIDLFiles() {
-        console.log("\n📄 Validating IDL Files...");
+        console.log('\n📄 Validating IDL Files...');
 
         const test = {
             name: 'idl_validation',
@@ -256,7 +256,7 @@ class DeploymentValidator {
             test.status = 'failed';
             test.details = { error: error.message };
 
-            console.log(`❌ IDL validation: FAILED`);
+            console.log('❌ IDL validation: FAILED');
             console.log(`   Error: ${error.message}`);
         }
 
@@ -268,7 +268,7 @@ class DeploymentValidator {
      * GI #3: Production readiness
      */
     async validateAccountCreation() {
-        console.log("\n🏗️ Validating Account Creation...");
+        console.log('\n🏗️ Validating Account Creation...');
 
         const test = {
             name: 'account_creation',
@@ -301,7 +301,7 @@ class DeploymentValidator {
                 lastValidBlockHeight: lastValidBlockHeight
             };
 
-            console.log(`✅ Account creation validation: OK`);
+            console.log('✅ Account creation validation: OK');
             console.log(`   Latest blockhash: ${blockhash.substring(0, 16)}...`);
             console.log(`   Last valid block height: ${lastValidBlockHeight}`);
             rentCalculations.forEach(calc => {
@@ -312,7 +312,7 @@ class DeploymentValidator {
             test.status = 'failed';
             test.details = { error: error.message };
 
-            console.log(`❌ Account creation validation: FAILED`);
+            console.log('❌ Account creation validation: FAILED');
             console.log(`   Error: ${error.message}`);
         }
 
@@ -324,7 +324,7 @@ class DeploymentValidator {
      * GI #13: Security measures
      */
     async validateSecurity() {
-        console.log("\n🔒 Validating Security Configuration...");
+        console.log('\n🔒 Validating Security Configuration...');
 
         const test = {
             name: 'security_validation',
@@ -371,7 +371,7 @@ class DeploymentValidator {
             test.status = 'passed';
             test.details = { securityChecks: securityChecks };
 
-            console.log(`✅ Security validation: Completed`);
+            console.log('✅ Security validation: Completed');
             securityChecks.forEach(check => {
                 const icon = check.status === 'ok' ? '✅' : check.status === 'warning' ? '⚠️' : 'ℹ️';
                 console.log(`   ${icon} ${check.check}: ${check.value} ${check.note || ''}`);
@@ -381,7 +381,7 @@ class DeploymentValidator {
             test.status = 'failed';
             test.details = { error: error.message };
 
-            console.log(`❌ Security validation: FAILED`);
+            console.log('❌ Security validation: FAILED');
             console.log(`   Error: ${error.message}`);
         }
 
@@ -405,20 +405,20 @@ class DeploymentValidator {
             coverage: totalTests > 0 ? (passedTests / totalTests * 100).toFixed(1) : 0
         };
 
-        console.log("\n📋 DEPLOYMENT VALIDATION REPORT");
-        console.log("=" * 50);
+        console.log('\n📋 DEPLOYMENT VALIDATION REPORT');
+        console.log('=' * 50);
         console.log(`🌐 Network: ${this.network}`);
         console.log(`📅 Timestamp: ${this.results.timestamp}`);
         console.log(`🎯 Overall Status: ${this.results.overall === 'passed' ? '✅ PASSED' : '❌ FAILED'}`);
-        console.log("");
-        console.log("📊 Test Summary:");
+        console.log('');
+        console.log('📊 Test Summary:');
         console.log(`   Total Tests: ${totalTests}`);
         console.log(`   Passed: ${passedTests}`);
         console.log(`   Failed: ${failedTests}`);
         console.log(`   Success Rate: ${this.results.summary.coverage}%`);
 
         if (failedTests > 0) {
-            console.log("\n❌ Failed Tests:");
+            console.log('\n❌ Failed Tests:');
             this.results.tests
                 .filter(t => t.status === 'failed')
                 .forEach(test => {
@@ -438,17 +438,17 @@ class DeploymentValidator {
         fs.writeFileSync(reportPath, JSON.stringify(this.results, null, 2));
         console.log(`\n📄 Detailed report saved: ${reportPath}`);
 
-        console.log("\n" + "=" * 50);
+        console.log('\n' + '=' * 50);
 
         if (this.results.overall === 'failed') {
-            console.log("💡 Recommendations:");
-            console.log("   1. Check program deployment status");
-            console.log("   2. Verify network connectivity");
+            console.log('💡 Recommendations:');
+            console.log('   1. Check program deployment status');
+            console.log('   2. Verify network connectivity');
             console.log("   3. Run 'anchor build' to generate IDL files");
-            console.log("   4. Review error details in the report");
+            console.log('   4. Review error details in the report');
         } else {
-            console.log("🎉 Deployment validation successful!");
-            console.log("   Ready for comprehensive testing");
+            console.log('🎉 Deployment validation successful!');
+            console.log('   Ready for comprehensive testing');
         }
     }
 }

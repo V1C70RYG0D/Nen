@@ -1,14 +1,31 @@
 /**
  * Service Initialization Module
-
+ * Enhanced with comprehensive service implementations
  */
 
 import { logger } from '../utils/logger';
 import config from '../config';
 
-// Export all services
+// Export existing services
 export { MultisigVaultService } from './MultisigVaultService';
 export { TransactionProposalService } from './TransactionProposalService';
+export { AuthenticationService } from './AuthenticationService';
+export { UserService } from './UserService';
+
+// Export new comprehensive service implementations
+export { ApplicationService } from './ApplicationService';
+export { NotificationService } from './NotificationService';
+export { FileService } from './FileService';
+export { EnhancedUserManagementService } from './EnhancedUserManagementService';
+
+// Export enhanced service factory
+export { 
+  EnhancedServiceFactory, 
+  getEnhancedServiceFactory, 
+  resetEnhancedServiceFactory,
+  initializeEnhancedServices,
+  getServiceStatistics
+} from './EnhancedServiceFactory';
 
 // Service initialization flags
 let dbInitialized = false;

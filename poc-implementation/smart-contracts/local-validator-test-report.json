@@ -1,0 +1,68 @@
+{
+  "summary": {
+    "testSuite": "Local Validator Integration Tests",
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "successRate": "100.00%",
+    "totalDuration": "664ms",
+    "timestamp": "2025-08-06T12:41:02.742Z"
+  },
+  "validationResults": {
+    "deploymentReady": true,
+    "web3Ready": true,
+    "securityValidated": true,
+    "performanceAcceptable": true
+  },
+  "recommendations": [
+    "Deploy to devnet for full integration testing",
+    "Run anchor test with local validator",
+    "Perform load testing with multiple users",
+    "Validate gas costs on real transactions",
+    "Test upgrade scenarios"
+  ],
+  "details": [
+    {
+      "name": "Deployment Readiness",
+      "status": "PASSED",
+      "duration": 80,
+      "timestamp": "2025-08-06T12:41:02.890Z"
+    },
+    {
+      "name": "Transaction Signing Patterns",
+      "status": "PASSED",
+      "duration": 23,
+      "timestamp": "2025-08-06T12:41:02.915Z"
+    },
+    {
+      "name": "State Query Capabilities",
+      "status": "PASSED",
+      "duration": 12,
+      "timestamp": "2025-08-06T12:41:02.928Z"
+    },
+    {
+      "name": "Web3 Integration Readiness",
+      "status": "PASSED",
+      "duration": 7,
+      "timestamp": "2025-08-06T12:41:02.935Z"
+    },
+    {
+      "name": "Performance Benchmarks",
+      "status": "PASSED",
+      "duration": 6,
+      "timestamp": "2025-08-06T12:41:02.942Z"
+    },
+    {
+      "name": "Upgradeability Patterns",
+      "status": "PASSED",
+      "duration": 172,
+      "timestamp": "2025-08-06T12:41:03.115Z"
+    },
+    {
+      "name": "Security Validation",
+      "status": "PASSED",
+      "duration": 282,
+      "timestamp": "2025-08-06T12:41:03.399Z"
+    }
+  ]
+}

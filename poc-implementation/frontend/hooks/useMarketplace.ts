@@ -1,73 +1,130 @@
-import { useState, useEffect, useCallback } from 'react';
-import type { MarketplaceListing } from '@/types';
+import { useState, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useAnchorWallet } from '@solana/wallet-adapter-react';
 
-interface UseMarketplaceHook {
-  listings: MarketplaceListing[];
-  isLoading: boolean;
-  error: string | null;
-  refetch: () => void;
+interface AIAgent {
+  id: string;
+  name: string;
+  owner: string;
+  elo: number;
+  winRate: number;
+  gamesPlayed: number;
+  price?: number;
+  personality: string;
+  isForSale?: boolean;
+  nenType: string;
+  specialAbilities: string[];
+  generation: number;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
 }
 
-export const useMarketplace = (): UseMarketplaceHook => {
-  const [listings, setListings] = useState<MarketplaceListing[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+export const useMarketplace = () => {
+  const wallet = useAnchorWallet();
+  const queryClient = useQueryClient();
 
-  const fetchMarketplaceData = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  // Fetch agents
+  const { data: agents, isLoading } = useQuery<AIAgent[]>('marketplace-agents', async () => {
+    // In a real implementation, this would fetch from the API
+    const mockAgents: AIAgent[] = [
+      {
+        id: '1',
+        name: 'Shadow Hunter X',
+        owner: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+        elo: 2450,
+        winRate: 0.78,
+        gamesPlayed: 234,
+        price: 5000000000,
+        personality: 'Aggressive',
+        isForSale: true,
+        nenType: 'enhancement',
+        specialAbilities: ['Power Strike', 'Rage Mode', 'Counter Attack'],
+        generation: 3,
+        rarity: 'legendary',
+      },
+      {
+        id: '2',
+        name: 'Mind Weaver',
+        owner: '8WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+        elo: 2280,
+        winRate: 0.65,
+        gamesPlayed: 156,
+        price: 3000000000,
+        personality: 'Strategic',
+        isForSale: true,
+        nenType: 'manipulation',
+        specialAbilities: ['Mind Control', 'Illusion', 'Puppet Master'],
+        generation: 2,
+        rarity: 'epic',
+      },
+      {
+        id: '3',
+        name: 'Lightning Bolt',
+        owner: '7WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+        elo: 2150,
+        winRate: 0.58,
+        gamesPlayed: 89,
+        personality: 'Speedster',
+        isForSale: false,
+        nenType: 'transmutation',
+        specialAbilities: ['Lightning Speed', 'Thunder Strike'],
+        generation: 1,
+        rarity: 'rare',
+      },
+      {
+        id: '4',
+        name: 'Phantom Sniper',
+        owner: '6WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+        elo: 2350,
+        winRate: 0.72,
+        gamesPlayed: 312,
+        price: 8000000000,
+        personality: 'Precision',
+        isForSale: true,
+        nenType: 'emission',
+        specialAbilities: ['Long Range', 'Perfect Shot', 'Homing Missile', 'Explosive Round'],
+        generation: 4,
+        rarity: 'legendary',
+      },
+    ];
 
-      // Mock API call
-      const response = await Promise.resolve({
-        data: [
-          {
-            id: '1',
-            agent: {
-              id: 'agent-1',
-              name: 'Agent Alpha',
-              owner: 'owner-1',
-              elo: 1500,
-              winRate: 0.65,
-              gamesPlayed: 42,
-              totalWinnings: 1250,
-              personality: 'Aggressive' as const,
-              avatar: '🤖',
-              isForSale: true,
-              price: 100,
-              traits: {
-                strategy: 85,
-                adaptability: 70,
-                aggression: 92,
-                patience: 35,
-                creativity: 78
-              }
-            },
-            seller: 'seller-1',
-            price: 100,
-            listedAt: new Date(),
-            status: 'active' as const,
-          },
-        ],
-      });
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
-      setListings(response.data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch data.');
-    } finally {
-      setIsLoading(false);
+    return mockAgents;
+  });
+
+  // Buy agent mutation
+  const buyAgentMutation = useMutation(
+    async (agentId: string) => {
+      if (!wallet) {
+        throw new Error('Wallet not connected');
+      }
+
+      // In a real implementation, this would call the smart contract
+      console.log('Buying agent:', agentId);
+
+      // Simulate transaction
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      return { success: true, txId: 'mock-tx-id' };
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('marketplace-agents');
+      }
     }
-  }, []);
+  );
 
-  useEffect(() => {
-    fetchMarketplaceData();
-  }, [fetchMarketplaceData]);
+  const buyAgent = useCallback(
+    (agentId: string) => {
+      return buyAgentMutation.mutateAsync(agentId);
+    },
+    [buyAgentMutation]
+  );
 
   return {
-    listings,
+    agents: agents || [],
     isLoading,
-    error,
-    refetch: fetchMarketplaceData,
+    buyAgent,
   };
-};
-
+}; 

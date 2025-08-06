@@ -8,15 +8,15 @@ export default defineConfig({
     },
     specPattern: 'cypress/e2e*.cy.{js,jsx,ts,tsx}',
     supportFile: 'cypress/support/index.js',
-    video: false,
+    video: false
   },
   // Reporter configuration
   reporter: 'cypress-multi-reporters',
   reporterOptions: {
-    configFile: 'config/reporter-config.json',
+    configFile: 'config/reporter-config.json'
   },
   env: {
-    FAIL_FAST_PLUGIN: 'false',
-  },
+    FAIL_FAST_PLUGIN: 'false'
+  }
 });
 

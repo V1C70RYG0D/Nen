@@ -5,7 +5,7 @@ const WebSocket = require('ws');
 describe('Backend API Deployment Tests', () => {
   const baseURL = process.env.API_BASE_URL || process.env.TEST_API_BASE_URL || (() => {
   })();
-  let authToken = null;
+  const authToken = null;
 
   beforeAll(async () => {
     // Wait for services to be ready

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { WalletButton } from '@/components/WalletButton';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -148,7 +148,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               )}
               
               {/* Wallet Button */}
-              <WalletMultiButton className="cyber-button !text-sm" />
+              <WalletButton className="!text-sm" />
               
               {/* Mobile Menu Button */}
               <button

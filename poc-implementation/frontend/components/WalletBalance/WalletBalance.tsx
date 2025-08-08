@@ -203,7 +203,7 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({ className = '' }) 
               <div className="bg-cyber-dark/50 p-4 rounded border border-solana-purple/20">
                 <div className="text-center mb-3">
                   <div className="text-2xl font-mono text-magicblock-primary">
-                    {formatSOL(bettingBalance * LAMPORTS_PER_SOL)} SOL
+                    {formatSOL((bettingBalance || 0) * LAMPORTS_PER_SOL)} SOL
                   </div>
                   <p className="text-gray-400 text-xs">Betting Balance</p>
                 </div>
@@ -211,13 +211,13 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({ className = '' }) 
                 <div className="grid grid-cols-2 gap-3 text-center">
                   <div className="bg-cyber-darker/50 p-2 rounded">
                     <div className="text-sm font-mono text-solana-green">
-                      {formatSOL(availableBalance * LAMPORTS_PER_SOL)}
+                      {formatSOL((availableBalance || 0) * LAMPORTS_PER_SOL)}
                     </div>
                     <div className="text-xs text-gray-400 uppercase">Available</div>
                   </div>
                   <div className="bg-cyber-darker/50 p-2 rounded">
                     <div className="text-sm font-mono text-yellow-400">
-                      {formatSOL(lockedBalance * LAMPORTS_PER_SOL)}
+                      {formatSOL((lockedBalance || 0) * LAMPORTS_PER_SOL)}
                     </div>
                     <div className="text-xs text-gray-400 uppercase">Locked</div>
                   </div>

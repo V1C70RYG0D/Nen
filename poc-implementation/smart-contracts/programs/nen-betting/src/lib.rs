@@ -49,6 +49,7 @@ pub mod nen_betting {
     pub fn create_betting_account(ctx: Context<CreateBettingAccount>) -> Result<()> {
         let betting_account = &mut ctx.accounts.betting_account;
         let user = ctx.accounts.user.key();
+        let current_time = Clock::get()?.unix_timestamp;
         
         betting_account.user = user;
         betting_account.balance = 0;
@@ -57,8 +58,9 @@ pub mod nen_betting {
         betting_account.locked_balance = 0;
         betting_account.deposit_count = 0;
         betting_account.withdrawal_count = 0;
-        betting_account.created_at = Clock::get()?.unix_timestamp;
-        betting_account.last_updated = Clock::get()?.unix_timestamp;
+        betting_account.created_at = current_time;
+        betting_account.last_updated = current_time;
+        betting_account.last_withdrawal_time = 0; // User Story 2a: Initialize withdrawal timestamp
         betting_account.bump = ctx.bumps.betting_account;
 
         // Update platform stats
@@ -134,7 +136,7 @@ pub mod nen_betting {
         Ok(())
     }
 
-    /// Withdraw SOL from betting account
+    /// Withdraw SOL from betting account (User Story 2a)
     pub fn withdraw_sol(
         ctx: Context<WithdrawSol>,
         amount: u64,
@@ -145,29 +147,41 @@ pub mod nen_betting {
         require!(amount > 0, BettingError::InvalidWithdrawalAmount);
         
         let betting_account = &mut ctx.accounts.betting_account;
+        let current_time = Clock::get()?.unix_timestamp;
         
-        // Check available balance (excluding locked funds)
+        // User Story 2a: Enforce 24-hour cooldown using devnet timestamps
+        let cooldown_period = 24 * 60 * 60; // 24 hours in seconds
+        if betting_account.withdrawal_count > 0 && 
+           current_time - betting_account.last_withdrawal_time < cooldown_period {
+            let remaining_time = cooldown_period - (current_time - betting_account.last_withdrawal_time);
+            msg!("24-hour cooldown active. Remaining time: {} seconds", remaining_time);
+            return Err(BettingError::WithdrawalCooldownActive.into());
+        }
+        
+        // User Story 2a: Validate against locked funds on devnet PDA
         let available_balance = betting_account.balance - betting_account.locked_balance;
         require!(amount <= available_balance, BettingError::InsufficientBalance);
 
-        // Transfer SOL from betting PDA back to user
+        // User Story 2a: Transfer real SOL from PDA to wallet via devnet transaction
         let betting_account_info = betting_account.to_account_info();
         let user_info = ctx.accounts.user.to_account_info();
         
         **betting_account_info.try_borrow_mut_lamports()? -= amount;
         **user_info.try_borrow_mut_lamports()? += amount;
 
-        // Update balance records
+        // Update balance records with real devnet timestamps
         let previous_balance = betting_account.balance;
         betting_account.balance -= amount;
         betting_account.total_withdrawn += amount;
         betting_account.withdrawal_count += 1;
-        betting_account.last_updated = Clock::get()?.unix_timestamp;
+        betting_account.last_updated = current_time;
+        betting_account.last_withdrawal_time = current_time; // User Story 2a: Track withdrawal time
 
         // Update platform statistics
         let platform = &mut ctx.accounts.betting_platform;
         platform.total_withdrawals += amount;
 
+        // User Story 2a: Emit withdrawal event; update real balance records on devnet
         emit!(WithdrawalCompleted {
             user: ctx.accounts.user.key(),
             pda_address: betting_account.key(),
@@ -175,7 +189,7 @@ pub mod nen_betting {
             previous_balance,
             new_balance: betting_account.balance,
             transaction_count: betting_account.withdrawal_count,
-            timestamp: Clock::get()?.unix_timestamp,
+            timestamp: current_time,
         });
 
         Ok(())
@@ -372,6 +386,7 @@ pub struct BettingAccount {
     pub withdrawal_count: u32,     // Number of withdrawals made
     pub created_at: i64,           // Account creation timestamp
     pub last_updated: i64,         // Last transaction timestamp
+    pub last_withdrawal_time: i64, // Last withdrawal timestamp for cooldown (User Story 2a)
     pub bump: u8,                  // PDA bump seed
 }
 
@@ -472,6 +487,9 @@ pub enum BettingError {
     
     #[msg("Insufficient locked funds for this operation")]
     InsufficientLockedFunds,
+    
+    #[msg("24-hour withdrawal cooldown is active")]
+    WithdrawalCooldownActive,
     
     #[msg("Unauthorized access")]
     Unauthorized,

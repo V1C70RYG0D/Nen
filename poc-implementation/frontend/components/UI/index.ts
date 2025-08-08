@@ -1,2 +1,2 @@
-export { ParticlesBackground } from './Particles';
+// export { ParticlesBackground } from './Particles';
 export { NenLoader } from './NenLoader'; 

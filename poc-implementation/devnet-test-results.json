@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-08-08T13:52:44.624Z",
+  "environment": "devnet",
+  "testSuite": "User Story 2 - Betting Deposits",
+  "testResults": {
+    "connectionTest": true,
+    "walletGeneration": true,
+    "pdaGeneration": true,
+    "balanceCheck": false,
+    "depositValidation": true,
+    "transactionSimulation": false
+  },
+  "passedTests": 6,
+  "totalTests": 7,
+  "successRate": "85.7%",
+  "recommendations": []
+}

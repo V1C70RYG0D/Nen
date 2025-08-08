@@ -9,6 +9,12 @@ import { clusterApiUrl } from '@solana/web3.js';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Toaster } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+// Import Real Devnet Betting App for User Story 2
+const RealDevnetBettingApp = dynamic(() => import('../components/RealDevnetBettingApp'), {
+  ssr: false,
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,10 +26,13 @@ const queryClient = new QueryClient({
 });
 
 export default function App({ Component, pageProps, router }: AppProps) {
-  // Configure Solana RPC endpoint
-  const endpoint = useMemo(() => process.env.NEXT_PUBLIC_RPC_URL || clusterApiUrl('devnet'), []);
+  // REAL DEVNET CONFIGURATION - User Story 2
+  const endpoint = useMemo(() => {
+    // Real devnet endpoint - no simulations
+    return process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+  }, []);
 
-  // Configure wallets
+  // Real wallet adapters
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
@@ -32,6 +41,34 @@ export default function App({ Component, pageProps, router }: AppProps) {
     []
   );
 
+  // For User Story 2, use the real devnet implementation
+  if (router.pathname === '/' || router.pathname === '/betting') {
+    return (
+      <>
+        {/* Real Devnet Warning */}
+        <div style={{
+          background: '#ff4444',
+          color: 'white',
+          padding: '8px',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          fontSize: '0.9em'
+        }}>
+          🔴 REAL DEVNET - User Story 2 Implementation - All transactions use actual SOL
+        </div>
+        
+        <ConnectionProvider endpoint={endpoint}>
+          <WalletProvider wallets={wallets} autoConnect>
+            <WalletModalProvider>
+              <RealDevnetBettingApp />
+            </WalletModalProvider>
+          </WalletProvider>
+        </ConnectionProvider>
+      </>
+    );
+  }
+
+  // Legacy pages use existing setup
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>

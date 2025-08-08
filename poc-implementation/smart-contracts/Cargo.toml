@@ -6,8 +6,8 @@ resolver = "2"
 
 # Enhanced security dependencies for POC Master Plan
 [workspace.dependencies]
-anchor-lang = "0.31.0"
-anchor-spl = "0.31.0"
+anchor-lang = "0.31.1"
+anchor-spl = "0.31.1"
 solana-program = "1.18.22"
 spl-token = "4.0.0"
 spl-associated-token-account = "2.3.0"

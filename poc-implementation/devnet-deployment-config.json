@@ -1,0 +1,20 @@
+{
+  "network": "devnet",
+  "programs": {
+    "nen-core": {
+      "programId": "BfvcT9Rk5o7YpGSutqSpTBFrFeuzpWBPdDGvkF9weTks",
+      "name": "Nen Core Program",
+      "description": "Core platform functionality and user account management"
+    },
+    "nen-betting": {
+      "programId": "J8mEg7V8K3qY4pZ2nDx5T6uC9wR1sF4hL7vA3eM2kQ9p",
+      "name": "Nen Betting Program",
+      "description": "Betting account management and SOL withdrawal functionality"
+    },
+    "nen-magicblock": {
+      "programId": "389fjKeMujUy73oPg75ByLpoPA5caj5YTn84XT6zNBpe",
+      "name": "Nen MagicBlock Program",
+      "description": "Game session management with enhanced ECS integration"
+    }
+  }
+}

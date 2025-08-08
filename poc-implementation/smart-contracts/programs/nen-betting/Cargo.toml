@@ -1,7 +1,7 @@
 [package]
 name = "nen-betting"
 version = "0.1.0"
-description = "Nen Platform Betting Program - Real SOL deposits and withdrawals"
+description = "Created with Anchor"
 edition = "2021"
 
 [lib]
@@ -16,11 +16,7 @@ cpi = ["no-entrypoint"]
 default = []
 
 [dependencies]
-anchor-lang = "0.29.0"
-anchor-spl = "0.29.0"
-spl-token = "4.0.0"
+anchor-lang = { workspace = true }
 
-[dev-dependencies]
-anchor-client = "0.29.0"
-solana-sdk = "1.17.0"
-tokio = { version = "1.0", features = ["macros"] }
+[target.bpfel-unknown-unknown.dependencies]
+getrandom = { version = "0.2", features = ["custom"] }

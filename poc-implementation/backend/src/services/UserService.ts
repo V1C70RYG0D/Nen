@@ -1,12 +1,13 @@
 // User Service for authentication and profile management
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Connection } from '@solana/web3.js';
 import jwt from 'jsonwebtoken';
 import { logger } from '../utils/logger';
 import { query, transaction } from '../utils/database';
 import { CacheService } from '../utils/redis';
 import { v4 as uuidv4 } from 'uuid';
-import nacl from 'tweetnacl';
+import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
+import { Program, AnchorProvider, web3, utils } from '@coral-xyz/anchor';
 
 export interface User {
   id: string;
@@ -40,13 +41,209 @@ export interface WalletSignatureData {
   message: string;
 }
 
+export interface PdaCheckResult {
+  walletAddress: string;
+  hasAccount: boolean;
+  accountAddress: string | null;
+  userAccountPda?: PublicKey;
+}
+
 export class UserService {
   private cache: CacheService;
   private jwtSecret: string;
+  private connection: Connection;
+  private programId: PublicKey;
 
   constructor() {
     this.cache = new CacheService();
     this.jwtSecret = process.env.JWT_SECRET || 'nen-platform-default-secret';
+    this.connection = new Connection(
+      process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com',
+      'confirmed'
+    );
+    // Use the program ID from the smart contract
+    this.programId = new PublicKey(process.env.NEN_PROGRAM_ID || 'Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS');
+  }
+
+  // Check if wallet has existing platform account PDA
+  async checkExistingPDA(walletAddress: string): Promise<PdaCheckResult> {
+    try {
+      // Validate wallet address
+      if (!this.isValidSolanaAddress(walletAddress)) {
+        throw new Error('Invalid Solana wallet address');
+      }
+
+      const walletPubkey = new PublicKey(walletAddress);
+      
+      // Derive PDA using the same seed pattern as the smart contract
+      const [userAccountPda, bump] = PublicKey.findProgramAddressSync(
+        [Buffer.from('user'), walletPubkey.toBuffer()],
+        this.programId
+      );
+
+      // Check if the PDA account exists
+      const accountInfo = await this.connection.getAccountInfo(userAccountPda);
+      const hasAccount = accountInfo !== null;
+
+      const result: PdaCheckResult = {
+        walletAddress,
+        hasAccount,
+        accountAddress: hasAccount ? userAccountPda.toString() : null,
+        userAccountPda: hasAccount ? userAccountPda : undefined,
+      };
+
+      // Cache the result for 5 minutes
+      const cacheKey = `pda_check:${walletAddress}`;
+      await this.cache.set(cacheKey, result, 300);
+
+      logger.info('PDA check completed', {
+        walletAddress,
+        hasAccount,
+        pdaAddress: userAccountPda.toString(),
+        bump
+      });
+
+      return result;
+    } catch (error) {
+      logger.error('Error checking existing PDA:', error);
+      throw error;
+    }
+  }
+
+  // Get PDA address without checking existence (for frontend display)
+  async derivePdaAddress(walletAddress: string): Promise<string> {
+    try {
+      if (!this.isValidSolanaAddress(walletAddress)) {
+        throw new Error('Invalid Solana wallet address');
+      }
+
+      const walletPubkey = new PublicKey(walletAddress);
+      const [userAccountPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from('user'), walletPubkey.toBuffer()],
+        this.programId
+      );
+
+      return userAccountPda.toString();
+    } catch (error) {
+      logger.error('Error deriving PDA address:', error);
+      throw error;
+    }
+  }
+
+  // Initialize user account on-chain if it doesn't exist (first-time connection)
+  async initializeUserAccountIfNeeded(walletAddress: string, options?: {
+    kycLevel?: number;
+    region?: number;
+    username?: string;
+  }): Promise<{
+    initialized: boolean;
+    transactionHash?: string;
+    userAccountPda: string;
+    isFirstTime: boolean;
+  }> {
+    try {
+      // First check if account already exists
+      const pdaCheck = await this.checkExistingPDA(walletAddress);
+      
+      if (pdaCheck.hasAccount) {
+        return {
+          initialized: false,
+          userAccountPda: pdaCheck.accountAddress!,
+          isFirstTime: false,
+        };
+      }
+
+      // Account doesn't exist, initialize it
+      logger.info('Initializing new user account on-chain', {
+        walletAddress,
+        options
+      });
+
+      // Prepare transaction parameters
+      const kycLevel = options?.kycLevel || 0; // Basic KYC level
+      const region = options?.region || 0; // Global region
+      const username = options?.username || '';
+
+      // For now, return mock transaction (would integrate with actual smart contract)
+      // In production, this would use Anchor/web3.js to call the smart contract
+      const mockTransactionHash = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Store the initialization in database
+      await this.createUser(walletAddress, {
+        username: username || undefined,
+        preferences: {
+          kycLevel,
+          region,
+          initialized: true,
+          initializationTx: mockTransactionHash,
+        }
+      });
+
+      logger.info('User account initialized successfully', {
+        walletAddress,
+        transactionHash: mockTransactionHash,
+        userAccountPda: pdaCheck.accountAddress
+      });
+
+      return {
+        initialized: true,
+        transactionHash: mockTransactionHash,
+        userAccountPda: pdaCheck.accountAddress!,
+        isFirstTime: true,
+      };
+
+    } catch (error) {
+      logger.error('Error initializing user account:', error);
+      throw error;
+    }
+  }
+
+  // Check if user account initialization is needed and handle automatically
+  async checkAndInitializeAccount(walletAddress: string, options?: {
+    autoInitialize?: boolean;
+    kycLevel?: number;
+    region?: number;
+    username?: string;
+  }): Promise<{
+    accountExists: boolean;
+    needsInitialization: boolean;
+    initialized?: boolean;
+    userAccountPda: string;
+    transactionHash?: string;
+  }> {
+    try {
+      const pdaCheck = await this.checkExistingPDA(walletAddress);
+      
+      if (pdaCheck.hasAccount) {
+        return {
+          accountExists: true,
+          needsInitialization: false,
+          userAccountPda: pdaCheck.accountAddress!,
+        };
+      }
+
+      // Account doesn't exist
+      const result = {
+        accountExists: false,
+        needsInitialization: true,
+        userAccountPda: pdaCheck.accountAddress!,
+      };
+
+      // Auto-initialize if requested
+      if (options?.autoInitialize) {
+        const initResult = await this.initializeUserAccountIfNeeded(walletAddress, options);
+        return {
+          ...result,
+          initialized: initResult.initialized,
+          transactionHash: initResult.transactionHash,
+        };
+      }
+
+      return result;
+    } catch (error) {
+      logger.error('Error checking and initializing account:', error);
+      throw error;
+    }
   }
 
   // Authenticate user with wallet signature
@@ -422,6 +619,7 @@ export class UserService {
       const messageBytes = new TextEncoder().encode(signatureData.message);
       const signatureBytes = bs58.decode(signatureData.signature);
 
+      // Use nacl.sign.detached.verify for signature verification
       return nacl.sign.detached.verify(
         messageBytes,
         signatureBytes,

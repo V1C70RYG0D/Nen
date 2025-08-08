@@ -8,10 +8,12 @@ anchor_version = "0.30.1"
 [programs.localnet]
 nen_core = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
 nen_magicblock = "389fjKeMujUy73oPg75ByLpoPA5caj5YTn84XT6zNBpe"
+nen_betting = "Bet1111111111111111111111111111111111111111"
 
 [programs.devnet]
 nen_core = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
 nen_magicblock = "389fjKeMujUy73oPg75ByLpoPA5caj5YTn84XT6zNBpe"
+nen_betting = "Bet1111111111111111111111111111111111111111"
 
 [provider]
 cluster = "devnet"

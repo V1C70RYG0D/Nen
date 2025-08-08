@@ -28,7 +28,7 @@ export const useGameState = (matchId: string) => {
     if (!matchId) return;
 
     // Connect to WebSocket server
-    const socketInstance = io(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001', {
+    const socketInstance = io(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3011', {
       query: { matchId },
       transports: ['websocket'],
     });

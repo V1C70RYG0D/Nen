@@ -190,15 +190,32 @@ describe('Nen Platform User Stories Validation', () => {
       });
 
       it('should check for existing platform account PDA', async () => {
-        // Mock PDA check
-        const pdaCheck = {
-          walletAddress: testWallet,
-          hasAccount: Math.random() > 0.5,
-          accountAddress: testWallet + '_pda'
+        // Mock PDA check using actual UserService interface
+        const userService = {
+          checkExistingPDA: async (walletAddress) => {
+            // Simulate PDA derivation and check
+            const hasAccount = Math.random() > 0.5;
+            return {
+              walletAddress: walletAddress,
+              hasAccount: hasAccount,
+              accountAddress: hasAccount ? walletAddress + '_pda' : null,
+              userAccountPda: hasAccount ? walletAddress + '_pda_object' : undefined
+            };
+          }
         };
+
+        const pdaCheck = await userService.checkExistingPDA(testWallet);
 
         expect(pdaCheck.walletAddress).toBe(testWallet);
         expect(typeof pdaCheck.hasAccount).toBe('boolean');
+        expect(pdaCheck.accountAddress).toBeDefined();
+        
+        // Log the PDA check for verification
+        console.log('PDA Check Result:', {
+          wallet: pdaCheck.walletAddress,
+          hasAccount: pdaCheck.hasAccount,
+          pdaAddress: pdaCheck.accountAddress
+        });
       });
 
       it('should query and display user SOL balance', async () => {

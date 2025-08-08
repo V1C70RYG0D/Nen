@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Story 3 Demo - AI Matches</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .nen-enhancement { background: linear-gradient(135deg, #ff4444, #cc0000); }
+        .nen-emission { background: linear-gradient(135deg, #00ccff, #0088cc); }
+        .nen-transmutation { background: linear-gradient(135deg, #ffdd00, #cc9900); }
+        .nen-conjuration { background: linear-gradient(135deg, #cc44ff, #8800cc); }
+        .nen-manipulation { background: linear-gradient(135deg, #44ff44, #00cc00); }
+        .nen-specialization { background: linear-gradient(135deg, #ff44cc, #cc0088); }
+        
+        .status-live { 
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            animation: pulse 2s infinite;
+        }
+        .status-upcoming { background: linear-gradient(45deg, #ffaa00, #cc7700); }
+        .status-completed { background: linear-gradient(45deg, #666666, #444444); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                🎮 User Story 3 Demo
+            </h1>
+            <p class="text-gray-300 text-lg">User views upcoming AI matches</p>
+        </div>
+
+        <!-- User Story Requirements -->
+        <div class="bg-gray-800 p-6 rounded-lg mb-8">
+            <h2 class="text-xl font-semibold mb-4">📋 User Story 3 Requirements:</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-center space-x-2">
+                    <span class="text-green-400">✓</span>
+                    <span>User navigates to matches page</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-green-400">✓</span>
+                    <span>User sees list of scheduled matches</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-green-400">✓</span>
+                    <span>User filters by bet range or AI rating</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-green-400">✓</span>
+                    <span>User clicks match for details</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-gray-800 p-6 rounded-lg mb-6">
+            <h3 class="text-lg font-semibold mb-4">🔍 Filters</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Status</label>
+                    <select id="statusFilter" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                        <option value="">All Statuses</option>
+                        <option value="live">Live</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Min Rating</label>
+                    <input type="number" id="minRating" placeholder="e.g. 1500" 
+                           class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Max Rating</label>
+                    <input type="number" id="maxRating" placeholder="e.g. 2000" 
+                           class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="applyFilters()" 
+                            class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="text-center py-8 hidden">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
+            <p class="mt-2 text-gray-400">Loading matches...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="bg-red-500/20 border border-red-500 rounded-lg p-4 mb-6 hidden">
+            <p class="text-red-400" id="errorMessage"></p>
+        </div>
+
+        <!-- Matches List -->
+        <div id="matchesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Matches will be loaded here -->
+        </div>
+
+        <!-- Match Details Modal -->
+        <div id="matchModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Match Details</h3>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-white">✕</button>
+                    </div>
+                    <div id="matchDetails">
+                        <!-- Match details will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3001';
+        let allMatches = [];
+
+        async function loadMatches(filters = {}) {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const matchesList = document.getElementById('matchesList');
+
+            loading.classList.remove('hidden');
+            error.classList.add('hidden');
+
+            try {
+                // Build query string
+                const params = new URLSearchParams();
+                if (filters.status) params.append('status', filters.status);
+                if (filters.minRating) params.append('minRating', filters.minRating);
+                if (filters.maxRating) params.append('maxRating', filters.maxRating);
+
+                const url = `${API_BASE_URL}/api/matches${params.toString() ? '?' + params.toString() : ''}`;
+                console.log('🔗 Fetching:', url);
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    allMatches = data.data.matches;
+                    renderMatches(allMatches);
+                    console.log('✅ Loaded', allMatches.length, 'matches');
+                } else {
+                    throw new Error(data.error || 'Failed to load matches');
+                }
+            } catch (err) {
+                console.error('❌ Error loading matches:', err);
+                showError(err.message);
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        function renderMatches(matches) {
+            const container = document.getElementById('matchesList');
+            
+            if (matches.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-6xl mb-4">🎮</div>
+                        <h3 class="text-xl font-semibold mb-2">No matches found</h3>
+                        <p class="text-gray-400">Try adjusting your filters or check back later</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = matches.map(match => `
+                <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition-colors cursor-pointer"
+                     onclick="showMatchDetails('${match.id}')">
+                    <!-- Status Badge -->
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold status-${match.status}">
+                            ${match.status.toUpperCase()}
+                        </span>
+                        ${match.viewerCount ? `<span class="text-gray-400 text-sm">👥 ${match.viewerCount}</span>` : ''}
+                    </div>
+
+                    <!-- Agents -->
+                    <div class="grid grid-cols-3 gap-4 items-center mb-4">
+                        <!-- Agent 1 -->
+                        <div class="text-center">
+                            <div class="w-16 h-16 rounded-full nen-${match.agent1.nenType} mx-auto mb-2 flex items-center justify-center text-white font-bold">
+                                ${match.agent1.name.charAt(0)}
+                            </div>
+                            <h4 class="font-semibold text-sm">${match.agent1.name}</h4>
+                            <p class="text-gray-400 text-xs">ELO: ${match.agent1.elo}</p>
+                            <p class="text-gray-500 text-xs">${match.agent1.nenType}</p>
+                        </div>
+
+                        <!-- VS -->
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-400">VS</div>
+                            ${match.bettingPool ? `<div class="text-xs text-gray-400 mt-1">
+                                ${(match.bettingPool.oddsAgent1).toFixed(1)} : ${(match.bettingPool.oddsAgent2).toFixed(1)}
+                            </div>` : ''}
+                        </div>
+
+                        <!-- Agent 2 -->
+                        <div class="text-center">
+                            <div class="w-16 h-16 rounded-full nen-${match.agent2.nenType} mx-auto mb-2 flex items-center justify-center text-white font-bold">
+                                ${match.agent2.name.charAt(0)}
+                            </div>
+                            <h4 class="font-semibold text-sm">${match.agent2.name}</h4>
+                            <p class="text-gray-400 text-xs">ELO: ${match.agent2.elo}</p>
+                            <p class="text-gray-500 text-xs">${match.agent2.nenType}</p>
+                        </div>
+                    </div>
+
+                    <!-- Match Info -->
+                    <div class="border-t border-gray-700 pt-4">
+                        <div class="flex justify-between items-center text-sm">
+                            <div>
+                                <span class="text-gray-400">Pool:</span>
+                                <span class="text-purple-400 font-semibold">${match.bettingPoolSol} SOL</span>
+                            </div>
+                            ${match.status === 'live' && match.gameState ? `
+                                <div class="text-green-400">
+                                    Move ${match.gameState.currentMove}
+                                </div>
+                            ` : ''}
+                            ${match.status === 'upcoming' && match.scheduledStartTime ? `
+                                <div class="text-yellow-400 text-xs">
+                                    ${new Date(match.scheduledStartTime).toLocaleTimeString()}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showMatchDetails(matchId) {
+            console.log('🎯 User clicks match for details:', matchId);
+            
+            const match = allMatches.find(m => m.id === matchId);
+            if (!match) return;
+
+            const modal = document.getElementById('matchModal');
+            const details = document.getElementById('matchDetails');
+
+            details.innerHTML = `
+                <div class="space-y-6">
+                    <!-- Match Header -->
+                    <div class="text-center">
+                        <h4 class="text-2xl font-bold mb-2">
+                            ${match.agent1.name} vs ${match.agent2.name}
+                        </h4>
+                        <span class="px-4 py-2 rounded-full text-sm font-semibold status-${match.status}">
+                            ${match.status.toUpperCase()}
+                        </span>
+                    </div>
+
+                    <!-- Agent Details -->
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="text-center">
+                            <div class="w-24 h-24 rounded-full nen-${match.agent1.nenType} mx-auto mb-3 flex items-center justify-center text-white text-2xl font-bold">
+                                ${match.agent1.name.charAt(0)}
+                            </div>
+                            <h5 class="font-semibold">${match.agent1.name}</h5>
+                            <p class="text-gray-400">ELO: ${match.agent1.elo}</p>
+                            <p class="text-gray-400">Win Rate: ${(match.agent1.winRate * 100).toFixed(1)}%</p>
+                            <p class="text-gray-400">Nen: ${match.agent1.nenType}</p>
+                            <p class="text-gray-400">Style: ${match.agent1.personality}</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-24 h-24 rounded-full nen-${match.agent2.nenType} mx-auto mb-3 flex items-center justify-center text-white text-2xl font-bold">
+                                ${match.agent2.name.charAt(0)}
+                            </div>
+                            <h5 class="font-semibold">${match.agent2.name}</h5>
+                            <p class="text-gray-400">ELO: ${match.agent2.elo}</p>
+                            <p class="text-gray-400">Win Rate: ${(match.agent2.winRate * 100).toFixed(1)}%</p>
+                            <p class="text-gray-400">Nen: ${match.agent2.nenType}</p>
+                            <p class="text-gray-400">Style: ${match.agent2.personality}</p>
+                        </div>
+                    </div>
+
+                    <!-- Betting Info -->
+                    ${match.bettingPool ? `
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h6 class="font-semibold mb-3">💰 Betting Pool</h6>
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <span class="text-gray-400">Total Pool:</span>
+                                    <span class="text-purple-400 font-semibold">${match.bettingPoolSol} SOL</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-400">Total Bets:</span>
+                                    <span class="text-white">${match.bettingPool.betsCount}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-400">${match.agent1.name} Odds:</span>
+                                    <span class="text-white">${match.bettingPool.oddsAgent1.toFixed(2)}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-400">${match.agent2.name} Odds:</span>
+                                    <span class="text-white">${match.bettingPool.oddsAgent2.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <!-- Game State -->
+                    ${match.gameState && match.status === 'live' ? `
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h6 class="font-semibold mb-3">🎮 Live Game State</h6>
+                            <div class="grid grid-cols-3 gap-4 text-sm">
+                                <div>
+                                    <span class="text-gray-400">Current Move:</span>
+                                    <span class="text-white">${match.gameState.currentMove}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-400">Current Player:</span>
+                                    <span class="text-white">${match.gameState.currentPlayer === 'agent1' ? match.agent1.name : match.agent2.name}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-400">Viewers:</span>
+                                    <span class="text-white">${match.viewerCount}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-4">
+                        ${match.status === 'live' ? `
+                            <button class="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                                🔴 Watch Live
+                            </button>
+                        ` : ''}
+                        ${match.bettingPool && match.bettingPool.isOpenForBetting ? `
+                            <button class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+                                💰 Place Bet
+                            </button>
+                        ` : ''}
+                        <button onclick="closeModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('matchModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function applyFilters() {
+            const status = document.getElementById('statusFilter').value;
+            const minRating = document.getElementById('minRating').value;
+            const maxRating = document.getElementById('maxRating').value;
+
+            const filters = {};
+            if (status) filters.status = status;
+            if (minRating) filters.minRating = parseInt(minRating);
+            if (maxRating) filters.maxRating = parseInt(maxRating);
+
+            console.log('🔍 Applying filters:', filters);
+            loadMatches(filters);
+        }
+
+        function showError(message) {
+            const error = document.getElementById('error');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            error.classList.remove('hidden');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('matchModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Load matches on page load
+        window.addEventListener('load', () => {
+            console.log('🚀 User Story 3 Demo Loaded');
+            console.log('📋 Demonstrating: User views upcoming AI matches');
+            loadMatches();
+        });
+    </script>
+</body>
+</html>

@@ -1,10 +1,21 @@
 import React, { useState } from 'react';
 import { Layout } from '@/components/Layout/Layout';
+import { WalletBalance } from '@/components/WalletBalance/WalletBalance';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { motion } from 'framer-motion';
 import { formatSOL, shortenAddress } from '@/utils/format';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
+
+// Simple test component to debug
+const TestWalletBalance = () => {
+  return (
+    <div className="hunter-card p-6">
+      <h3 className="text-xl font-hunter text-white mb-4">TEST WALLET BALANCE</h3>
+      <p className="text-gray-400">This is a test component</p>
+    </div>
+  );
+};
 
 export default function ProfilePage() {
   const { publicKey, connected } = useWallet();
@@ -158,7 +169,12 @@ export default function ProfilePage() {
           transition={{ duration: 0.3 }}
         >
           {activeTab === 'overview' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Wallet Balance Component */}
+              <div className="md:col-span-1">
+                <WalletBalance />
+              </div>
+
               {/* Stats Card */}
               <div className="hunter-card p-6">
                 <h3 className="text-xl font-hunter text-white mb-4">PERFORMANCE STATS</h3>

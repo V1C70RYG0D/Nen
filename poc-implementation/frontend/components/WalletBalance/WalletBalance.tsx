@@ -4,6 +4,7 @@ import { Connection, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { formatSOL } from '@/utils/format';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBettingAccount } from '@/hooks/useBettingAccount';
+import { WithdrawalModal } from '@/components/WithdrawalModal/WithdrawalModal';
 import toast from 'react-hot-toast';
 
 interface WalletBalanceProps {
@@ -38,6 +39,7 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({ className = '' }) 
   });
   
   const [showDepositModal, setShowDepositModal] = useState(false);
+  const [showWithdrawalModal, setShowWithdrawalModal] = useState(false);
   const [depositAmount, setDepositAmount] = useState('');
   const [depositing, setDepositing] = useState(false);
 
@@ -136,6 +138,14 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({ className = '' }) 
     }
   };
 
+  const handleWithdrawalSuccess = useCallback(async () => {
+    // Refresh both wallet and betting account balances
+    await Promise.all([
+      fetchWalletBalance(),
+      refreshAccount(),
+    ]);
+  }, [fetchWalletBalance, refreshAccount]);
+
   const isLoading = walletData.loading || bettingLoading;
 
   if (!connected) {
@@ -171,6 +181,15 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({ className = '' }) 
             >
               DEPOSIT
             </button>
+            {hasAccount && availableBalance > 0 && (
+              <button
+                onClick={() => setShowWithdrawalModal(true)}
+                className="px-3 py-1 bg-solana-green/20 hover:bg-solana-green/30 border border-solana-green/50 text-solana-green font-cyber text-xs uppercase transition-all rounded"
+                disabled={isLoading}
+              >
+                WITHDRAW
+              </button>
+            )}
           </div>
         </div>
 
@@ -257,15 +276,30 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({ className = '' }) 
                 <span className="text-magicblock-primary font-mono">Devnet</span>
               </div>
               {bettingAccount && (
-                <div className="flex justify-between text-xs mt-1">
-                  <span className="text-gray-500">Deposits</span>
-                  <span className="text-gray-500 font-mono">{bettingAccount.depositCount}</span>
+                <div className="grid grid-cols-2 gap-2 text-xs mt-1">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Deposits</span>
+                    <span className="text-gray-500 font-mono">{bettingAccount.depositCount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Withdrawals</span>
+                    <span className="text-gray-500 font-mono">{bettingAccount.withdrawalCount || 0}</span>
+                  </div>
                 </div>
               )}
             </div>
           </div>
         )}
       </div>
+
+      {/* Withdrawal Modal */}
+      <WithdrawalModal
+        isOpen={showWithdrawalModal}
+        onClose={() => setShowWithdrawalModal(false)}
+        availableBalance={availableBalance || 0}
+        lockedBalance={lockedBalance || 0}
+        onWithdrawalSuccess={handleWithdrawalSuccess}
+      />
 
       {/* Deposit Modal */}
       <AnimatePresence>

@@ -29,8 +29,27 @@ interface BettingAccountHook extends BettingAccountState {
  * Hook for managing user's betting account
  * Implements User Story 2: Real SOL deposits with proper PDA management
  */
+
+// Utility function to create a safe account object with all required properties
+const createSafeAccountObject = (baseAccount: any, updates: any = {}) => {
+  return {
+    user: baseAccount?.user || updates?.user,
+    balance: baseAccount?.balance || { toNumber: () => 0 },
+    totalDeposited: baseAccount?.totalDeposited || { toNumber: () => 0 },
+    totalWithdrawn: baseAccount?.totalWithdrawn || { toNumber: () => 0 },
+    lockedBalance: baseAccount?.lockedBalance || { toNumber: () => 0 },
+    depositCount: baseAccount?.depositCount || 0,
+    withdrawalCount: baseAccount?.withdrawalCount || 0,
+    createdAt: baseAccount?.createdAt || { toNumber: () => Date.now() / 1000 },
+    lastUpdated: baseAccount?.lastUpdated || { toNumber: () => Date.now() / 1000 },
+    bump: baseAccount?.bump || 255,
+    ...updates,
+  };
+};
+
 export const useBettingAccount = (): BettingAccountHook => {
-  const { publicKey, connected, wallet } = useWallet();
+  const walletContext = useWallet();
+  const { publicKey, connected, wallet } = walletContext;
   const [state, setState] = useState<BettingAccountState>({
     account: null,
     loading: false,
@@ -51,8 +70,22 @@ export const useBettingAccount = (): BettingAccountHook => {
       try {
         const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
         const client = new SolanaBettingClient(connection);
+        
+        // Create a simple IDL for initialization (this would be the actual program IDL in production)
+        const simpleIdl = {
+          version: "0.1.0",
+          name: "betting_platform",
+          instructions: [],
+          accounts: [],
+        };
+        
+        // Initialize the client with wallet and IDL
+        await client.initialize(walletContext, simpleIdl);
+        
         setBettingClient(client);
         setState(prev => ({ ...prev, initialized: true }));
+        
+        console.log('✅ Betting client initialized with wallet connection');
       } catch (error) {
         console.error('Failed to initialize betting client:', error);
         setState(prev => ({ ...prev, error: 'Failed to initialize betting client', initialized: false }));
@@ -72,10 +105,12 @@ export const useBettingAccount = (): BettingAccountHook => {
     setState(prev => ({ ...prev, loading: true, error: null }));
     
     try {
-      const account = await bettingClient.getBettingAccount(publicKey);
+      const account = await bettingClient.getBettingAccountWithPersistence(publicKey);
+      // Ensure the account has all required properties using our safe wrapper
+      const safeAccount = account ? createSafeAccountObject(account) : null;
       setState(prev => ({ 
         ...prev, 
-        account, 
+        account: safeAccount, 
         loading: false,
         error: null 
       }));
@@ -110,18 +145,9 @@ export const useBettingAccount = (): BettingAccountHook => {
       console.log('Account creation signature:', signature);
       
       // For demo, create a mock account since the smart contract might not be deployed
-      const mockAccount = {
+      const mockAccount = createSafeAccountObject(null, {
         user: publicKey,
-        balance: { toNumber: () => 0 },
-        totalDeposited: { toNumber: () => 0 },
-        totalWithdrawn: { toNumber: () => 0 },
-        lockedBalance: { toNumber: () => 0 },
-        depositCount: 0,
-        withdrawalCount: 0,
-        createdAt: { toNumber: () => Date.now() / 1000 },
-        lastUpdated: { toNumber: () => Date.now() / 1000 },
-        bump: 255,
-      };
+      });
       
       setState(prev => ({ 
         ...prev, 
@@ -163,13 +189,13 @@ export const useBettingAccount = (): BettingAccountHook => {
       
       // Update local state with the new balance for demo
       if (result && result.success) {
-        const updatedAccount = {
-          ...state.account,
+        // The result.newBalance already contains the accumulated total
+        const updatedAccount = createSafeAccountObject(state.account, {
           balance: { toNumber: () => result.newBalance * 1_000_000_000 },
-          totalDeposited: { toNumber: () => (state.account?.totalDeposited.toNumber() || 0) + (amount * 1_000_000_000) },
-          depositCount: (state.account?.depositCount || 0) + 1,
+          totalDeposited: { toNumber: () => result.newBalance * 1_000_000_000 }, // Total deposited = current balance for new accounts
+          depositCount: result.transactionCount,
           lastUpdated: { toNumber: () => Date.now() / 1000 },
-        };
+        });
         
         setState(prev => ({ 
           ...prev, 
@@ -220,8 +246,10 @@ export const useBettingAccount = (): BettingAccountHook => {
   }, [bettingClient, publicKey, state.account, refreshAccount]);
 
   // Computed values
-  const totalBalance = state.account ? state.account.balance.toNumber() / 1_000_000_000 : 0; // Convert lamports to SOL
-  const lockedBalance = state.account ? state.account.lockedBalance.toNumber() / 1_000_000_000 : 0;
+  const totalBalance = state.account && state.account.balance && typeof state.account.balance.toNumber === 'function' 
+    ? state.account.balance.toNumber() / 1_000_000_000 : 0; // Convert lamports to SOL
+  const lockedBalance = state.account && state.account.lockedBalance && typeof state.account.lockedBalance.toNumber === 'function' 
+    ? state.account.lockedBalance.toNumber() / 1_000_000_000 : 0;
   const availableBalance = totalBalance - lockedBalance;
   const hasAccount = state.account !== null;
 

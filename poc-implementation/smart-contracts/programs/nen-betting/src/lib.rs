@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
 
-declare_id!("Bet1111111111111111111111111111111111111111");
+declare_id!("C8uJ3ABMU87GjcB8moR1jiiAgYnFUDR17DBfiQE4eUcz");
 
 /// Nen Platform Betting Program
 /// Implements User Story 2: Real SOL deposits with proper PDA management
@@ -80,7 +80,6 @@ pub mod nen_betting {
         amount: u64,
     ) -> Result<()> {
         let platform = &ctx.accounts.betting_platform;
-        let betting_account = &mut ctx.accounts.betting_account;
         
         // Validate deposit amount (User Story 2: Enforce minimum deposit 0.1 SOL)
         require!(amount >= platform.minimum_deposit, BettingError::BelowMinimumDeposit);
@@ -100,6 +99,8 @@ pub mod nen_betting {
         
         system_program::transfer(transfer_ctx, amount)?;
 
+        let betting_account = &mut ctx.accounts.betting_account;
+        
         // Update user's on-chain balance record (User Story 2 requirement)
         let previous_balance = betting_account.balance;
         betting_account.balance += amount;
@@ -139,17 +140,18 @@ pub mod nen_betting {
         amount: u64,
     ) -> Result<()> {
         let platform = &ctx.accounts.betting_platform;
-        let betting_account = &mut ctx.accounts.betting_account;
         
         require!(!platform.is_paused, BettingError::PlatformPaused);
         require!(amount > 0, BettingError::InvalidWithdrawalAmount);
+        
+        let betting_account = &mut ctx.accounts.betting_account;
         
         // Check available balance (excluding locked funds)
         let available_balance = betting_account.balance - betting_account.locked_balance;
         require!(amount <= available_balance, BettingError::InsufficientBalance);
 
         // Transfer SOL from betting PDA back to user
-        let betting_account_info = ctx.accounts.betting_account.to_account_info();
+        let betting_account_info = betting_account.to_account_info();
         let user_info = ctx.accounts.user.to_account_info();
         
         **betting_account_info.try_borrow_mut_lamports()? -= amount;

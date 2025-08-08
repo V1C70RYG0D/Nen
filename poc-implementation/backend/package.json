@@ -67,6 +67,7 @@
     "@types/swagger-ui-express": "^4.1.8",
     "axios": "^1.11.0",
     "bcryptjs": "^2.4.3",
+    "bs58": "^6.0.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",

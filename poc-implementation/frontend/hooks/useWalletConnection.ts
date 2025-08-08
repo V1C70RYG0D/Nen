@@ -78,24 +78,30 @@ export const useWalletConnection = () => {
     }
   }, []);
 
-  // Query user's SOL balance
+  // Query user's SOL balance using real devnet RPC
   const getBalance = useCallback(async (walletAddress: string): Promise<number> => {
     try {
-      // In a real implementation, this would connect to Solana RPC
-      // For now, we'll simulate getting the balance
+      // Real implementation: Query balance from devnet via backend API
       const response = await fetch(`/api/blockchain/balance/${walletAddress}`);
       
       if (!response.ok) {
-        // Fallback to simulated balance for testing
-        return Math.random() * 10 + 1; // 1-11 SOL range
+        const errorText = await response.text();
+        throw new Error(`Balance query failed: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
-      return result.balance || 0;
+      const balance = result.balance || 0;
+      
+      // Validate balance is a valid number
+      if (typeof balance !== 'number' || isNaN(balance)) {
+        throw new Error('Invalid balance data received from backend');
+      }
+      
+      return balance;
     } catch (error) {
-      console.error('Error fetching balance:', error);
-      // Return simulated balance for testing
-      return Math.random() * 10 + 1;
+      console.error('Error fetching SOL balance from devnet:', error);
+      // GI.md Compliance: No simulations or fallbacks - throw the error
+      throw new Error(`Failed to fetch real SOL balance: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }, []);
 

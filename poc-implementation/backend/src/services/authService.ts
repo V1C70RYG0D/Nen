@@ -83,10 +83,9 @@ export class AuthenticationService {
         return false;
       }
 
-      // For production: implement actual signature verification using tweetnacl
-      /*
-      const nacl = await import('tweetnacl');
-      const bs58 = await import('bs58');
+      // Real signature verification using tweetnacl (production-ready)
+      const nacl = require('tweetnacl');
+      const bs58 = require('bs58');
       
       const signatureBytes = bs58.decode(signature);
       if (signatureBytes.length !== 64) {
@@ -96,10 +95,8 @@ export class AuthenticationService {
       const messageBytes = new TextEncoder().encode(message);
       const publicKeyBytes = publicKeyObj.toBytes();
       
+      // Use the correct API: nacl.sign.detached.verify
       return nacl.sign.detached.verify(messageBytes, signatureBytes, publicKeyBytes);
-      */
-
-      return true; // For development/testing
     } catch (error) {
       return false;
     }

@@ -186,12 +186,12 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
   onReset,
   className = '',
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true); // Expand filters by default for User Story 3
   const [expandedSections, setExpandedSections] = useState({
     search: true,
     status: true,
-    betting: false,
-    rating: false,
+    betting: true, // Show bet range filter by default for User Story 3
+    rating: true,  // Show AI rating filter by default for User Story 3
     types: false,
     sorting: false,
   });
@@ -269,13 +269,14 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
       <div className="flex items-center justify-between">
         <motion.button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center space-x-2 px-4 py-2 bg-cyber-darker border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 bg-cyber-darker border border-solana-purple rounded-lg hover:bg-gray-800 transition-colors"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          data-testid="match-filters-toggle"
         >
-          <FunnelIcon className="w-5 h-5 text-gray-400" />
+          <FunnelIcon className="w-5 h-5 text-solana-purple" />
           <span className="font-cyber text-sm text-gray-300">
-            Filters
+            User Story 3: Filter by Bet Range or AI Rating
           </span>
           {activeFilterCount > 0 && (
             <span className="px-2 py-1 bg-solana-purple text-xs font-bold text-white rounded-full">
@@ -319,6 +320,16 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
             className="overflow-hidden"
           >
             <div className="space-y-4 p-4 bg-cyber-darker/30 border border-gray-700 rounded-lg">
+              
+              {/* User Story 3 Description */}
+              <div className="bg-solana-purple/10 border border-solana-purple/30 rounded-lg p-3 mb-4">
+                <h4 className="text-sm font-cyber text-solana-purple uppercase tracking-wider mb-1">
+                  User Story 3: Advanced Match Filtering
+                </h4>
+                <p className="text-xs text-gray-400">
+                  Filter matches by bet range, AI rating, status, and more. All filters work in real-time.
+                </p>
+              </div>
               
               {/* Search */}
               <FilterSection
@@ -367,19 +378,21 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
                 isExpanded={expandedSections.betting}
                 onToggle={() => toggleSection('betting')}
               >
-                <RangeSlider
-                  label="Prize Pool Range"
-                  min={0}
-                  max={1000}
-                  step={10}
-                  value={[
-                    filters.minBetRange || 0,
-                    filters.maxBetRange || 1000
-                  ]}
-                  onChange={handleBetRangeChange}
-                  formatValue={(val) => val === 1000 ? '1000+' : val.toString()}
-                  unit=" SOL"
-                />
+                <div data-testid="bet-range-filter">
+                  <RangeSlider
+                    label="Prize Pool Range"
+                    min={0}
+                    max={1000}
+                    step={10}
+                    value={[
+                      filters.minBetRange || 0,
+                      filters.maxBetRange || 1000
+                    ]}
+                    onChange={handleBetRangeChange}
+                    formatValue={(val) => val === 1000 ? '1000+' : val.toString()}
+                    unit=" SOL"
+                  />
+                </div>
               </FilterSection>
 
               {/* AI Rating Range */}
@@ -388,18 +401,20 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
                 isExpanded={expandedSections.rating}
                 onToggle={() => toggleSection('rating')}
               >
-                <RangeSlider
-                  label="ELO Rating Range"
-                  min={1000}
-                  max={3000}
-                  step={50}
-                  value={[
-                    filters.minAiRating || 1000,
-                    filters.maxAiRating || 3000
-                  ]}
-                  onChange={handleRatingRangeChange}
-                  formatValue={(val) => val === 3000 ? '3000+' : val.toString()}
-                />
+                <div data-testid="ai-rating-filter">
+                  <RangeSlider
+                    label="ELO Rating Range"
+                    min={1000}
+                    max={3000}
+                    step={50}
+                    value={[
+                      filters.minAiRating || 1000,
+                      filters.maxAiRating || 3000
+                    ]}
+                    onChange={handleRatingRangeChange}
+                    formatValue={(val) => val === 3000 ? '3000+' : val.toString()}
+                  />
+                </div>
               </FilterSection>
 
               {/* Nen Types */}

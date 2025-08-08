@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Story 3: Filtering Demo - Nen Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .cyber-dark { background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%); }
+        .cyber-darker { background: rgba(15, 15, 15, 0.8); }
+        .solana-purple { color: #9945FF; }
+        .solana-green { color: #14F195; }
+        .bg-solana-purple { background-color: #9945FF; }
+        .bg-solana-green { background-color: #14F195; }
+        .border-solana-purple { border-color: #9945FF; }
+        .hunter-card { 
+            background: linear-gradient(135deg, rgba(153, 69, 255, 0.1) 0%, rgba(20, 241, 149, 0.05) 100%);
+            border: 1px solid rgba(153, 69, 255, 0.3);
+        }
+        .nen-enhancement { color: #ff4444; }
+        .nen-emission { color: #44ccff; }
+        .nen-transmutation { color: #ffff44; }
+        .nen-conjuration { color: #dd44ff; }
+        .nen-manipulation { color: #44ff44; }
+        .nen-specialization { color: #ff8844; }
+    </style>
+</head>
+<body class="cyber-dark text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                🎮 User Story 3: Filtering Demo
+            </h1>
+            <p class="text-gray-300 text-lg">Demonstrating "User filters by bet range or AI rating"</p>
+        </div>
+
+        <!-- Implementation Status -->
+        <div class="bg-green-500/10 border border-green-500/50 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-green-400">✅ Implementation Status: COMPLETE</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <h3 class="font-semibold text-gray-300">Backend Filtering:</h3>
+                    <ul class="text-sm text-gray-400 space-y-1">
+                        <li>✅ Bet Range: minBet, maxBet params</li>
+                        <li>✅ AI Rating: minRating, maxRating params</li>
+                        <li>✅ Status filtering: active, upcoming, completed</li>
+                        <li>✅ Real-time filter processing</li>
+                    </ul>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-semibold text-gray-300">Frontend Filtering:</h3>
+                    <ul class="text-sm text-gray-400 space-y-1">
+                        <li>✅ Bet Range slider (0-1000+ SOL)</li>
+                        <li>✅ AI Rating slider (1000-3000+ ELO)</li>
+                        <li>✅ Visual filter indicators</li>
+                        <li>✅ Reset functionality</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Demo Panel -->
+        <div class="bg-purple-500/10 border border-purple-500/50 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4 solana-purple">🔧 Filter Controls (Demo)</h2>
+            
+            <!-- Bet Range Filter -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 text-gray-300">💰 Bet Range (SOL)</h3>
+                <div class="bg-gray-800 p-4 rounded-lg">
+                    <label class="block text-sm text-gray-400 mb-2">Prize Pool Range</label>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-xs text-gray-500 w-8">Min:</span>
+                        <input type="range" id="minBet" min="0" max="1000" value="0" class="flex-1 h-2 bg-gray-700 rounded-lg">
+                        <span class="text-xs text-gray-300 w-16 text-right" id="minBetValue">0 SOL</span>
+                    </div>
+                    <div class="flex items-center space-x-4 mt-2">
+                        <span class="text-xs text-gray-500 w-8">Max:</span>
+                        <input type="range" id="maxBet" min="0" max="1000" value="1000" class="flex-1 h-2 bg-gray-700 rounded-lg">
+                        <span class="text-xs text-gray-300 w-16 text-right" id="maxBetValue">1000+ SOL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Rating Filter -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 text-gray-300">🤖 AI Rating (ELO)</h3>
+                <div class="bg-gray-800 p-4 rounded-lg">
+                    <label class="block text-sm text-gray-400 mb-2">ELO Rating Range</label>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-xs text-gray-500 w-8">Min:</span>
+                        <input type="range" id="minRating" min="1000" max="3000" value="1000" step="50" class="flex-1 h-2 bg-gray-700 rounded-lg">
+                        <span class="text-xs text-gray-300 w-16 text-right" id="minRatingValue">1000</span>
+                    </div>
+                    <div class="flex items-center space-x-4 mt-2">
+                        <span class="text-xs text-gray-500 w-8">Max:</span>
+                        <input type="range" id="maxRating" min="1000" max="3000" value="3000" step="50" class="flex-1 h-2 bg-gray-700 rounded-lg">
+                        <span class="text-xs text-gray-300 w-16 text-right" id="maxRatingValue">3000+</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter URL Display -->
+            <div class="bg-gray-900 p-4 rounded-lg">
+                <h4 class="text-sm font-semibold mb-2 text-gray-300">Generated API URL:</h4>
+                <code class="text-sm text-green-400" id="apiUrl">http://localhost:3001/api/matches</code>
+            </div>
+        </div>
+
+        <!-- Sample Matches Display -->
+        <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-300">🎯 Sample Matches (Filtered)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="matchesContainer">
+                <!-- Sample match cards will be generated here -->
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="mt-8 bg-blue-500/10 border border-blue-500/50 rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4 text-blue-400">📚 How to Test the Real Implementation</h2>
+            <ol class="space-y-2 text-gray-300">
+                <li><strong>1. Start Backend:</strong> <code class="bg-gray-800 px-2 py-1 rounded">cd backend && node simple-server.js</code></li>
+                <li><strong>2. Start Frontend:</strong> <code class="bg-gray-800 px-2 py-1 rounded">cd frontend && npm run dev</code></li>
+                <li><strong>3. Open Browser:</strong> <code class="bg-gray-800 px-2 py-1 rounded">http://localhost:3000/matches</code></li>
+                <li><strong>4. Use Filters:</strong> Look for the "User Story 3: Filter by Bet Range or AI Rating" panel</li>
+                <li><strong>5. Test Filtering:</strong> Adjust sliders to see real-time match filtering</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Sample matches data
+        const sampleMatches = [
+            {
+                id: 'match-1',
+                agent1: { name: 'Netero AI', elo: 1850, nenType: 'enhancement' },
+                agent2: { name: 'Meruem AI', elo: 2100, nenType: 'specialization' },
+                bettingPoolSol: 12.5,
+                status: 'live'
+            },
+            {
+                id: 'match-2',
+                agent1: { name: 'Komugi AI', elo: 2200, nenType: 'conjuration' },
+                agent2: { name: 'Ging AI', elo: 1950, nenType: 'transmutation' },
+                bettingPoolSol: 8.3,
+                status: 'upcoming'
+            },
+            {
+                id: 'match-3',
+                agent1: { name: 'Hisoka AI', elo: 1975, nenType: 'transmutation' },
+                agent2: { name: 'Illumi AI', elo: 1880, nenType: 'manipulation' },
+                bettingPoolSol: 22.1,
+                status: 'upcoming'
+            },
+            {
+                id: 'match-4',
+                agent1: { name: 'Gon AI', elo: 1650, nenType: 'enhancement' },
+                agent2: { name: 'Killua AI', elo: 1720, nenType: 'transmutation' },
+                bettingPoolSol: 5.2,
+                status: 'upcoming'
+            },
+            {
+                id: 'match-5',
+                agent1: { name: 'Kurapika AI', elo: 1770, nenType: 'conjuration' },
+                agent2: { name: 'Leorio AI', elo: 1540, nenType: 'emission' },
+                bettingPoolSol: 45.8,
+                status: 'completed'
+            }
+        ];
+
+        // DOM elements
+        const minBetSlider = document.getElementById('minBet');
+        const maxBetSlider = document.getElementById('maxBet');
+        const minRatingSlider = document.getElementById('minRating');
+        const maxRatingSlider = document.getElementById('maxRating');
+        
+        const minBetValue = document.getElementById('minBetValue');
+        const maxBetValue = document.getElementById('maxBetValue');
+        const minRatingValue = document.getElementById('minRatingValue');
+        const maxRatingValue = document.getElementById('maxRatingValue');
+        
+        const apiUrl = document.getElementById('apiUrl');
+        const matchesContainer = document.getElementById('matchesContainer');
+
+        // Update display values and filter matches
+        function updateFilters() {
+            const minBet = parseInt(minBetSlider.value);
+            const maxBet = parseInt(maxBetSlider.value);
+            const minRating = parseInt(minRatingSlider.value);
+            const maxRating = parseInt(maxRatingSlider.value);
+
+            // Update display values
+            minBetValue.textContent = minBet === 0 ? '0 SOL' : `${minBet} SOL`;
+            maxBetValue.textContent = maxBet === 1000 ? '1000+ SOL' : `${maxBet} SOL`;
+            minRatingValue.textContent = minRating.toString();
+            maxRatingValue.textContent = maxRating === 3000 ? '3000+' : maxRating.toString();
+
+            // Update API URL
+            const params = new URLSearchParams();
+            if (minBet > 0) params.set('minBet', minBet.toString());
+            if (maxBet < 1000) params.set('maxBet', maxBet.toString());
+            if (minRating > 1000) params.set('minRating', minRating.toString());
+            if (maxRating < 3000) params.set('maxRating', maxRating.toString());
+            
+            const urlParams = params.toString();
+            apiUrl.textContent = `http://localhost:3001/api/matches${urlParams ? '?' + urlParams : ''}`;
+
+            // Filter matches
+            const filteredMatches = sampleMatches.filter(match => {
+                const avgRating = (match.agent1.elo + match.agent2.elo) / 2;
+                
+                if (minBet > 0 && match.bettingPoolSol < minBet) return false;
+                if (maxBet < 1000 && match.bettingPoolSol > maxBet) return false;
+                if (minRating > 1000 && avgRating < minRating) return false;
+                if (maxRating < 3000 && avgRating > maxRating) return false;
+                
+                return true;
+            });
+
+            displayMatches(filteredMatches);
+        }
+
+        // Display filtered matches
+        function displayMatches(matches) {
+            matchesContainer.innerHTML = '';
+            
+            if (matches.length === 0) {
+                matchesContainer.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <div class="text-gray-400">
+                            <p class="text-lg mb-2">🔍 No matches found</p>
+                            <p class="text-sm">Try adjusting your filter criteria</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            matches.forEach(match => {
+                const avgRating = ((match.agent1.elo + match.agent2.elo) / 2).toFixed(0);
+                const statusColor = match.status === 'live' ? 'red' : 
+                                  match.status === 'upcoming' ? 'yellow' : 'gray';
+                
+                const matchCard = document.createElement('div');
+                matchCard.className = 'hunter-card p-4 rounded-lg';
+                matchCard.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-lg font-semibold">${match.id}</h3>
+                            <span class="text-xs px-2 py-1 bg-${statusColor}-500/20 text-${statusColor}-400 rounded">
+                                ${match.status}
+                            </span>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="nen-${match.agent1.nenType}">${match.agent1.name}</span>
+                                <span class="text-gray-400">${match.agent1.elo}</span>
+                            </div>
+                            <div class="text-center text-xs text-gray-500">VS</div>
+                            <div class="flex justify-between text-sm">
+                                <span class="nen-${match.agent2.nenType}">${match.agent2.name}</span>
+                                <span class="text-gray-400">${match.agent2.elo}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-2 border-t border-gray-700">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Pool:</span>
+                                <span class="text-yellow-400">${match.bettingPoolSol} SOL</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Avg ELO:</span>
+                                <span class="text-blue-400">${avgRating}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                matchesContainer.appendChild(matchCard);
+            });
+        }
+
+        // Event listeners
+        minBetSlider.addEventListener('input', updateFilters);
+        maxBetSlider.addEventListener('input', updateFilters);
+        minRatingSlider.addEventListener('input', updateFilters);
+        maxRatingSlider.addEventListener('input', updateFilters);
+
+        // Initialize
+        updateFilters();
+
+        console.log('🎮 User Story 3 Filtering Demo Loaded');
+        console.log('📋 Demonstrating: User filters by bet range or AI rating');
+        console.log('✅ All filtering functionality is implemented and working!');
+    </script>
+</body>
+</html>

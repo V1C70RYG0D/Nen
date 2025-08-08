@@ -4,18 +4,26 @@ import { WalletButton } from '@/components/WalletButton';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stars } from '@react-three/drei';
+import dynamic from 'next/dynamic';
+
+// Dynamically import 3D components to avoid SSR issues
+const Canvas = dynamic(() => import('@react-three/fiber').then(mod => ({ default: mod.Canvas })), { ssr: false });
+const Stars = dynamic(() => import('@react-three/drei').then(mod => ({ default: mod.Stars })), { ssr: false });
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
+const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
   const { connected, publicKey } = useWallet();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,12 +44,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* 3D Background */}
-      <div className="fixed inset-0 -z-20">
-        <Canvas camera={{ position: [0, 0, 1] }}>
-          <Stars radius={300} depth={60} count={3000} factor={7} fade />
-          <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
-        </Canvas>
-      </div>
+      {isClient && (
+        <div className="fixed inset-0 -z-20">
+          <Canvas camera={{ position: [0, 0, 1] }}>
+            <Stars radius={300} depth={60} count={3000} factor={7} fade />
+          </Canvas>
+        </div>
+      )}
 
       {/* Animated Grid Background */}
       <div className="fixed inset-0 -z-10 bg-cyber-grid bg-[size:50px_50px] opacity-20" />
@@ -278,4 +287,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       </footer>
     </div>
   );
-}; 
+};
+
+export const Layout = LayoutComponent;
+export default LayoutComponent; 

@@ -9,7 +9,7 @@
     "db:seed": "npx tsx prisma/seed.ts",
     "start:production": "NODE_ENV=production node dist/main.js",
     "start:test": "NODE_ENV=test PORT=3001 node dist/main.js",
-    "dev": "tsx watch src/minimal-server.ts",
+    "dev": "node src/temp-server.js",
     "dev:optimized": "tsx watch src/server-optimized.ts",
     "test": "jest --coverage",
     "test:optimized": "jest --testPathPattern=optimized --verbose",

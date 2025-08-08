@@ -19,6 +19,10 @@
     "backend:build": "cd backend && npm run build",
     "frontend:build": "cd frontend && npm run build",
     "deploy": "echo 'Deploy script not implemented yet'",
+    "deploy:betting": "ts-node scripts/deploy-betting-platform.ts",
+    "deploy:betting:test": "ts-node scripts/deploy-betting-platform.ts --with-test",
+    "deploy:betting:status": "node scripts/deploy-betting-simple.js",
+    "test:user-story-2": "node scripts/validate-user-story-2.js",
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
     "test:performance": "ts-node ./testing/performance/test-runner.ts",
     "test": "jest --config config/jest.config.js",
@@ -117,10 +121,13 @@
     "@solana/wallet-adapter-react": "^0.15.39",
     "@solana/web3.js": "^1.98.4",
     "axios": "^1.11.0",
+    "bs58": "^6.0.0",
     "dotenv": "^17.2.1",
     "js-yaml": "^4.1.0",
     "mixpanel-browser": "^2.67.0",
+    "node-fetch": "^3.3.2",
     "react-router-dom": "^7.7.1",
+    "tweetnacl": "^1.0.3",
     "uuid": "^11.1.0"
   }
 }

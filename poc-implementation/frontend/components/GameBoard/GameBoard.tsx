@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Canvas } from '@react-three/fiber';
-import { Text, Box, MeshDistortMaterial } from '@react-three/drei';
+import dynamic from 'next/dynamic';
 import { useGameState } from '@/hooks/useGameState';
 import { useMagicBlockSession } from '@/hooks/useMagicBlockSession';
 import toast from 'react-hot-toast';
+
+// Dynamically import 3D components to avoid SSR issues
+const Canvas = dynamic(() => import('@react-three/fiber').then(mod => ({ default: mod.Canvas })), { ssr: false });
+const Text = dynamic(() => import('@react-three/drei').then(mod => ({ default: mod.Text })), { ssr: false });
+const Box = dynamic(() => import('@react-three/drei').then(mod => ({ default: mod.Box })), { ssr: false });
+const MeshDistortMaterial = dynamic(() => import('@react-three/drei').then(mod => ({ default: mod.MeshDistortMaterial })), { ssr: false });
 
 interface GameBoardProps {
   matchId: string;
@@ -234,15 +239,15 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                           text-3xl flex items-center justify-center
                           ${piece.owner === 1 ? 'drop-shadow-[0_0_10px_#FF6B6B]' : 'drop-shadow-[0_0_10px_#4ECDC4]'}
                         `}>
-                          <span className={`nen-${pieceData[piece.type].nenType}`}>
-                            {pieceData[piece.type].symbol}
+                          <span className={`nen-${pieceData[piece.type as keyof typeof pieceData]?.nenType || 'basic'}`}>
+                            {pieceData[piece.type as keyof typeof pieceData]?.symbol || '❓'}
                           </span>
                         </div>
                         
                         {/* Power Level */}
                         <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
                           <span className="text-xs font-mono text-white/80 bg-black/50 px-1 rounded">
-                            {pieceData[piece.type].power}
+                            {pieceData[piece.type as keyof typeof pieceData]?.power || 1}
                           </span>
                         </div>
                       </motion.div>

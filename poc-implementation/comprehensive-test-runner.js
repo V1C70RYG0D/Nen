@@ -187,7 +187,16 @@ async function testEnvironmentConfiguration() {
 }
 
 async function testGICompliance() {
-  log('\n📋 GI COMPLIANCE CHECK', 'cyan');
+    // Add User Account Initialization validation
+  tests.push({
+    name: "User Account Initialization",
+    script: "validate-account-initialization.js",
+    timeout: 30000,
+    description: "Tests automatic user account initialization for first-time wallet connections",
+    requirements: ["User Story 1 - Requirement 4"]
+  });
+
+  log('\n📋 TEST SUITE CONFIGURATION', 'cyan');
   log('=' .repeat(50), 'cyan');
   
   const result = await runCommand('node verify-gi-compliance.js');

@@ -25,10 +25,22 @@ dotenv.config();
 const app = express();
 const httpServer = createServer(app);
 
+// In-memory storage for POC betting accounts (User Story 2 requirement)
+const bettingAccounts = new Map<string, {
+  userId: string;
+  walletAddress: string;
+  pdaAddress: string;
+  balance: number;
+  totalDeposited: number;
+  totalWithdrawn: number;
+  lockedBalance: number;
+  lastUpdated: string;
+}>();
+
 // Basic configuration - all values from environment variables (GI-18)
 const PORT = parseInt(process.env.PORT || '3001');
 const HOST = process.env.API_HOST || '127.0.0.1';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://127.0.0.1:3010';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://127.0.0.1:3004';
 
 // Middleware setup
 app.use(helmet({
@@ -43,7 +55,7 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: CORS_ORIGIN,
+  origin: ['http://127.0.0.1:3004', 'http://localhost:3004', 'http://127.0.0.1:3010', 'http://localhost:3010', CORS_ORIGIN],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -173,6 +185,68 @@ app.get('/api/betting/pools', (req: Request, res: Response) => {
   });
 });
 
+// Betting account endpoints for User Story 2
+// 🚨 DEPRECATED SIMULATION - REPLACED WITH REAL SOLANA IMPLEMENTATION
+// This endpoint is deprecated. Use the real Solana betting client instead.
+// See: frontend/lib/solana-betting-client.ts
+// Complies with GI.md directive #2: "Prioritize Real Implementations Over Simulations"
+app.get('/api/user/betting-account/:walletAddress', (req: Request, res: Response) => {
+  res.status(410).json({
+    success: false,
+    error: 'DEPRECATED: This simulated endpoint has been replaced with real Solana smart contract implementation. Please use SolanaBettingClient instead.',
+    migration: {
+      newImplementation: 'frontend/lib/solana-betting-client.ts',
+      smartContract: 'smart-contracts/programs/nen-betting/src/lib.rs',
+      userStory: 'User Story 2 - Real SOL deposits with proper PDA management'
+    }
+  });
+});
+
+// 🚨 DEPRECATED SIMULATION - REPLACED WITH REAL SOLANA IMPLEMENTATION
+app.post('/api/user/deposit', (req: Request, res: Response) => {
+  res.status(410).json({
+    success: false,
+    error: 'DEPRECATED: This simulated deposit endpoint has been replaced with real Solana smart contract implementation. Please use SolanaBettingClient.depositSol() instead.',
+    migration: {
+      newImplementation: 'frontend/lib/solana-betting-client.ts',
+      smartContract: 'smart-contracts/programs/nen-betting/src/lib.rs',
+      userStory: 'User Story 2 - Real SOL deposits with proper PDA management',
+      realFeatures: [
+        'Actual SOL transfer to betting PDA',
+        'Proper PDA derivation (not hardcoded)',
+        'On-chain balance tracking',
+        'Real event emission'
+      ]
+    }
+  });
+});
+
+// 🚨 DEPRECATED SIMULATION - REPLACED WITH REAL SOLANA IMPLEMENTATION
+app.post('/api/user/withdraw', (req: Request, res: Response) => {
+  res.status(410).json({
+    success: false,
+    error: 'DEPRECATED: This simulated withdraw endpoint has been replaced with real Solana smart contract implementation. Please use SolanaBettingClient.withdrawSol() instead.',
+    migration: {
+      newImplementation: 'frontend/lib/solana-betting-client.ts',
+      smartContract: 'smart-contracts/programs/nen-betting/src/lib.rs',
+      userStory: 'User Story 2 - Real SOL withdrawals from betting PDA'
+    }
+  });
+
+
+// 🚨 DEPRECATED SIMULATION - REPLACED WITH REAL SOLANA IMPLEMENTATION
+app.get('/api/user/transaction-history/:walletAddress', (req: Request, res: Response) => {
+  res.status(410).json({
+    success: false,
+    error: 'DEPRECATED: This simulated transaction history endpoint has been replaced with real Solana event listening. Please use on-chain event monitoring instead.',
+    migration: {
+      newImplementation: 'Monitor DepositCompleted and WithdrawalCompleted events from the smart contract',
+      smartContract: 'smart-contracts/programs/nen-betting/src/lib.rs',
+      userStory: 'User Story 2 - Real event emission for tracking'
+    }
+  });
+});
+
 // Setup WebSocket
 const io = new SocketIOServer(httpServer, {
   cors: {
@@ -233,7 +307,11 @@ app.use('*', (req: Request, res: Response) => {
       '/api/bets',
       '/api/auth/status',
       '/api/users/me',
-      '/api/betting/pools'
+      '/api/betting/pools',
+      '/api/user/betting-account/:walletAddress',
+      '/api/user/deposit',
+      '/api/user/withdraw',
+      '/api/user/transaction-history/:walletAddress'
     ],
     timestamp: new Date().toISOString()
   });
@@ -279,7 +357,7 @@ function gracefulShutdown(signal: string) {
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-// Start if run directly
+// Start if run directly  
 if (require.main === module) {
   startServer().catch((error: Error) => {
     console.error('💥 Failed to start server:', error);
@@ -287,5 +365,6 @@ if (require.main === module) {
   });
 }
 
-export default app;
-export { startServer, httpServer, io };
+module.exports = app;
+module.exports.startServer = startServer;
+module.exports.io = io;

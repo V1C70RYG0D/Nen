@@ -37,6 +37,7 @@ import analyticsRoutes from './api/analytics';
 import legacyAiRoutes from './routes/ai';
 import legacyGameRoutes from './routes/game';
 import legacyEnhancedRoutes from './routes/enhanced';
+import devnetRoutes from './routes/devnet';
 
 // Import services
 import { initializeServices } from './services';
@@ -52,7 +53,7 @@ class NenPlatformServer {
   private app: express.Application;
   private httpServer: any;
   private io: SocketIOServer | undefined;
-  private logger: winston.Logger;
+  private logger!: winston.Logger;
 
   constructor() {
     this.app = express();
@@ -162,17 +163,19 @@ private setupMiddleware(): void {
 
     // New API structure (main endpoints)
     this.app.use('/api/auth', authRoutes);
-    this.app.use('/api/betting', bettingRoutes);
+  this.app.use('/api/betting', bettingRoutes);
     this.app.use('/api/matches', matchesRoutes);
     this.app.use('/api/users', usersRoutes);
     this.app.use('/api/analytics', analyticsRoutes);
+  this.app.use('/api/devnet', devnetRoutes);
 
     // Versioned API routes
     this.app.use('/api/v1/auth', authRoutes);
     this.app.use('/api/v1/betting', bettingRoutes);
     this.app.use('/api/v1/matches', matchesRoutes);
     this.app.use('/api/v1/users', usersRoutes);
-    this.app.use('/api/v1/analytics', analyticsRoutes);
+  this.app.use('/api/v1/analytics', analyticsRoutes);
+  this.app.use('/api/v1/devnet', devnetRoutes);
 
     // Legacy routes for backward compatibility
     this.app.use('/api/ai', legacyAiRoutes);

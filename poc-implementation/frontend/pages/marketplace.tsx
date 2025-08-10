@@ -287,7 +287,7 @@ export default function MarketplacePage() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-r from-solana-purple to-magicblock-primary rounded-full flex items-center justify-center shadow-lg shadow-solana-purple/50 group"
-          onClick={() => toast.info('Hunter creation coming soon!')}
+          onClick={() => toast('Hunter creation coming soon!')}
         >
           <span className="text-2xl group-hover:rotate-180 transition-transform duration-300">➕</span>
         </motion.button>

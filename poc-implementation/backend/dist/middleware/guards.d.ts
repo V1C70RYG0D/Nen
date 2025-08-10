@@ -10,6 +10,7 @@ interface AuthenticatedRequest extends Request {
         id: string;
         publicKey: string;
         address: string;
+        walletAddress: string;
         username?: string;
         email?: string;
         wallet?: string;

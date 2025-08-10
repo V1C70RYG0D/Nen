@@ -1,38 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout/Layout';
 import { GameBoard } from '@/components/GameBoard/GameBoard';
 import { BettingPanel } from '@/components/BettingPanel/BettingPanel';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useQuery } from 'react-query';
 import { formatSOL, formatNumber } from '@/utils/format';
 import toast from 'react-hot-toast';
-
-interface Match {
-  id: string;
-  agent1: {
-    id: string;
-    name: string;
-    elo: number;
-    winRate: number;
-    nenType: string;
-    specialAbility: string;
-  };
-  agent2: {
-    id: string;
-    name: string;
-    elo: number;
-    winRate: number;
-    nenType: string;
-    specialAbility: string;
-  };
-  status: 'upcoming' | 'live' | 'completed';
-  totalPool: number;
-  moveCount: number;
-  moveHistory: string[];
-  viewerCount: number;
-  startTime?: Date;
-}
+import { useMatch } from '@/hooks/useMatch';
+import { Match } from '@/types/match';
 
 export default function MatchPage() {
   const router = useRouter();
@@ -40,40 +15,8 @@ export default function MatchPage() {
   const [selectedView, setSelectedView] = useState<'board' | 'stats' | 'history'>('board');
   const [showChat, setShowChat] = useState(false);
 
-  // Fetch match data
-  const { data: match, isLoading } = useQuery<Match>(
-    ['match', matchId],
-    async () => {
-      // In a real implementation, this would fetch from the API
-      return {
-        id: matchId as string,
-        agent1: {
-          id: '1',
-          name: 'Gon Freecss',
-          elo: 2150,
-          winRate: 0.65,
-          nenType: 'enhancement',
-          specialAbility: 'Jajanken - Rock Paper Scissors technique',
-        },
-        agent2: {
-          id: '2',
-          name: 'Killua Zoldyck',
-          elo: 2280,
-          winRate: 0.72,
-          nenType: 'transmutation',
-          specialAbility: 'Godspeed - Lightning-fast reflexes',
-        },
-        status: 'live',
-        totalPool: 25000000000,
-        moveCount: 42,
-        moveHistory: ['e4', 'e5', 'Nf3', 'Nc6', 'Bb5', 'a6'],
-        viewerCount: 1234,
-      };
-    },
-    {
-      enabled: !!matchId,
-    }
-  );
+  // Fetch match data from real API (via Next proxy)
+  const { data: match, isLoading } = useMatch(matchId as string);
 
   if (!matchId || isLoading) {
     return (
@@ -144,8 +87,8 @@ export default function MatchPage() {
                   <span className="font-mono text-white">{match.moveCount}</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <span className="text-gray-400">Viewers:</span>
-                  <span className="font-mono text-white">{formatNumber(match.viewerCount)}</span>
+                  <span className="text-gray-400">Moves:</span>
+                  <span className="font-mono text-white">{match.gameState?.currentMove ?? 0}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <span className="text-gray-400">Pool:</span>
@@ -153,7 +96,7 @@ export default function MatchPage() {
                 </div>
               </div>
             </div>
-
+                  <span className="font-mono text-solana-green">{formatSOL(match.bettingPool?.totalPool || 0)} SOL</span>
             {/* Agent 2 */}
             <div className="flex items-center space-x-4">
               <div className="text-center">
@@ -284,7 +227,7 @@ export default function MatchPage() {
                   <h3 className="text-xl font-hunter text-white mb-6">MOVE HISTORY</h3>
                   
                   <div className="max-h-96 overflow-y-auto space-y-2 font-mono text-sm">
-                    {match.moveHistory.map((move, index) => (
+                    {(match.gameState?.moveHistory || []).map((move: string, index: number) => (
                       <motion.div
                         key={index}
                         initial={{ opacity: 0, x: -20 }}

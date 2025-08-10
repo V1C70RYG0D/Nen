@@ -39,6 +39,7 @@ const analytics_1 = __importDefault(require("./api/analytics"));
 const ai_1 = __importDefault(require("./routes/ai"));
 const game_1 = __importDefault(require("./routes/game"));
 const enhanced_1 = __importDefault(require("./routes/enhanced"));
+const devnet_1 = __importDefault(require("./routes/devnet"));
 // Import services
 const services_1 = require("./services");
 const apiGateway_1 = __importDefault(require("./middleware/apiGateway"));
@@ -143,12 +144,14 @@ class NenPlatformServer {
         this.app.use('/api/matches', matches_1.default);
         this.app.use('/api/users', users_1.default);
         this.app.use('/api/analytics', analytics_1.default);
+        this.app.use('/api/devnet', devnet_1.default);
         // Versioned API routes
         this.app.use('/api/v1/auth', auth_1.default);
         this.app.use('/api/v1/betting', betting_1.default);
         this.app.use('/api/v1/matches', matches_1.default);
         this.app.use('/api/v1/users', users_1.default);
         this.app.use('/api/v1/analytics', analytics_1.default);
+        this.app.use('/api/v1/devnet', devnet_1.default);
         // Legacy routes for backward compatibility
         this.app.use('/api/ai', ai_1.default);
         this.app.use('/api/game', game_1.default);

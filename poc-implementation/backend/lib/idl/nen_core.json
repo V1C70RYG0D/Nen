@@ -1,0 +1,76 @@
+{
+  "version": "0.1.0",
+  "name": "nen_core",
+  "instructions": [
+    {
+      "name": "startTrainingSessionLight",
+      "accounts": [
+        { "name": "trainingSession", "isMut": true, "isSigner": false },
+        { "name": "mint", "isMut": false, "isSigner": false },
+        { "name": "owner", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "sessionId", "type": { "array": ["u8", 16] } },
+        { "name": "replayCommitments", "type": { "vec": { "array": ["u8", 32] } } },
+        { "name": "params", "type": { "defined": "TrainingParams" } }
+      ]
+    },
+    {
+      "name": "startTrainingSession",
+      "accounts": [
+        { "name": "trainingSession", "isMut": true, "isSigner": false },
+        { "name": "agentNft", "isMut": true, "isSigner": false },
+        { "name": "mint", "isMut": false, "isSigner": false },
+        { "name": "owner", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "sessionId", "type": { "array": ["u8", 16] } },
+        { "name": "replayCommitments", "type": { "vec": { "array": ["u8", 32] } } },
+        { "name": "params", "type": { "defined": "TrainingParams" } }
+      ]
+    },
+    {
+      "name": "endTrainingSession",
+      "accounts": [
+        { "name": "trainingSession", "isMut": true, "isSigner": false },
+        { "name": "agentNft", "isMut": true, "isSigner": false },
+        { "name": "mint", "isMut": false, "isSigner": false },
+        { "name": "owner", "isMut": true, "isSigner": true }
+      ],
+      "args": [
+        { "name": "status", "type": { "defined": "TrainingStatus" } }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "TrainingParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "focusArea", "type": "u8" },
+          { "name": "intensity", "type": "u8" },
+          { "name": "maxMatches", "type": "u16" },
+          { "name": "learningRateBp", "type": "u16" },
+          { "name": "epochs", "type": "u16" },
+          { "name": "batchSize", "type": "u16" }
+        ]
+      }
+    },
+    {
+      "name": "TrainingStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          { "name": "Initiated" },
+          { "name": "InProgress" },
+          { "name": "Completed" },
+          { "name": "Cancelled" },
+          { "name": "Failed" }
+        ]
+      }
+    }
+  ]
+}

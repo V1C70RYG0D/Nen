@@ -49,11 +49,16 @@ module.exports = {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'glow': 'glow 2s ease-in-out infinite alternate',
         'float': 'float 6s ease-in-out infinite',
+        'float-gentle': 'float-gentle 4s ease-in-out infinite',
         'matrix': 'matrix 20s linear infinite',
         'glitch': 'glitch 2s ease-in-out infinite',
         'nen-aura': 'nenAura 3s ease-in-out infinite',
         'cyber-scan': 'cyberScan 4s ease-in-out infinite',
         'hologram': 'hologram 8s ease-in-out infinite',
+        'text-glow-pulse': 'text-glow-pulse 2s ease-in-out infinite',
+        'border-glow': 'border-glow 2s ease-in-out infinite',
+        'shimmer': 'shimmer 2s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 1s ease-in-out infinite alternate',
       },
       keyframes: {
         glow: {
@@ -63,6 +68,10 @@ module.exports = {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-20px)' },
+        },
+        'float-gentle': {
+          '0%, 100%': { transform: 'translateY(0px) scale(1)' },
+          '50%': { transform: 'translateY(-10px) scale(1.02)' },
         },
         matrix: {
           '0%': { transform: 'translateY(-100%)' },
@@ -96,6 +105,35 @@ module.exports = {
         hologram: {
           '0%, 100%': { opacity: '0.8', filter: 'hue-rotate(0deg)' },
           '50%': { opacity: '1', filter: 'hue-rotate(180deg)' },
+        },
+        'text-glow-pulse': {
+          '0%, 100%': { 
+            textShadow: '0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor',
+          },
+          '50%': { 
+            textShadow: '0 0 20px currentColor, 0 0 30px currentColor, 0 0 40px currentColor, 0 0 50px currentColor',
+          },
+        },
+        'border-glow': {
+          '0%, 100%': { 
+            borderColor: 'rgba(153, 69, 255, 0.3)',
+            boxShadow: '0 0 10px rgba(153, 69, 255, 0.2)',
+          },
+          '50%': { 
+            borderColor: 'rgba(153, 69, 255, 0.8)',
+            boxShadow: '0 0 20px rgba(153, 69, 255, 0.4), 0 0 30px rgba(153, 69, 255, 0.2)',
+          },
+        },
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
+        },
+        'pulse-glow': {
+          '0%': { 
+            boxShadow: '0 0 5px rgba(153, 69, 255, 0.5)',
+          },
+          '100%': { 
+            boxShadow: '0 0 20px rgba(153, 69, 255, 0.8), 0 0 30px rgba(153, 69, 255, 0.6)',
+          },
         },
       },
       backgroundImage: {

@@ -5,8 +5,6 @@
  * A working backend that follows GI guidelines and provides essential API endpoints
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.io = exports.httpServer = void 0;
-exports.startServer = startServer;
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -21,11 +19,12 @@ dotenv.config({ path: configPath });
 dotenv.config();
 const app = express();
 const httpServer = createServer(app);
-exports.httpServer = httpServer;
+// In-memory storage for POC betting accounts (User Story 2 requirement)
+const bettingAccounts = new Map();
 // Basic configuration - all values from environment variables (GI-18)
 const PORT = parseInt(process.env.PORT || '3001');
 const HOST = process.env.API_HOST || '127.0.0.1';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://127.0.0.1:3010';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://127.0.0.1:3004';
 // Middleware setup
 app.use(helmet({
     contentSecurityPolicy: {
@@ -38,7 +37,7 @@ app.use(helmet({
     },
 }));
 app.use(cors({
-    origin: CORS_ORIGIN,
+    origin: ['http://127.0.0.1:3004', 'http://localhost:3004', 'http://127.0.0.1:3010', 'http://localhost:3010', CORS_ORIGIN],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -151,107 +150,170 @@ app.get('/api/betting/pools', (req, res) => {
         timestamp: new Date().toISOString()
     });
 });
-// Setup WebSocket
-const io = new SocketIOServer(httpServer, {
-    cors: {
-        origin: CORS_ORIGIN,
-        methods: ['GET', 'POST'],
-        credentials: true
-    },
-    transports: ['websocket', 'polling'],
-    pingTimeout: 30000,
-    pingInterval: 25000
-});
-exports.io = io;
-io.on('connection', (socket) => {
-    console.log(`🔌 WebSocket client connected: ${socket.id}`);
-    socket.emit('welcome', {
-        message: 'Connected to Nen Platform',
-        serverId: socket.id,
-        timestamp: new Date().toISOString(),
-        environment: 'minimal-poc'
+// Betting account endpoints for User Story 2
+// 🚨 DEPRECATED SIMULATION - REPLACED WITH REAL SOLANA IMPLEMENTATION
+// This endpoint is deprecated. Use the real Solana betting client instead.
+// See: frontend/lib/solana-betting-client.ts
+// Complies with GI.md directive #2: "Prioritize Real Implementations Over Simulations"
+app.get('/api/user/betting-account/:walletAddress', (req, res) => {
+    res.status(410).json({
+        success: false,
+        error: 'DEPRECATED: This simulated endpoint has been replaced with real Solana smart contract implementation. Please use SolanaBettingClient instead.',
+        migration: {
+            newImplementation: 'frontend/lib/solana-betting-client.ts',
+            smartContract: 'smart-contracts/programs/nen-betting/src/lib.rs',
+            userStory: 'User Story 2 - Real SOL deposits with proper PDA management'
+        }
     });
-    socket.on('ping', () => {
-        socket.emit('pong', {
+});
+// 🚨 DEPRECATED SIMULATION - REPLACED WITH REAL SOLANA IMPLEMENTATION
+app.post('/api/user/deposit', (req, res) => {
+    res.status(410).json({
+        success: false,
+        error: 'DEPRECATED: This simulated deposit endpoint has been replaced with real Solana smart contract implementation. Please use SolanaBettingClient.depositSol() instead.',
+        migration: {
+            newImplementation: 'frontend/lib/solana-betting-client.ts',
+            smartContract: 'smart-contracts/programs/nen-betting/src/lib.rs',
+            userStory: 'User Story 2 - Real SOL deposits with proper PDA management',
+            realFeatures: [
+                'Actual SOL transfer to betting PDA',
+                'Proper PDA derivation (not hardcoded)',
+                'On-chain balance tracking',
+                'Real event emission'
+            ]
+        }
+    });
+});
+// 🚨 DEPRECATED SIMULATION - REPLACED WITH REAL SOLANA IMPLEMENTATION
+app.post('/api/user/withdraw', (req, res) => {
+    res.status(410).json({
+        success: false,
+        error: 'DEPRECATED: This simulated withdraw endpoint has been replaced with real Solana smart contract implementation. Please use SolanaBettingClient.withdrawSol() instead.',
+        migration: {
+            newImplementation: 'frontend/lib/solana-betting-client.ts',
+            smartContract: 'smart-contracts/programs/nen-betting/src/lib.rs',
+            userStory: 'User Story 2 - Real SOL withdrawals from betting PDA'
+        }
+    });
+    // 🚨 DEPRECATED SIMULATION - REPLACED WITH REAL SOLANA IMPLEMENTATION
+    app.get('/api/user/transaction-history/:walletAddress', (req, res) => {
+        res.status(410).json({
+            success: false,
+            error: 'DEPRECATED: This simulated transaction history endpoint has been replaced with real Solana event listening. Please use on-chain event monitoring instead.',
+            migration: {
+                newImplementation: 'Monitor DepositCompleted and WithdrawalCompleted events from the smart contract',
+                smartContract: 'smart-contracts/programs/nen-betting/src/lib.rs',
+                userStory: 'User Story 2 - Real event emission for tracking'
+            }
+        });
+    });
+    // Setup WebSocket
+    const io = new SocketIOServer(httpServer, {
+        cors: {
+            origin: CORS_ORIGIN,
+            methods: ['GET', 'POST'],
+            credentials: true
+        },
+        transports: ['websocket', 'polling'],
+        pingTimeout: 30000,
+        pingInterval: 25000
+    });
+    io.on('connection', (socket) => {
+        console.log(`🔌 WebSocket client connected: ${socket.id}`);
+        socket.emit('welcome', {
+            message: 'Connected to Nen Platform',
+            serverId: socket.id,
             timestamp: new Date().toISOString(),
-            server: 'minimal-backend'
+            environment: 'minimal-poc'
+        });
+        socket.on('ping', () => {
+            socket.emit('pong', {
+                timestamp: new Date().toISOString(),
+                server: 'minimal-backend'
+            });
+        });
+        socket.on('disconnect', () => {
+            console.log(`🔌 WebSocket client disconnected: ${socket.id}`);
         });
     });
-    socket.on('disconnect', () => {
-        console.log(`🔌 WebSocket client disconnected: ${socket.id}`);
-    });
-});
-// Error handling
-app.use((error, req, res, next) => {
-    console.error('❌ Error:', error);
-    res.status(500).json({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
-        timestamp: new Date().toISOString(),
-        environment: 'minimal-poc'
-    });
-});
-app.use('*', (req, res) => {
-    res.status(404).json({
-        error: 'Not Found',
-        message: `Route ${req.originalUrl} not found`,
-        availableRoutes: [
-            '/',
-            '/health',
-            '/api/matches',
-            '/api/matches/:id',
-            '/api/agents',
-            '/api/agents/:id',
-            '/api/stats',
-            '/api/bets',
-            '/api/auth/status',
-            '/api/users/me',
-            '/api/betting/pools'
-        ],
-        timestamp: new Date().toISOString()
-    });
-});
-// Start server
-function startServer() {
-    return new Promise((resolve, reject) => {
-        httpServer.listen(PORT, HOST, () => {
-            console.log('='.repeat(50));
-            console.log('🚀 NEN PLATFORM MINIMAL BACKEND STARTED');
-            console.log('='.repeat(50));
-            console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
-            console.log(`🔗 API Server: http://${HOST}:${PORT}`);
-            console.log(`🏥 Health Check: http://${HOST}:${PORT}/health`);
-            console.log(`🎮 WebSocket: ws://${HOST}:${PORT}`);
-            console.log(`🌍 CORS Origin: ${CORS_ORIGIN}`);
-            console.log(`📝 Type: Minimal POC Implementation`);
-            console.log('='.repeat(50));
-            resolve();
-        });
-        httpServer.on('error', (error) => {
-            console.error('❌ Server error:', error);
-            reject(error);
+    // Error handling
+    app.use((error, req, res, next) => {
+        console.error('❌ Error:', error);
+        res.status(500).json({
+            error: 'Internal Server Error',
+            message: 'An unexpected error occurred',
+            timestamp: new Date().toISOString(),
+            environment: 'minimal-poc'
         });
     });
-}
-// Graceful shutdown
-function gracefulShutdown(signal) {
-    console.log(`\n🛑 Received ${signal}, shutting down gracefully...`);
-    httpServer.close(() => {
-        console.log('✅ HTTP server closed');
-        io.close();
-        console.log('✅ WebSocket server closed');
-        console.log('✅ Graceful shutdown completed');
-        process.exit(0);
+    app.use('*', (req, res) => {
+        res.status(404).json({
+            error: 'Not Found',
+            message: `Route ${req.originalUrl} not found`,
+            availableRoutes: [
+                '/',
+                '/health',
+                '/api/matches',
+                '/api/matches/:id',
+                '/api/agents',
+                '/api/agents/:id',
+                '/api/stats',
+                '/api/bets',
+                '/api/auth/status',
+                '/api/users/me',
+                '/api/betting/pools',
+                '/api/user/betting-account/:walletAddress',
+                '/api/user/deposit',
+                '/api/user/withdraw',
+                '/api/user/transaction-history/:walletAddress'
+            ],
+            timestamp: new Date().toISOString()
+        });
     });
-}
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-// Start if run directly
-if (require.main === module) {
-    startServer().catch((error) => {
-        console.error('💥 Failed to start server:', error);
-        process.exit(1);
-    });
-}
-exports.default = app;
+    // Start server
+    function startServer() {
+        return new Promise((resolve, reject) => {
+            httpServer.listen(PORT, HOST, () => {
+                console.log('='.repeat(50));
+                console.log('🚀 NEN PLATFORM MINIMAL BACKEND STARTED');
+                console.log('='.repeat(50));
+                console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+                console.log(`🔗 API Server: http://${HOST}:${PORT}`);
+                console.log(`🏥 Health Check: http://${HOST}:${PORT}/health`);
+                console.log(`🎮 WebSocket: ws://${HOST}:${PORT}`);
+                console.log(`🌍 CORS Origin: ${CORS_ORIGIN}`);
+                console.log(`📝 Type: Minimal POC Implementation`);
+                console.log('='.repeat(50));
+                resolve();
+            });
+            httpServer.on('error', (error) => {
+                console.error('❌ Server error:', error);
+                reject(error);
+            });
+        });
+    }
+    // Graceful shutdown
+    function gracefulShutdown(signal) {
+        console.log(`\n🛑 Received ${signal}, shutting down gracefully...`);
+        httpServer.close(() => {
+            console.log('✅ HTTP server closed');
+            io.close();
+            console.log('✅ WebSocket server closed');
+            console.log('✅ Graceful shutdown completed');
+            process.exit(0);
+        });
+    }
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    // Start if run directly  
+    if (require.main === module) {
+        startServer().catch((error) => {
+            console.error('💥 Failed to start server:', error);
+            process.exit(1);
+        });
+    }
+    module.exports = app;
+    module.exports.startServer = startServer;
+    module.exports.io = io;
+});
 //# sourceMappingURL=minimal-server.js.map

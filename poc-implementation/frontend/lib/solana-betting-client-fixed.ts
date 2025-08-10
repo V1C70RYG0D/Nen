@@ -218,7 +218,7 @@ export class SolanaBettingClient {
         console.log('🆕 Creating new betting account');
       }
     } catch (error) {
-      console.log('⚠️ Account check error (will create new):', error.message);
+      console.log('⚠️ Account check error (will create new):', error instanceof Error ? error.message : String(error));
     }
 
     // Step 3: Create and execute real SOL transfer transaction
@@ -281,7 +281,7 @@ export class SolanaBettingClient {
 
     } catch (error) {
       console.error('❌ Real SOL deposit failed:', error);
-      throw new Error(`Deposit failed: ${error.message}`);
+      throw new Error(`Deposit failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

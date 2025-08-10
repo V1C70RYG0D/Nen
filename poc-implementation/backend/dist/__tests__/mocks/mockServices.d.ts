@@ -54,5 +54,21 @@ export declare const mockEnhancedAITrainingService: {
     getActiveSessions: jest.Mock<any, any, any>;
     stopTraining: jest.Mock<any, any, any>;
     shutdown: jest.Mock<any, any, any>;
+    startAdvancedSelfPlayTraining: jest.Mock<any, any, any>;
+    pauseTraining: jest.Mock<any, any, any>;
+    resumeTraining: jest.Mock<any, any, any>;
+    getComputeEfficiency: jest.Mock<any, any, any>;
+};
+export declare const mockAdvancedLoadTestingService: {
+    runLoadTest: jest.Mock<any, any, any>;
+    getMetrics: jest.Mock<any, any, any>;
+    stopAllTests: jest.Mock<any, any, any>;
+    shutdown: jest.Mock<any, any, any>;
+};
+export declare const mockEnhancedComplianceServiceV2: {
+    initialize: jest.Mock<any, any, any>;
+    detectFraud: jest.Mock<any, any, any>;
+    checkKYCCompliance: jest.Mock<any, any, any>;
+    shutdown: jest.Mock<any, any, any>;
 };
 //# sourceMappingURL=mockServices.d.ts.map

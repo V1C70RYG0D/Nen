@@ -30,11 +30,67 @@ export interface BettingLimits {
     maxBetSol: number;
     platformFeeRate: number;
 }
+export interface BettingAccount {
+    userId: string;
+    walletAddress: string;
+    pdaAddress: string;
+    balance: number;
+    totalDeposited: number;
+    totalWithdrawn: number;
+    lockedBalance: number;
+    lastUpdated: Date;
+}
+export interface DepositRequest {
+    userId: string;
+    walletAddress: string;
+    amount: number;
+    transactionSignature?: string;
+}
+export interface DepositResult {
+    success: boolean;
+    transactionId: string;
+    newBalance: number;
+    depositAmount: number;
+    pdaAddress: string;
+    message: string;
+}
+export interface WithdrawalRequest {
+    userId: string;
+    walletAddress: string;
+    amount: number;
+    destinationAddress?: string;
+}
+export interface WithdrawalResult {
+    success: boolean;
+    transactionId: string;
+    newBalance: number;
+    withdrawalAmount: number;
+    message: string;
+}
+export interface TransactionRecord {
+    id: string;
+    userId: string;
+    walletAddress: string;
+    type: 'deposit' | 'withdrawal' | 'bet' | 'payout';
+    amount: number;
+    transactionHash?: string;
+    status: 'pending' | 'confirmed' | 'failed';
+    metadata?: Record<string, any>;
+    createdAt: Date;
+}
 export declare class BettingService {
     private connection;
     private cache;
     private platformFeeRate;
+    private programId;
     constructor();
+    getBettingAccount(walletAddress: string): Promise<BettingAccount>;
+    depositSol(depositRequest: DepositRequest): Promise<DepositResult>;
+    withdrawSol(withdrawalRequest: WithdrawalRequest): Promise<WithdrawalResult>;
+    getTransactionHistory(walletAddress: string, limit?: number): Promise<TransactionRecord[]>;
+    private storeTransactionRecord;
+    private updateTransactionStatus;
+    private isValidSolanaAddress;
     placeBet(betData: {
         userId: string;
         matchId: string;

@@ -177,6 +177,54 @@ export const useDeposit = () => {
     initializeBettingClient();
   }, [publicKey, connection, sendTransaction]);
 
+  // Helper function to safely convert BN or number to SOL
+  const safeToSol = useCallback((value: any): number => {
+    if (!value) return 0;
+    
+    // If it's already a number, return it divided by LAMPORTS_PER_SOL if it seems to be in lamports
+    if (typeof value === 'number') {
+      // If the number is large (>= 1 SOL in lamports), assume it's in lamports
+      return value >= LAMPORTS_PER_SOL ? value / LAMPORTS_PER_SOL : value;
+    }
+    
+    // If it has toNumber method (BN object), use it
+    if (value && typeof value.toNumber === 'function') {
+      return value.toNumber() / LAMPORTS_PER_SOL;
+    }
+    
+    // Try to parse as number if it's a string
+    if (typeof value === 'string') {
+      const num = parseFloat(value);
+      return isNaN(num) ? 0 : num;
+    }
+    
+    // Default to 0 for any other type
+    return 0;
+  }, []);
+
+  // Helper function to safely convert timestamp
+  const safeToTimestamp = useCallback((value: any): string => {
+    if (!value) return new Date().toISOString();
+    
+    // If it has toNumber method (BN object), use it
+    if (value && typeof value.toNumber === 'function') {
+      return new Date(value.toNumber() * 1000).toISOString();
+    }
+    
+    // If it's already a number, use it
+    if (typeof value === 'number') {
+      return new Date(value * 1000).toISOString();
+    }
+    
+    // If it's a string, try to parse it
+    if (typeof value === 'string') {
+      return new Date(value).toISOString();
+    }
+    
+    // Default to current time
+    return new Date().toISOString();
+  }, []);
+
   // Get betting account details (User Story 2: Create/access user's betting account PDA)
   const getBettingAccount = useCallback(async (): Promise<BettingAccount | null> => {
     if (!publicKey) return null;
@@ -191,16 +239,20 @@ export const useDeposit = () => {
         const onChainAccount = await state.bettingClient.getBettingAccount(publicKey);
         
         if (onChainAccount) {
+          console.log('📊 Raw on-chain account data:', onChainAccount);
+          
           accountData = {
             userId: `user_${publicKey.toString().slice(-8)}`,
             walletAddress: publicKey.toString(),
             pdaAddress: state.bettingClient.getBettingAccountPDA(publicKey)[0].toString(),
-            balance: onChainAccount.balance.toNumber() / LAMPORTS_PER_SOL,
-            totalDeposited: onChainAccount.totalDeposited.toNumber() / LAMPORTS_PER_SOL,
-            totalWithdrawn: onChainAccount.totalWithdrawn.toNumber() / LAMPORTS_PER_SOL,
-            lockedBalance: onChainAccount.lockedBalance.toNumber() / LAMPORTS_PER_SOL,
-            lastUpdated: new Date(onChainAccount.lastUpdated.toNumber() * 1000).toISOString(),
+            balance: safeToSol(onChainAccount.balance),
+            totalDeposited: safeToSol(onChainAccount.totalDeposited),
+            totalWithdrawn: safeToSol(onChainAccount.totalWithdrawn),
+            lockedBalance: safeToSol(onChainAccount.lockedBalance),
+            lastUpdated: safeToTimestamp(onChainAccount.lastUpdated),
           };
+          
+          console.log('✅ Processed account data:', accountData);
         }
       } else if (state.fallbackClient) {
         // Use fallback client
@@ -212,11 +264,11 @@ export const useDeposit = () => {
             userId: `user_${publicKey.toString().slice(-8)}`,
             walletAddress: publicKey.toString(),
             pdaAddress: pdaAddress.toString(),
-            balance: fallbackAccount.balance,
-            totalDeposited: fallbackAccount.totalDeposited,
-            totalWithdrawn: fallbackAccount.totalWithdrawn,
-            lockedBalance: fallbackAccount.lockedBalance,
-            lastUpdated: fallbackAccount.lastUpdated.toISOString(),
+            balance: fallbackAccount.balance || 0,
+            totalDeposited: fallbackAccount.totalDeposited || 0,
+            totalWithdrawn: fallbackAccount.totalWithdrawn || 0,
+            lockedBalance: fallbackAccount.lockedBalance || 0,
+            lastUpdated: fallbackAccount.lastUpdated ? fallbackAccount.lastUpdated.toISOString() : new Date().toISOString(),
           };
         }
       } else {
@@ -241,6 +293,7 @@ export const useDeposit = () => {
         return null;
       }
     } catch (error) {
+      console.error('❌ Error in getBettingAccount:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to get betting account';
       setState(prev => ({ 
         ...prev, 
@@ -249,7 +302,7 @@ export const useDeposit = () => {
       }));
       return null;
     }
-  }, [publicKey, state.bettingClient, state.fallbackClient]);
+  }, [publicKey, state.bettingClient, state.fallbackClient, safeToSol, safeToTimestamp]);
 
   // Deposit SOL into betting account (User Story 2: Real SOL transfer, not simulation)
   const depositSol = useCallback(async (amount: number): Promise<DepositResult | null> => {

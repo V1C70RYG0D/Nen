@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 export interface User {
     id: string;
     walletAddress: string;
@@ -27,10 +28,42 @@ export interface WalletSignatureData {
     signature: string;
     message: string;
 }
+export interface PdaCheckResult {
+    walletAddress: string;
+    hasAccount: boolean;
+    accountAddress: string | null;
+    userAccountPda?: PublicKey;
+}
 export declare class UserService {
     private cache;
     private jwtSecret;
+    private connection;
+    private programId;
     constructor();
+    checkExistingPDA(walletAddress: string): Promise<PdaCheckResult>;
+    derivePdaAddress(walletAddress: string): Promise<string>;
+    initializeUserAccountIfNeeded(walletAddress: string, options?: {
+        kycLevel?: number;
+        region?: number;
+        username?: string;
+    }): Promise<{
+        initialized: boolean;
+        transactionHash?: string;
+        userAccountPda: string;
+        isFirstTime: boolean;
+    }>;
+    checkAndInitializeAccount(walletAddress: string, options?: {
+        autoInitialize?: boolean;
+        kycLevel?: number;
+        region?: number;
+        username?: string;
+    }): Promise<{
+        accountExists: boolean;
+        needsInitialization: boolean;
+        initialized?: boolean;
+        userAccountPda: string;
+        transactionHash?: string;
+    }>;
     authenticateWallet(signatureData: WalletSignatureData): Promise<AuthToken>;
     verifyToken(token: string): Promise<User | null>;
     getUserById(userId: string): Promise<User | null>;

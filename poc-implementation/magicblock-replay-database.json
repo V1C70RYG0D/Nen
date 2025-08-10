@@ -1,0 +1,3651 @@
+{
+  "wallet": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+  "agents": [
+    {
+      "mint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "name": "Netero Strategic AI"
+    },
+    {
+      "mint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "name": "Phantom AI Specialist"
+    },
+    {
+      "mint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "name": "Zoldyck Assassin AI"
+    }
+  ],
+  "replays": [
+    {
+      "id": "H4o5x8s4_replay_001",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_83cc5abee42336f7",
+      "commitmentHash": "83cc5abee42336f7645d73fedb7e6fff9f6871cd698956180a331c4dcfa2ec3e",
+      "gameData": {
+        "opponent": {
+          "name": "Illumi AI",
+          "elo": 1980,
+          "nenType": "Manipulation"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "French Defense",
+        "endgameType": "Checkmate",
+        "moveCount": 79,
+        "gameDuration": 1679,
+        "avgMoveTime": 21,
+        "criticalMoments": 3,
+        "blunders": 0,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-17T00:51:06.395Z",
+        "completedAt": "2025-08-09T23:36:06.272Z",
+        "rollupEpoch": 5039,
+        "rollupSlot": 52720,
+        "finalStateHash": "074b285aaec88843db2e9c4adf0758f3071965a1241de7c0f3194884ffecb583",
+        "verificationStatus": "verified",
+        "replaySize": 2061,
+        "compressionRatio": 0.24709782205439063
+      },
+      "trainingValue": {
+        "tacticalComplexity": 2.0270405589558838,
+        "strategicDepth": 5.7058648458041645,
+        "endgameRelevance": 6.613158028307264,
+        "openingNovelty": 7.586926191065317,
+        "overallScore": 6.425895771134483
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "83cc5abee42336f7645d73fedb7e6fff",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_002",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_8805bd0734c9408a",
+      "commitmentHash": "8805bd0734c9408a9e7ab76d85a90aea2dd2fe7622462947c757c8bed836edec",
+      "gameData": {
+        "opponent": {
+          "name": "Gon AI",
+          "elo": 1650,
+          "nenType": "Enhancement"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "Queen's Gambit",
+        "endgameType": "Time Forfeit",
+        "moveCount": 64,
+        "gameDuration": 1991,
+        "avgMoveTime": 31,
+        "criticalMoments": 2,
+        "blunders": 1,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-27T15:15:07.831Z",
+        "completedAt": "2025-07-21T13:41:47.022Z",
+        "rollupEpoch": 5295,
+        "rollupSlot": 54132,
+        "finalStateHash": "a3de7578740998e64579b1ba554472625319db825efa77bdf19042396760b363",
+        "verificationStatus": "verified",
+        "replaySize": 1870,
+        "compressionRatio": 0.1592858103637052
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.1118397796248525,
+        "strategicDepth": 4.68286035733086,
+        "endgameRelevance": 9.203138351710983,
+        "openingNovelty": 5.051028864509544,
+        "overallScore": 5.325327800817785
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "8805bd0734c9408a9e7ab76d85a90aea",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_003",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_049e236690077b53",
+      "commitmentHash": "049e236690077b531399b90fda801fc8aeab0c9b4b790c41f76d2819ad8d8b35",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "defeat",
+        "playerColor": "black",
+        "opening": "Queen's Gambit",
+        "endgameType": "Resignation",
+        "moveCount": 57,
+        "gameDuration": 1672,
+        "avgMoveTime": 29,
+        "criticalMoments": 2,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-08-06T13:57:59.838Z",
+        "completedAt": "2025-07-23T20:08:12.420Z",
+        "rollupEpoch": 5434,
+        "rollupSlot": 55678,
+        "finalStateHash": "83e5d802fe7f2438882708de1460687e7de0fdaee249b91a7decfa35874807f2",
+        "verificationStatus": "verified",
+        "replaySize": 2424,
+        "compressionRatio": 0.2013720265168597
+      },
+      "trainingValue": {
+        "tacticalComplexity": 9.177184806507693,
+        "strategicDepth": 4.579252136574059,
+        "endgameRelevance": 5.823479940909446,
+        "openingNovelty": 4.828401336950289,
+        "overallScore": 9.13859381670349
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "049e236690077b531399b90fda801fc8",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_004",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_74c144ff05a424de",
+      "commitmentHash": "74c144ff05a424de184ecd0797215648bf2d60f82ee47eefa17ae9e3cb5df5da",
+      "gameData": {
+        "opponent": {
+          "name": "Gon AI",
+          "elo": 1650,
+          "nenType": "Enhancement"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Sicilian Defense",
+        "endgameType": "Time Forfeit",
+        "moveCount": 76,
+        "gameDuration": 2743,
+        "avgMoveTime": 36,
+        "criticalMoments": 6,
+        "blunders": 2,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-21T03:25:37.067Z",
+        "completedAt": "2025-07-14T11:05:20.449Z",
+        "rollupEpoch": 5761,
+        "rollupSlot": 58973,
+        "finalStateHash": "212c57f1cac9864f40fd480cc243e19e5f56b852297ae37c43cdb3e3d5f0a390",
+        "verificationStatus": "verified",
+        "replaySize": 2691,
+        "compressionRatio": 0.19759524273287557
+      },
+      "trainingValue": {
+        "tacticalComplexity": 3.5380052486983304,
+        "strategicDepth": 6.69332448429272,
+        "endgameRelevance": 9.617245234405232,
+        "openingNovelty": 8.607985382981166,
+        "overallScore": 7.072054893870804
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "74c144ff05a424de184ecd0797215648",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_005",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_744bb9a5d6b1ea0e",
+      "commitmentHash": "744bb9a5d6b1ea0ed8e20aa5d82ecac63794d3703be70474c3a9a9e449ea81c4",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "English Opening",
+        "endgameType": "Time Forfeit",
+        "moveCount": 46,
+        "gameDuration": 1436,
+        "avgMoveTime": 31,
+        "criticalMoments": 6,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-13T11:08:13.871Z",
+        "completedAt": "2025-07-31T23:24:55.276Z",
+        "rollupEpoch": 5216,
+        "rollupSlot": 57227,
+        "finalStateHash": "f396b52b9272586e556374cf1cf574a5f763197a6ac3c4677c9b6376c8f9f63a",
+        "verificationStatus": "verified",
+        "replaySize": 1589,
+        "compressionRatio": 0.15011172039450282
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.72464479297647,
+        "strategicDepth": 5.362224936480868,
+        "endgameRelevance": 0.7291714762561097,
+        "openingNovelty": 3.5419067799218107,
+        "overallScore": 9.296897398370447
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "744bb9a5d6b1ea0ed8e20aa5d82ecac6",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_006",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_e38d78dbc17f4532",
+      "commitmentHash": "e38d78dbc17f45325039e069ae4b93a98fb76177ea5b86068efe54174bd653c3",
+      "gameData": {
+        "opponent": {
+          "name": "Illumi AI",
+          "elo": 1980,
+          "nenType": "Manipulation"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "French Defense",
+        "endgameType": "Checkmate",
+        "moveCount": 47,
+        "gameDuration": 2492,
+        "avgMoveTime": 53,
+        "criticalMoments": 5,
+        "blunders": 0,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-22T22:30:08.671Z",
+        "completedAt": "2025-07-12T15:44:23.329Z",
+        "rollupEpoch": 5470,
+        "rollupSlot": 58605,
+        "finalStateHash": "45e7b1f22b2550c6e2d56724c5a8e3d2929f327cff4cc5af2f3fee9f51fa9387",
+        "verificationStatus": "verified",
+        "replaySize": 1398,
+        "compressionRatio": 0.19716108580209096
+      },
+      "trainingValue": {
+        "tacticalComplexity": 9.71497145092596,
+        "strategicDepth": 9.382383153994635,
+        "endgameRelevance": 7.964316324334845,
+        "openingNovelty": 6.31949854123331,
+        "overallScore": 5.730540936955714
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "e38d78dbc17f45325039e069ae4b93a9",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_007",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_4dd1ea868feef85c",
+      "commitmentHash": "4dd1ea868feef85caef6658cd2b13bc39a268b6acd612a3b5546452b23003e3b",
+      "gameData": {
+        "opponent": {
+          "name": "Killua AI",
+          "elo": 1720,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Queen's Gambit",
+        "endgameType": "Draw",
+        "moveCount": 109,
+        "gameDuration": 2352,
+        "avgMoveTime": 21,
+        "criticalMoments": 6,
+        "blunders": 1,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-25T12:58:30.147Z",
+        "completedAt": "2025-07-16T19:06:46.082Z",
+        "rollupEpoch": 5574,
+        "rollupSlot": 55625,
+        "finalStateHash": "eeae34b382ca82daff058d546e2d91e5b77be486442fc89f327280bd61ca3a02",
+        "verificationStatus": "verified",
+        "replaySize": 2884,
+        "compressionRatio": 0.16022181077529532
+      },
+      "trainingValue": {
+        "tacticalComplexity": 4.4657900963692665,
+        "strategicDepth": 0.501740447397705,
+        "endgameRelevance": 5.0970125055901105,
+        "openingNovelty": 0.015320250674004665,
+        "overallScore": 8.193266469471952
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "4dd1ea868feef85caef6658cd2b13bc3",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_008",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_8c96214a3d015f2f",
+      "commitmentHash": "8c96214a3d015f2f492a074964c367a2e8577b680000ca22ca742ba052791292",
+      "gameData": {
+        "opponent": {
+          "name": "Illumi AI",
+          "elo": 1980,
+          "nenType": "Manipulation"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "English Opening",
+        "endgameType": "Checkmate",
+        "moveCount": 93,
+        "gameDuration": 3353,
+        "avgMoveTime": 36,
+        "criticalMoments": 2,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-12T08:06:22.079Z",
+        "completedAt": "2025-07-13T18:49:22.632Z",
+        "rollupEpoch": 5327,
+        "rollupSlot": 51973,
+        "finalStateHash": "a15772e617a50dcb9efb74dc0a1aed570f87be83c6e047f6a6933e0891af463c",
+        "verificationStatus": "verified",
+        "replaySize": 2474,
+        "compressionRatio": 0.22954703418061936
+      },
+      "trainingValue": {
+        "tacticalComplexity": 2.609208446077007,
+        "strategicDepth": 8.424022639222597,
+        "endgameRelevance": 7.708390132646041,
+        "openingNovelty": 8.475414263273873,
+        "overallScore": 7.370507356130997
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "8c96214a3d015f2f492a074964c367a2",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_009",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_8b61d51e603d8824",
+      "commitmentHash": "8b61d51e603d88247c418afa7301167c1fa14831df872e9a976eb7d13eae5dec",
+      "gameData": {
+        "opponent": {
+          "name": "Gon AI",
+          "elo": 1650,
+          "nenType": "Enhancement"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Queen's Gambit",
+        "endgameType": "Resignation",
+        "moveCount": 51,
+        "gameDuration": 3575,
+        "avgMoveTime": 70,
+        "criticalMoments": 2,
+        "blunders": 1,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-19T21:22:45.399Z",
+        "completedAt": "2025-08-10T09:23:32.930Z",
+        "rollupEpoch": 5551,
+        "rollupSlot": 54824,
+        "finalStateHash": "49fda50965e4dbdffc27231294c7b9834a9903f108872fdae6d0147f32c440d2",
+        "verificationStatus": "verified",
+        "replaySize": 1839,
+        "compressionRatio": 0.15058091779317306
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.2178401478919145,
+        "strategicDepth": 3.078746755688868,
+        "endgameRelevance": 2.8187796391891484,
+        "openingNovelty": 6.483281417771332,
+        "overallScore": 5.261200593214398
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "8b61d51e603d88247c418afa7301167c",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_010",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_87a01cb111b29d47",
+      "commitmentHash": "87a01cb111b29d47227557b44306ad44396b23a809af0bc5225260404531c699",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "English Opening",
+        "endgameType": "Resignation",
+        "moveCount": 112,
+        "gameDuration": 3303,
+        "avgMoveTime": 29,
+        "criticalMoments": 2,
+        "blunders": 2,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-13T13:03:40.241Z",
+        "completedAt": "2025-07-24T00:32:20.038Z",
+        "rollupEpoch": 5918,
+        "rollupSlot": 57651,
+        "finalStateHash": "a0d822bc00f48f1c3c31455cdc22da33c09b85a821333174a738e12b00309e2b",
+        "verificationStatus": "verified",
+        "replaySize": 2893,
+        "compressionRatio": 0.16329628183098266
+      },
+      "trainingValue": {
+        "tacticalComplexity": 8.263741612621278,
+        "strategicDepth": 4.433528785511087,
+        "endgameRelevance": 9.703371946716793,
+        "openingNovelty": 0.06124917662788665,
+        "overallScore": 8.60249236585822
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "87a01cb111b29d47227557b44306ad44",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_011",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_450330558a7d5cc9",
+      "commitmentHash": "450330558a7d5cc947b9a53b5b5a115efc490cc4d5e260c3e973ddeffae369eb",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "French Defense",
+        "endgameType": "Resignation",
+        "moveCount": 113,
+        "gameDuration": 3390,
+        "avgMoveTime": 30,
+        "criticalMoments": 6,
+        "blunders": 0,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-18T11:30:51.781Z",
+        "completedAt": "2025-08-06T01:37:01.136Z",
+        "rollupEpoch": 5333,
+        "rollupSlot": 53116,
+        "finalStateHash": "480bf94bd98762d0db047e1a67695d09aaed7a7e674cdbe87564b3323e051eb7",
+        "verificationStatus": "verified",
+        "replaySize": 3671,
+        "compressionRatio": 0.2366121207704474
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.04704812027113,
+        "strategicDepth": 5.728329223693407,
+        "endgameRelevance": 5.50514759740164,
+        "openingNovelty": 8.630315971750528,
+        "overallScore": 8.054971574848548
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "450330558a7d5cc947b9a53b5b5a115e",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_012",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_7213c0b4f8852489",
+      "commitmentHash": "7213c0b4f88524895146963924c06ce01356a0391d49a13af2364be4c94e336b",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Sicilian Defense",
+        "endgameType": "Checkmate",
+        "moveCount": 62,
+        "gameDuration": 1793,
+        "avgMoveTime": 28,
+        "criticalMoments": 2,
+        "blunders": 0,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-08-02T16:34:45.212Z",
+        "completedAt": "2025-08-02T18:57:49.628Z",
+        "rollupEpoch": 5143,
+        "rollupSlot": 55623,
+        "finalStateHash": "911bb7bd98d8b34afc0b5e446717ade5d4918d2f68451e77f210f89f0d617ac5",
+        "verificationStatus": "verified",
+        "replaySize": 1873,
+        "compressionRatio": 0.18766467260055075
+      },
+      "trainingValue": {
+        "tacticalComplexity": 1.1632218169885977,
+        "strategicDepth": 1.2113516157507709,
+        "endgameRelevance": 0.7773447834840286,
+        "openingNovelty": 5.072372617407092,
+        "overallScore": 8.203631765743765
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "7213c0b4f88524895146963924c06ce0",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_013",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_ce75f10155218bbb",
+      "commitmentHash": "ce75f10155218bbb021dcd75bbaa0f2d1ae233bc10ffa6d7a4779fb700465f5d",
+      "gameData": {
+        "opponent": {
+          "name": "Hisoka AI",
+          "elo": 2020,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "English Opening",
+        "endgameType": "Checkmate",
+        "moveCount": 49,
+        "gameDuration": 1894,
+        "avgMoveTime": 38,
+        "criticalMoments": 4,
+        "blunders": 0,
+        "brilliantMoves": 1
+      },
+      "metadata": {
+        "recordedAt": "2025-07-26T12:09:12.973Z",
+        "completedAt": "2025-07-22T10:09:18.347Z",
+        "rollupEpoch": 5810,
+        "rollupSlot": 59262,
+        "finalStateHash": "205c0294e9882bcecb3475f1050a697a8fd590e13c392e452cad55d3f076933c",
+        "verificationStatus": "verified",
+        "replaySize": 1602,
+        "compressionRatio": 0.17511268620425197
+      },
+      "trainingValue": {
+        "tacticalComplexity": 5.370779827126608,
+        "strategicDepth": 4.879986894542803,
+        "endgameRelevance": 3.3793766939906544,
+        "openingNovelty": 2.571568990742026,
+        "overallScore": 9.728883442662589
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "ce75f10155218bbb021dcd75bbaa0f2d",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_014",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_5ac74992e6f629ce",
+      "commitmentHash": "5ac74992e6f629cea6edb3554ba05885cd9209c6b31b570b5ef25ac08e846366",
+      "gameData": {
+        "opponent": {
+          "name": "Gon AI",
+          "elo": 1650,
+          "nenType": "Enhancement"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Sicilian Defense",
+        "endgameType": "Draw",
+        "moveCount": 109,
+        "gameDuration": 2362,
+        "avgMoveTime": 21,
+        "criticalMoments": 2,
+        "blunders": 1,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-21T07:39:46.773Z",
+        "completedAt": "2025-07-17T05:50:57.264Z",
+        "rollupEpoch": 5057,
+        "rollupSlot": 58577,
+        "finalStateHash": "bc0fa1b0b1175adc1cf1cd99c875616e7e9ce02f620818b5b9dd7d32b8938991",
+        "verificationStatus": "verified",
+        "replaySize": 3482,
+        "compressionRatio": 0.16001230496861377
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.855480990685935,
+        "strategicDepth": 2.30072845876532,
+        "endgameRelevance": 1.1160444441658401,
+        "openingNovelty": 7.932155045640378,
+        "overallScore": 9.780029140516422
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "5ac74992e6f629cea6edb3554ba05885",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_015",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_b37970a9ecf3373f",
+      "commitmentHash": "b37970a9ecf3373f23474bead7b00a1b47b92980c7d12303887cb91b9792e541",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "King's Indian",
+        "endgameType": "Time Forfeit",
+        "moveCount": 119,
+        "gameDuration": 1780,
+        "avgMoveTime": 14,
+        "criticalMoments": 2,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-08-07T03:06:10.047Z",
+        "completedAt": "2025-07-17T15:23:19.294Z",
+        "rollupEpoch": 5813,
+        "rollupSlot": 51421,
+        "finalStateHash": "a78d55268ca89dc349ca2144ae7a15bb9c79ac6b50a6b866c202a86dd32d33c2",
+        "verificationStatus": "verified",
+        "replaySize": 3558,
+        "compressionRatio": 0.18702803775293853
+      },
+      "trainingValue": {
+        "tacticalComplexity": 1.9860326934797867,
+        "strategicDepth": 7.307212162079786,
+        "endgameRelevance": 1.2125022281025877,
+        "openingNovelty": 8.015509141421855,
+        "overallScore": 6.595205374951185
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "b37970a9ecf3373f23474bead7b00a1b",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_016",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_0121622f3ad6f34b",
+      "commitmentHash": "0121622f3ad6f34b9002245e2649e01b8e9288165233d4ebde078ba343ba5291",
+      "gameData": {
+        "opponent": {
+          "name": "Illumi AI",
+          "elo": 1980,
+          "nenType": "Manipulation"
+        },
+        "result": "defeat",
+        "playerColor": "white",
+        "opening": "King's Indian",
+        "endgameType": "Draw",
+        "moveCount": 123,
+        "gameDuration": 2686,
+        "avgMoveTime": 21,
+        "criticalMoments": 2,
+        "blunders": 1,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-08-02T14:02:48.194Z",
+        "completedAt": "2025-07-19T01:24:25.541Z",
+        "rollupEpoch": 5095,
+        "rollupSlot": 55594,
+        "finalStateHash": "0f7e470b2ac0438ccc5366c3bfd180d5289f031028c5ca4a2c4758d338f7ed98",
+        "verificationStatus": "verified",
+        "replaySize": 3194,
+        "compressionRatio": 0.22780265018820683
+      },
+      "trainingValue": {
+        "tacticalComplexity": 5.996175111306727,
+        "strategicDepth": 1.7178159455575104,
+        "endgameRelevance": 7.162208581056668,
+        "openingNovelty": 2.3191507532675226,
+        "overallScore": 9.355607822118298
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "0121622f3ad6f34b9002245e2649e01b",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_017",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_619ef2bbb5a24476",
+      "commitmentHash": "619ef2bbb5a24476c19a96be03b1c2038b0f18713e111c1995373234fecb0aa2",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "English Opening",
+        "endgameType": "Draw",
+        "moveCount": 83,
+        "gameDuration": 2099,
+        "avgMoveTime": 25,
+        "criticalMoments": 6,
+        "blunders": 1,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-22T14:10:17.011Z",
+        "completedAt": "2025-07-14T04:32:30.964Z",
+        "rollupEpoch": 5914,
+        "rollupSlot": 54672,
+        "finalStateHash": "e8d7cf02890894d73668c9234d626d6156a2691c4ae554a966a89bd533b2b551",
+        "verificationStatus": "verified",
+        "replaySize": 2094,
+        "compressionRatio": 0.24570933019636476
+      },
+      "trainingValue": {
+        "tacticalComplexity": 3.1654842244760495,
+        "strategicDepth": 3.9684376195259463,
+        "endgameRelevance": 0.5430844122371692,
+        "openingNovelty": 7.824892551318962,
+        "overallScore": 5.478717603735688
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "619ef2bbb5a24476c19a96be03b1c203",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_018",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_28b234a890d655a0",
+      "commitmentHash": "28b234a890d655a02ca2bcb40476e24456051b0e8e9bf24021b2d7f62605c42b",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "French Defense",
+        "endgameType": "Resignation",
+        "moveCount": 77,
+        "gameDuration": 3160,
+        "avgMoveTime": 41,
+        "criticalMoments": 4,
+        "blunders": 1,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-25T19:12:39.239Z",
+        "completedAt": "2025-08-06T20:56:00.479Z",
+        "rollupEpoch": 5972,
+        "rollupSlot": 51691,
+        "finalStateHash": "086bf43aaa4fa9c2120e3b35389752d8a493c88e155eb6559c807d1261d071db",
+        "verificationStatus": "verified",
+        "replaySize": 1973,
+        "compressionRatio": 0.23777777886106657
+      },
+      "trainingValue": {
+        "tacticalComplexity": 0.6014762990704714,
+        "strategicDepth": 4.1137260506387925,
+        "endgameRelevance": 8.328697323388683,
+        "openingNovelty": 8.96444362130714,
+        "overallScore": 9.760002354139711
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "28b234a890d655a02ca2bcb40476e244",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_019",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_711a90da39aaae69",
+      "commitmentHash": "711a90da39aaae69b7d6b45d746265662e7625dc0eea0570f36b29c485de3f87",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "English Opening",
+        "endgameType": "Time Forfeit",
+        "moveCount": 54,
+        "gameDuration": 3557,
+        "avgMoveTime": 65,
+        "criticalMoments": 2,
+        "blunders": 1,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-08-08T07:55:46.922Z",
+        "completedAt": "2025-08-04T06:57:58.960Z",
+        "rollupEpoch": 5564,
+        "rollupSlot": 57658,
+        "finalStateHash": "d9e37d443affe7ce178404a2fc1cfe4cc23a716a82f2075ba16f0d8e81f84413",
+        "verificationStatus": "verified",
+        "replaySize": 2177,
+        "compressionRatio": 0.20005846730309362
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.752487416534767,
+        "strategicDepth": 5.764680800061226,
+        "endgameRelevance": 7.409588707979822,
+        "openingNovelty": 5.458275850530612,
+        "overallScore": 9.796734907467656
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "711a90da39aaae69b7d6b45d74626566",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_020",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_ec7b1f436f523f90",
+      "commitmentHash": "ec7b1f436f523f9094fa65b6cd12bf5de479b21f2857a52d06de6b3025ec33df",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "Queen's Gambit",
+        "endgameType": "Draw",
+        "moveCount": 109,
+        "gameDuration": 1228,
+        "avgMoveTime": 11,
+        "criticalMoments": 4,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-13T21:20:25.371Z",
+        "completedAt": "2025-07-18T07:06:02.843Z",
+        "rollupEpoch": 5622,
+        "rollupSlot": 54747,
+        "finalStateHash": "fa1c7ff6d8e8408131bc1a5f41950fe622000b36fb3c9605437aba9370ff60a7",
+        "verificationStatus": "verified",
+        "replaySize": 2855,
+        "compressionRatio": 0.2132548329062982
+      },
+      "trainingValue": {
+        "tacticalComplexity": 0.04173458383569306,
+        "strategicDepth": 3.720941542395866,
+        "endgameRelevance": 0.0133816806113507,
+        "openingNovelty": 1.0171059012582084,
+        "overallScore": 8.535522630798136
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "ec7b1f436f523f9094fa65b6cd12bf5d",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_021",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_138fd523e6e32b53",
+      "commitmentHash": "138fd523e6e32b53dfea387353c756d2c67a87878e82ea5bf755202503b49d3a",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Sicilian Defense",
+        "endgameType": "Time Forfeit",
+        "moveCount": 58,
+        "gameDuration": 2605,
+        "avgMoveTime": 44,
+        "criticalMoments": 2,
+        "blunders": 0,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-08-03T02:55:55.267Z",
+        "completedAt": "2025-07-12T10:37:22.488Z",
+        "rollupEpoch": 5370,
+        "rollupSlot": 59664,
+        "finalStateHash": "e7053699a5e95860ed3885b7d11d2bd45fa31598efac88121815dc452448b2df",
+        "verificationStatus": "verified",
+        "replaySize": 2022,
+        "compressionRatio": 0.18945645097496902
+      },
+      "trainingValue": {
+        "tacticalComplexity": 9.10311832399227,
+        "strategicDepth": 3.943842542321918,
+        "endgameRelevance": 5.520460608800947,
+        "openingNovelty": 4.053661294217237,
+        "overallScore": 8.175945449759285
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "138fd523e6e32b53dfea387353c756d2",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_022",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_927fdc4023dc4a07",
+      "commitmentHash": "927fdc4023dc4a073a0d163d090ff94e87e46ad7c30b0b493087c8c094262bab",
+      "gameData": {
+        "opponent": {
+          "name": "Hisoka AI",
+          "elo": 2020,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Queen's Gambit",
+        "endgameType": "Draw",
+        "moveCount": 58,
+        "gameDuration": 3068,
+        "avgMoveTime": 52,
+        "criticalMoments": 4,
+        "blunders": 1,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-17T00:26:08.561Z",
+        "completedAt": "2025-07-24T07:16:40.067Z",
+        "rollupEpoch": 5942,
+        "rollupSlot": 56808,
+        "finalStateHash": "29f970b69ca8f0d441f1f3193bfb34fa2ecd8378a7f80cc19f223126a326a9b5",
+        "verificationStatus": "verified",
+        "replaySize": 1451,
+        "compressionRatio": 0.17311217286934938
+      },
+      "trainingValue": {
+        "tacticalComplexity": 4.141035458849172,
+        "strategicDepth": 6.5076529592783245,
+        "endgameRelevance": 5.767441239438225,
+        "openingNovelty": 1.0853340428331881,
+        "overallScore": 5.187217895809077
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "927fdc4023dc4a073a0d163d090ff94e",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_023",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_309fbc05759c11f3",
+      "commitmentHash": "309fbc05759c11f3fab96b9ceddb9fbe9dbaebb2b3ac6aa7c0acd5a99b020461",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "Queen's Gambit",
+        "endgameType": "Draw",
+        "moveCount": 67,
+        "gameDuration": 1820,
+        "avgMoveTime": 27,
+        "criticalMoments": 2,
+        "blunders": 2,
+        "brilliantMoves": 1
+      },
+      "metadata": {
+        "recordedAt": "2025-07-18T04:45:36.155Z",
+        "completedAt": "2025-07-11T20:48:47.108Z",
+        "rollupEpoch": 5572,
+        "rollupSlot": 59674,
+        "finalStateHash": "ea95b9d661a41af63bbf4e663aa03f909e174f802c51e3eaec5f523ab2a297a9",
+        "verificationStatus": "verified",
+        "replaySize": 2484,
+        "compressionRatio": 0.2447872852046777
+      },
+      "trainingValue": {
+        "tacticalComplexity": 0.6757714449232122,
+        "strategicDepth": 8.975880174608776,
+        "endgameRelevance": 3.3263559715676227,
+        "openingNovelty": 5.496170801855222,
+        "overallScore": 6.040834143915675
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "309fbc05759c11f3fab96b9ceddb9fbe",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_024",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_82f93d91b020bf8f",
+      "commitmentHash": "82f93d91b020bf8fc8fa7471c6d854f8860f18f72b12931f589d17368a2fcfab",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "French Defense",
+        "endgameType": "Checkmate",
+        "moveCount": 119,
+        "gameDuration": 1499,
+        "avgMoveTime": 12,
+        "criticalMoments": 4,
+        "blunders": 2,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-18T08:17:22.322Z",
+        "completedAt": "2025-08-04T02:05:41.539Z",
+        "rollupEpoch": 5873,
+        "rollupSlot": 54367,
+        "finalStateHash": "82272228afd092849cadb9981cadcb9abf48db8cbafd79242a5af0dc39823156",
+        "verificationStatus": "verified",
+        "replaySize": 3014,
+        "compressionRatio": 0.18900208501161636
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.1542487988553365,
+        "strategicDepth": 3.6447483752305443,
+        "endgameRelevance": 3.7942702103913883,
+        "openingNovelty": 4.791392417479914,
+        "overallScore": 9.146430976169734
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "82f93d91b020bf8fc8fa7471c6d854f8",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "H4o5x8s4_replay_025",
+      "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_9ed75d4e8bf8c019",
+      "commitmentHash": "9ed75d4e8bf8c019dd9085331e017b463f112bf1b0d300f7d5900b89e6954b1d",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "French Defense",
+        "endgameType": "Checkmate",
+        "moveCount": 71,
+        "gameDuration": 2126,
+        "avgMoveTime": 29,
+        "criticalMoments": 4,
+        "blunders": 1,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-28T19:31:32.935Z",
+        "completedAt": "2025-07-27T04:21:07.753Z",
+        "rollupEpoch": 5922,
+        "rollupSlot": 54407,
+        "finalStateHash": "c71dca1eb02a4d9a2074e882e772d09f90f947aa9be8392e6bd1620478a300ef",
+        "verificationStatus": "verified",
+        "replaySize": 2583,
+        "compressionRatio": 0.1786078210552732
+      },
+      "trainingValue": {
+        "tacticalComplexity": 2.6828870330668875,
+        "strategicDepth": 8.320824916329954,
+        "endgameRelevance": 8.15962345018152,
+        "openingNovelty": 2.121370079388325,
+        "overallScore": 9.194029681602695
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "9ed75d4e8bf8c019dd9085331e017b46",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_001",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_bbb5b495b8bff87b",
+      "commitmentHash": "bbb5b495b8bff87b47b851acd046bd8152fac14458dd82d80359b1f1151f2ea7",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "King's Indian",
+        "endgameType": "Draw",
+        "moveCount": 118,
+        "gameDuration": 2676,
+        "avgMoveTime": 22,
+        "criticalMoments": 6,
+        "blunders": 0,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-15T00:28:57.913Z",
+        "completedAt": "2025-07-12T13:49:33.726Z",
+        "rollupEpoch": 5553,
+        "rollupSlot": 59828,
+        "finalStateHash": "e394fddacfb84e9a161026f7802de99b1210b9c84f0289fdecc6ba74751a734d",
+        "verificationStatus": "verified",
+        "replaySize": 3949,
+        "compressionRatio": 0.18472165300963928
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.534444095579499,
+        "strategicDepth": 9.228742215383319,
+        "endgameRelevance": 9.659369868729675,
+        "openingNovelty": 7.624212317912034,
+        "overallScore": 7.7022002595544485
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "bbb5b495b8bff87b47b851acd046bd81",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_002",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_152191178f0b153b",
+      "commitmentHash": "152191178f0b153b9ac28ae4b3cf716767fc09c524a3a58a0587dcfafe4a5665",
+      "gameData": {
+        "opponent": {
+          "name": "Gon AI",
+          "elo": 1650,
+          "nenType": "Enhancement"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "Queen's Gambit",
+        "endgameType": "Resignation",
+        "moveCount": 93,
+        "gameDuration": 1402,
+        "avgMoveTime": 15,
+        "criticalMoments": 3,
+        "blunders": 2,
+        "brilliantMoves": 1
+      },
+      "metadata": {
+        "recordedAt": "2025-07-18T05:24:35.359Z",
+        "completedAt": "2025-07-18T04:59:49.175Z",
+        "rollupEpoch": 5948,
+        "rollupSlot": 53176,
+        "finalStateHash": "7eda116c7704f6cb5344fdc394b970bf0208a358342ddf235a20cc0bbdda7db9",
+        "verificationStatus": "verified",
+        "replaySize": 2403,
+        "compressionRatio": 0.21833761835141827
+      },
+      "trainingValue": {
+        "tacticalComplexity": 8.101667713789386,
+        "strategicDepth": 1.1093872689685624,
+        "endgameRelevance": 2.593535861924088,
+        "openingNovelty": 0.7015017418591407,
+        "overallScore": 9.380164565102229
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "152191178f0b153b9ac28ae4b3cf7167",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_003",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_fe604abde13f2e0c",
+      "commitmentHash": "fe604abde13f2e0c9454241d93195fb4007c46d9ac734ede74058c33cfa90e16",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "King's Indian",
+        "endgameType": "Draw",
+        "moveCount": 86,
+        "gameDuration": 2500,
+        "avgMoveTime": 29,
+        "criticalMoments": 3,
+        "blunders": 2,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-08-01T19:23:43.590Z",
+        "completedAt": "2025-07-12T22:44:15.904Z",
+        "rollupEpoch": 5152,
+        "rollupSlot": 52917,
+        "finalStateHash": "2d691eb10778ab81862d98aa86784715545547a27fcc934b8c7c8e94866622c6",
+        "verificationStatus": "verified",
+        "replaySize": 3054,
+        "compressionRatio": 0.21954260017524946
+      },
+      "trainingValue": {
+        "tacticalComplexity": 3.577704495175016,
+        "strategicDepth": 4.6734590744409665,
+        "endgameRelevance": 8.994859207623499,
+        "openingNovelty": 0.7295125876391761,
+        "overallScore": 8.906091570586785
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "fe604abde13f2e0c9454241d93195fb4",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_004",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_377c0059747ac48c",
+      "commitmentHash": "377c0059747ac48c8ae973c751ee6879c4c8d6c4abb653151f99310e71026285",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Sicilian Defense",
+        "endgameType": "Checkmate",
+        "moveCount": 105,
+        "gameDuration": 3567,
+        "avgMoveTime": 33,
+        "criticalMoments": 2,
+        "blunders": 0,
+        "brilliantMoves": 1
+      },
+      "metadata": {
+        "recordedAt": "2025-07-22T18:31:35.776Z",
+        "completedAt": "2025-07-22T08:00:03.277Z",
+        "rollupEpoch": 5742,
+        "rollupSlot": 56542,
+        "finalStateHash": "32efebdec9ff8a6aae641e1790a313a0ed0cf269012f393f70517bfb2245e9a2",
+        "verificationStatus": "verified",
+        "replaySize": 3157,
+        "compressionRatio": 0.23061023807467915
+      },
+      "trainingValue": {
+        "tacticalComplexity": 3.2189620489817994,
+        "strategicDepth": 7.215726545614533,
+        "endgameRelevance": 6.182377881406735,
+        "openingNovelty": 5.72853649200074,
+        "overallScore": 6.810158082046252
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "377c0059747ac48c8ae973c751ee6879",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_005",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_4567bc60677d6147",
+      "commitmentHash": "4567bc60677d61478f7c8827555ac170aa03709d9184a7f0a52fea59ace92b42",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "defeat",
+        "playerColor": "black",
+        "opening": "King's Indian",
+        "endgameType": "Resignation",
+        "moveCount": 87,
+        "gameDuration": 2302,
+        "avgMoveTime": 26,
+        "criticalMoments": 3,
+        "blunders": 1,
+        "brilliantMoves": 1
+      },
+      "metadata": {
+        "recordedAt": "2025-07-12T13:04:17.040Z",
+        "completedAt": "2025-07-27T06:43:35.810Z",
+        "rollupEpoch": 5157,
+        "rollupSlot": 51511,
+        "finalStateHash": "245a3ff7593fb5a8e36d97c6e724300984233475f6cfc162ff17212abc4bfc71",
+        "verificationStatus": "verified",
+        "replaySize": 2950,
+        "compressionRatio": 0.19492760390091363
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.717378661335241,
+        "strategicDepth": 6.720627670279706,
+        "endgameRelevance": 6.249585106882154,
+        "openingNovelty": 2.0592594485515314,
+        "overallScore": 5.6388864200244395
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "4567bc60677d61478f7c8827555ac170",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_006",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_18c95ac2b05b98ce",
+      "commitmentHash": "18c95ac2b05b98cea012e12a9e19b8fef8485987338d15351aeaa9e486bbe0ab",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "defeat",
+        "playerColor": "white",
+        "opening": "English Opening",
+        "endgameType": "Resignation",
+        "moveCount": 61,
+        "gameDuration": 3191,
+        "avgMoveTime": 52,
+        "criticalMoments": 3,
+        "blunders": 2,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-08-07T08:33:09.968Z",
+        "completedAt": "2025-07-13T07:57:38.573Z",
+        "rollupEpoch": 5156,
+        "rollupSlot": 52275,
+        "finalStateHash": "fc5cb1890513f99e351194e15492d85ac51ab638747d0b2d9f250803ec367038",
+        "verificationStatus": "verified",
+        "replaySize": 1629,
+        "compressionRatio": 0.1836417849627574
+      },
+      "trainingValue": {
+        "tacticalComplexity": 8.51436922936724,
+        "strategicDepth": 1.6852827593597852,
+        "endgameRelevance": 6.594094457615944,
+        "openingNovelty": 2.889065491583813,
+        "overallScore": 8.325276550564567
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "18c95ac2b05b98cea012e12a9e19b8fe",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_007",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_a4a24846c0b9d79e",
+      "commitmentHash": "a4a24846c0b9d79edbe3b16262035620c4172a1a183f1d614590e527f6f30bae",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Queen's Gambit",
+        "endgameType": "Checkmate",
+        "moveCount": 118,
+        "gameDuration": 2980,
+        "avgMoveTime": 25,
+        "criticalMoments": 4,
+        "blunders": 2,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-18T22:09:25.388Z",
+        "completedAt": "2025-07-25T09:51:17.851Z",
+        "rollupEpoch": 5877,
+        "rollupSlot": 56118,
+        "finalStateHash": "82082f351487640df0daa1b5362ba07d104a57b0a270b31c771a6a1b302071d4",
+        "verificationStatus": "verified",
+        "replaySize": 3887,
+        "compressionRatio": 0.1778458138812698
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.635106944101407,
+        "strategicDepth": 4.278898849599388,
+        "endgameRelevance": 1.3597201119144664,
+        "openingNovelty": 2.51872188993129,
+        "overallScore": 9.40915019027733
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "a4a24846c0b9d79edbe3b16262035620",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_008",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_1bfbdf8cf88cc448",
+      "commitmentHash": "1bfbdf8cf88cc44867c3965435e6d04ebac69cc0a730fbd9e7f4b631547cb038",
+      "gameData": {
+        "opponent": {
+          "name": "Killua AI",
+          "elo": 1720,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "King's Indian",
+        "endgameType": "Resignation",
+        "moveCount": 60,
+        "gameDuration": 1956,
+        "avgMoveTime": 32,
+        "criticalMoments": 5,
+        "blunders": 0,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-08-03T06:56:09.103Z",
+        "completedAt": "2025-07-20T00:38:09.333Z",
+        "rollupEpoch": 5897,
+        "rollupSlot": 55627,
+        "finalStateHash": "b2492f151e3f3fb71daef878ad95f3b7fdd35f4900d2f5191be65a98928c7ef1",
+        "verificationStatus": "verified",
+        "replaySize": 2120,
+        "compressionRatio": 0.2207900015555084
+      },
+      "trainingValue": {
+        "tacticalComplexity": 8.828772053908905,
+        "strategicDepth": 1.136194812912934,
+        "endgameRelevance": 7.023778319660328,
+        "openingNovelty": 8.363068666099148,
+        "overallScore": 6.892758620086096
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "1bfbdf8cf88cc44867c3965435e6d04e",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_009",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_f35a5ed22dd9a214",
+      "commitmentHash": "f35a5ed22dd9a214e601ce0ee7ed3bd0390b6e153accd9cc4edd8c335e14276a",
+      "gameData": {
+        "opponent": {
+          "name": "Killua AI",
+          "elo": 1720,
+          "nenType": "Transmutation"
+        },
+        "result": "defeat",
+        "playerColor": "white",
+        "opening": "Queen's Gambit",
+        "endgameType": "Draw",
+        "moveCount": 109,
+        "gameDuration": 1567,
+        "avgMoveTime": 14,
+        "criticalMoments": 5,
+        "blunders": 0,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-18T06:31:24.542Z",
+        "completedAt": "2025-07-17T13:36:40.742Z",
+        "rollupEpoch": 5889,
+        "rollupSlot": 52145,
+        "finalStateHash": "ee424d135cc9bc811878ce3c28f1a052496beb1998c085657a1d59764e601ba2",
+        "verificationStatus": "verified",
+        "replaySize": 2847,
+        "compressionRatio": 0.24779569896926484
+      },
+      "trainingValue": {
+        "tacticalComplexity": 9.846626637507587,
+        "strategicDepth": 0.7707394191428296,
+        "endgameRelevance": 8.527857316541487,
+        "openingNovelty": 7.823224075493194,
+        "overallScore": 8.01465721873556
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "f35a5ed22dd9a214e601ce0ee7ed3bd0",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_010",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_1ee03f88400e9086",
+      "commitmentHash": "1ee03f88400e9086368d3b2e069de5ad10bdacdfcf32afd38f19bb7688ebcfd0",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "English Opening",
+        "endgameType": "Resignation",
+        "moveCount": 102,
+        "gameDuration": 3569,
+        "avgMoveTime": 34,
+        "criticalMoments": 4,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-27T16:35:41.342Z",
+        "completedAt": "2025-07-24T09:28:32.125Z",
+        "rollupEpoch": 5235,
+        "rollupSlot": 50486,
+        "finalStateHash": "851875b334257293fdb3a24468c3f0083486e6459abb6cc1d4a2c14c53689853",
+        "verificationStatus": "verified",
+        "replaySize": 3505,
+        "compressionRatio": 0.18919008507576832
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.127009810092241,
+        "strategicDepth": 9.100679433219073,
+        "endgameRelevance": 0.15511317849870698,
+        "openingNovelty": 7.43512789406096,
+        "overallScore": 7.271841638716533
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "1ee03f88400e9086368d3b2e069de5ad",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_011",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_f693fbca07f9801e",
+      "commitmentHash": "f693fbca07f9801ee9910caa83c85e60ac681902a753cb18d96249a634aec8b1",
+      "gameData": {
+        "opponent": {
+          "name": "Killua AI",
+          "elo": 1720,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "French Defense",
+        "endgameType": "Draw",
+        "moveCount": 124,
+        "gameDuration": 2801,
+        "avgMoveTime": 22,
+        "criticalMoments": 5,
+        "blunders": 2,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-25T04:07:26.235Z",
+        "completedAt": "2025-07-12T18:48:03.850Z",
+        "rollupEpoch": 5827,
+        "rollupSlot": 59501,
+        "finalStateHash": "1b2d8bbd37f223a8a9332e1972f1f7534131fa90ff661f0030960e1b536f51ec",
+        "verificationStatus": "verified",
+        "replaySize": 3494,
+        "compressionRatio": 0.21156797457175738
+      },
+      "trainingValue": {
+        "tacticalComplexity": 4.369627939071217,
+        "strategicDepth": 6.297439725447349,
+        "endgameRelevance": 8.169846682860886,
+        "openingNovelty": 0.7608251432442881,
+        "overallScore": 7.074541245608561
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "f693fbca07f9801ee9910caa83c85e60",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_012",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_fab7cf641499271d",
+      "commitmentHash": "fab7cf641499271d0e1a4551a2036832f9ab651f7ec7ea0f4fcf186e09f3fe4a",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "King's Indian",
+        "endgameType": "Checkmate",
+        "moveCount": 100,
+        "gameDuration": 1794,
+        "avgMoveTime": 17,
+        "criticalMoments": 5,
+        "blunders": 0,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-30T02:15:21.244Z",
+        "completedAt": "2025-07-23T09:50:45.547Z",
+        "rollupEpoch": 5864,
+        "rollupSlot": 51057,
+        "finalStateHash": "5b5e3fc32f6b8a2d97ba67bb78edccd5cf45aacdadb450134cd09bf5ceb8cf7f",
+        "verificationStatus": "verified",
+        "replaySize": 3142,
+        "compressionRatio": 0.18153853341182188
+      },
+      "trainingValue": {
+        "tacticalComplexity": 8.405958581520931,
+        "strategicDepth": 9.723990556726289,
+        "endgameRelevance": 0.5834890957621863,
+        "openingNovelty": 3.571709009977928,
+        "overallScore": 6.42690486404639
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "fab7cf641499271d0e1a4551a2036832",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_013",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_6ae5e78973586fff",
+      "commitmentHash": "6ae5e78973586fffcd10db96cf18294729a5e72b302a6d8df1ca18a78f5dae54",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "defeat",
+        "playerColor": "white",
+        "opening": "French Defense",
+        "endgameType": "Time Forfeit",
+        "moveCount": 65,
+        "gameDuration": 1600,
+        "avgMoveTime": 24,
+        "criticalMoments": 3,
+        "blunders": 1,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-13T21:17:18.634Z",
+        "completedAt": "2025-07-18T09:29:08.832Z",
+        "rollupEpoch": 5957,
+        "rollupSlot": 59341,
+        "finalStateHash": "9aed4e45c84fe383dc3ad0e896467f72a08933d36543cc78eae0f419560b9c6a",
+        "verificationStatus": "verified",
+        "replaySize": 2403,
+        "compressionRatio": 0.16736085433934822
+      },
+      "trainingValue": {
+        "tacticalComplexity": 5.210114039150751,
+        "strategicDepth": 5.201113429917266,
+        "endgameRelevance": 6.641680795036096,
+        "openingNovelty": 9.715716650681763,
+        "overallScore": 5.351500071710941
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "6ae5e78973586fffcd10db96cf182947",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_014",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_04218161dd75ebbc",
+      "commitmentHash": "04218161dd75ebbc1e3cf4bdf5e10756688cff66a9278babb0e76188cc992188",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "English Opening",
+        "endgameType": "Draw",
+        "moveCount": 112,
+        "gameDuration": 2716,
+        "avgMoveTime": 24,
+        "criticalMoments": 2,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-30T02:50:55.371Z",
+        "completedAt": "2025-07-28T07:04:34.912Z",
+        "rollupEpoch": 5654,
+        "rollupSlot": 52229,
+        "finalStateHash": "e541ada7d462cb0364750e0732f94a68177ec68a08bb7385704229082351f325",
+        "verificationStatus": "verified",
+        "replaySize": 3352,
+        "compressionRatio": 0.168457706040019
+      },
+      "trainingValue": {
+        "tacticalComplexity": 2.1483225604856115,
+        "strategicDepth": 5.761769461661846,
+        "endgameRelevance": 0.5151482313371458,
+        "openingNovelty": 7.755880766726026,
+        "overallScore": 5.2149038033922865
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "04218161dd75ebbc1e3cf4bdf5e10756",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_015",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_a84c6054469b5b42",
+      "commitmentHash": "a84c6054469b5b420867ade4741ebd093a442832b779efccbfd5c2925ce5c009",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "English Opening",
+        "endgameType": "Draw",
+        "moveCount": 45,
+        "gameDuration": 3112,
+        "avgMoveTime": 69,
+        "criticalMoments": 5,
+        "blunders": 0,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-28T07:09:04.771Z",
+        "completedAt": "2025-07-22T22:09:09.682Z",
+        "rollupEpoch": 5416,
+        "rollupSlot": 56222,
+        "finalStateHash": "c7e19c0a33843fd73c093b0bbd3f3ffbd2b67988ffb5266b924341f092f2ed61",
+        "verificationStatus": "verified",
+        "replaySize": 2073,
+        "compressionRatio": 0.16624042112951326
+      },
+      "trainingValue": {
+        "tacticalComplexity": 8.998884246919186,
+        "strategicDepth": 3.482329356082232,
+        "endgameRelevance": 2.6751005416925744,
+        "openingNovelty": 5.339550478075472,
+        "overallScore": 7.614547780465771
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "a84c6054469b5b420867ade4741ebd09",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_016",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_992acba48ff9db0b",
+      "commitmentHash": "992acba48ff9db0b2b27f32cd71b5feb14403c6749ec14cec164dca5acb6c025",
+      "gameData": {
+        "opponent": {
+          "name": "Illumi AI",
+          "elo": 1980,
+          "nenType": "Manipulation"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "King's Indian",
+        "endgameType": "Checkmate",
+        "moveCount": 86,
+        "gameDuration": 2482,
+        "avgMoveTime": 28,
+        "criticalMoments": 3,
+        "blunders": 1,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-19T13:28:25.728Z",
+        "completedAt": "2025-07-31T00:10:13.526Z",
+        "rollupEpoch": 5602,
+        "rollupSlot": 51549,
+        "finalStateHash": "2386011347f15f640aee90cb60d37d2010b5772746a5d78f7ad401dfefd0f056",
+        "verificationStatus": "verified",
+        "replaySize": 2956,
+        "compressionRatio": 0.1569123622152197
+      },
+      "trainingValue": {
+        "tacticalComplexity": 0.1296256330396761,
+        "strategicDepth": 4.9895029391458845,
+        "endgameRelevance": 7.760883245049433,
+        "openingNovelty": 9.546962144962203,
+        "overallScore": 8.799873553861463
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "992acba48ff9db0b2b27f32cd71b5feb",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_017",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_5c852c10e871ad89",
+      "commitmentHash": "5c852c10e871ad89670c1efea264020d6f18142c1520036c84fe8f2537440f52",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Sicilian Defense",
+        "endgameType": "Resignation",
+        "moveCount": 77,
+        "gameDuration": 1403,
+        "avgMoveTime": 18,
+        "criticalMoments": 5,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-22T05:15:00.437Z",
+        "completedAt": "2025-07-21T20:13:58.047Z",
+        "rollupEpoch": 5308,
+        "rollupSlot": 53392,
+        "finalStateHash": "4391d5fe1cabbd589943859e4123cba44232ff8096fbac2e0e9063c39f0fc590",
+        "verificationStatus": "verified",
+        "replaySize": 2309,
+        "compressionRatio": 0.15203455916654796
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.355529748868829,
+        "strategicDepth": 3.827677697327483,
+        "endgameRelevance": 6.152496779394099,
+        "openingNovelty": 1.310411533186664,
+        "overallScore": 5.019295059522067
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "5c852c10e871ad89670c1efea264020d",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_018",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_5e23121b6dc2286e",
+      "commitmentHash": "5e23121b6dc2286e922f186f05c8dd389732ee6defb2a61e67b74917347166c8",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Queen's Gambit",
+        "endgameType": "Checkmate",
+        "moveCount": 82,
+        "gameDuration": 3151,
+        "avgMoveTime": 38,
+        "criticalMoments": 5,
+        "blunders": 0,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-14T19:06:18.836Z",
+        "completedAt": "2025-07-27T15:21:29.143Z",
+        "rollupEpoch": 5717,
+        "rollupSlot": 52538,
+        "finalStateHash": "29e028ccde48dad578883e0e2ace5197817214e0c6bf6f869da00ffe85fd417c",
+        "verificationStatus": "verified",
+        "replaySize": 2371,
+        "compressionRatio": 0.1589561464470481
+      },
+      "trainingValue": {
+        "tacticalComplexity": 4.405250792914854,
+        "strategicDepth": 4.301213064311289,
+        "endgameRelevance": 7.220614729506298,
+        "openingNovelty": 0.4812036202313852,
+        "overallScore": 5.165226303482973
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "5e23121b6dc2286e922f186f05c8dd38",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_019",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_79b33e66b15bd7ad",
+      "commitmentHash": "79b33e66b15bd7ad1d9a200da0930d38d1f06a4e6664b4aa31d38bee47e5c28a",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "French Defense",
+        "endgameType": "Checkmate",
+        "moveCount": 53,
+        "gameDuration": 2487,
+        "avgMoveTime": 46,
+        "criticalMoments": 4,
+        "blunders": 1,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-13T14:52:32.113Z",
+        "completedAt": "2025-07-19T12:10:38.750Z",
+        "rollupEpoch": 5765,
+        "rollupSlot": 53041,
+        "finalStateHash": "499ce453118e794ab75160874ef99f66ca8170f5ccff6cc6568b102d33f76a25",
+        "verificationStatus": "verified",
+        "replaySize": 1839,
+        "compressionRatio": 0.1622658111665388
+      },
+      "trainingValue": {
+        "tacticalComplexity": 4.435647638972995,
+        "strategicDepth": 5.936638084560775,
+        "endgameRelevance": 2.9899795865002243,
+        "openingNovelty": 5.250636772753388,
+        "overallScore": 7.567735485699961
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "79b33e66b15bd7ad1d9a200da0930d38",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_020",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_2cd0327eff4470a4",
+      "commitmentHash": "2cd0327eff4470a4ccb17e4701a465d666031c171d053123954bbbcd0d88f09c",
+      "gameData": {
+        "opponent": {
+          "name": "Hisoka AI",
+          "elo": 2020,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "Sicilian Defense",
+        "endgameType": "Draw",
+        "moveCount": 45,
+        "gameDuration": 3099,
+        "avgMoveTime": 68,
+        "criticalMoments": 5,
+        "blunders": 1,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-18T01:07:40.828Z",
+        "completedAt": "2025-07-26T06:54:50.958Z",
+        "rollupEpoch": 5521,
+        "rollupSlot": 53249,
+        "finalStateHash": "a972e94e4fd86fadc0e153bd3eda5e0ce3b095db33c0ee942daaba5748048045",
+        "verificationStatus": "verified",
+        "replaySize": 1393,
+        "compressionRatio": 0.16603771739700962
+      },
+      "trainingValue": {
+        "tacticalComplexity": 8.03150966842159,
+        "strategicDepth": 0.5601500475991772,
+        "endgameRelevance": 7.436841119484223,
+        "openingNovelty": 6.107908694111277,
+        "overallScore": 6.594357163696766
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "2cd0327eff4470a4ccb17e4701a465d6",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_021",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_02a7e63c9d06897e",
+      "commitmentHash": "02a7e63c9d06897e87ded42ed99d2e18a3b550198909c535a7ac50af38b4eed1",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "King's Indian",
+        "endgameType": "Time Forfeit",
+        "moveCount": 121,
+        "gameDuration": 3416,
+        "avgMoveTime": 28,
+        "criticalMoments": 6,
+        "blunders": 2,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-18T10:39:37.061Z",
+        "completedAt": "2025-07-30T15:40:19.703Z",
+        "rollupEpoch": 5706,
+        "rollupSlot": 57187,
+        "finalStateHash": "b7e1360840bc75d58f880874caa21cc7945aff51368374a32fe59ad3808ee20f",
+        "verificationStatus": "verified",
+        "replaySize": 3419,
+        "compressionRatio": 0.2174050858345636
+      },
+      "trainingValue": {
+        "tacticalComplexity": 9.091971075489141,
+        "strategicDepth": 8.170817593997672,
+        "endgameRelevance": 6.510839011754297,
+        "openingNovelty": 2.917334126215927,
+        "overallScore": 7.623877176863427
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "02a7e63c9d06897e87ded42ed99d2e18",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_022",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_1aa1873ac561a541",
+      "commitmentHash": "1aa1873ac561a5414ce58cacebeec6c810218c5b3c03b432d3dfa53022ba9b91",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Sicilian Defense",
+        "endgameType": "Time Forfeit",
+        "moveCount": 90,
+        "gameDuration": 2386,
+        "avgMoveTime": 26,
+        "criticalMoments": 6,
+        "blunders": 0,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-26T12:25:51.276Z",
+        "completedAt": "2025-07-12T03:32:36.758Z",
+        "rollupEpoch": 5638,
+        "rollupSlot": 57147,
+        "finalStateHash": "6a0813f2037663e43325d53da32af126d0c11ee0f9fba13d60acf8ec62ed0229",
+        "verificationStatus": "verified",
+        "replaySize": 2662,
+        "compressionRatio": 0.24461510392848734
+      },
+      "trainingValue": {
+        "tacticalComplexity": 9.533333105854888,
+        "strategicDepth": 9.720299238936317,
+        "endgameRelevance": 2.9982402925469342,
+        "openingNovelty": 2.474313430725803,
+        "overallScore": 6.482669842657249
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "1aa1873ac561a5414ce58cacebeec6c8",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_023",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_8ec1280b23ce6c2d",
+      "commitmentHash": "8ec1280b23ce6c2d2f0303f3bb1ec2433eb88753cd0d98aedcd7391a3920d974",
+      "gameData": {
+        "opponent": {
+          "name": "Gon AI",
+          "elo": 1650,
+          "nenType": "Enhancement"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "Sicilian Defense",
+        "endgameType": "Resignation",
+        "moveCount": 109,
+        "gameDuration": 1278,
+        "avgMoveTime": 11,
+        "criticalMoments": 2,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-31T23:04:51.630Z",
+        "completedAt": "2025-07-22T09:15:36.996Z",
+        "rollupEpoch": 5358,
+        "rollupSlot": 53608,
+        "finalStateHash": "f9a7c9149bd39187d6fcb6ff10c4fc88e9aa28f49ab30344dae1d61be891f64f",
+        "verificationStatus": "verified",
+        "replaySize": 3227,
+        "compressionRatio": 0.2012960955299488
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.28689603529446,
+        "strategicDepth": 5.216085492440305,
+        "endgameRelevance": 5.729643962480962,
+        "openingNovelty": 5.226115672489633,
+        "overallScore": 7.739169959338842
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "8ec1280b23ce6c2d2f0303f3bb1ec243",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_024",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_099eb8d93dd87083",
+      "commitmentHash": "099eb8d93dd87083f247d7dec4445223b72c449d298d0053e680203e5c877c4f",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Sicilian Defense",
+        "endgameType": "Time Forfeit",
+        "moveCount": 82,
+        "gameDuration": 1996,
+        "avgMoveTime": 24,
+        "criticalMoments": 5,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-14T16:15:04.737Z",
+        "completedAt": "2025-07-18T00:01:40.622Z",
+        "rollupEpoch": 5802,
+        "rollupSlot": 57796,
+        "finalStateHash": "2f0a3af4aa0c868e3b4e423cebd03072d63dfc12375b9b608cc7a490a72fcfc3",
+        "verificationStatus": "verified",
+        "replaySize": 2745,
+        "compressionRatio": 0.18234746781839858
+      },
+      "trainingValue": {
+        "tacticalComplexity": 0.8874081550675483,
+        "strategicDepth": 2.6440739994107365,
+        "endgameRelevance": 0.06452599833735029,
+        "openingNovelty": 3.839544208533703,
+        "overallScore": 7.174221902950574
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "099eb8d93dd87083f247d7dec4445223",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "CxkxzcL5_replay_025",
+      "agentMint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_6572afc3faddc311",
+      "commitmentHash": "6572afc3faddc311424d4363102730fbb0f3a8285e021074ed53af86fa3d8f11",
+      "gameData": {
+        "opponent": {
+          "name": "Illumi AI",
+          "elo": 1980,
+          "nenType": "Manipulation"
+        },
+        "result": "defeat",
+        "playerColor": "black",
+        "opening": "French Defense",
+        "endgameType": "Resignation",
+        "moveCount": 109,
+        "gameDuration": 3368,
+        "avgMoveTime": 30,
+        "criticalMoments": 2,
+        "blunders": 1,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-18T01:19:42.050Z",
+        "completedAt": "2025-08-03T01:11:47.104Z",
+        "rollupEpoch": 5854,
+        "rollupSlot": 57510,
+        "finalStateHash": "281d55ce1df8aab4f32c0639a2b4b6cf0bbd0614438ba87ae6ad6aefacde4142",
+        "verificationStatus": "verified",
+        "replaySize": 2935,
+        "compressionRatio": 0.1507002467471729
+      },
+      "trainingValue": {
+        "tacticalComplexity": 9.338704176232117,
+        "strategicDepth": 8.723333112602873,
+        "endgameRelevance": 8.074942822367193,
+        "openingNovelty": 8.042466472941134,
+        "overallScore": 8.265921260208364
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "6572afc3faddc311424d4363102730fb",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_001",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_0884ba31e03669f9",
+      "commitmentHash": "0884ba31e03669f9ad3c3a45049c6c83806e5329d4f86e1a2b137a268b6f4bd6",
+      "gameData": {
+        "opponent": {
+          "name": "Killua AI",
+          "elo": 1720,
+          "nenType": "Transmutation"
+        },
+        "result": "defeat",
+        "playerColor": "white",
+        "opening": "King's Indian",
+        "endgameType": "Draw",
+        "moveCount": 82,
+        "gameDuration": 1992,
+        "avgMoveTime": 24,
+        "criticalMoments": 5,
+        "blunders": 1,
+        "brilliantMoves": 1
+      },
+      "metadata": {
+        "recordedAt": "2025-08-03T03:30:17.292Z",
+        "completedAt": "2025-07-23T02:00:23.228Z",
+        "rollupEpoch": 5093,
+        "rollupSlot": 55798,
+        "finalStateHash": "50f4743eca57369fcc8e1a96a3eb2726ab645e03ff37b5980a933ef2e85e0723",
+        "verificationStatus": "verified",
+        "replaySize": 2078,
+        "compressionRatio": 0.19679180257817336
+      },
+      "trainingValue": {
+        "tacticalComplexity": 3.3556248500409547,
+        "strategicDepth": 5.497511246112044,
+        "endgameRelevance": 4.1747435346204735,
+        "openingNovelty": 2.64045554205796,
+        "overallScore": 5.554320339928401
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "0884ba31e03669f9ad3c3a45049c6c83",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_002",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_d39c1cfd42943f00",
+      "commitmentHash": "d39c1cfd42943f00c3cbbbbbe9b3879fc76cc1d532fe3fd579fdb936790cce6b",
+      "gameData": {
+        "opponent": {
+          "name": "Hisoka AI",
+          "elo": 2020,
+          "nenType": "Transmutation"
+        },
+        "result": "defeat",
+        "playerColor": "white",
+        "opening": "Queen's Gambit",
+        "endgameType": "Draw",
+        "moveCount": 111,
+        "gameDuration": 2283,
+        "avgMoveTime": 20,
+        "criticalMoments": 3,
+        "blunders": 1,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-29T08:41:35.676Z",
+        "completedAt": "2025-07-12T14:16:04.558Z",
+        "rollupEpoch": 5525,
+        "rollupSlot": 57619,
+        "finalStateHash": "9e56a804a232fd465fa3efce22e38d80f62f5ced046ad98b0e96f7f44a81e0a8",
+        "verificationStatus": "verified",
+        "replaySize": 3150,
+        "compressionRatio": 0.21472739012637604
+      },
+      "trainingValue": {
+        "tacticalComplexity": 9.234027863882634,
+        "strategicDepth": 3.7448453197725584,
+        "endgameRelevance": 6.930817378879521,
+        "openingNovelty": 6.35529315101863,
+        "overallScore": 6.10157917189401
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "d39c1cfd42943f00c3cbbbbbe9b3879f",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_003",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_ebd2c1f9acf14ec3",
+      "commitmentHash": "ebd2c1f9acf14ec381529d2fa750ef9282dd3539ab3b81b874e5153039a302f6",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "Sicilian Defense",
+        "endgameType": "Time Forfeit",
+        "moveCount": 49,
+        "gameDuration": 1276,
+        "avgMoveTime": 26,
+        "criticalMoments": 6,
+        "blunders": 1,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-28T11:19:18.696Z",
+        "completedAt": "2025-07-18T22:19:02.967Z",
+        "rollupEpoch": 5097,
+        "rollupSlot": 52709,
+        "finalStateHash": "6eca51b8a7128cf33d82ff903b5bc2d2e46731e58e54de273f318f76a4392054",
+        "verificationStatus": "verified",
+        "replaySize": 1783,
+        "compressionRatio": 0.16714767076529066
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.317921901658683,
+        "strategicDepth": 0.027715614653647247,
+        "endgameRelevance": 8.682114478648044,
+        "openingNovelty": 5.419954453661832,
+        "overallScore": 5.799572161514589
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "ebd2c1f9acf14ec381529d2fa750ef92",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_004",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_70eb587d3586dcaf",
+      "commitmentHash": "70eb587d3586dcafafe627d800d91b05e26441e49cfa4836fcd6035eccf3a0b3",
+      "gameData": {
+        "opponent": {
+          "name": "Hisoka AI",
+          "elo": 2020,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Queen's Gambit",
+        "endgameType": "Time Forfeit",
+        "moveCount": 70,
+        "gameDuration": 2094,
+        "avgMoveTime": 29,
+        "criticalMoments": 3,
+        "blunders": 1,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-08-08T08:01:29.251Z",
+        "completedAt": "2025-07-23T18:37:31.519Z",
+        "rollupEpoch": 5292,
+        "rollupSlot": 55235,
+        "finalStateHash": "439ab4daa87460e72d87587b8f2af6813f35d396929c3fbdf1be4565971398c7",
+        "verificationStatus": "verified",
+        "replaySize": 2681,
+        "compressionRatio": 0.19053957535624133
+      },
+      "trainingValue": {
+        "tacticalComplexity": 4.914699738842319,
+        "strategicDepth": 0.7163393884260172,
+        "endgameRelevance": 9.323329334930238,
+        "openingNovelty": 8.351385785210752,
+        "overallScore": 9.025646423634342
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "70eb587d3586dcafafe627d800d91b05",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_005",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_cb6e83a1d30e8743",
+      "commitmentHash": "cb6e83a1d30e87437c8407518655fdcb1509447d7d3507ccf8bf9509dafe9c4e",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "Sicilian Defense",
+        "endgameType": "Draw",
+        "moveCount": 59,
+        "gameDuration": 1202,
+        "avgMoveTime": 20,
+        "criticalMoments": 6,
+        "blunders": 2,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-14T05:10:23.967Z",
+        "completedAt": "2025-07-28T00:28:15.618Z",
+        "rollupEpoch": 5604,
+        "rollupSlot": 51674,
+        "finalStateHash": "e6110f5e05022838ca2f5d6598c6343416ae0027b344c2935fd8b79f4d1768ef",
+        "verificationStatus": "verified",
+        "replaySize": 2032,
+        "compressionRatio": 0.22243795530429028
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.8089230057545596,
+        "strategicDepth": 4.083631982925324,
+        "endgameRelevance": 9.234041283425551,
+        "openingNovelty": 0.27140558749396915,
+        "overallScore": 5.567774156870695
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "cb6e83a1d30e87437c8407518655fdcb",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_006",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_47968b87c367b15a",
+      "commitmentHash": "47968b87c367b15ad22c2376cc3d71212669fb7e3d938007e73e250c899c8f95",
+      "gameData": {
+        "opponent": {
+          "name": "Hisoka AI",
+          "elo": 2020,
+          "nenType": "Transmutation"
+        },
+        "result": "defeat",
+        "playerColor": "white",
+        "opening": "Sicilian Defense",
+        "endgameType": "Time Forfeit",
+        "moveCount": 115,
+        "gameDuration": 2386,
+        "avgMoveTime": 20,
+        "criticalMoments": 2,
+        "blunders": 1,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-11T20:03:20.502Z",
+        "completedAt": "2025-08-05T21:40:31.287Z",
+        "rollupEpoch": 5494,
+        "rollupSlot": 56561,
+        "finalStateHash": "64219be54e0353966a71c5a3c1aeb0b5d3dab934bd08222171a1773134787130",
+        "verificationStatus": "verified",
+        "replaySize": 2905,
+        "compressionRatio": 0.24524542482542316
+      },
+      "trainingValue": {
+        "tacticalComplexity": 0.04244799481291528,
+        "strategicDepth": 7.385657205322267,
+        "endgameRelevance": 4.4630906650419,
+        "openingNovelty": 6.006418869658752,
+        "overallScore": 7.962945988851834
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "47968b87c367b15ad22c2376cc3d7121",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_007",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_04dc384b83120600",
+      "commitmentHash": "04dc384b83120600c2b1e75cab8cc591c630384bf626715b3e695dddfa739072",
+      "gameData": {
+        "opponent": {
+          "name": "Illumi AI",
+          "elo": 1980,
+          "nenType": "Manipulation"
+        },
+        "result": "defeat",
+        "playerColor": "black",
+        "opening": "King's Indian",
+        "endgameType": "Resignation",
+        "moveCount": 103,
+        "gameDuration": 2527,
+        "avgMoveTime": 24,
+        "criticalMoments": 4,
+        "blunders": 2,
+        "brilliantMoves": 1
+      },
+      "metadata": {
+        "recordedAt": "2025-08-01T14:32:26.721Z",
+        "completedAt": "2025-07-29T19:58:30.068Z",
+        "rollupEpoch": 5876,
+        "rollupSlot": 55522,
+        "finalStateHash": "2aec89b36483c763ec3ae89e9ca1ee87e4853200a47aa44ecb30d23274d6f054",
+        "verificationStatus": "verified",
+        "replaySize": 3393,
+        "compressionRatio": 0.17667185181501524
+      },
+      "trainingValue": {
+        "tacticalComplexity": 4.3892883016083335,
+        "strategicDepth": 1.3577676883204326,
+        "endgameRelevance": 6.301004829902954,
+        "openingNovelty": 3.8691125833585627,
+        "overallScore": 5.771006879467777
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "04dc384b83120600c2b1e75cab8cc591",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_008",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_b6bbc0d00b8401c9",
+      "commitmentHash": "b6bbc0d00b8401c98f9069370493b494a6b45d47826113e62fbed6a6df496e0a",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "defeat",
+        "playerColor": "black",
+        "opening": "King's Indian",
+        "endgameType": "Checkmate",
+        "moveCount": 73,
+        "gameDuration": 2505,
+        "avgMoveTime": 34,
+        "criticalMoments": 5,
+        "blunders": 2,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-15T05:45:01.452Z",
+        "completedAt": "2025-07-14T20:51:41.073Z",
+        "rollupEpoch": 5069,
+        "rollupSlot": 55702,
+        "finalStateHash": "ade3c1123b9fb7828b89eb8f5efd8628627dca93188797764f05ec2a28f4f870",
+        "verificationStatus": "verified",
+        "replaySize": 2405,
+        "compressionRatio": 0.15134240417565428
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.847969557194611,
+        "strategicDepth": 2.632427137624631,
+        "endgameRelevance": 2.86593723569899,
+        "openingNovelty": 7.221593482536813,
+        "overallScore": 7.608493240688061
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "b6bbc0d00b8401c98f9069370493b494",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_009",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_72c0e45b98a4dc46",
+      "commitmentHash": "72c0e45b98a4dc463fb3d7b8010c1ad76881e6c1588185ef4a5a0a1f6d0f8386",
+      "gameData": {
+        "opponent": {
+          "name": "Killua AI",
+          "elo": 1720,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "King's Indian",
+        "endgameType": "Time Forfeit",
+        "moveCount": 66,
+        "gameDuration": 3317,
+        "avgMoveTime": 50,
+        "criticalMoments": 6,
+        "blunders": 0,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-08-08T15:36:01.813Z",
+        "completedAt": "2025-07-12T21:38:01.693Z",
+        "rollupEpoch": 5481,
+        "rollupSlot": 57873,
+        "finalStateHash": "a8254cc67b4dc4e39900ff12bb4b80af960acb03fcecc7781b441c7294475063",
+        "verificationStatus": "verified",
+        "replaySize": 1653,
+        "compressionRatio": 0.2001382861833882
+      },
+      "trainingValue": {
+        "tacticalComplexity": 2.247311739405189,
+        "strategicDepth": 4.089994213594013,
+        "endgameRelevance": 7.514062605038521,
+        "openingNovelty": 2.16638281762769,
+        "overallScore": 6.725446990440632
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "72c0e45b98a4dc463fb3d7b8010c1ad7",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_010",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_c0163d4702adb83e",
+      "commitmentHash": "c0163d4702adb83e46e5ed274fa8dcd3c6b73e7f088cee08254ea490d9a51652",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "defeat",
+        "playerColor": "white",
+        "opening": "English Opening",
+        "endgameType": "Resignation",
+        "moveCount": 89,
+        "gameDuration": 1459,
+        "avgMoveTime": 16,
+        "criticalMoments": 6,
+        "blunders": 0,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-22T02:57:14.852Z",
+        "completedAt": "2025-08-02T08:52:50.717Z",
+        "rollupEpoch": 5014,
+        "rollupSlot": 56226,
+        "finalStateHash": "fe43f36cda4cba3231c576d8b4a6158e5e2fb216e3694a77bd477a82122469ef",
+        "verificationStatus": "verified",
+        "replaySize": 2412,
+        "compressionRatio": 0.1688295305086702
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.656810115101694,
+        "strategicDepth": 8.122631589789428,
+        "endgameRelevance": 5.065680194486866,
+        "openingNovelty": 1.037316717265977,
+        "overallScore": 8.116491447876161
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "c0163d4702adb83e46e5ed274fa8dcd3",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_011",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_75d30319af74e370",
+      "commitmentHash": "75d30319af74e3707450862f29f490ed14bad4d990814c60ef595b87e64253c0",
+      "gameData": {
+        "opponent": {
+          "name": "Hisoka AI",
+          "elo": 2020,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "French Defense",
+        "endgameType": "Time Forfeit",
+        "moveCount": 89,
+        "gameDuration": 3009,
+        "avgMoveTime": 33,
+        "criticalMoments": 5,
+        "blunders": 1,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-14T16:33:10.268Z",
+        "completedAt": "2025-07-19T11:35:29.922Z",
+        "rollupEpoch": 5952,
+        "rollupSlot": 56792,
+        "finalStateHash": "7a7dc5f95c74bac6340333783c5bbd2fe9f689c9993941eccba933403841b70d",
+        "verificationStatus": "verified",
+        "replaySize": 2780,
+        "compressionRatio": 0.18801715684192732
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.819217512078524,
+        "strategicDepth": 3.9354749559311553,
+        "endgameRelevance": 7.771394312714133,
+        "openingNovelty": 5.217177329847296,
+        "overallScore": 6.526505273205671
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "75d30319af74e3707450862f29f490ed",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_012",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_f3d56fb5ab0d5692",
+      "commitmentHash": "f3d56fb5ab0d5692e31e02eff04f0f5085e4dca956e3b9fcb579904b74cebc5b",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "defeat",
+        "playerColor": "white",
+        "opening": "Sicilian Defense",
+        "endgameType": "Resignation",
+        "moveCount": 47,
+        "gameDuration": 1324,
+        "avgMoveTime": 28,
+        "criticalMoments": 4,
+        "blunders": 0,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-30T09:37:21.158Z",
+        "completedAt": "2025-07-24T07:25:32.082Z",
+        "rollupEpoch": 5857,
+        "rollupSlot": 57742,
+        "finalStateHash": "b3101cc40885e1f5e0c65ccca11728b8d7f036090cfed0331557e2c4cc64d5c4",
+        "verificationStatus": "verified",
+        "replaySize": 1648,
+        "compressionRatio": 0.15190921703348548
+      },
+      "trainingValue": {
+        "tacticalComplexity": 3.836523441605615,
+        "strategicDepth": 9.19028944134845,
+        "endgameRelevance": 1.7014785250099518,
+        "openingNovelty": 9.68482996870679,
+        "overallScore": 9.306265712031884
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "f3d56fb5ab0d5692e31e02eff04f0f50",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_013",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_a21a6ace31d61fd4",
+      "commitmentHash": "a21a6ace31d61fd4d34f675b222466e345505e36e9ac8773eda5ca754fcab409",
+      "gameData": {
+        "opponent": {
+          "name": "Hisoka AI",
+          "elo": 2020,
+          "nenType": "Transmutation"
+        },
+        "result": "defeat",
+        "playerColor": "black",
+        "opening": "English Opening",
+        "endgameType": "Draw",
+        "moveCount": 84,
+        "gameDuration": 1939,
+        "avgMoveTime": 23,
+        "criticalMoments": 6,
+        "blunders": 2,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-08-04T04:23:17.680Z",
+        "completedAt": "2025-07-30T03:27:01.786Z",
+        "rollupEpoch": 5707,
+        "rollupSlot": 55286,
+        "finalStateHash": "e0cdc7c495846a36c82c024d72f4f65eeff211c92c75a342a038f717fba799cd",
+        "verificationStatus": "verified",
+        "replaySize": 2983,
+        "compressionRatio": 0.22748499676428732
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.76896463057761,
+        "strategicDepth": 1.930207246185811,
+        "endgameRelevance": 1.232881434349744,
+        "openingNovelty": 7.541005536525994,
+        "overallScore": 6.520169720371895
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "a21a6ace31d61fd4d34f675b222466e3",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_014",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_b3ae921a9b0e6f87",
+      "commitmentHash": "b3ae921a9b0e6f8762a54cdf6355bd8c979e8ba4cfd346e9ac21226f555508be",
+      "gameData": {
+        "opponent": {
+          "name": "Meruem AI",
+          "elo": 2680,
+          "nenType": "Specialization"
+        },
+        "result": "defeat",
+        "playerColor": "black",
+        "opening": "French Defense",
+        "endgameType": "Resignation",
+        "moveCount": 94,
+        "gameDuration": 3506,
+        "avgMoveTime": 37,
+        "criticalMoments": 4,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-13T17:10:12.971Z",
+        "completedAt": "2025-07-30T21:11:04.281Z",
+        "rollupEpoch": 5535,
+        "rollupSlot": 58326,
+        "finalStateHash": "48f370006b89d760c5bf532ca71a8a1c47d1a87fc4cdfccb85f90f7a2aa22484",
+        "verificationStatus": "verified",
+        "replaySize": 2893,
+        "compressionRatio": 0.2276900720268153
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.28970046770212,
+        "strategicDepth": 9.267438134413332,
+        "endgameRelevance": 4.43407553309622,
+        "openingNovelty": 3.676962566626447,
+        "overallScore": 6.413833823670725
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "b3ae921a9b0e6f8762a54cdf6355bd8c",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_015",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_b7a084c544d2a0ce",
+      "commitmentHash": "b7a084c544d2a0ce8e76898a99d7e816001e6c2ab10d1e14fe5e2cba3c104d1d",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "King's Indian",
+        "endgameType": "Checkmate",
+        "moveCount": 59,
+        "gameDuration": 3109,
+        "avgMoveTime": 52,
+        "criticalMoments": 5,
+        "blunders": 2,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-08-07T07:46:20.631Z",
+        "completedAt": "2025-07-21T20:28:12.612Z",
+        "rollupEpoch": 5931,
+        "rollupSlot": 51703,
+        "finalStateHash": "a0c7ab2911166fc0bb0434fa8e20ff684ba79ba4f96cad58b23d3b77d14cda5e",
+        "verificationStatus": "verified",
+        "replaySize": 1616,
+        "compressionRatio": 0.21190599881278152
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.507427307013838,
+        "strategicDepth": 8.727435474978318,
+        "endgameRelevance": 3.2957760012424564,
+        "openingNovelty": 1.8699152997172996,
+        "overallScore": 9.654577127238156
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "b7a084c544d2a0ce8e76898a99d7e816",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_016",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_b3eb35c0ee68c703",
+      "commitmentHash": "b3eb35c0ee68c703bf83be46bf7893fb347dd80bad9973e94d788ee3df677a13",
+      "gameData": {
+        "opponent": {
+          "name": "Gon AI",
+          "elo": 1650,
+          "nenType": "Enhancement"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "King's Indian",
+        "endgameType": "Time Forfeit",
+        "moveCount": 120,
+        "gameDuration": 3438,
+        "avgMoveTime": 28,
+        "criticalMoments": 4,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-27T15:12:46.862Z",
+        "completedAt": "2025-07-16T15:38:23.422Z",
+        "rollupEpoch": 5160,
+        "rollupSlot": 59637,
+        "finalStateHash": "38199405f39ebb0cc00025b9a4a872bf9197e8f562b2d69b9b9fdbb70f0f90f9",
+        "verificationStatus": "verified",
+        "replaySize": 3335,
+        "compressionRatio": 0.2272950220214368
+      },
+      "trainingValue": {
+        "tacticalComplexity": 8.354072895693562,
+        "strategicDepth": 8.287903983560048,
+        "endgameRelevance": 6.349899337954563,
+        "openingNovelty": 6.926729418156599,
+        "overallScore": 7.58622264423686
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "b3eb35c0ee68c703bf83be46bf7893fb",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_017",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_274ada7d362719a1",
+      "commitmentHash": "274ada7d362719a1a49a3cca15471726ee07bb2b07e7d8d9fc893827133668df",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "English Opening",
+        "endgameType": "Draw",
+        "moveCount": 102,
+        "gameDuration": 3193,
+        "avgMoveTime": 31,
+        "criticalMoments": 6,
+        "blunders": 1,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-08-04T05:06:00.349Z",
+        "completedAt": "2025-07-23T05:46:24.326Z",
+        "rollupEpoch": 5167,
+        "rollupSlot": 58824,
+        "finalStateHash": "18cc977b4af8c78629582e63516076873c978d7992e7a5f3050e4ec042a7602d",
+        "verificationStatus": "verified",
+        "replaySize": 3109,
+        "compressionRatio": 0.19401902101964513
+      },
+      "trainingValue": {
+        "tacticalComplexity": 5.506007017029299,
+        "strategicDepth": 6.452104269566831,
+        "endgameRelevance": 6.102704656697425,
+        "openingNovelty": 1.1260523170769843,
+        "overallScore": 5.413222065557849
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "274ada7d362719a1a49a3cca15471726",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_018",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_b52f16a7c02fa4cc",
+      "commitmentHash": "b52f16a7c02fa4cc5d4758f3ba2beac2c7a1fdaa12f94ae58d4c097517b49ca2",
+      "gameData": {
+        "opponent": {
+          "name": "Kurapika AI",
+          "elo": 1850,
+          "nenType": "Conjuration"
+        },
+        "result": "defeat",
+        "playerColor": "black",
+        "opening": "Sicilian Defense",
+        "endgameType": "Time Forfeit",
+        "moveCount": 48,
+        "gameDuration": 2939,
+        "avgMoveTime": 61,
+        "criticalMoments": 5,
+        "blunders": 0,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-11T20:06:56.516Z",
+        "completedAt": "2025-07-24T20:51:58.772Z",
+        "rollupEpoch": 5126,
+        "rollupSlot": 58708,
+        "finalStateHash": "ce174de1e70038ed07a09f684c41bfe695924a2e99c2f92235dd8b88805e9a8e",
+        "verificationStatus": "verified",
+        "replaySize": 1550,
+        "compressionRatio": 0.1504128995480585
+      },
+      "trainingValue": {
+        "tacticalComplexity": 0.05344790365218843,
+        "strategicDepth": 0.6863022677339137,
+        "endgameRelevance": 6.025981356148256,
+        "openingNovelty": 0.46715796066194804,
+        "overallScore": 7.441510513229838
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "b52f16a7c02fa4cc5d4758f3ba2beac2",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_019",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_3d26a736178e77da",
+      "commitmentHash": "3d26a736178e77dab1423689e2aa09de963bf81cf0fc644930dff9bfc8803ee1",
+      "gameData": {
+        "opponent": {
+          "name": "Illumi AI",
+          "elo": 1980,
+          "nenType": "Manipulation"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "Sicilian Defense",
+        "endgameType": "Draw",
+        "moveCount": 61,
+        "gameDuration": 2546,
+        "avgMoveTime": 41,
+        "criticalMoments": 2,
+        "blunders": 2,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-20T06:36:12.724Z",
+        "completedAt": "2025-07-28T02:02:53.361Z",
+        "rollupEpoch": 5389,
+        "rollupSlot": 51247,
+        "finalStateHash": "e6ca9441536a98b078d60f538fe5a73f18c174de674815a78b2f60587a23f85c",
+        "verificationStatus": "verified",
+        "replaySize": 2202,
+        "compressionRatio": 0.16476106156032902
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.049746796524845,
+        "strategicDepth": 6.950076969164476,
+        "endgameRelevance": 3.31248917314088,
+        "openingNovelty": 3.4625622514602905,
+        "overallScore": 9.001468868305498
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "3d26a736178e77dab1423689e2aa09de",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_020",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_25b665954e68edd6",
+      "commitmentHash": "25b665954e68edd6031dd12b25225c38ce202175c712b5eb2ffe7cbef864c046",
+      "gameData": {
+        "opponent": {
+          "name": "Gon AI",
+          "elo": 1650,
+          "nenType": "Enhancement"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "Sicilian Defense",
+        "endgameType": "Time Forfeit",
+        "moveCount": 95,
+        "gameDuration": 2871,
+        "avgMoveTime": 30,
+        "criticalMoments": 6,
+        "blunders": 2,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-21T12:49:18.786Z",
+        "completedAt": "2025-07-13T10:28:30.405Z",
+        "rollupEpoch": 5070,
+        "rollupSlot": 55233,
+        "finalStateHash": "41baaa5cd15cda9203074b0b3ee939508adbf0d575a25b47d703373bdaf46144",
+        "verificationStatus": "verified",
+        "replaySize": 2469,
+        "compressionRatio": 0.20264279968653737
+      },
+      "trainingValue": {
+        "tacticalComplexity": 4.756815317956131,
+        "strategicDepth": 1.379699540925674,
+        "endgameRelevance": 6.95222248988137,
+        "openingNovelty": 1.2527652956802937,
+        "overallScore": 9.864209538540386
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "25b665954e68edd6031dd12b25225c38",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_021",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_d9db9d17b5cc1694",
+      "commitmentHash": "d9db9d17b5cc1694f66b805e8258acf25cd3330dd595fae929aaa3c24c2c3d6b",
+      "gameData": {
+        "opponent": {
+          "name": "Chrollo AI",
+          "elo": 2340,
+          "nenType": "Specialization"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "King's Indian",
+        "endgameType": "Time Forfeit",
+        "moveCount": 93,
+        "gameDuration": 2192,
+        "avgMoveTime": 23,
+        "criticalMoments": 3,
+        "blunders": 2,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-07-18T14:19:17.564Z",
+        "completedAt": "2025-07-15T09:09:54.896Z",
+        "rollupEpoch": 5000,
+        "rollupSlot": 51835,
+        "finalStateHash": "5e35871b95ce4927e0a7dabfcdf1dddf9b12426ed9b8ee34b4ec2b420c9d4974",
+        "verificationStatus": "verified",
+        "replaySize": 2676,
+        "compressionRatio": 0.1503371769649806
+      },
+      "trainingValue": {
+        "tacticalComplexity": 8.165425712981321,
+        "strategicDepth": 5.059593097884338,
+        "endgameRelevance": 5.2800236253348825,
+        "openingNovelty": 2.575881813480332,
+        "overallScore": 9.790816427123097
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "d9db9d17b5cc1694f66b805e8258acf2",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_022",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_656856e8ec26b447",
+      "commitmentHash": "656856e8ec26b447110602bfa330f6f12e54629ca4f756b7a558adc755d66034",
+      "gameData": {
+        "opponent": {
+          "name": "Killua AI",
+          "elo": 1720,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "King's Indian",
+        "endgameType": "Draw",
+        "moveCount": 48,
+        "gameDuration": 1512,
+        "avgMoveTime": 31,
+        "criticalMoments": 3,
+        "blunders": 1,
+        "brilliantMoves": 0
+      },
+      "metadata": {
+        "recordedAt": "2025-08-05T03:00:14.819Z",
+        "completedAt": "2025-07-25T03:38:12.573Z",
+        "rollupEpoch": 5516,
+        "rollupSlot": 53704,
+        "finalStateHash": "d36cdc9cbe3f5491db781a6ffbc5c003801b6f38c2f0f71f5dae54b82cf99082",
+        "verificationStatus": "verified",
+        "replaySize": 1570,
+        "compressionRatio": 0.19682239851686653
+      },
+      "trainingValue": {
+        "tacticalComplexity": 6.507731152427738,
+        "strategicDepth": 0.400078126568586,
+        "endgameRelevance": 6.1654283918588675,
+        "openingNovelty": 3.219867672410255,
+        "overallScore": 9.449907644719051
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "656856e8ec26b447110602bfa330f6f1",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_023",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_90384844890153ad",
+      "commitmentHash": "90384844890153ad97904980de1f3e88080c388ebe2055132f306de1aaf98cb4",
+      "gameData": {
+        "opponent": {
+          "name": "Illumi AI",
+          "elo": 1980,
+          "nenType": "Manipulation"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "English Opening",
+        "endgameType": "Resignation",
+        "moveCount": 72,
+        "gameDuration": 1930,
+        "avgMoveTime": 26,
+        "criticalMoments": 3,
+        "blunders": 2,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-13T05:46:28.779Z",
+        "completedAt": "2025-07-19T02:29:01.129Z",
+        "rollupEpoch": 5161,
+        "rollupSlot": 52715,
+        "finalStateHash": "adca0bcd7a9040a5ad32f8101daf0cc3b87fb9c7558abd079e96194ceffd8aae",
+        "verificationStatus": "verified",
+        "replaySize": 2520,
+        "compressionRatio": 0.19236108742045788
+      },
+      "trainingValue": {
+        "tacticalComplexity": 7.819121018189805,
+        "strategicDepth": 0.8369656708935036,
+        "endgameRelevance": 9.85095635713291,
+        "openingNovelty": 6.824131346962559,
+        "overallScore": 8.77968405162962
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "90384844890153ad97904980de1f3e88",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_024",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_f6c092bf4b590aba",
+      "commitmentHash": "f6c092bf4b590aba2357d475ab6bc744988a8871162c956920115585249ca4fc",
+      "gameData": {
+        "opponent": {
+          "name": "Killua AI",
+          "elo": 1720,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "white",
+        "opening": "Queen's Gambit",
+        "endgameType": "Resignation",
+        "moveCount": 76,
+        "gameDuration": 1601,
+        "avgMoveTime": 21,
+        "criticalMoments": 4,
+        "blunders": 0,
+        "brilliantMoves": 3
+      },
+      "metadata": {
+        "recordedAt": "2025-07-22T16:25:29.480Z",
+        "completedAt": "2025-08-10T04:57:38.478Z",
+        "rollupEpoch": 5361,
+        "rollupSlot": 53476,
+        "finalStateHash": "d0093a02f5c1922c547591c2783f156ec06dd498942ff699852279b9c9ab72f4",
+        "verificationStatus": "verified",
+        "replaySize": 2272,
+        "compressionRatio": 0.16930172699795232
+      },
+      "trainingValue": {
+        "tacticalComplexity": 4.653666136797902,
+        "strategicDepth": 8.825301712614372,
+        "endgameRelevance": 8.029946514261507,
+        "openingNovelty": 9.617963853601044,
+        "overallScore": 9.32979398878285
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "f6c092bf4b590aba2357d475ab6bc744",
+        "verifiable": true
+      }
+    },
+    {
+      "id": "FMucxRU9_replay_025",
+      "agentMint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "walletAddress": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "magicBlockSessionId": "mb_061384871776a770",
+      "commitmentHash": "061384871776a7706a8f7f49f7a2060f6a61a102f5f97971a34edfb7884f27cd",
+      "gameData": {
+        "opponent": {
+          "name": "Hisoka AI",
+          "elo": 2020,
+          "nenType": "Transmutation"
+        },
+        "result": "victory",
+        "playerColor": "black",
+        "opening": "Sicilian Defense",
+        "endgameType": "Draw",
+        "moveCount": 67,
+        "gameDuration": 2498,
+        "avgMoveTime": 37,
+        "criticalMoments": 3,
+        "blunders": 2,
+        "brilliantMoves": 2
+      },
+      "metadata": {
+        "recordedAt": "2025-07-16T09:34:49.441Z",
+        "completedAt": "2025-07-22T00:05:58.826Z",
+        "rollupEpoch": 5237,
+        "rollupSlot": 57517,
+        "finalStateHash": "bdccfbf6e1f72d0c74f5b67f28e7c3134f19196c86e111da4c80e8d9e70b6beb",
+        "verificationStatus": "verified",
+        "replaySize": 1962,
+        "compressionRatio": 0.19824336703777928
+      },
+      "trainingValue": {
+        "tacticalComplexity": 5.637201826355409,
+        "strategicDepth": 3.6065300908471465,
+        "endgameRelevance": 9.866909014737523,
+        "openingNovelty": 1.4414090110628552,
+        "overallScore": 9.092288040480458
+      },
+      "onChainReference": {
+        "network": "devnet",
+        "rollupProgram": "MagicBlock-devnet-v1.0",
+        "sessionPDA": "061384871776a7706a8f7f49f7a2060f",
+        "verifiable": true
+      }
+    }
+  ],
+  "replayIndex": {
+    "kind": "magicblock_replay_index",
+    "wallet": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+    "totalReplays": 75,
+    "agentCount": 3,
+    "indexedAt": "2025-08-10T08:43:48.717Z",
+    "network": "devnet",
+    "magicBlockVersion": "1.0.0-devnet",
+    "replayHashes": [
+      "83cc5abee42336f7645d73fedb7e6fff9f6871cd698956180a331c4dcfa2ec3e",
+      "8805bd0734c9408a9e7ab76d85a90aea2dd2fe7622462947c757c8bed836edec",
+      "049e236690077b531399b90fda801fc8aeab0c9b4b790c41f76d2819ad8d8b35",
+      "74c144ff05a424de184ecd0797215648bf2d60f82ee47eefa17ae9e3cb5df5da",
+      "744bb9a5d6b1ea0ed8e20aa5d82ecac63794d3703be70474c3a9a9e449ea81c4",
+      "e38d78dbc17f45325039e069ae4b93a98fb76177ea5b86068efe54174bd653c3",
+      "4dd1ea868feef85caef6658cd2b13bc39a268b6acd612a3b5546452b23003e3b",
+      "8c96214a3d015f2f492a074964c367a2e8577b680000ca22ca742ba052791292",
+      "8b61d51e603d88247c418afa7301167c1fa14831df872e9a976eb7d13eae5dec",
+      "87a01cb111b29d47227557b44306ad44396b23a809af0bc5225260404531c699",
+      "450330558a7d5cc947b9a53b5b5a115efc490cc4d5e260c3e973ddeffae369eb",
+      "7213c0b4f88524895146963924c06ce01356a0391d49a13af2364be4c94e336b",
+      "ce75f10155218bbb021dcd75bbaa0f2d1ae233bc10ffa6d7a4779fb700465f5d",
+      "5ac74992e6f629cea6edb3554ba05885cd9209c6b31b570b5ef25ac08e846366",
+      "b37970a9ecf3373f23474bead7b00a1b47b92980c7d12303887cb91b9792e541",
+      "0121622f3ad6f34b9002245e2649e01b8e9288165233d4ebde078ba343ba5291",
+      "619ef2bbb5a24476c19a96be03b1c2038b0f18713e111c1995373234fecb0aa2",
+      "28b234a890d655a02ca2bcb40476e24456051b0e8e9bf24021b2d7f62605c42b",
+      "711a90da39aaae69b7d6b45d746265662e7625dc0eea0570f36b29c485de3f87",
+      "ec7b1f436f523f9094fa65b6cd12bf5de479b21f2857a52d06de6b3025ec33df",
+      "138fd523e6e32b53dfea387353c756d2c67a87878e82ea5bf755202503b49d3a",
+      "927fdc4023dc4a073a0d163d090ff94e87e46ad7c30b0b493087c8c094262bab",
+      "309fbc05759c11f3fab96b9ceddb9fbe9dbaebb2b3ac6aa7c0acd5a99b020461",
+      "82f93d91b020bf8fc8fa7471c6d854f8860f18f72b12931f589d17368a2fcfab",
+      "9ed75d4e8bf8c019dd9085331e017b463f112bf1b0d300f7d5900b89e6954b1d",
+      "bbb5b495b8bff87b47b851acd046bd8152fac14458dd82d80359b1f1151f2ea7",
+      "152191178f0b153b9ac28ae4b3cf716767fc09c524a3a58a0587dcfafe4a5665",
+      "fe604abde13f2e0c9454241d93195fb4007c46d9ac734ede74058c33cfa90e16",
+      "377c0059747ac48c8ae973c751ee6879c4c8d6c4abb653151f99310e71026285",
+      "4567bc60677d61478f7c8827555ac170aa03709d9184a7f0a52fea59ace92b42",
+      "18c95ac2b05b98cea012e12a9e19b8fef8485987338d15351aeaa9e486bbe0ab",
+      "a4a24846c0b9d79edbe3b16262035620c4172a1a183f1d614590e527f6f30bae",
+      "1bfbdf8cf88cc44867c3965435e6d04ebac69cc0a730fbd9e7f4b631547cb038",
+      "f35a5ed22dd9a214e601ce0ee7ed3bd0390b6e153accd9cc4edd8c335e14276a",
+      "1ee03f88400e9086368d3b2e069de5ad10bdacdfcf32afd38f19bb7688ebcfd0",
+      "f693fbca07f9801ee9910caa83c85e60ac681902a753cb18d96249a634aec8b1",
+      "fab7cf641499271d0e1a4551a2036832f9ab651f7ec7ea0f4fcf186e09f3fe4a",
+      "6ae5e78973586fffcd10db96cf18294729a5e72b302a6d8df1ca18a78f5dae54",
+      "04218161dd75ebbc1e3cf4bdf5e10756688cff66a9278babb0e76188cc992188",
+      "a84c6054469b5b420867ade4741ebd093a442832b779efccbfd5c2925ce5c009",
+      "992acba48ff9db0b2b27f32cd71b5feb14403c6749ec14cec164dca5acb6c025",
+      "5c852c10e871ad89670c1efea264020d6f18142c1520036c84fe8f2537440f52",
+      "5e23121b6dc2286e922f186f05c8dd389732ee6defb2a61e67b74917347166c8",
+      "79b33e66b15bd7ad1d9a200da0930d38d1f06a4e6664b4aa31d38bee47e5c28a",
+      "2cd0327eff4470a4ccb17e4701a465d666031c171d053123954bbbcd0d88f09c",
+      "02a7e63c9d06897e87ded42ed99d2e18a3b550198909c535a7ac50af38b4eed1",
+      "1aa1873ac561a5414ce58cacebeec6c810218c5b3c03b432d3dfa53022ba9b91",
+      "8ec1280b23ce6c2d2f0303f3bb1ec2433eb88753cd0d98aedcd7391a3920d974",
+      "099eb8d93dd87083f247d7dec4445223b72c449d298d0053e680203e5c877c4f",
+      "6572afc3faddc311424d4363102730fbb0f3a8285e021074ed53af86fa3d8f11",
+      "0884ba31e03669f9ad3c3a45049c6c83806e5329d4f86e1a2b137a268b6f4bd6",
+      "d39c1cfd42943f00c3cbbbbbe9b3879fc76cc1d532fe3fd579fdb936790cce6b",
+      "ebd2c1f9acf14ec381529d2fa750ef9282dd3539ab3b81b874e5153039a302f6",
+      "70eb587d3586dcafafe627d800d91b05e26441e49cfa4836fcd6035eccf3a0b3",
+      "cb6e83a1d30e87437c8407518655fdcb1509447d7d3507ccf8bf9509dafe9c4e",
+      "47968b87c367b15ad22c2376cc3d71212669fb7e3d938007e73e250c899c8f95",
+      "04dc384b83120600c2b1e75cab8cc591c630384bf626715b3e695dddfa739072",
+      "b6bbc0d00b8401c98f9069370493b494a6b45d47826113e62fbed6a6df496e0a",
+      "72c0e45b98a4dc463fb3d7b8010c1ad76881e6c1588185ef4a5a0a1f6d0f8386",
+      "c0163d4702adb83e46e5ed274fa8dcd3c6b73e7f088cee08254ea490d9a51652",
+      "75d30319af74e3707450862f29f490ed14bad4d990814c60ef595b87e64253c0",
+      "f3d56fb5ab0d5692e31e02eff04f0f5085e4dca956e3b9fcb579904b74cebc5b",
+      "a21a6ace31d61fd4d34f675b222466e345505e36e9ac8773eda5ca754fcab409",
+      "b3ae921a9b0e6f8762a54cdf6355bd8c979e8ba4cfd346e9ac21226f555508be",
+      "b7a084c544d2a0ce8e76898a99d7e816001e6c2ab10d1e14fe5e2cba3c104d1d",
+      "b3eb35c0ee68c703bf83be46bf7893fb347dd80bad9973e94d788ee3df677a13",
+      "274ada7d362719a1a49a3cca15471726ee07bb2b07e7d8d9fc893827133668df",
+      "b52f16a7c02fa4cc5d4758f3ba2beac2c7a1fdaa12f94ae58d4c097517b49ca2",
+      "3d26a736178e77dab1423689e2aa09de963bf81cf0fc644930dff9bfc8803ee1",
+      "25b665954e68edd6031dd12b25225c38ce202175c712b5eb2ffe7cbef864c046",
+      "d9db9d17b5cc1694f66b805e8258acf25cd3330dd595fae929aaa3c24c2c3d6b",
+      "656856e8ec26b447110602bfa330f6f12e54629ca4f756b7a558adc755d66034",
+      "90384844890153ad97904980de1f3e88080c388ebe2055132f306de1aaf98cb4",
+      "f6c092bf4b590aba2357d475ab6bc744988a8871162c956920115585249ca4fc",
+      "061384871776a7706a8f7f49f7a2060f6a61a102f5f97971a34edfb7884f27cd"
+    ],
+    "onChainTx": "38wwRQnxAyxRhb6YfEeLNguzgGuk35GUudBUrqvSQVQppngQzLh2ZF6fEGuHgKRvqWWwJyo1jYMPXEdPeRnaSnEg",
+    "explorer": "https://explorer.solana.com/tx/38wwRQnxAyxRhb6YfEeLNguzgGuk35GUudBUrqvSQVQppngQzLh2ZF6fEGuHgKRvqWWwJyo1jYMPXEdPeRnaSnEg?cluster=devnet",
+    "compactIndex": {
+      "t": "magicblock_replay_idx",
+      "w": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "c": 75,
+      "a": 3,
+      "ts": "2025-08-10T08:44:36.335Z",
+      "v": "1.0.0-devnet",
+      "h": [
+        "83cc5abee42336f7",
+        "8805bd0734c9408a",
+        "049e236690077b53",
+        "74c144ff05a424de",
+        "744bb9a5d6b1ea0e"
+      ]
+    }
+  },
+  "totalReplays": 75,
+  "created_at": "2025-08-10T08:43:49.989Z",
+  "network": "devnet",
+  "userStory": "User Story 7: Training Replay Selection"
+}

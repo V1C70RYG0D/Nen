@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "anchor test",
+  "verify:user-story-2": "node scripts/verify-user-story-2-onchain.js",
     "test:unit": "mocha --require ts-node/register tests/unit/**/*.test.ts",
     "test:integration": "mocha --require ts-node/register tests/integration/**/*.test.ts",
     "test:security": "mocha --require ts-node/register tests/security/**/*.test.ts",

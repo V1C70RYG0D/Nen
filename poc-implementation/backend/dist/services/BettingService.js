@@ -12,6 +12,284 @@ class BettingService {
         this.platformFeeRate = 0.03; // 3% platform fee
         this.connection = new web3_js_1.Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
         this.cache = new redis_1.CacheService();
+        this.programId = new web3_js_1.PublicKey(process.env.NEN_BETTING_PROGRAM_ID || 'BetFg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS');
+    }
+    // Get or create betting account for user
+    async getBettingAccount(walletAddress) {
+        try {
+            if (!this.isValidSolanaAddress(walletAddress)) {
+                throw new Error('Invalid Solana wallet address');
+            }
+            // Check cache first
+            const cacheKey = `betting_account:${walletAddress}`;
+            const cached = await this.cache.get(cacheKey);
+            if (cached) {
+                return cached;
+            }
+            // Get user account
+            const userResult = await (0, database_1.query)(`
+        SELECT id, betting_balance, total_winnings, total_losses 
+        FROM users WHERE wallet_address = $1
+      `, [walletAddress]);
+            if (userResult.length === 0) {
+                throw new Error('User not found');
+            }
+            const user = userResult[0];
+            // Derive betting account PDA
+            const walletPubkey = new web3_js_1.PublicKey(walletAddress);
+            const [bettingAccountPda] = web3_js_1.PublicKey.findProgramAddressSync([Buffer.from('betting'), walletPubkey.toBuffer()], this.programId);
+            // Check if betting account exists on-chain
+            const accountInfo = await this.connection.getAccountInfo(bettingAccountPda);
+            let balance = parseFloat(user.betting_balance || '0');
+            if (accountInfo) {
+                // Parse account data to get balance (simplified for POC)
+                // In production, this would deserialize the account data properly
+                balance = accountInfo.lamports / web3_js_1.LAMPORTS_PER_SOL;
+            }
+            const bettingAccount = {
+                userId: user.id,
+                walletAddress,
+                pdaAddress: bettingAccountPda.toString(),
+                balance,
+                totalDeposited: parseFloat(user.betting_balance || '0'),
+                totalWithdrawn: 0,
+                lockedBalance: 0,
+                lastUpdated: new Date(),
+            };
+            // Cache for 5 minutes
+            await this.cache.set(cacheKey, bettingAccount, 300);
+            return bettingAccount;
+        }
+        catch (error) {
+            logger_1.logger.error('Error getting betting account:', error);
+            throw error;
+        }
+    }
+    // Deposit SOL into betting account
+    async depositSol(depositRequest) {
+        try {
+            const { userId, walletAddress, amount, transactionSignature } = depositRequest;
+            // Validate inputs
+            if (!this.isValidSolanaAddress(walletAddress)) {
+                throw new Error('Invalid wallet address');
+            }
+            if (amount < 0.1) {
+                throw new Error('Minimum deposit amount is 0.1 SOL');
+            }
+            if (amount > 1000) {
+                throw new Error('Maximum deposit amount is 1000 SOL');
+            }
+            // Get or create betting account
+            const bettingAccount = await this.getBettingAccount(walletAddress);
+            // Create transaction record
+            const transactionId = (0, uuid_1.v4)();
+            const transactionRecord = {
+                id: transactionId,
+                userId,
+                walletAddress,
+                type: 'deposit',
+                amount,
+                transactionHash: transactionSignature,
+                status: 'pending',
+                metadata: {
+                    pdaAddress: bettingAccount.pdaAddress,
+                    previousBalance: bettingAccount.balance,
+                },
+                createdAt: new Date(),
+            };
+            // Store transaction record
+            await this.storeTransactionRecord(transactionRecord);
+            // For POC: Simulate on-chain transaction
+            // In production, this would:
+            // 1. Verify the transaction signature on-chain
+            // 2. Check that funds were transferred to the betting PDA
+            // 3. Update the betting account balance
+            const mockTransactionHash = transactionSignature || `deposit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            // Simulate transaction confirmation delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Update betting account balance in database
+            const newBalance = bettingAccount.balance + amount;
+            await (0, database_1.transaction)(async (client) => {
+                await client.query(`
+          UPDATE users 
+          SET betting_balance = $1, updated_at = $2 
+          WHERE id = $3
+        `, [newBalance, new Date(), userId]);
+            });
+            // Update transaction status
+            await this.updateTransactionStatus(transactionId, 'confirmed', mockTransactionHash);
+            // Clear cache
+            await this.cache.del(`betting_account:${walletAddress}`);
+            const result = {
+                success: true,
+                transactionId: mockTransactionHash,
+                newBalance,
+                depositAmount: amount,
+                pdaAddress: bettingAccount.pdaAddress,
+                message: `Successfully deposited ${amount} SOL to betting account`,
+            };
+            logger_1.logger.info('Deposit completed successfully', {
+                walletAddress,
+                amount,
+                transactionId: mockTransactionHash,
+                newBalance,
+            });
+            return result;
+        }
+        catch (error) {
+            logger_1.logger.error('Error processing deposit:', error);
+            throw error;
+        }
+    }
+    // Withdraw SOL from betting account
+    async withdrawSol(withdrawalRequest) {
+        try {
+            const { userId, walletAddress, amount, destinationAddress } = withdrawalRequest;
+            // Validate inputs
+            if (!this.isValidSolanaAddress(walletAddress)) {
+                throw new Error('Invalid wallet address');
+            }
+            if (amount <= 0) {
+                throw new Error('Withdrawal amount must be greater than 0');
+            }
+            // Get betting account
+            const bettingAccount = await this.getBettingAccount(walletAddress);
+            // Check sufficient balance
+            const availableBalance = bettingAccount.balance - bettingAccount.lockedBalance;
+            if (amount > availableBalance) {
+                throw new Error(`Insufficient balance. Available: ${availableBalance} SOL`);
+            }
+            // Minimum withdrawal amount
+            if (amount < 0.01) {
+                throw new Error('Minimum withdrawal amount is 0.01 SOL');
+            }
+            // Create transaction record
+            const transactionId = (0, uuid_1.v4)();
+            const transactionRecord = {
+                id: transactionId,
+                userId,
+                walletAddress,
+                type: 'withdrawal',
+                amount,
+                status: 'pending',
+                metadata: {
+                    destinationAddress: destinationAddress || walletAddress,
+                    previousBalance: bettingAccount.balance,
+                },
+                createdAt: new Date(),
+            };
+            await this.storeTransactionRecord(transactionRecord);
+            // For POC: Simulate on-chain withdrawal
+            const mockTransactionHash = `withdrawal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            // Simulate transaction processing delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Update betting account balance in database
+            const newBalance = bettingAccount.balance - amount;
+            await (0, database_1.transaction)(async (client) => {
+                await client.query(`
+          UPDATE users 
+          SET betting_balance = $1, updated_at = $2 
+          WHERE id = $3
+        `, [newBalance, new Date(), userId]);
+            });
+            // Update transaction status
+            await this.updateTransactionStatus(transactionId, 'confirmed', mockTransactionHash);
+            // Clear cache
+            await this.cache.del(`betting_account:${walletAddress}`);
+            const result = {
+                success: true,
+                transactionId: mockTransactionHash,
+                newBalance,
+                withdrawalAmount: amount,
+                message: `Successfully withdrew ${amount} SOL from betting account`,
+            };
+            logger_1.logger.info('Withdrawal completed successfully', {
+                walletAddress,
+                amount,
+                transactionId: mockTransactionHash,
+                newBalance,
+            });
+            return result;
+        }
+        catch (error) {
+            logger_1.logger.error('Error processing withdrawal:', error);
+            throw error;
+        }
+    }
+    // Get transaction history for a user
+    async getTransactionHistory(walletAddress, limit = 50) {
+        try {
+            // For POC: Return mock transaction history
+            // In production: Query from database
+            const mockHistory = [
+                {
+                    id: '1',
+                    userId: 'user_1',
+                    walletAddress,
+                    type: 'deposit',
+                    amount: 5.0,
+                    transactionHash: 'dep_hash_1',
+                    status: 'confirmed',
+                    createdAt: new Date(Date.now() - 86400000), // 1 day ago
+                },
+                {
+                    id: '2',
+                    userId: 'user_1',
+                    walletAddress,
+                    type: 'bet',
+                    amount: 1.5,
+                    transactionHash: 'bet_hash_1',
+                    status: 'confirmed',
+                    metadata: { matchId: 'match_1', agentId: 'agent_1' },
+                    createdAt: new Date(Date.now() - 43200000), // 12 hours ago
+                },
+                {
+                    id: '3',
+                    userId: 'user_1',
+                    walletAddress,
+                    type: 'payout',
+                    amount: 2.25,
+                    transactionHash: 'payout_hash_1',
+                    status: 'confirmed',
+                    metadata: { matchId: 'match_1', betId: 'bet_1' },
+                    createdAt: new Date(Date.now() - 21600000), // 6 hours ago
+                },
+            ];
+            return mockHistory.slice(0, limit);
+        }
+        catch (error) {
+            logger_1.logger.error('Error getting transaction history:', error);
+            throw error;
+        }
+    }
+    // Private helper methods for deposits/withdrawals
+    async storeTransactionRecord(record) {
+        // In production: Store in database
+        // For POC: Store in cache
+        const cacheKey = `transaction:${record.id}`;
+        await this.cache.set(cacheKey, record, 3600); // 1 hour
+    }
+    async updateTransactionStatus(transactionId, status, transactionHash) {
+        // In production: Update database
+        // For POC: Update cache
+        const cacheKey = `transaction:${transactionId}`;
+        const record = await this.cache.get(cacheKey);
+        if (record) {
+            record.status = status;
+            if (transactionHash) {
+                record.transactionHash = transactionHash;
+            }
+            await this.cache.set(cacheKey, record, 3600);
+        }
+    }
+    isValidSolanaAddress(address) {
+        try {
+            new web3_js_1.PublicKey(address);
+            return true;
+        }
+        catch {
+            return false;
+        }
     }
     // Place a bet on a match
     async placeBet(betData) {

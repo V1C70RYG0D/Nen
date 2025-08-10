@@ -8,7 +8,7 @@
 
 import { NextApiRequest, NextApiResponse } from 'next';
 
-// Use the configured API URL from environment or fallback to port 3001
+// Use the configured API URL from environment or fallback to port 3011
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || 'http://127.0.0.1:3011';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -32,7 +32,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    const backendUrl = `${BACKEND_URL}/api/matches/${matchId}`;
+  // Prefer devnet-backed single match endpoint
+  const backendUrl = `${BACKEND_URL}/api/devnet/matches/${matchId}`;
     
     const response = await fetch(backendUrl, {
       method: req.method,
@@ -47,8 +48,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw new Error(`Backend responded with status: ${response.status}`);
     }
 
-    const data = await response.json();
-    res.status(200).json(data);
+  const data = await response.json();
+  const match = data.data?.id ? data.data : data.data?.match || data;
+  res.status(200).json({ success: true, data: { match } });
 
   } catch (error) {
     console.error('Error fetching match details:', error);

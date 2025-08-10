@@ -10,7 +10,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 const mockWallet = {
   publicKey: new PublicKey('4Fde9aetSpkg8hitFLBZMYC776QTaNW9BRVkATem9fTk'),
   connected: true,
-  sendTransaction: async (transaction, connection) => {
+  sendTransaction: async (transaction: any, connection: any) => {
     // Simulate wallet approval and transaction sending
     console.log('🔐 Wallet signing transaction...');
     await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate user approval time
@@ -103,8 +103,8 @@ export const WithdrawalDemoComponent = () => {
       console.log(`   Available: ${newAvailableBalance} SOL`);
       console.log(`   Transaction: ${signature}`);
       
-    } catch (error) {
-      setMessage(`❌ Withdrawal failed: ${error.message}`);
+    } catch (error: any) {
+      setMessage(`❌ Withdrawal failed: ${error?.message || 'Unknown error'}`);
       setMessageType('error');
       console.error('User Story 2a withdrawal error:', error);
     } finally {

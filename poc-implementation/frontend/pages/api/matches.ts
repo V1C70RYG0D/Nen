@@ -39,7 +39,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.query.maxBet) queryParams.set('maxBet', req.query.maxBet as string);
 
     const queryString = queryParams.toString();
-    const backendUrl = `${BACKEND_URL}/api/matches${queryString ? `?${queryString}` : ''}`;
+  // Prefer devnet-backed matches endpoint for real on-chain data
+  const backendUrl = `${BACKEND_URL}/api/devnet/matches${queryString ? `?${queryString}` : ''}`;
     
     // Forward request to backend
     const response = await fetch(backendUrl, {
@@ -56,9 +57,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const data = await response.json();
-    
-    // Return the data with proper User Story 3 structure
-    res.status(200).json(data);
+
+    // Normalize shape to { success, data: { matches, ... } }
+    const matches = Array.isArray(data.data) ? data.data : data.data?.matches || [];
+    res.status(200).json({
+      success: true,
+      data: {
+        matches,
+        total: matches.length,
+        page: parseInt((req.query.page as string) || '1'),
+        limit: parseInt((req.query.limit as string) || '50'),
+        hasNext: false,
+        hasPrev: false
+      },
+      count: matches.length,
+      message: data.message || 'Devnet matches'
+    });
 
   } catch (error) {
     console.error('Error proxying matches request:', error);

@@ -3,6 +3,7 @@
  * Following GI guidelines - real implementations with comprehensive testing
  */
 import 'jest-extended';
+import { setupTestDatabase, teardownTestDatabase } from './utils/testDatabase';
 declare global {
     namespace jest {
         interface Matchers<R> {
@@ -35,5 +36,6 @@ export declare function getTestSolanaConnection(): {
     requestAirdrop: jest.Mock<any, any, any>;
 };
 export declare function cleanupTestEnvironment(): Promise<void>;
+export { setupTestDatabase, teardownTestDatabase };
 export {};
 //# sourceMappingURL=setup.d.ts.map

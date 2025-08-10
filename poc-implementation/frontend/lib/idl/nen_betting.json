@@ -3,53 +3,10 @@
   "name": "nen_betting",
   "instructions": [
     {
-      "name": "initializeBettingPlatform",
-      "accounts": [
-        {
-          "name": "bettingPlatform",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "admin",
-          "type": "publicKey"
-        },
-        {
-          "name": "minimumDeposit",
-          "type": "u64"
-        },
-        {
-          "name": "maximumDeposit",
-          "type": "u64"
-        },
-        {
-          "name": "platformFeeBps",
-          "type": "u16"
-        }
-      ]
-    },
-    {
       "name": "createBettingAccount",
       "accounts": [
         {
           "name": "bettingAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "bettingPlatform",
           "isMut": true,
           "isSigner": false
         },
@@ -71,11 +28,6 @@
       "accounts": [
         {
           "name": "bettingAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "bettingPlatform",
           "isMut": true,
           "isSigner": false
         },
@@ -103,11 +55,6 @@
         {
           "name": "bettingAccount",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "bettingPlatform",
-          "isMut": false,
           "isSigner": false
         },
         {
@@ -169,80 +116,16 @@
           "type": "u64"
         }
       ]
-    },
-    {
-      "name": "togglePause",
-      "accounts": [
-        {
-          "name": "bettingPlatform",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
-        }
-      ],
-      "args": []
     }
   ],
   "accounts": [
-    {
-      "name": "BettingPlatform",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "admin",
-            "type": "publicKey"
-          },
-          {
-            "name": "minimumDeposit",
-            "type": "u64"
-          },
-          {
-            "name": "maximumDeposit",
-            "type": "u64"
-          },
-          {
-            "name": "platformFeeBps",
-            "type": "u16"
-          },
-          {
-            "name": "totalDeposits",
-            "type": "u64"
-          },
-          {
-            "name": "totalWithdrawals",
-            "type": "u64"
-          },
-          {
-            "name": "totalUsers",
-            "type": "u64"
-          },
-          {
-            "name": "isPaused",
-            "type": "bool"
-          },
-          {
-            "name": "createdAt",
-            "type": "i64"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
     {
       "name": "BettingAccount",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "user",
+            "name": "owner",
             "type": "publicKey"
           },
           {
@@ -258,64 +141,26 @@
             "type": "u64"
           },
           {
-            "name": "lockedBalance",
+            "name": "lockedFunds",
             "type": "u64"
           },
           {
-            "name": "depositCount",
-            "type": "u32"
+            "name": "lastActivity",
+            "type": "i64"
+          },
+          {
+            "name": "lastWithdrawal",
+            "type": "i64"
           },
           {
             "name": "withdrawalCount",
-            "type": "u32"
-          },
-          {
-            "name": "createdAt",
-            "type": "i64"
-          },
-          {
-            "name": "lastUpdated",
-            "type": "i64"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
+            "type": "u64"
           }
         ]
       }
     }
   ],
   "events": [
-    {
-      "name": "BettingPlatformInitialized",
-      "fields": [
-        {
-          "name": "admin",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "minimumDeposit",
-          "type": "u64",
-          "index": false
-        },
-        {
-          "name": "maximumDeposit",
-          "type": "u64",
-          "index": false
-        },
-        {
-          "name": "platformFeeBps",
-          "type": "u16",
-          "index": false
-        },
-        {
-          "name": "timestamp",
-          "type": "i64",
-          "index": false
-        }
-      ]
-    },
     {
       "name": "BettingAccountCreated",
       "fields": [
@@ -325,7 +170,7 @@
           "index": false
         },
         {
-          "name": "pdaAddress",
+          "name": "account",
           "type": "publicKey",
           "index": false
         },
@@ -337,7 +182,7 @@
       ]
     },
     {
-      "name": "DepositCompleted",
+      "name": "SolDeposited",
       "fields": [
         {
           "name": "user",
@@ -345,7 +190,7 @@
           "index": false
         },
         {
-          "name": "pdaAddress",
+          "name": "account",
           "type": "publicKey",
           "index": false
         },
@@ -355,18 +200,8 @@
           "index": false
         },
         {
-          "name": "previousBalance",
-          "type": "u64",
-          "index": false
-        },
-        {
           "name": "newBalance",
           "type": "u64",
-          "index": false
-        },
-        {
-          "name": "transactionCount",
-          "type": "u32",
           "index": false
         },
         {
@@ -377,7 +212,7 @@
       ]
     },
     {
-      "name": "WithdrawalCompleted",
+      "name": "SolWithdrawn",
       "fields": [
         {
           "name": "user",
@@ -385,7 +220,7 @@
           "index": false
         },
         {
-          "name": "pdaAddress",
+          "name": "account",
           "type": "publicKey",
           "index": false
         },
@@ -395,18 +230,13 @@
           "index": false
         },
         {
-          "name": "previousBalance",
-          "type": "u64",
-          "index": false
-        },
-        {
           "name": "newBalance",
           "type": "u64",
           "index": false
         },
         {
-          "name": "transactionCount",
-          "type": "u32",
+          "name": "availableBalance",
+          "type": "u64",
           "index": false
         },
         {
@@ -421,6 +251,11 @@
       "fields": [
         {
           "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "account",
           "type": "publicKey",
           "index": false
         },
@@ -450,6 +285,11 @@
           "index": false
         },
         {
+          "name": "account",
+          "type": "publicKey",
+          "index": false
+        },
+        {
           "name": "amount",
           "type": "u64",
           "index": false
@@ -465,78 +305,68 @@
           "index": false
         }
       ]
-    },
-    {
-      "name": "PlatformToggled",
-      "fields": [
-        {
-          "name": "admin",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "isPaused",
-          "type": "bool",
-          "index": false
-        },
-        {
-          "name": "timestamp",
-          "type": "i64",
-          "index": false
-        }
-      ]
     }
   ],
   "errors": [
     {
       "code": 6000,
-      "name": "InvalidMinimumDeposit",
-      "msg": "Invalid minimum deposit amount"
+      "name": "DepositTooSmall",
+      "msg": "Deposit amount too small (minimum 0.1 SOL)"
     },
     {
       "code": 6001,
-      "name": "InvalidMaximumDeposit",
-      "msg": "Invalid maximum deposit amount"
+      "name": "DepositTooLarge",
+      "msg": "Deposit amount too large (maximum 100 SOL)"
     },
     {
       "code": 6002,
-      "name": "InvalidFeePercentage",
-      "msg": "Invalid fee percentage"
+      "name": "WithdrawalAmountInvalid",
+      "msg": "Withdrawal amount must be greater than 0"
     },
     {
       "code": 6003,
-      "name": "BelowMinimumDeposit",
-      "msg": "Deposit amount below minimum required"
+      "name": "WithdrawalTooSmall",
+      "msg": "Withdrawal amount too small (minimum 0.01 SOL)"
     },
     {
       "code": 6004,
-      "name": "AboveMaximumDeposit",
-      "msg": "Deposit amount above maximum allowed"
+      "name": "InsufficientAvailableBalance",
+      "msg": "Insufficient available balance (funds may be locked in active bets)"
     },
     {
       "code": 6005,
-      "name": "PlatformPaused",
-      "msg": "Platform is currently paused"
+      "name": "WithdrawalCooldownActive",
+      "msg": "Withdrawal cooldown active - must wait 24 hours between withdrawals"
     },
     {
       "code": 6006,
-      "name": "InvalidWithdrawalAmount",
-      "msg": "Invalid withdrawal amount"
+      "name": "UnauthorizedWithdrawal",
+      "msg": "Unauthorized withdrawal attempt"
     },
     {
       "code": 6007,
-      "name": "InsufficientBalance",
-      "msg": "Insufficient balance for this operation"
+      "name": "LockAmountInvalid",
+      "msg": "Lock amount must be greater than 0"
     },
     {
       "code": 6008,
-      "name": "InsufficientLockedFunds",
-      "msg": "Insufficient locked funds for this operation"
+      "name": "UnauthorizedLock",
+      "msg": "Unauthorized lock attempt"
     },
     {
       "code": 6009,
-      "name": "Unauthorized",
-      "msg": "Unauthorized access"
+      "name": "UnlockAmountInvalid",
+      "msg": "Unlock amount must be greater than 0"
+    },
+    {
+      "code": 6010,
+      "name": "UnlockAmountExceedsLocked",
+      "msg": "Unlock amount exceeds locked funds"
+    },
+    {
+      "code": 6011,
+      "name": "UnauthorizedUnlock",
+      "msg": "Unauthorized unlock attempt"
     }
   ]
 }

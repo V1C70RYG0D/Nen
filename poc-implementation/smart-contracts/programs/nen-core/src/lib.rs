@@ -4,7 +4,7 @@ use anchor_spl::token::{TokenAccount, Token, Mint};
 mod errors;
 use errors::NenPlatformError;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF");
 
 // Enhanced Nen Platform Core Smart Contract
 // Implements comprehensive gaming features with security frameworks
@@ -285,6 +285,112 @@ pub mod nen_core {
         
         Ok(())
     }
+
+    /// Start a training session: initializes a TrainingSession PDA and locks the agent
+    pub fn start_training_session(
+        ctx: Context<StartTrainingSession>,
+        session_id: [u8; 16],
+        replay_commitments: Vec<[u8; 32]>,
+        params: TrainingParams,
+    ) -> Result<()> {
+        // Basic bounds
+        require!(
+            replay_commitments.len() as u32 <= TrainingSession::MAX_REPLAYS as u32,
+            ErrorCode::TooManyReplays
+        );
+
+        // Verify authority owns the agent
+        let agent = &mut ctx.accounts.agent_nft;
+        require!(agent.owner == ctx.accounts.owner.key(), ErrorCode::InvalidComplianceSignature); // reuse generic error
+        require!(!agent.is_training, NenPlatformError::InvalidMatchStatus); // already training
+
+        // Initialize session
+        let session = &mut ctx.accounts.training_session;
+        session.session_id = session_id;
+        session.owner = ctx.accounts.owner.key();
+        session.agent_mint = ctx.accounts.mint.key();
+        session.status = TrainingStatus::Initiated;
+        session.replay_commitments = replay_commitments;
+        session.params = params;
+        session.created_at = Clock::get()?.unix_timestamp;
+        session.updated_at = session.created_at;
+
+        // Lock agent
+        agent.is_training = true;
+
+        emit!(TrainingSessionStarted {
+            owner: session.owner,
+            agent_mint: session.agent_mint,
+            session_id,
+            replay_count: session.replay_commitments.len() as u32,
+            timestamp: session.created_at,
+        });
+
+        Ok(())
+    }
+
+    /// End a training session and unlock the agent
+    pub fn end_training_session(
+        ctx: Context<EndTrainingSession>,
+        status: TrainingStatus,
+    ) -> Result<()> {
+        require!(matches!(status, TrainingStatus::Completed | TrainingStatus::Cancelled | TrainingStatus::Failed), NenPlatformError::InvalidMatchStatus);
+
+        let session = &mut ctx.accounts.training_session;
+        require!(session.owner == ctx.accounts.owner.key(), NenPlatformError::Unauthorized);
+
+        session.status = status.clone();
+        session.updated_at = Clock::get()?.unix_timestamp;
+
+        // Unlock agent
+        let agent = &mut ctx.accounts.agent_nft;
+        agent.is_training = false;
+
+        emit!(TrainingSessionEnded {
+            owner: session.owner,
+            agent_mint: session.agent_mint,
+            session_id: session.session_id,
+            status,
+            timestamp: session.updated_at,
+        });
+
+        Ok(())
+    }
+
+    /// Start a training session (light): initializes a TrainingSession PDA without requiring the on-chain AiAgentNft account
+    /// This variant persists session metadata and can be used when the AiAgentNft account address is unknown/not initialized.
+    pub fn start_training_session_light(
+        ctx: Context<StartTrainingSessionLight>,
+        session_id: [u8; 16],
+        replay_commitments: Vec<[u8; 32]>,
+        params: TrainingParams,
+    ) -> Result<()> {
+        require!(
+            replay_commitments.len() as u32 <= TrainingSession::MAX_REPLAYS as u32,
+            ErrorCode::TooManyReplays
+        );
+
+        // Initialize session
+        let session = &mut ctx.accounts.training_session;
+        session.session_id = session_id;
+        session.owner = ctx.accounts.owner.key();
+        session.agent_mint = ctx.accounts.mint.key();
+        session.status = TrainingStatus::Initiated;
+        session.replay_commitments = replay_commitments;
+        session.params = params;
+        session.created_at = Clock::get()?.unix_timestamp;
+        session.updated_at = session.created_at;
+
+        emit!(TrainingSessionStarted {
+            owner: session.owner,
+            agent_mint: session.agent_mint,
+            session_id,
+            replay_count: session.replay_commitments.len() as u32,
+            timestamp: session.created_at,
+        });
+
+        Ok(())
+    }
 }
 
 // ==========================================
@@ -383,6 +489,54 @@ pub struct MintAiAgentNft<'info> {
     pub system_program: Program<'info, System>,
 }
 
+#[derive(Accounts)]
+pub struct StartTrainingSession<'info> {
+    #[account(
+        init,
+        payer = owner,
+        space = 8 + TrainingSession::MAX_SIZE,
+        seeds = [b"training", owner.key().as_ref(), mint.key().as_ref()],
+        bump
+    )]
+    pub training_session: Account<'info, TrainingSession>,
+    #[account(mut)]
+    pub agent_nft: Account<'info, AiAgentNft>,
+    pub mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct EndTrainingSession<'info> {
+    #[account(mut,
+        seeds = [b"training", owner.key().as_ref(), mint.key().as_ref()],
+        bump
+    )]
+    pub training_session: Account<'info, TrainingSession>,
+    #[account(mut)]
+    pub agent_nft: Account<'info, AiAgentNft>,
+    pub mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct StartTrainingSessionLight<'info> {
+    #[account(
+        init,
+        payer = owner,
+        space = 8 + TrainingSession::MAX_SIZE,
+        seeds = [b"training", owner.key().as_ref(), mint.key().as_ref()],
+        bump
+    )]
+    pub training_session: Account<'info, TrainingSession>,
+    pub mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
 // ==========================================
 // DATA STRUCTURES
 // ==========================================
@@ -455,6 +609,49 @@ pub struct AiAgentNft {
     pub matches_played: u32,
     pub wins: u32,
     pub is_training: bool,
+}
+
+#[account]
+pub struct TrainingSession {
+    pub session_id: [u8; 16],
+    pub owner: Pubkey,
+    pub agent_mint: Pubkey,
+    pub status: TrainingStatus,
+    pub replay_commitments: Vec<[u8; 32]>,
+    pub params: TrainingParams,
+    pub created_at: i64,
+    pub updated_at: i64,
+}
+
+impl TrainingSession {
+    pub const MAX_REPLAYS: usize = 50;
+    // Discriminator (8) handled by Anchor; we provide inner size via MAX_SIZE
+    // session_id (16) + owner (32) + agent_mint (32) + status (1) + vec len (4) + commitments (50*32)
+    // params (~16) + created_at (8) + updated_at (8)
+    pub const MAX_SIZE: usize = 16 + 32 + 32 + 1 + 4 + (Self::MAX_REPLAYS * 32) + TrainingParams::SIZE + 8 + 8;
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
+pub enum TrainingStatus {
+    Initiated,
+    InProgress,
+    Completed,
+    Cancelled,
+    Failed,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct TrainingParams {
+    pub focus_area: u8,   // 0=openings,1=midgame,2=endgame,3=all
+    pub intensity: u8,    // 0=low,1=medium,2=high
+    pub max_matches: u16, // 1..=50
+    pub learning_rate_bp: u16, // basis points of 1.0 (optional)
+    pub epochs: u16,      // 0 if unused
+    pub batch_size: u16,  // 0 if unused
+}
+
+impl TrainingParams {
+    pub const SIZE: usize = 1 + 1 + 2 + 2 + 2 + 2; // 10 bytes
 }
 
 // ==========================================
@@ -585,6 +782,24 @@ pub struct AiAgentNftMinted {
     pub timestamp: i64,
 }
 
+#[event]
+pub struct TrainingSessionStarted {
+    pub owner: Pubkey,
+    pub agent_mint: Pubkey,
+    pub session_id: [u8; 16],
+    pub replay_count: u32,
+    pub timestamp: i64,
+}
+
+#[event]
+pub struct TrainingSessionEnded {
+    pub owner: Pubkey,
+    pub agent_mint: Pubkey,
+    pub session_id: [u8; 16],
+    pub status: TrainingStatus,
+    pub timestamp: i64,
+}
+
 // ==========================================
 // HELPER FUNCTIONS
 // ==========================================
@@ -707,4 +922,6 @@ pub enum ErrorCode {
     InvalidComplianceSignature,
     #[msg("Agent name too long")]
     NameTooLong,
+    #[msg("Too many replays selected for training session")]
+    TooManyReplays,
 }

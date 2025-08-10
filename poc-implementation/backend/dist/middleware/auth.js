@@ -73,6 +73,7 @@ const authMiddleware = async (req, res, next) => {
             id: userId,
             publicKey: wallet,
             address: wallet,
+            walletAddress: wallet,
             wallet: wallet,
             username: decoded.username,
             email: decoded.email,
@@ -141,6 +142,7 @@ const solanaWalletAuth = async (req, res, next) => {
             id: publicKey,
             publicKey,
             address: publicKey,
+            walletAddress: publicKey,
             wallet: publicKey
         };
         next();

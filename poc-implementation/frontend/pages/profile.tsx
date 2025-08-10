@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Layout } from '@/components/Layout/Layout';
 import { WalletBalance } from '@/components/WalletBalance/WalletBalance';
+import WalletBalanceDebug from '@/components/WalletBalance/WalletBalanceDebug';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { motion } from 'framer-motion';
 import { formatSOL, shortenAddress } from '@/utils/format';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
+import { Layout } from '@/components/Layout/Layout';
 
 // Simple test component to debug
 const TestWalletBalance = () => {
@@ -17,25 +18,36 @@ const TestWalletBalance = () => {
   );
 };
 
-export default function ProfilePage() {
+const ProfilePage: React.FC = () => {
   const { publicKey, connected } = useWallet();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'agents' | 'bets' | 'history'>('overview');
 
+  const handleReturnToArena = (e: React.MouseEvent) => {
+    if (router.pathname === '/') {
+      e.preventDefault();
+      router.replace('/', undefined, { shallow: true });
+    } else {
+      router.push('/');
+    }
+  };
+
   if (!connected || !publicKey) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="text-6xl mb-4">🔒</div>
-            <h2 className="text-3xl font-hunter text-gray-400 mb-4">ACCESS DENIED</h2>
-            <p className="text-gray-500 mb-8">Connect your wallet to view your profile</p>
-            <button
-              onClick={() => router.push('/')}
-              className="cyber-button"
-            >
-              RETURN TO ARENA
-            </button>
+        <div className="min-h-screen bg-cyber-darker">
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🔒</div>
+              <h2 className="text-3xl font-hunter text-gray-400 mb-4">ACCESS DENIED</h2>
+              <p className="text-gray-500 mb-8">Connect your wallet to view your profile</p>
+              <button
+                onClick={handleReturnToArena}
+                className="cyber-button"
+              >
+                RETURN TO ARENA
+              </button>
+            </div>
           </div>
         </div>
       </Layout>
@@ -93,13 +105,14 @@ export default function ProfilePage() {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Profile Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="hunter-card p-8 mb-8"
-        >
+      <div className="min-h-screen bg-cyber-darker">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Profile Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="hunter-card p-8 mb-8"
+          >
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             {/* Avatar */}
             <div className="relative">
@@ -169,52 +182,54 @@ export default function ProfilePage() {
           transition={{ duration: 0.3 }}
         >
           {activeTab === 'overview' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Wallet Balance Component */}
-              <div className="md:col-span-1">
-                <WalletBalance />
-              </div>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Wallet Balance Component */}
+                <div className="md:col-span-1" style={{ position: 'relative', zIndex: 1000 }}>
+                  <WalletBalance />
+                </div>
 
-              {/* Stats Card */}
-              <div className="hunter-card p-6">
-                <h3 className="text-xl font-hunter text-white mb-4">PERFORMANCE STATS</h3>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-gray-400">Total Winnings</span>
-                      <span className="font-mono text-solana-green">{formatSOL(userData.totalWinnings)} SOL</span>
+                {/* Stats Card */}
+                <div className="hunter-card p-6">
+                  <h3 className="text-xl font-hunter text-white mb-4">PERFORMANCE STATS</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-gray-400">Total Winnings</span>
+                        <span className="font-mono text-solana-green">{formatSOL(userData.totalWinnings)} SOL</span>
+                      </div>
+                      <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-solana-green to-emerald-500" style={{ width: '75%' }} />
+                      </div>
                     </div>
-                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-solana-green to-emerald-500" style={{ width: '75%' }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-gray-400">Win Rate</span>
-                      <span className="font-mono text-cyan-400">{(userData.winRate * 100).toFixed(1)}%</span>
-                    </div>
-                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500" style={{ width: `${userData.winRate * 100}%` }} />
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-gray-400">Win Rate</span>
+                        <span className="font-mono text-cyan-400">{(userData.winRate * 100).toFixed(1)}%</span>
+                      </div>
+                      <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500" style={{ width: `${userData.winRate * 100}%` }} />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Activity Card */}
-              <div className="hunter-card p-6">
-                <h3 className="text-xl font-hunter text-white mb-4">RECENT ACTIVITY</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-cyber-dark/50 rounded">
-                    <span className="text-sm text-gray-400">Last Match Bet</span>
-                    <span className="text-sm font-mono text-white">2 hours ago</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-cyber-dark/50 rounded">
-                    <span className="text-sm text-gray-400">Join Date</span>
-                    <span className="text-sm font-mono text-white">{userData.joinDate.toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-cyber-dark/50 rounded">
-                    <span className="text-sm text-gray-400">Total Games</span>
-                    <span className="text-sm font-mono text-white">{userData.totalBets}</span>
+                {/* Activity Card */}
+                <div className="hunter-card p-6">
+                  <h3 className="text-xl font-hunter text-white mb-4">RECENT ACTIVITY</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-cyber-dark/50 rounded">
+                      <span className="text-sm text-gray-400">Last Match Bet</span>
+                      <span className="text-sm font-mono text-white">2 hours ago</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-cyber-dark/50 rounded">
+                      <span className="text-sm text-gray-400">Join Date</span>
+                      <span className="text-sm font-mono text-white">{userData.joinDate.toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-cyber-dark/50 rounded">
+                      <span className="text-sm text-gray-400">Total Games</span>
+                      <span className="text-sm font-mono text-white">{userData.totalBets}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -278,7 +293,10 @@ export default function ProfilePage() {
             </div>
           )}
         </motion.div>
+        </div>
       </div>
     </Layout>
   );
-} 
+};
+
+export default ProfilePage; 

@@ -1,1 +1,1 @@
-{"version":3,"file":"minimal-server.d.ts","sourceRoot":"","sources":["../src/minimal-server.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AAoBH,QAAA,MAAM,GAAG,KAAY,CAAC;AACtB,QAAA,MAAM,UAAU,KAAoB,CAAC;AAuJrC,QAAA,MAAM,EAAE,KASN,CAAC;AAyDH,iBAAS,WAAW,IAAI,OAAO,CAAC,IAAI,CAAC,CAqBpC;AA0BD,eAAe,GAAG,CAAC;AACnB,OAAO,EAAE,WAAW,EAAE,UAAU,EAAE,EAAE,EAAE,CAAC"}
+{"version":3,"file":"minimal-server.d.ts","sourceRoot":"","sources":["../src/minimal-server.ts"],"names":[],"mappings":"AAAA;;;;GAIG"}

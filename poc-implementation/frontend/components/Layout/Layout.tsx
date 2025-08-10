@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletButton } from '@/components/WalletButton';
+import { ClientOnly } from '@/components/ClientOnly';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -36,15 +37,19 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
 
   const navItems = [
     { href: '/', label: 'Arena', icon: '⚔️', nenType: 'enhancement' },
+  { href: '/create-room', label: 'Create Game', icon: '➕', nenType: 'transmutation' },
     { href: '/marketplace', label: 'Hunters', icon: '🎯', nenType: 'emission' },
+    { href: '/training', label: 'Training', icon: '🧠', nenType: 'conjuration', requiresAuth: true },
     { href: '/leaderboard', label: 'Rankings', icon: '🏆', nenType: 'manipulation' },
     { href: '/profile', label: 'Profile', icon: '👤', nenType: 'specialization', requiresAuth: true },
   ];
 
+  const isHome = router.pathname === '/';
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* 3D Background */}
-      {isClient && (
+      {isClient && isHome && (
         <div className="fixed inset-0 -z-20">
           <Canvas camera={{ position: [0, 0, 1] }}>
             <Stars radius={300} depth={60} count={3000} factor={7} fade />
@@ -53,7 +58,9 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
       )}
 
       {/* Animated Grid Background */}
-      <div className="fixed inset-0 -z-10 bg-cyber-grid bg-[size:50px_50px] opacity-20" />
+      {isHome && (
+        <div className="fixed inset-0 -z-10 bg-cyber-grid bg-[size:50px_50px] opacity-20" />
+      )}
       
       {/* Navigation */}
       <nav
@@ -96,12 +103,21 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
             <div className="hidden md:flex items-center space-x-1">
               {navItems.map((item) => {
                 if (item.requiresAuth && !connected) return null;
-                
+
                 const isActive = router.pathname === item.href;
-                
+
+                const onNavClick = (e: React.MouseEvent) => {
+                  if (router.pathname === item.href) {
+                    // Force a shallow replace to refresh state without full reload
+                    e.preventDefault();
+                    router.replace(item.href, undefined, { shallow: true });
+                  }
+                };
+
                 return (
-                  <Link key={item.href} href={item.href}>
-                    <motion.div
+                  <Link key={item.href} href={item.href} legacyBehavior>
+                    <motion.a
+                      onClick={onNavClick}
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.95 }}
                       className={`
@@ -122,19 +138,19 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
                           filter: 'blur(20px)',
                         }}
                       />
-                      
+
                       <span className="relative flex items-center space-x-2">
                         <span className="text-lg">{item.icon}</span>
                         <span>{item.label}</span>
                       </span>
-                      
+
                       {isActive && (
                         <motion.div
                           layoutId="nav-indicator"
                           className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-solana-purple to-solana-green"
                         />
                       )}
-                    </motion.div>
+                    </motion.a>
                   </Link>
                 );
               })}
@@ -157,7 +173,13 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
               )}
               
               {/* Wallet Button */}
-              <WalletButton className="!text-sm" />
+              <ClientOnly fallback={
+                <div className="bg-gradient-to-r from-solana-purple to-magicblock-primary px-4 py-2 rounded-lg font-cyber text-sm animate-pulse">
+                  Connect Wallet
+                </div>
+              }>
+                <WalletButton className="!text-sm" />
+              </ClientOnly>
               
               {/* Mobile Menu Button */}
               <button
@@ -195,12 +217,11 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
               <div className="px-4 py-6 space-y-4">
                 {navItems.map((item) => {
                   if (item.requiresAuth && !connected) return null;
-                  
                   return (
-                    <Link key={item.href} href={item.href}>
-                      <motion.div
+                    <Link key={item.href} href={item.href} legacyBehavior>
+                      <motion.a
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => setIsMenuOpen(false)}
+                        onClick={(e) => { setIsMenuOpen(false); if (router.pathname === item.href) { e.preventDefault(); router.replace(item.href, undefined, { shallow: true }); } }}
                         className={`
                           flex items-center space-x-3 px-4 py-3 rounded-lg
                           transition-all duration-300
@@ -214,7 +235,7 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
                         <span className="font-cyber uppercase tracking-wider">
                           {item.label}
                         </span>
-                      </motion.div>
+                      </motion.a>
                     </Link>
                   );
                 })}

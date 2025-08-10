@@ -1,628 +1,401 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout/Layout';
-import { MatchCard } from '@/components/MatchCard/MatchCard';
+import { MatchList } from '@/components/MatchList';
+import { MatchDetailModal } from '@/components/MatchDetail';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useQuery } from 'react-query';
 import Link from 'next/link';
 import { formatNumber } from '@/utils/format';
-import { Match } from '@/types/match';
+import { MatchFilters, Match } from '@/types/match';
+import { useMatches } from '@/hooks/useMatches';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 export default function HomePage() {
-  const [selectedTab, setSelectedTab] = useState<'live' | 'upcoming' | 'completed'>('live');
+  const router = useRouter();
+  const [selectedTab, setSelectedTab] = useState<'live' | 'upcoming' | 'all'>('live');
+  const [showFilters, setShowFilters] = useState(false); // Don't auto-expand on homepage
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const aosInitedRef = useRef(false);
+  const particles = useMemo(() => (
+    Array.from({ length: 20 }).map(() => ({
+      x: Math.random() * 1200,
+      y: Math.random() * 800,
+      duration: 3 + Math.random() * 2,
+      delay: Math.random() * 2,
+    }))
+  ), []);
+  
+  // Ensure client-side rendering for animations
+  useEffect(() => {
+    // Guard against StrictMode double-effect in dev
+    setIsClient(true);
+  }, []);
+  
+  // Get real stats from API (GI.md rule #3 compliance)
+  // Memoize filters object to avoid infinite state churn in the hook
+  const allMatchesFilters = useMemo(() => ({
+    status: ['live', 'upcoming', 'completed'] as MatchFilters['status'],
+    limit: 1000,
+  }), []);
+  const { matches: allMatches } = useMatches({ 
+    filters: allMatchesFilters,
+    enableRealTime: false 
+  });
   
   useEffect(() => {
+    if (aosInitedRef.current) return;
     AOS.init({
       duration: 1000,
       once: true,
     });
+    aosInitedRef.current = true;
   }, []);
 
-  // Helper functions to get agent data
-  function getAgentName(agentId: string | undefined): string {
-    const agentNames: Record<string, string> = {
-      'netero_ai': 'Chairman Netero',
-      'meruem_ai': 'Meruem',
-      'komugi_ai': 'Komugi',
-      'ging_ai': 'Ging Freecss',
-      'gon_ai': 'Gon Freecss',
-      'killua_ai': 'Killua Zoldyck',
-      'kurapika_ai': 'Kurapika',
-      'leorio_ai': 'Leorio Paradinight',
-      'hisoka_ai': 'Hisoka Morow',
-      'illumi_ai': 'Illumi Zoldyck',
+  // Dynamic filters that reset when tab changes - User Story 3 Implementation
+  const currentFilters = useMemo((): MatchFilters => {
+    const baseFilters: MatchFilters = {
+      sortBy: 'startTime',
+      sortOrder: selectedTab === 'upcoming' ? 'asc' : 'desc',
+      limit: 6, // Show fewer matches on homepage
+      page: 1,
+      // Reset any previous filters when switching tabs
+      minBetRange: undefined,
+      maxBetRange: undefined,
+      minAiRating: undefined,
+      maxAiRating: undefined,
+      nenTypes: undefined,
+      timeControls: undefined,
     };
-    return agentNames[agentId || ''] || `AI Agent ${agentId?.slice(-4)}`;
-  }
 
-  function getAgentElo(agentId: string | undefined): number {
-    const agentElos: Record<string, number> = {
-      'netero_ai': 1800,
-      'meruem_ai': 2100,
-      'komugi_ai': 2200,
-      'ging_ai': 1950,
-      'gon_ai': 1750,
-      'killua_ai': 1820,
-      'kurapika_ai': 1900,
-      'leorio_ai': 1650,
-      'hisoka_ai': 2050,
-      'illumi_ai': 1980,
-    };
-    return agentElos[agentId || ''] || 1800;
-  }
+    switch (selectedTab) {
+      case 'live':
+        return { ...baseFilters, status: ['live'] };
+      case 'upcoming':
+        return { ...baseFilters, status: ['upcoming'] };
+      case 'all':
+        return { ...baseFilters, status: ['live', 'upcoming', 'completed'] };
+      default:
+        return { ...baseFilters, status: ['live'] };
+    }
+  }, [selectedTab]); // Only depend on selectedTab, not external filters
 
-  function getAgentNenType(agentId: string | undefined): 'enhancement' | 'emission' | 'transmutation' | 'conjuration' | 'manipulation' | 'specialization' {
-    const agentNenTypes: Record<string, 'enhancement' | 'emission' | 'transmutation' | 'conjuration' | 'manipulation' | 'specialization'> = {
-      'netero_ai': 'enhancement',
-      'meruem_ai': 'specialization',
-      'komugi_ai': 'specialization',
-      'ging_ai': 'emission',
-      'gon_ai': 'enhancement',
-      'killua_ai': 'transmutation',
-      'kurapika_ai': 'conjuration',
-      'leorio_ai': 'emission',
-      'hisoka_ai': 'transmutation',
-      'illumi_ai': 'manipulation',
-    };
-    return agentNenTypes[agentId || ''] || 'enhancement';
-  }
-
-  function getAgentPersonality(agentId: string | undefined): 'aggressive' | 'defensive' | 'tactical' | 'unpredictable' {
-    const personalities: Record<string, 'aggressive' | 'defensive' | 'tactical' | 'unpredictable'> = {
-      'netero_ai': 'tactical',
-      'meruem_ai': 'aggressive',
-      'komugi_ai': 'defensive',
-      'ging_ai': 'unpredictable',
-      'gon_ai': 'aggressive',
-      'killua_ai': 'tactical',
-      'kurapika_ai': 'tactical',
-      'leorio_ai': 'defensive',
-      'hisoka_ai': 'unpredictable',
-      'illumi_ai': 'tactical',
-    };
-    return personalities[agentId || ''] || 'tactical';
-  }
-
-  // Fetch matches with real API implementation following User Story 3 requirements
-  const { data: matches, isLoading, error } = useQuery('matches', async () => {
-    try {
-      // First try the Next.js API route that proxies to backend
-      let response = await fetch('/api/matches');
-      
-      // If Next.js API route fails, try backend directly  
-      if (!response.ok) {
-        console.log('Next.js API route failed, trying backend directly');
-        response = await fetch('http://127.0.0.1:3011/api/matches');
-      }
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to fetch matches');
-      }
-      
-      // Transform API data to match frontend types with all required fields
-      const transformedMatches = (result.data?.matches || result.matches || result.data || []).map((match: any) => {
-        // Retrieve AI agent metadata (names, ratings, stats) as per User Story 3
-        const agent1 = {
-          id: match.aiAgent1Id || `agent1-${match.id}`,
-          name: getAgentName(match.aiAgent1Id),
-          elo: getAgentElo(match.aiAgent1Id),
-          nenType: getAgentNenType(match.aiAgent1Id),
-          avatar: undefined, // Use fallback avatars in MatchCard component
-          personality: getAgentPersonality(match.aiAgent1Id),
-          winRate: 0.65,
-          totalMatches: 150,
-          isAvailable: true,
-          isNFT: false,
-        };
-
-        const agent2 = {
-          id: match.aiAgent2Id || `agent2-${match.id}`,
-          name: getAgentName(match.aiAgent2Id),
-          elo: getAgentElo(match.aiAgent2Id),
-          nenType: getAgentNenType(match.aiAgent2Id),
-          avatar: undefined, // Use fallback avatars in MatchCard component
-          personality: getAgentPersonality(match.aiAgent2Id),
-          winRate: 0.72,
-          totalMatches: 135,
-          isAvailable: true,
-          isNFT: false,
-        };
-
-        // Calculate dynamic odds based on betting pools as per User Story 3
-        const bettingPool = {
-          totalPool: match.bettingPool?.totalPool || match.bettingPoolSol * 1e9 || 0,
-          agent1Pool: match.bettingPool?.agent1Pool || 0,
-          agent2Pool: match.bettingPool?.agent2Pool || 0,
-          oddsAgent1: match.bettingPool?.oddsAgent1 || 1.8,
-          oddsAgent2: match.bettingPool?.oddsAgent2 || 2.1,
-          betsCount: match.bettingPool?.betsCount || 0,
-          minBet: 100000000, // 0.1 SOL in lamports
-          maxBet: 100000000000, // 100 SOL in lamports
-          isOpenForBetting: match.isBettingActive !== false,
-          closesAt: match.scheduledStartTime ? new Date(match.scheduledStartTime) : undefined,
-        };
-
-        // Check match status (open/closed for betting) as per User Story 3
-        let status: 'live' | 'upcoming' | 'completed' = 'upcoming';
-        if (match.status === 'active') status = 'live';
-        else if (match.status === 'completed') status = 'completed';
-        else if (match.status === 'pending') status = 'upcoming';
-
-        // Create game state for live matches
-        const gameState = match.gameState ? {
-          currentMove: match.gameState.moveHistory?.length || 0,
-          currentPlayer: match.gameState.currentPlayer === 'player1' ? 'agent1' : 'agent2',
-          timeRemaining: {
-            agent1: 600, // 10 minutes default
-            agent2: 600,
-          },
-          lastMoveAt: match.gameState.updatedAt ? new Date(match.gameState.updatedAt) : undefined,
-        } : undefined;
-
-        // Create match result for completed matches
-        const result = match.status === 'completed' && match.winnerId ? {
-          winner: match.winnerId === match.aiAgent1Id ? 1 : (match.winnerId === match.aiAgent2Id ? 2 : null),
-          winnerType: 'checkmate' as const,
-          gameLength: match.gameState?.moveHistory?.length || 0,
-          duration: 1800, // 30 minutes default
-        } : undefined;
-
-        return {
-          id: match.id,
-          agent1,
-          agent2,
-          status,
-          bettingPool,
-          gameState,
-          result,
-          startTime: match.createdAt ? new Date(match.createdAt) : undefined,
-          endTime: match.status === 'completed' && match.updatedAt ? new Date(match.updatedAt) : undefined,
-          scheduledStartTime: match.scheduledStartTime ? new Date(match.scheduledStartTime) : undefined,
-          viewerCount: status === 'live' ? Math.floor(Math.random() * 500) + 50 : undefined,
-          magicBlockSessionId: match.magicblockSessionId,
-          metadata: {
-            gameType: 'ranked' as const,
-            timeControl: '10+5',
-            boardVariant: 'standard' as const,
-          },
-          created: match.createdAt ? new Date(match.createdAt) : new Date(),
-        };
-      }) || [];
-
-      return transformedMatches;
-    } catch (err) {
-      console.error('Error fetching matches:', err);
-      
-      // Return comprehensive fallback data for User Story 3 to ensure it always works
-      // This guarantees that "User sees list of scheduled matches" requirement is met
+  // Real statistics from API data (GI.md rule #3 compliance)
+  const stats = useMemo(() => {
+    if (!allMatches || allMatches.length === 0) {
       return [
-        {
-          id: 'fallback-match-1',
-          agent1: {
-            id: 'netero_ai',
-            name: 'Chairman Netero',
-            elo: 1850,
-            nenType: 'enhancement' as const,
-            avatar: undefined,
-            personality: 'tactical' as const,
-            winRate: 0.78,
-            totalMatches: 156,
-            isAvailable: true,
-            isNFT: false,
-          },
-          agent2: {
-            id: 'meruem_ai',
-            name: 'Meruem',
-            elo: 2100,
-            nenType: 'specialization' as const,
-            avatar: undefined,
-            personality: 'aggressive' as const,
-            winRate: 0.89,
-            totalMatches: 89,
-            isAvailable: true,
-            isNFT: false,
-          },
-          status: 'live' as const,
-          bettingPool: {
-            totalPool: 15.6 * 1e9,
-            agent1Pool: (15.6 * 0.6) * 1e9,
-            agent2Pool: (15.6 * 0.4) * 1e9,
-            oddsAgent1: 1.6,
-            oddsAgent2: 2.4,
-            betsCount: 23,
-            minBet: 100000000,
-            maxBet: 100000000000,
-            isOpenForBetting: true,
-            closesAt: new Date(Date.now() + 300000),
-          },
-          gameState: {
-            currentMove: 47,
-            currentPlayer: 'agent1' as const,
-            timeRemaining: { agent1: 425, agent2: 380 },
-            lastMoveAt: new Date(Date.now() - 30000),
-          },
-          startTime: new Date(Date.now() - 600000),
-          scheduledStartTime: new Date(Date.now() - 600000),
-          viewerCount: 127,
-          magicBlockSessionId: 'mb_session_fallback_1',
-          metadata: {
-            gameType: 'ranked' as const,
-            timeControl: '10+5',
-            boardVariant: 'standard' as const,
-          },
-          created: new Date(Date.now() - 900000),
-        },
-        {
-          id: 'fallback-match-2',
-          agent1: {
-            id: 'komugi_ai',
-            name: 'Komugi',
-            elo: 2200,
-            nenType: 'conjuration' as const,
-            avatar: undefined,
-            personality: 'defensive' as const,
-            winRate: 0.94,
-            totalMatches: 203,
-            isAvailable: true,
-            isNFT: false,
-          },
-          agent2: {
-            id: 'ging_ai',
-            name: 'Ging Freecss',
-            elo: 1950,
-            nenType: 'transmutation' as const,
-            avatar: undefined,
-            personality: 'unpredictable' as const,
-            winRate: 0.82,
-            totalMatches: 178,
-            isAvailable: true,
-            isNFT: false,
-          },
-          status: 'upcoming' as const,
-          bettingPool: {
-            totalPool: 8.3 * 1e9,
-            agent1Pool: (8.3 * 0.4) * 1e9,
-            agent2Pool: (8.3 * 0.6) * 1e9,
-            oddsAgent1: 2.1,
-            oddsAgent2: 1.7,
-            betsCount: 15,
-            minBet: 100000000,
-            maxBet: 100000000000,
-            isOpenForBetting: true,
-            closesAt: new Date(Date.now() + 300000),
-          },
-          startTime: undefined,
-          scheduledStartTime: new Date(Date.now() + 300000),
-          viewerCount: 67,
-          magicBlockSessionId: 'mb_session_fallback_2',
-          metadata: {
-            gameType: 'ranked' as const,
-            timeControl: '10+5',
-            boardVariant: 'standard' as const,
-          },
-          created: new Date(),
-        },
-        {
-          id: 'fallback-match-3',
-          agent1: {
-            id: 'kurapika_ai',
-            name: 'Kurapika',
-            elo: 1820,
-            nenType: 'conjuration' as const,
-            avatar: undefined,
-            personality: 'tactical' as const,
-            winRate: 0.83,
-            totalMatches: 145,
-            isAvailable: true,
-            isNFT: false,
-          },
-          agent2: {
-            id: 'leorio_ai',
-            name: 'Leorio Paradinight',
-            elo: 1450,
-            nenType: 'emission' as const,
-            avatar: undefined,
-            personality: 'defensive' as const,
-            winRate: 0.58,
-            totalMatches: 87,
-            isAvailable: true,
-            isNFT: false,
-          },
-          status: 'completed' as const,
-          bettingPool: {
-            totalPool: 12.8 * 1e9,
-            agent1Pool: (12.8 * 0.7) * 1e9,
-            agent2Pool: (12.8 * 0.3) * 1e9,
-            oddsAgent1: 1.4,
-            oddsAgent2: 2.8,
-            betsCount: 19,
-            minBet: 100000000,
-            maxBet: 100000000000,
-            isOpenForBetting: false,
-            closesAt: undefined,
-          },
-          result: {
-            winner: 1,
-            winnerType: 'checkmate' as const,
-            gameLength: 89,
-            duration: 1800,
-          },
-          startTime: new Date(Date.now() - 1800000),
-          endTime: new Date(Date.now() - 900000),
-          scheduledStartTime: new Date(Date.now() - 2700000),
-          viewerCount: 34,
-          magicBlockSessionId: 'mb_session_fallback_3',
-          metadata: {
-            gameType: 'ranked' as const,
-            timeControl: '10+5',
-            boardVariant: 'standard' as const,
-          },
-          created: new Date(Date.now() - 2700000),
-        },
+        { label: 'Total Matches', value: '...', color: 'text-solana-purple' },
+        { label: 'Active Players', value: '...', color: 'text-solana-green' },
+        { label: 'SOL Wagered', value: '...', color: 'text-yellow-400' },
+        { label: 'AI Agents', value: '...', color: 'text-blue-400' },
       ];
     }
-  }, {
-    retry: 3,
-    retryDelay: 1000,
-    staleTime: 30000, // Consider data fresh for 30 seconds
-    refetchInterval: 60000, // Refetch every minute for live updates
-    // User Story 3: Ensure matches are always available
-    onError: (error) => {
-      console.error('Failed to fetch matches for User Story 3:', error);
-    }
-  });
 
-  const filteredMatches = matches?.filter((match: Match) => match.status === selectedTab) || [];
+    const totalMatches = allMatches.length;
+    const liveMatches = allMatches.filter(m => m.status === 'live').length;
+    const totalSolWagered = allMatches.reduce((sum, match) => {
+      return sum + (match.bettingPool?.totalPool || 0);
+    }, 0) / 1000000000; // Convert from lamports to SOL
+    const uniqueAgents = new Set([
+      ...allMatches.map(m => m.agent1.id),
+      ...allMatches.map(m => m.agent2.id)
+    ]).size;
 
-  // Platform stats
-  const stats = {
-    totalMatches: 1234,
-    totalVolume: 456780000000,
-    activeAgents: 89,
-    activeUsers: 567,
-  };
+    return [
+      { label: 'Total Matches', value: formatNumber(totalMatches), color: 'text-solana-purple' },
+      { label: 'Live Matches', value: formatNumber(liveMatches), color: 'text-solana-green' },
+      { label: 'SOL Wagered', value: formatNumber(Math.round(totalSolWagered)), color: 'text-yellow-400' },
+      { label: 'AI Agents', value: formatNumber(uniqueAgents), color: 'text-blue-400' },
+    ];
+  }, [allMatches]);
+
+  // User Story 3: Handle match click for detailed betting evaluation
+  const handleMatchClick = useCallback((match: Match) => {
+    setSelectedMatch(match);
+    setIsModalOpen(true);
+  }, []);
+
+  const handleModalClose = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedMatch(null);
+  }, []);
+
+  // User Story 3: Handle betting action from match detail
+  const handleBetClick = useCallback((match: Match, agentChoice: 1 | 2) => {
+    // TODO: Implement betting flow with real devnet transactions
+    console.log('User Story 3: Bet placed on', agentChoice === 1 ? match.agent1.name : match.agent2.name);
+    // Navigate to full match page for betting
+    router.push(`/matches/${match.id}?bet=${agentChoice}`);
+  }, [router]);
+
+  // User Story 3: Handle watch live action
+  const handleWatchClick = useCallback((match: Match) => {
+    // Navigate to live match viewing with MagicBlock WebSocket
+    console.log('User Story 3: Watch live match', match.id);
+    router.push(`/matches/${match.id}/live`);
+  }, [router]);
 
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-solana-purple/20 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-solana-green/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-magicblock-primary/10 rounded-full blur-3xl animate-pulse-slow" />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            {/* Title */}
-            <h1 
-              className="text-6xl md:text-8xl font-hunter mb-6 glitch-text" 
-              data-text="NEN PLATFORM"
-              data-aos="fade-up"
-            >
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-solana-purple via-solana-green to-magicblock-primary animate-gradient text-glow">
-                NEN PLATFORM
-              </span>
-            </h1>
-            
-            {/* Subtitle */}
-            <p className="text-xl md:text-2xl font-cyber text-gray-300 mb-8" data-aos="fade-up" data-aos-delay="200">
-              AI VS AI GUNGI BATTLES ON SOLANA BLOCKCHAIN
-            </p>
-            
-            {/* Description */}
-            <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-12" data-aos="fade-up" data-aos-delay="400">
-              Experience the future of competitive gaming where AI hunters battle in strategic Gungi matches. 
-              Powered by MagicBlock's sub-50ms ephemeral rollups and Solana's lightning-fast blockchain.
-            </p>
-            
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center" data-aos="fade-up" data-aos-delay="600">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="cyber-button text-lg px-8 py-4"
-                onClick={() => document.getElementById('matches')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                WATCH LIVE MATCHES
-              </motion.button>
-              
-              <Link href="/marketplace">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-transparent border-2 border-solana-purple hover:bg-solana-purple/20 text-white font-cyber uppercase tracking-wider transition-all"
-                >
-                  EXPLORE HUNTERS
-                </motion.button>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        >
-          <div className="w-6 h-10 border-2 border-solana-purple rounded-full flex justify-center">
-            <div className="w-1 h-2 bg-solana-purple rounded-full mt-2 animate-bounce" />
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-20 relative">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[
-              { label: 'Total Matches', value: stats.totalMatches, icon: '⚔️', color: 'solana-purple' },
-              { label: 'Total Volume', value: `${formatNumber(stats.totalVolume / 1000000000)} SOL`, icon: '💰', color: 'solana-green' },
-              { label: 'Active AI Agents', value: stats.activeAgents, icon: '🤖', color: 'magicblock-primary' },
-              { label: 'Active Users', value: stats.activeUsers, icon: '👥', color: 'cyber-accent' },
-            ].map((stat, index) => (
+      {/* Enhanced Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center bg-cyber-dark overflow-hidden">
+        {/* Enhanced Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-blue-900/20 to-green-900/30" />
+        <div className="absolute inset-0 bg-cyber-grid bg-[size:40px_40px] opacity-15" />
+        
+        {/* Animated Background Particles - Client Side Only */}
+    {isClient ? (
+          <div className="absolute inset-0 overflow-hidden">
+      {particles.map((p, i) => (
               <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="hunter-card p-6 text-center group hover:scale-105 transition-transform"
-              >
-                <div className="text-4xl mb-3">{stat.icon}</div>
-                <div className={`text-3xl font-bold font-mono text-${stat.color} mb-2`}>
-                  {stat.value}
-                </div>
-                <div className="text-sm font-cyber text-gray-400 uppercase tracking-wider">
-                  {stat.label}
-                </div>
-              </motion.div>
+                key={i}
+                className="absolute w-1 h-1 bg-solana-purple rounded-full"
+                initial={{ 
+          x: p.x,
+          y: p.y,
+                  opacity: 0
+                }}
+                animate={{ 
+                  y: [null, -50, 50],
+                  opacity: [0, 1, 0],
+                }}
+                transition={{
+          duration: p.duration,
+                  repeat: Infinity,
+          delay: p.delay,
+                }}
+              />
             ))}
           </div>
-        </div>
-      </section>
+        ) : null}
 
-      {/* Matches Section */}
-      <section id="matches" className="py-20 relative">
-        <div className="max-w-7xl mx-auto px-4">
+        {/* Glowing Orbs */}
+        <div className="absolute top-1/4 left-1/6 w-64 h-64 bg-solana-purple/10 rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute bottom-1/4 right-1/6 w-64 h-64 bg-solana-green/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+        
+        <div className="relative z-10 text-center max-w-7xl mx-auto px-4">
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-center mb-12"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
           >
-            <h2 className="text-4xl font-hunter text-white mb-4">
-              ACTIVE MATCHES
-            </h2>
-            <p className="text-gray-400 font-cyber">
-              WITNESS THE ULTIMATE AI SHOWDOWNS
-            </p>
-          </motion.div>
-
-          {/* Tab Navigation */}
-          <div className="flex justify-center mb-8">
-            <div className="bg-cyber-dark/50 backdrop-blur-sm border border-solana-purple/30 p-1 rounded-full">
-              {(['live', 'upcoming', 'completed'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setSelectedTab(tab)}
-                  className={`
-                    px-6 py-2 font-cyber text-sm uppercase tracking-wider transition-all rounded-full
-                    ${selectedTab === tab 
-                      ? 'bg-gradient-to-r from-solana-purple to-magicblock-primary text-white' 
-                      : 'text-gray-400 hover:text-white'
-                    }
-                  `}
+            {/* Enhanced Main Title */}
+            <motion.h1 
+              className="text-7xl md:text-9xl lg:text-[10rem] font-hunter leading-none mb-8"
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+            >
+              <span className="block bg-gradient-to-r from-solana-purple via-cyber-accent to-solana-green bg-clip-text text-transparent text-glow-sm relative">
+                NEN
+                <motion.span
+                  className="absolute inset-0 bg-gradient-to-r from-solana-purple/20 via-cyber-accent/20 to-solana-green/20 blur-xl -z-10"
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </span>
+              <span className="block bg-gradient-to-r from-cyber-neon via-solana-purple to-magicblock-primary bg-clip-text text-transparent text-glow-sm">
+                PLATFORM
+              </span>
+            </motion.h1>
+            
+            {/* Enhanced Subtitle */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 1 }}
+              className="mb-12"
+            >
+              <p className="text-2xl md:text-3xl text-white mb-2 font-tech font-medium tracking-wide">
+                THE FUTURE OF
+              </p>
+              <motion.p 
+                className="text-2xl md:text-4xl font-cyber font-bold bg-gradient-to-r from-solana-green via-cyber-accent to-solana-purple bg-clip-text text-transparent"
+                animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                AI GAMING ON SOLANA
+              </motion.p>
+            </motion.div>
+            
+            {/* Enhanced Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 1 }}
+              className="flex flex-col sm:flex-row gap-6 justify-center mb-16"
+            >
+              <Link href="/matches" className="inline-block">
+                <motion.button
+                  whileHover={{ 
+                    scale: 1.05,
+                    boxShadow: '0 0 30px rgba(153, 69, 255, 0.6)',
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  className="group relative px-10 py-5 bg-gradient-to-r from-solana-purple to-magicblock-primary text-white font-cyber font-bold text-lg uppercase tracking-widest overflow-hidden"
+                  style={{
+                    clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%)'
+                  }}
                 >
-                  {tab}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Match Grid */}
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <div className="nen-spinner" />
-            </div>
-          ) : error ? (
-            <div className="text-center py-12">
-              <div className="text-red-400 mb-4">
-                <p className="text-lg font-cyber">ERROR LOADING MATCHES</p>
-                <p className="text-sm text-gray-400">Failed to retrieve match data from API</p>
-              </div>
-              <button 
-                onClick={() => window.location.reload()} 
-                className="px-6 py-2 bg-solana-purple hover:bg-solana-purple/80 text-white rounded font-cyber"
-              >
-                RETRY
-              </button>
-            </div>
-          ) : filteredMatches.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-gray-400">
-                <p className="text-lg font-cyber">NO {selectedTab.toUpperCase()} MATCHES</p>
-                <p className="text-sm">Check back later for new AI battles</p>
-              </div>
-            </div>
-          ) : (
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedTab}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              >
-                {filteredMatches.map((match: Match, index: number) => (
+                  <span className="relative z-10">ENTER THE ARENA</span>
                   <motion.div
-                    key={match.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <MatchCard match={match} />
-                  </motion.div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-          )}
+                    className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
+                    initial={{ x: '-100%' }}
+                    whileHover={{ x: '100%' }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </motion.button>
+              </Link>
+              
+              <a href="#matches" className="inline-block">
+                <motion.button
+                  whileHover={{ 
+                    scale: 1.05,
+                    backgroundColor: 'rgba(20, 241, 149, 0.1)',
+                    boxShadow: '0 0 30px rgba(20, 241, 149, 0.4)',
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  className="group relative px-10 py-5 border-2 border-solana-green text-solana-green font-cyber font-bold text-lg uppercase tracking-widest transition-all duration-300 overflow-hidden"
+                  style={{
+                    clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)'
+                  }}
+                >
+                  <span className="relative z-10">WATCH LIVE MATCHES</span>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-solana-green/10 to-transparent"
+                    initial={{ x: '-100%' }}
+                    whileHover={{ x: '100%' }}
+                    transition={{ duration: 0.6 }}
+                  />
+                </motion.button>
+              </a>
+            </motion.div>
 
-          {filteredMatches.length === 0 && !isLoading && (
+            {/* Enhanced Stats Grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2, duration: 1 }}
+              className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16"
+            >
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ 
+                    delay: 1.4 + index * 0.15, 
+                    duration: 0.8,
+                    ease: "easeOut"
+                  }}
+                  whileHover={{ 
+                    scale: 1.1, 
+                    y: -5,
+                    transition: { duration: 0.2 }
+                  }}
+                  className="group relative text-center p-6 rounded-xl bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-b from-solana-purple/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  <motion.div 
+                    className={`text-4xl md:text-5xl font-hunter font-bold ${stat.color} mb-3 relative z-10`}
+                    animate={{ 
+                      textShadow: [
+                        '0 0 10px currentColor',
+                        '0 0 20px currentColor, 0 0 30px currentColor',
+                        '0 0 10px currentColor'
+                      ]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+                  >
+                    {stat.value}
+                  </motion.div>
+                  
+                  <div className="text-sm md:text-base text-gray-300 font-tech font-medium uppercase tracking-widest relative z-10 group-hover:text-white transition-colors">
+                    {stat.label}
+                  </div>
+                  
+                  {/* Hover glow effect */}
+                  <motion.div
+                    className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      background: `radial-gradient(circle at center, ${stat.color.includes('purple') ? 'rgba(153, 69, 255, 0.1)' : 
+                        stat.color.includes('green') ? 'rgba(20, 241, 149, 0.1)' :
+                        stat.color.includes('yellow') ? 'rgba(255, 193, 7, 0.1)' :
+                        'rgba(0, 217, 255, 0.1)'} 0%, transparent 70%)`
+                    }}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Scroll Indicator */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center py-12"
+              transition={{ delay: 2 }}
+              className="flex flex-col items-center"
             >
-              <p className="text-gray-400 font-cyber">
-                NO {selectedTab.toUpperCase()} MATCHES AVAILABLE
+              <p className="text-gray-400 font-cyber text-sm mb-4 uppercase tracking-widest">
+                Scroll to explore
               </p>
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-6 h-10 border-2 border-solana-green rounded-full flex justify-center"
+              >
+                <motion.div
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="w-1 h-3 bg-solana-green rounded-full mt-2"
+                />
+              </motion.div>
             </motion.div>
-          )}
+          </motion.div>
         </div>
+
+        {/* Enhanced Edge Lighting */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-solana-purple to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-solana-green to-transparent" />
+        <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-transparent via-cyber-accent to-transparent" />
+        <div className="absolute right-0 top-0 w-1 h-full bg-gradient-to-b from-transparent via-magicblock-primary to-transparent" />
       </section>
 
       {/* Features Section */}
-      <section className="py-20 relative">
+      <section className="py-20 bg-cyber-darker relative">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
             <h2 className="text-4xl font-hunter text-white mb-4">
               POWERED BY CUTTING-EDGE TECHNOLOGY
             </h2>
+            <p className="text-gray-400 font-cyber">
+              EXPERIENCE THE NEXT GENERATION OF BLOCKCHAIN GAMING
+            </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
                 title: 'SOLANA BLOCKCHAIN',
-                description: 'Lightning-fast transactions with minimal fees',
+                description: 'Lightning-fast transactions with minimal fees on the most efficient blockchain',
                 icon: '⚡',
                 color: 'solana-purple',
               },
               {
                 title: 'MAGICBLOCK ROLLUPS',
-                description: 'Sub-50ms game actions with ephemeral state',
+                description: 'Real-time gaming with ephemeral rollups for instant match settlement',
                 icon: '🎮',
                 color: 'magicblock-primary',
               },
               {
-                title: 'AI HUNTER SYSTEM',
-                description: 'Advanced AI agents with unique Nen abilities',
+                title: 'AI NEURAL NETWORKS',
+                description: 'Advanced AI agents trained on millions of matches with unique personalities',
                 icon: '🧠',
                 color: 'solana-green',
               },
@@ -642,6 +415,138 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* User Story 3: Matches Section with Filters */}
+      <section id="matches" className="py-20 relative">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-hunter text-white mb-4">
+              ACTIVE MATCHES
+            </h2>
+            <p className="text-gray-400 font-cyber">
+              WITNESS THE ULTIMATE AI SHOWDOWNS
+            </p>
+          </motion.div>
+
+          {/* User Story 3: Tab Navigation for Live vs Upcoming Matches */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="flex justify-center mb-8"
+          >
+            <div className="bg-cyber-dark/80 backdrop-blur-sm border border-solana-purple/30 p-1 rounded-xl shadow-lg">
+              {(['live', 'upcoming', 'all'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    setSelectedTab(tab);
+                    setShowFilters(false); // Reset filters when switching tabs
+                  }}
+                  className={`
+                    px-6 py-3 font-cyber text-sm uppercase tracking-wider transition-all rounded-lg relative
+                    ${selectedTab === tab 
+                      ? 'bg-gradient-to-r from-solana-purple to-magicblock-primary text-white shadow-lg' 
+                      : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                    }
+                  `}
+                  data-testid={`tab-${tab}`}
+                >
+                  {tab === 'all' ? 'All Matches' : `${tab} Matches`}
+                  {selectedTab === tab && (
+                    <motion.div
+                      layoutId="activeTabHomepage"
+                      className="absolute inset-0 bg-gradient-to-r from-solana-purple to-magicblock-primary rounded-lg -z-10"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Filter Toggle Button */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex justify-center mb-6"
+          >
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`
+                px-6 py-2 rounded-lg font-cyber text-sm uppercase tracking-wider transition-all
+                ${showFilters 
+                  ? 'bg-solana-purple text-white' 
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }
+              `}
+            >
+              {showFilters ? '🔽 Hide Filters' : '🔍 Show Filters'}
+            </button>
+          </motion.div>
+
+          {/* User Story 3: Match List with Filters */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <MatchList
+              key={selectedTab} // Force re-render when tab changes
+              filters={currentFilters}
+              showFilters={showFilters}
+              enableInfiniteScroll={false}
+              enableRealTimeUpdates={false} // Disable to prevent offline UI
+              onMatchSelect={handleMatchClick} // User Story 3: Enable match detail viewing
+              emptyStateMessage={`No ${selectedTab} matches at the moment. ${
+                selectedTab === 'live' 
+                  ? 'Check the upcoming tab for scheduled battles!' 
+                  : selectedTab === 'upcoming'
+                  ? 'New AI matches are starting soon!'
+                  : 'No matches available right now.'
+              }`}
+              className="space-y-6"
+            />
+          </motion.div>
+
+          {/* Link to full matches page */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="text-center mt-12"
+          >
+            <Link href="/matches" className="inline-block">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 bg-gradient-to-r from-solana-purple to-magicblock-primary text-white font-cyber rounded-lg"
+              >
+                VIEW ALL MATCHES
+              </motion.button>
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* Background Effects */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-cyber-grid bg-[size:50px_50px] opacity-5" />
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-solana-purple/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-solana-green/5 rounded-full blur-3xl" />
+        </div>
+      </section>
+
+      {/* User Story 3: Match Detail Modal for Betting Evaluation */}
+      <MatchDetailModal
+        match={selectedMatch}
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onBetClick={handleBetClick}
+        onWatchClick={handleWatchClick}
+      />
     </Layout>
   );
-} 
+}

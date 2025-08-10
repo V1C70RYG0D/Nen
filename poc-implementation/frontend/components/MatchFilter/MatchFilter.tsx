@@ -192,7 +192,7 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
     status: true,
     betting: true, // Show bet range filter by default for User Story 3
     rating: true,  // Show AI rating filter by default for User Story 3
-    types: false,
+    types: true,   // Expand nen types for User Story 3
     sorting: false,
   });
 
@@ -276,7 +276,7 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
         >
           <FunnelIcon className="w-5 h-5 text-solana-purple" />
           <span className="font-cyber text-sm text-gray-300">
-            User Story 3: Filter by Bet Range or AI Rating
+            Filter by Bet Range or AI Rating
           </span>
           {activeFilterCount > 0 && (
             <span className="px-2 py-1 bg-solana-purple text-xs font-bold text-white rounded-full">
@@ -321,15 +321,7 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
           >
             <div className="space-y-4 p-4 bg-cyber-darker/30 border border-gray-700 rounded-lg">
               
-              {/* User Story 3 Description */}
-              <div className="bg-solana-purple/10 border border-solana-purple/30 rounded-lg p-3 mb-4">
-                <h4 className="text-sm font-cyber text-solana-purple uppercase tracking-wider mb-1">
-                  User Story 3: Advanced Match Filtering
-                </h4>
-                <p className="text-xs text-gray-400">
-                  Filter matches by bet range, AI rating, status, and more. All filters work in real-time.
-                </p>
-              </div>
+              {/* Filter description removed per UI cleanup */}
               
               {/* Search */}
               <FilterSection

@@ -1,0 +1,56 @@
+{
+  "wallet": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+  "agents": [
+    {
+      "mint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+      "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "tokenAccount": "BPTXzY7XhscA88qVX4fFuo6Kg11nibQz46CJYk4dQbWm",
+      "signature": "JBhAhBcnk6LQnC25eWDWgzBEf7t9cUK3ELGUB6eC9yRsWZP9GyueKrkTYc7VJxxbveJuomux7a3WA1yvT4B5pKq",
+      "explorer": "https://explorer.solana.com/tx/JBhAhBcnk6LQnC25eWDWgzBEf7t9cUK3ELGUB6eC9yRsWZP9GyueKrkTYc7VJxxbveJuomux7a3WA1yvT4B5pKq?cluster=devnet",
+      "metadata": {
+        "name": "Netero Strategic AI",
+        "description": "Elite AI agent trained on Hunter x Hunter tactical patterns",
+        "elo": 2450,
+        "nenType": "Enhancement",
+        "personality": "Tactical",
+        "winRate": 0.89,
+        "totalMatches": 234
+      }
+    },
+    {
+      "mint": "CxkxzcL5j3UBfv1nxhtmG3MyW8tSncdntDGyA4mxUM4B",
+      "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "tokenAccount": "9vhomFy6xwhSq8LUKCU3tUGTmLv8mjzCVywGjLuKmVjr",
+      "signature": "3BRx49GpEnGCYrs4X922EvndwbvZPCCYLcK142CnwgpDhaKzRAJWNeFQb8rEevYj7wJju8f4Z3wHbNvh81ZJJA7p",
+      "explorer": "https://explorer.solana.com/tx/3BRx49GpEnGCYrs4X922EvndwbvZPCCYLcK142CnwgpDhaKzRAJWNeFQb8rEevYj7wJju8f4Z3wHbNvh81ZJJA7p?cluster=devnet",
+      "metadata": {
+        "name": "Phantom AI Specialist",
+        "description": "Advanced AI specializing in deceptive and unpredictable gameplay",
+        "elo": 2120,
+        "nenType": "Transmutation",
+        "personality": "Unpredictable",
+        "winRate": 0.83,
+        "totalMatches": 187
+      }
+    },
+    {
+      "mint": "FMucxRU9Ex4mM6DGScs449fp3erjX3FhcWPm2GoCctuH",
+      "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "tokenAccount": "DFPMrQgwoYrDigqft2UaCKiw7NRPp6Gys3SYyoSPeMXQ",
+      "signature": "4rNjq3TVXLukpKCSc39zro7dHCo21BNinG46LzsCQK9qAxKZoxs98W3CgKNxGG6GzuzCoS16ejJWmAT646PZGKJ",
+      "explorer": "https://explorer.solana.com/tx/4rNjq3TVXLukpKCSc39zro7dHCo21BNinG46LzsCQK9qAxKZoxs98W3CgKNxGG6GzuzCoS16ejJWmAT646PZGKJ?cluster=devnet",
+      "metadata": {
+        "name": "Zoldyck Assassin AI",
+        "description": "Lightning-fast AI trained on precision and elimination tactics",
+        "elo": 1980,
+        "nenType": "Manipulation",
+        "personality": "Aggressive",
+        "winRate": 0.79,
+        "totalMatches": 156
+      }
+    }
+  ],
+  "created_at": "2025-08-09T05:00:35.857Z",
+  "network": "devnet",
+  "total_agents": 3
+}

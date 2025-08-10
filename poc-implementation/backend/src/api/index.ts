@@ -16,6 +16,8 @@ export { default as matchesRoutes } from './matches';
 export { default as usersRoutes } from './users';
 export { default as analyticsRoutes } from './analytics';
 
+export { default as devnetRoutes } from './devnet';
+
 // Export service functions for dependency injection
 export { setBettingService } from './betting';
 export { setGameService } from './matches';

@@ -1,3 +1,82 @@
+/// Start a training session for an AI agent
+#[derive(Accounts)]
+pub struct StartTrainingSession<'info> {
+    #[account(
+        init,
+        payer = owner,
+        space = TrainingSession::LEN,
+        seeds = [b"training", owner.key().as_ref(), agent_mint.key().as_ref()],
+        bump
+    )]
+    pub training_session: Account<'info, TrainingSession>,
+    #[account(mut)]
+    pub agent_account: Account<'info, AiAgentAccount>,
+    pub agent_mint: AccountInfo<'info>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+pub fn start_training_session(
+    ctx: Context<StartTrainingSession>,
+    session_id: [u8; 36],
+    replay_commitments: Vec<[u8; 64]>,
+    training_params: [u8; 256],
+    priority: u8,
+    fee_paid: u64,
+) -> Result<()> {
+    let ts = &mut ctx.accounts.training_session;
+    let agent = &mut ctx.accounts.agent_account;
+    let now = Clock::get()?.unix_timestamp;
+    require!(replay_commitments.len() <= 20, NenPlatformError::TooManyReplays);
+    ts.session_id = session_id;
+    ts.owner = ctx.accounts.owner.key();
+    ts.agent_mint = ctx.accounts.agent_mint.key();
+    for (i, c) in replay_commitments.iter().enumerate() {
+        ts.replay_commitments[i] = *c;
+    }
+    ts.replay_count = replay_commitments.len() as u8;
+    ts.training_params = training_params;
+    ts.status = 1; // Active
+    ts.agent_locked = true;
+    ts.priority = priority;
+    ts.fee_paid = fee_paid;
+    ts.created_at = now;
+    ts.completed_at = None;
+    // Lock agent
+    agent.is_public = false;
+    Ok(())
+}
+
+/// End a training session and unlock agent
+#[derive(Accounts)]
+pub struct EndTrainingSession<'info> {
+    #[account(mut,
+        seeds = [b"training", owner.key().as_ref(), agent_mint.key().as_ref()],
+        bump
+    )]
+    pub training_session: Account<'info, TrainingSession>,
+    #[account(mut)]
+    pub agent_account: Account<'info, AiAgentAccount>,
+    pub agent_mint: AccountInfo<'info>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
+}
+
+pub fn end_training_session(
+    ctx: Context<EndTrainingSession>,
+    status: u8,
+    completed_at: i64,
+) -> Result<()> {
+    let ts = &mut ctx.accounts.training_session;
+    let agent = &mut ctx.accounts.agent_account;
+    ts.status = status;
+    ts.agent_locked = false;
+    ts.completed_at = Some(completed_at);
+    // Unlock agent
+    agent.is_public = true;
+    Ok(())
+}
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
 

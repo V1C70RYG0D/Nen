@@ -111,6 +111,16 @@ export class SolanaBettingClient {
   }
 
   /**
+   * Create a safe BN-like object that always has toNumber method
+   */
+  private createSafeBN(value: number | string): { toNumber: () => number } {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    return {
+      toNumber: () => isNaN(numValue) ? 0 : numValue
+    };
+  }
+
+  /**
    * Check if betting account exists for user
    */
   async getBettingAccount(userPublicKey: PublicKey): Promise<BettingAccount | null> {
@@ -126,17 +136,17 @@ export class SolanaBettingClient {
       // Parse the account data
       const parsedData = await this.parseBettingAccountData(accountInfo.data);
       
-      // Convert to BettingAccount format
+      // Convert to BettingAccount format with safe BN objects
       return {
         user: userPublicKey,
-        balance: { toNumber: () => parsedData.balance } as BN,
-        totalDeposited: { toNumber: () => parsedData.totalDeposited } as BN,
-        totalWithdrawn: { toNumber: () => parsedData.totalWithdrawn } as BN,
-        lockedBalance: { toNumber: () => parsedData.lockedBalance } as BN,
-        depositCount: parsedData.depositCount,
-        withdrawalCount: parsedData.withdrawalCount,
-        createdAt: { toNumber: () => parsedData.createdAt } as BN,
-        lastUpdated: { toNumber: () => parsedData.lastUpdated } as BN,
+        balance: this.createSafeBN(parsedData.balance),
+        totalDeposited: this.createSafeBN(parsedData.totalDeposited),
+        totalWithdrawn: this.createSafeBN(parsedData.totalWithdrawn),
+        lockedBalance: this.createSafeBN(parsedData.lockedBalance),
+        depositCount: parsedData.depositCount || 0,
+        withdrawalCount: parsedData.withdrawalCount || 0,
+        createdAt: this.createSafeBN(parsedData.createdAt),
+        lastUpdated: this.createSafeBN(parsedData.lastUpdated),
         bump: 255,
       } as BettingAccount;
       
@@ -256,8 +266,10 @@ export class SolanaBettingClient {
     try {
       existingAccount = await this.getBettingAccountWithPersistence(userPublicKey);
       if (existingAccount) {
-        previousBalance = existingAccount.balance.toNumber() / LAMPORTS_PER_SOL;
-        transactionCount = existingAccount.depositCount;
+        previousBalance = existingAccount.balance && typeof existingAccount.balance.toNumber === 'function'
+          ? existingAccount.balance.toNumber() / LAMPORTS_PER_SOL
+          : 0;
+        transactionCount = existingAccount.depositCount || 0;
         console.log(`📈 Found existing betting account with balance: ${previousBalance} SOL`);
       } else {
         console.log('🆕 Creating new betting account');
@@ -388,15 +400,31 @@ export class SolanaBettingClient {
       console.log(`💳 SOL successfully transferred from wallet to betting PDA!`);
       
       // Step 6: Update account data for persistence with real transaction signature
+      const existingTotalDeposited = existingAccount?.totalDeposited && typeof existingAccount.totalDeposited.toNumber === 'function'
+        ? existingAccount.totalDeposited.toNumber() / LAMPORTS_PER_SOL
+        : 0;
+        
+      const existingTotalWithdrawn = existingAccount?.totalWithdrawn && typeof existingAccount.totalWithdrawn.toNumber === 'function'
+        ? existingAccount.totalWithdrawn.toNumber() / LAMPORTS_PER_SOL
+        : 0;
+        
+      const existingLockedBalance = existingAccount?.lockedBalance && typeof existingAccount.lockedBalance.toNumber === 'function'
+        ? existingAccount.lockedBalance.toNumber()
+        : 0;
+        
+      const existingCreatedAt = existingAccount?.createdAt && typeof existingAccount.createdAt.toNumber === 'function'
+        ? existingAccount.createdAt.toNumber()
+        : Math.floor(Date.now() / 1000);
+        
       await this.updateBettingAccountData(depositPDA, {
         user: userPublicKey,
         balance: Math.floor(newTotalBalance * LAMPORTS_PER_SOL),
-        totalDeposited: Math.floor(((existingAccount?.totalDeposited?.toNumber() || 0) / LAMPORTS_PER_SOL + amountSol) * LAMPORTS_PER_SOL),
-        totalWithdrawn: existingAccount?.totalWithdrawn?.toNumber() || 0,
-        lockedBalance: existingAccount?.lockedBalance?.toNumber() || 0,
+        totalDeposited: Math.floor((existingTotalDeposited + amountSol) * LAMPORTS_PER_SOL),
+        totalWithdrawn: Math.floor(existingTotalWithdrawn * LAMPORTS_PER_SOL),
+        lockedBalance: existingLockedBalance,
         depositCount: transactionCount + 1,
         withdrawalCount: existingAccount?.withdrawalCount || 0,
-        createdAt: existingAccount?.createdAt?.toNumber() || Math.floor(Date.now() / 1000),
+        createdAt: existingCreatedAt,
         lastUpdated: Math.floor(Date.now() / 1000),
         bump: 255,
         realTransactionSignature: signature, // Store the real deposit transaction signature
@@ -527,17 +555,19 @@ export class SolanaBettingClient {
       const storedData = this.loadBettingAccountData(bettingAccountPDA);
       
       if (storedData) {
-        // Convert stored data to BettingAccount format
+        console.log('📂 Loading account from persistent storage:', storedData);
+        
+        // Convert stored data to BettingAccount format with safe BN objects
         return {
           user: userPublicKey,
-          balance: { toNumber: () => storedData.balance } as BN,
-          totalDeposited: { toNumber: () => storedData.totalDeposited } as BN,
-          totalWithdrawn: { toNumber: () => storedData.totalWithdrawn } as BN,
-          lockedBalance: { toNumber: () => storedData.lockedBalance } as BN,
-          depositCount: storedData.depositCount,
-          withdrawalCount: storedData.withdrawalCount,
-          createdAt: { toNumber: () => storedData.createdAt } as BN,
-          lastUpdated: { toNumber: () => storedData.lastUpdated } as BN,
+          balance: this.createSafeBN(storedData.balance || 0),
+          totalDeposited: this.createSafeBN(storedData.totalDeposited || 0),
+          totalWithdrawn: this.createSafeBN(storedData.totalWithdrawn || 0),
+          lockedBalance: this.createSafeBN(storedData.lockedBalance || 0),
+          depositCount: storedData.depositCount || 0,
+          withdrawalCount: storedData.withdrawalCount || 0,
+          createdAt: this.createSafeBN(storedData.createdAt || Math.floor(Date.now() / 1000)),
+          lastUpdated: this.createSafeBN(storedData.lastUpdated || Math.floor(Date.now() / 1000)),
           bump: 255,
         } as BettingAccount;
       }
@@ -568,11 +598,23 @@ export class SolanaBettingClient {
       throw new Error('Betting account does not exist');
     }
 
-    const previousBalance = existingAccount.balance.toNumber() / LAMPORTS_PER_SOL;
-    const availableBalance = (existingAccount.balance.toNumber() - existingAccount.lockedBalance.toNumber()) / LAMPORTS_PER_SOL;
+    // Safely get balance values using our helper
+    const previousBalance = existingAccount.balance && typeof existingAccount.balance.toNumber === 'function' 
+      ? existingAccount.balance.toNumber() / LAMPORTS_PER_SOL 
+      : 0;
+      
+    const lockedBalanceLamports = existingAccount.lockedBalance && typeof existingAccount.lockedBalance.toNumber === 'function'
+      ? existingAccount.lockedBalance.toNumber()
+      : 0;
+      
+    const totalBalanceLamports = existingAccount.balance && typeof existingAccount.balance.toNumber === 'function'
+      ? existingAccount.balance.toNumber()
+      : 0;
+    
+    const availableBalance = (totalBalanceLamports - lockedBalanceLamports) / LAMPORTS_PER_SOL;
 
     if (amountSol > availableBalance) {
-      throw new Error(`Insufficient available balance. Available: ${availableBalance} SOL`);
+      throw new Error(`Insufficient available balance. Available: ${availableBalance.toFixed(4)} SOL`);
     }
 
     // Execute real SOL withdrawal from betting PDA to user wallet
@@ -581,11 +623,17 @@ export class SolanaBettingClient {
 
     // Update stored account data
     const [bettingAccountPDA] = this.getBettingAccountPDA(userPublicKey);
+    const currentData = this.loadBettingAccountData(bettingAccountPDA) || {};
+    
+    const existingTotalWithdrawn = existingAccount.totalWithdrawn && typeof existingAccount.totalWithdrawn.toNumber === 'function'
+      ? existingAccount.totalWithdrawn.toNumber() / LAMPORTS_PER_SOL
+      : 0;
+    
     await this.updateBettingAccountData(bettingAccountPDA, {
-      ...this.loadBettingAccountData(bettingAccountPDA),
+      ...currentData,
       balance: Math.floor(newBalance * LAMPORTS_PER_SOL),
-      totalWithdrawn: Math.floor(((existingAccount.totalWithdrawn.toNumber() / LAMPORTS_PER_SOL) + amountSol) * LAMPORTS_PER_SOL),
-      withdrawalCount: existingAccount.withdrawalCount + 1,
+      totalWithdrawn: Math.floor((existingTotalWithdrawn + amountSol) * LAMPORTS_PER_SOL),
+      withdrawalCount: (existingAccount.withdrawalCount || 0) + 1,
       lastUpdated: Math.floor(Date.now() / 1000),
       realWithdrawalSignature: withdrawalResult.transactionSignature,
     });
@@ -596,7 +644,7 @@ export class SolanaBettingClient {
       newBalance,
       withdrawalAmount: amountSol,
       previousBalance,
-      transactionCount: existingAccount.withdrawalCount + 1,
+      transactionCount: (existingAccount.withdrawalCount || 0) + 1,
     };
   }
 
@@ -686,10 +734,15 @@ export class SolanaBettingClient {
     const account = await this.getBettingAccountWithPersistence(userPublicKey);
     if (!account) return 0;
 
-    const totalBalance = account.balance.toNumber() / LAMPORTS_PER_SOL;
-    const lockedBalance = account.lockedBalance.toNumber() / LAMPORTS_PER_SOL;
+    const totalBalance = account.balance && typeof account.balance.toNumber === 'function' 
+      ? account.balance.toNumber() / LAMPORTS_PER_SOL 
+      : 0;
+      
+    const lockedBalance = account.lockedBalance && typeof account.lockedBalance.toNumber === 'function'
+      ? account.lockedBalance.toNumber() / LAMPORTS_PER_SOL
+      : 0;
     
-    return totalBalance - lockedBalance;
+    return Math.max(0, totalBalance - lockedBalance);
   }
 
   /**

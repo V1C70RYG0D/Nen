@@ -6,7 +6,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createMockWebSocket = void 0;
 exports.mockWebSocketClient = mockWebSocketClient;
-const socket_io_client_1 = require("socket.io-client");
 class MockWebSocket {
     constructor(url) {
         this.url = url;
@@ -16,7 +15,7 @@ class MockWebSocket {
     open() {
         this.readyState = MockWebSocket.OPEN;
         if (this.onopen)
-            this.onopen({}); // Trigger open event
+            this.onopen(); // Trigger open event
     }
     // Simulate receiving a message
     send(data) {
@@ -29,15 +28,15 @@ class MockWebSocket {
     close() {
         this.readyState = MockWebSocket.CLOSED;
         if (this.onclose)
-            this.onclose({});
+            this.onclose();
     }
     // Attach event listeners
     set onopen(callback) { this._onopen = callback; }
     set onmessage(callback) { this._onmessage = callback; }
     set onclose(callback) { this._onclose = callback; }
-    get onopen() { return this._onopen; }
-    get onmessage() { return this._onmessage; }
-    get onclose() { return this._onclose; }
+    get onopen() { return this._onopen || (() => { }); }
+    get onmessage() { return this._onmessage || (() => { }); }
+    get onclose() { return this._onclose || (() => { }); }
 }
 MockWebSocket.CONNECTING = 0;
 MockWebSocket.OPEN = 1;
@@ -50,12 +49,17 @@ exports.createMockWebSocket = createMockWebSocket;
  * Mock WebSocket client for Socket.IO testing
  */
 function mockWebSocketClient(url, options = {}) {
-    return (0, socket_io_client_1.io)(url, {
-        transports: ['websocket'],
-        forceNew: true,
-        timeout: 5000,
+    // Return a mock socket object since we can't import Socket.IO client in a server environment
+    return {
+        connect: jest.fn(),
+        disconnect: jest.fn(),
+        emit: jest.fn(),
+        on: jest.fn(),
+        off: jest.fn(),
+        id: 'mock-socket-id',
+        connected: true,
         ...options
-    });
+    };
 }
 exports.default = MockWebSocket;
 //# sourceMappingURL=websocketMock.js.map

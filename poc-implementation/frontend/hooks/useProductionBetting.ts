@@ -47,7 +47,8 @@ interface WithdrawalResult {
 }
 
 export const useProductionBetting = () => {
-  const { publicKey, signTransaction, connected } = useWallet();
+  const walletCtx = useWallet();
+  const { publicKey, signTransaction, connected } = walletCtx;
   const { connection } = useConnection();
   
   const [client, setClient] = useState<ProductionSolanaBettingClient | null>(null);
@@ -82,10 +83,7 @@ export const useProductionBetting = () => {
       const productionClient = new ProductionSolanaBettingClient();
       
       // Initialize with real wallet and IDL
-      await productionClient.initialize(
-        { publicKey, signTransaction, connected } as any,
-        bettingIdl
-      );
+  await productionClient.initialize(walletCtx as any, bettingIdl);
       
       setClient(productionClient);
       console.log('✅ Production betting client initialized');
@@ -118,19 +116,33 @@ export const useProductionBetting = () => {
       const account = await activeClient.getBettingAccount(publicKey);
       
       if (account) {
-        const balance = account.balance.toNumber() / 1_000_000_000; // Convert lamports to SOL
-        const lockedBalance = account.lockedBalance.toNumber() / 1_000_000_000;
+        // Safely handle balance conversion with proper null/undefined checks
+        const balance = (account.balance && typeof account.balance === 'object' && typeof account.balance.toNumber === 'function') 
+          ? account.balance.toNumber() / 1_000_000_000 
+          : 0; // Convert lamports to SOL
+        const lockedBalance = (account.lockedFunds && typeof account.lockedFunds === 'object' && typeof account.lockedFunds.toNumber === 'function')
+          ? account.lockedFunds.toNumber() / 1_000_000_000
+          : 0;
         const availableBalance = balance - lockedBalance;
+        
+        const totalDeposited = (account.totalDeposited && typeof account.totalDeposited === 'object' && typeof account.totalDeposited.toNumber === 'function')
+          ? account.totalDeposited.toNumber() / 1_000_000_000
+          : 0;
+        const totalWithdrawn = (account.totalWithdrawn && typeof account.totalWithdrawn === 'object' && typeof account.totalWithdrawn.toNumber === 'function')
+          ? account.totalWithdrawn.toNumber() / 1_000_000_000
+          : 0;
         
         setState(prev => ({
           ...prev,
-          balance,
-          availableBalance,
-          lockedBalance,
-          totalDeposited: account.totalDeposited.toNumber() / 1_000_000_000,
-          totalWithdrawn: account.totalWithdrawn.toNumber() / 1_000_000_000,
-          depositCount: account.depositCount,
-          withdrawalCount: account.withdrawalCount,
+          balance: isNaN(balance) ? 0 : balance,
+          availableBalance: isNaN(availableBalance) ? 0 : availableBalance,
+          lockedBalance: isNaN(lockedBalance) ? 0 : lockedBalance,
+          totalDeposited: isNaN(totalDeposited) ? 0 : totalDeposited,
+          totalWithdrawn: isNaN(totalWithdrawn) ? 0 : totalWithdrawn,
+          depositCount: 0, // Not available in current schema
+          withdrawalCount: (account.withdrawalCount && typeof account.withdrawalCount === 'object' && typeof account.withdrawalCount.toNumber === 'function')
+            ? account.withdrawalCount.toNumber()
+            : 0,
           accountExists: true,
           isLoading: false,
           error: null,

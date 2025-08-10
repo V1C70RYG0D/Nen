@@ -10,10 +10,10 @@ const getApiConfig = () => {
   
   // Base URLs from environment variables with fallbacks
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
-    (isDevelopment ? 'http://localhost:3001' : 'https://api.nen-platform.com');
+    (isDevelopment ? 'http://127.0.0.1:3011' : 'https://api.nen-platform.com');
   
   const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || 
-    (isDevelopment ? 'ws://localhost:3011' : 'wss://ws.nen-platform.com');
+    (isDevelopment ? 'ws://127.0.0.1:3011' : 'wss://ws.nen-platform.com');
   
   const MAGICBLOCK_RPC = process.env.NEXT_PUBLIC_MAGICBLOCK_RPC || 
     'https://api.magicblock.app/v1/rpc';

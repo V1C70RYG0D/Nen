@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 
-declare_id!("dyvzd2UHYEvZQDJFx2ryGNQDLJx1rMGmDF3XGjvqQfM");
+// Aligned with Anchor.toml [programs.devnet].nen_betting
+declare_id!("34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5");
 
 #[program]
 pub mod nen_betting {
@@ -87,25 +88,23 @@ pub mod nen_betting {
         require!(amount <= available_balance, ErrorCode::InsufficientAvailableBalance);
         
         // Transfer SOL from betting account PDA to user wallet
-        let user_key = ctx.accounts.user.key();
-        let seeds = &[
-            b"betting-account",
-            user_key.as_ref(),
-            &[ctx.bumps.betting_account],
-        ];
-        let signer = &[&seeds[..]];
+        // PDAs with data cannot use system_program::transfer, so we manually adjust lamports
+        let betting_account_info = ctx.accounts.betting_account.to_account_info();
+        let user_info = ctx.accounts.user.to_account_info();
         
-        // Perform the transfer first, before updating the account
-        let transfer_instruction = anchor_lang::system_program::Transfer {
-            from: ctx.accounts.betting_account.to_account_info(),
-            to: ctx.accounts.user.to_account_info(),
-        };
-        let cpi_ctx = CpiContext::new_with_signer(
-            ctx.accounts.system_program.to_account_info(),
-            transfer_instruction,
-            signer,
+        // Validate PDA has enough lamports for withdrawal plus rent
+        let rent = Rent::get()?;
+        let required_rent = rent.minimum_balance(betting_account_info.data_len());
+        let account_lamports = betting_account_info.lamports();
+        
+        require!(
+            account_lamports >= amount + required_rent, 
+            ErrorCode::InsufficientAccountLamports
         );
-        anchor_lang::system_program::transfer(cpi_ctx, amount)?;
+        
+        // Manually transfer lamports from PDA to user
+        **betting_account_info.try_borrow_mut_lamports()? -= amount;
+        **user_info.try_borrow_mut_lamports()? += amount;
         
         // Now update betting account balances and counters
         let betting_account = &mut ctx.accounts.betting_account;
@@ -317,6 +316,8 @@ pub enum ErrorCode {
     WithdrawalCooldownActive,
     #[msg("Unauthorized withdrawal attempt")]
     UnauthorizedWithdrawal,
+    #[msg("Insufficient lamports in account for withdrawal plus rent")]
+    InsufficientAccountLamports,
     #[msg("Lock amount must be greater than 0")]
     LockAmountInvalid,
     #[msg("Unauthorized lock attempt")]

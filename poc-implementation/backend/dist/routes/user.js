@@ -5,10 +5,130 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const config_1 = __importDefault(require("../config"));
-const auth_js_1 = require("../middleware/auth.js");
+const auth_1 = require("../middleware/auth");
+const UserService_1 = require("../services/UserService");
+const BettingService_1 = require("../services/BettingService");
 const router = (0, express_1.Router)();
+const userService = new UserService_1.UserService();
+const bettingService = new BettingService_1.BettingService();
+// POST /api/user/check-pda - Check if wallet has existing platform account PDA
+router.post('/check-pda', async (req, res, next) => {
+    try {
+        const { walletAddress } = req.body;
+        if (!walletAddress) {
+            return res.status(400).json({
+                success: false,
+                error: 'Wallet address is required'
+            });
+        }
+        const pdaResult = await userService.checkExistingPDA(walletAddress);
+        res.json({
+            success: true,
+            data: pdaResult
+        });
+    }
+    catch (error) {
+        console.error('Error checking PDA:', error);
+        res.status(500).json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to check PDA'
+        });
+    }
+});
+// GET /api/user/derive-pda/:walletAddress - Get PDA address for wallet
+router.get('/derive-pda/:walletAddress', async (req, res, next) => {
+    try {
+        const { walletAddress } = req.params;
+        if (!walletAddress) {
+            return res.status(400).json({
+                success: false,
+                error: 'Wallet address is required'
+            });
+        }
+        const pdaAddress = await userService.derivePdaAddress(walletAddress);
+        res.json({
+            success: true,
+            data: {
+                walletAddress,
+                pdaAddress
+            }
+        });
+    }
+    catch (error) {
+        console.error('Error deriving PDA:', error);
+        res.status(500).json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to derive PDA address'
+        });
+    }
+});
+// POST /api/user/initialize-account - Initialize user account on-chain if needed
+router.post('/initialize-account', async (req, res, next) => {
+    try {
+        const { walletAddress, kycLevel, region, username, autoInitialize } = req.body;
+        if (!walletAddress) {
+            return res.status(400).json({
+                success: false,
+                error: 'Wallet address is required'
+            });
+        }
+        const result = await userService.checkAndInitializeAccount(walletAddress, {
+            autoInitialize: autoInitialize !== false, // Default to true
+            kycLevel: kycLevel || 0,
+            region: region || 0,
+            username
+        });
+        res.json({
+            success: true,
+            data: result
+        });
+    }
+    catch (error) {
+        console.error('Error initializing account:', error);
+        res.status(500).json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to initialize account'
+        });
+    }
+});
+// POST /api/user/check-and-initialize - Check PDA and auto-initialize if first-time user
+router.post('/check-and-initialize', async (req, res, next) => {
+    try {
+        const { walletAddress, options } = req.body;
+        if (!walletAddress) {
+            return res.status(400).json({
+                success: false,
+                error: 'Wallet address is required'
+            });
+        }
+        // Check if account exists and initialize if needed
+        const result = await userService.checkAndInitializeAccount(walletAddress, {
+            autoInitialize: true,
+            ...options
+        });
+        res.json({
+            success: true,
+            data: {
+                walletAddress,
+                ...result,
+                message: result.initialized ?
+                    'New user account initialized successfully' :
+                    result.accountExists ?
+                        'User account already exists' :
+                        'Account exists but not initialized'
+            }
+        });
+    }
+    catch (error) {
+        console.error('Error checking and initializing account:', error);
+        res.status(500).json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to check and initialize account'
+        });
+    }
+});
 // GET /api/user/profile - Get user profile
-router.get('/profile', auth_js_1.authMiddleware, async (req, res, next) => {
+router.get('/profile', auth_1.authMiddleware, async (req, res, next) => {
     try {
         // Get user information from authenticated request
         const user = req.user;
@@ -43,7 +163,7 @@ router.get('/profile', auth_js_1.authMiddleware, async (req, res, next) => {
     }
 });
 // PUT /api/user/profile - Update user profile
-router.put('/profile', auth_js_1.authMiddleware, async (req, res, next) => {
+router.put('/profile', auth_1.authMiddleware, async (req, res, next) => {
     try {
         const { username, preferences } = req.body;
         const user = req.user;
@@ -72,7 +192,7 @@ router.put('/profile', auth_js_1.authMiddleware, async (req, res, next) => {
     }
 });
 // GET /api/user/balance - Get user SOL balance
-router.get('/balance', auth_js_1.authMiddleware, async (req, res, next) => {
+router.get('/balance', auth_1.authMiddleware, async (req, res, next) => {
     try {
         const user = req.user;
         const userPublicKey = user?.publicKey;
@@ -103,7 +223,7 @@ router.get('/balance', auth_js_1.authMiddleware, async (req, res, next) => {
     }
 });
 // GET /api/user/stats - Get detailed user statistics
-router.get('/stats', auth_js_1.authMiddleware, async (req, res, next) => {
+router.get('/stats', auth_1.authMiddleware, async (req, res, next) => {
     try {
         const user = req.user;
         const userPublicKey = user?.publicKey || 'demo_user';
@@ -147,6 +267,163 @@ router.get('/stats', auth_js_1.authMiddleware, async (req, res, next) => {
     }
     catch (error) {
         next(error);
+    }
+});
+// POST /api/user/deposit - Deposit SOL into betting account
+router.post('/deposit', async (req, res, next) => {
+    try {
+        const { walletAddress, amount, transactionSignature } = req.body;
+        if (!walletAddress) {
+            return res.status(400).json({
+                success: false,
+                error: 'Wallet address is required'
+            });
+        }
+        if (!amount || typeof amount !== 'number') {
+            return res.status(400).json({
+                success: false,
+                error: 'Valid amount is required'
+            });
+        }
+        if (amount < 0.1) {
+            return res.status(400).json({
+                success: false,
+                error: 'Minimum deposit amount is 0.1 SOL'
+            });
+        }
+        if (amount > 1000) {
+            return res.status(400).json({
+                success: false,
+                error: 'Maximum deposit amount is 1000 SOL'
+            });
+        }
+        // Get or create user
+        let user = await userService.getUserByWallet(walletAddress);
+        if (!user) {
+            user = await userService.createUser(walletAddress);
+        }
+        // Process deposit
+        const depositResult = await bettingService.depositSol({
+            userId: user.id,
+            walletAddress,
+            amount,
+            transactionSignature
+        });
+        res.json({
+            success: true,
+            data: depositResult,
+            message: 'Deposit processed successfully'
+        });
+    }
+    catch (error) {
+        console.error('Error processing deposit:', error);
+        res.status(500).json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to process deposit'
+        });
+    }
+});
+// POST /api/user/withdraw - Withdraw SOL from betting account
+router.post('/withdraw', async (req, res, next) => {
+    try {
+        const { walletAddress, amount, destinationAddress } = req.body;
+        if (!walletAddress) {
+            return res.status(400).json({
+                success: false,
+                error: 'Wallet address is required'
+            });
+        }
+        if (!amount || typeof amount !== 'number') {
+            return res.status(400).json({
+                success: false,
+                error: 'Valid amount is required'
+            });
+        }
+        if (amount <= 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Withdrawal amount must be greater than 0'
+            });
+        }
+        // Get user
+        const user = await userService.getUserByWallet(walletAddress);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+        // Process withdrawal
+        const withdrawalResult = await bettingService.withdrawSol({
+            userId: user.id,
+            walletAddress,
+            amount,
+            destinationAddress
+        });
+        res.json({
+            success: true,
+            data: withdrawalResult,
+            message: 'Withdrawal processed successfully'
+        });
+    }
+    catch (error) {
+        console.error('Error processing withdrawal:', error);
+        res.status(500).json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to process withdrawal'
+        });
+    }
+});
+// GET /api/user/betting-account/:walletAddress - Get betting account details
+router.get('/betting-account/:walletAddress', async (req, res, next) => {
+    try {
+        const { walletAddress } = req.params;
+        if (!walletAddress) {
+            return res.status(400).json({
+                success: false,
+                error: 'Wallet address is required'
+            });
+        }
+        const bettingAccount = await bettingService.getBettingAccount(walletAddress);
+        res.json({
+            success: true,
+            data: bettingAccount
+        });
+    }
+    catch (error) {
+        console.error('Error getting betting account:', error);
+        res.status(500).json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to get betting account'
+        });
+    }
+});
+// GET /api/user/transaction-history/:walletAddress - Get transaction history
+router.get('/transaction-history/:walletAddress', async (req, res, next) => {
+    try {
+        const { walletAddress } = req.params;
+        const limit = parseInt(req.query.limit) || 50;
+        if (!walletAddress) {
+            return res.status(400).json({
+                success: false,
+                error: 'Wallet address is required'
+            });
+        }
+        const history = await bettingService.getTransactionHistory(walletAddress, limit);
+        res.json({
+            success: true,
+            data: {
+                transactions: history,
+                total: history.length
+            }
+        });
+    }
+    catch (error) {
+        console.error('Error getting transaction history:', error);
+        res.status(500).json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to get transaction history'
+        });
     }
 });
 exports.default = router;

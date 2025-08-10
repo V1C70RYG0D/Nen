@@ -5,7 +5,7 @@ async function checkProgramDeployment() {
   
   try {
     const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
-    const programId = new PublicKey('Bet1111111111111111111111111111111111111111');
+    const programId = new PublicKey('34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5');
     
     console.log(`📋 Program ID: ${programId.toString()}`);
     console.log(`🌐 RPC URL: https://api.devnet.solana.com\n`);

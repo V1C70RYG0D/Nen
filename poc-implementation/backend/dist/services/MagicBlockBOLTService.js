@@ -75,6 +75,16 @@ class MagicBlockBOLTService {
         const startTime = perf_hooks_1.performance.now();
         const perfMetrics = {};
         try {
+            // Validate input parameters
+            if (!sessionId || sessionId.trim() === '') {
+                throw new Error('Session ID cannot be empty');
+            }
+            if (!player1) {
+                throw new Error('Player 1 public key is required');
+            }
+            if (!config) {
+                throw new Error('Session configuration is required');
+            }
             // Step 1: Logging (optimize by reducing string conversions)
             const step1Start = perf_hooks_1.performance.now();
             this.logger.debug('Creating enhanced MagicBlock session', {

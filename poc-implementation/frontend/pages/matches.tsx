@@ -10,9 +10,10 @@
  * - Production-ready error boundaries
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
-import { motion } from 'framer-motion';
+import { useRouter } from 'next/router';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FunnelIcon,
   RocketLaunchIcon,
@@ -123,13 +124,29 @@ const MatchesLoadingComponent: React.FC = () => (
 // Main matches page component
 const MatchesPage: React.FC = () => {
   const [pageError, setPageError] = useState<string | null>(null);
-  const [initialFilters] = useState<MatchFilters>({
-    status: ['upcoming', 'live'],
-    sortBy: 'startTime',
-    sortOrder: 'asc',
-    limit: 20,
-    page: 1,
-  });
+  const router = useRouter();
+  const [selectedTab, setSelectedTab] = useState<'live' | 'upcoming' | 'all'>('live');
+  
+  // Dynamic filters that update based on selected tab - User Story 3 Implementation
+  const currentFilters = useMemo((): MatchFilters => {
+    const baseFilters: MatchFilters = {
+      sortBy: 'startTime',
+      sortOrder: selectedTab === 'upcoming' ? 'asc' : 'desc',
+      limit: 20,
+      page: 1,
+    };
+
+    switch (selectedTab) {
+      case 'live':
+        return { ...baseFilters, status: ['live'] };
+      case 'upcoming':
+        return { ...baseFilters, status: ['upcoming'] };
+      case 'all':
+        return { ...baseFilters, status: ['live', 'upcoming', 'completed'] };
+      default:
+        return { ...baseFilters, status: ['live'] };
+    }
+  }, [selectedTab]);
 
   // Initialize performance monitoring
   useEffect(() => {
@@ -142,8 +159,8 @@ const MatchesPage: React.FC = () => {
       console.log(`Matches page load time: ${pageLoadTime.toFixed(2)}ms`);
       
       // In production, send to analytics
-      if (process.env.NODE_ENV === 'production' && window.gtag) {
-        window.gtag('event', 'page_load_time', {
+      if (process.env.NODE_ENV === 'production' && (window as any).gtag) {
+        (window as any).gtag('event', 'page_load_time', {
           custom_map: { metric1: 'load_time' },
           metric1: Math.round(pageLoadTime),
         });
@@ -151,15 +168,19 @@ const MatchesPage: React.FC = () => {
     };
   }, []);
 
+  // Update filters when tab changes to implement User Story 3 filtering
+  const handleTabChange = (tab: 'live' | 'upcoming' | 'all') => {
+    setSelectedTab(tab);
+  };
+
   const handleError = (error: string) => {
     setPageError(error);
     console.error('MatchesPage error:', error);
   };
 
   const handleMatchSelect = (match: any) => {
-    // Navigate to match details or open modal
-    console.log('Selected match:', match.id);
-    toast.success(`Opening ${match.agent1.name} vs ${match.agent2.name}`);
+    // Navigate to match details
+    router.push(`/arena/${match.id}`);
   };
 
   return (
@@ -234,6 +255,40 @@ const MatchesPage: React.FC = () => {
             </div>
           </motion.div>
 
+          {/* User Story 3: Tab Navigation for Live vs Upcoming Matches */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="flex justify-center mb-8"
+          >
+            <div className="bg-cyber-dark/80 backdrop-blur-sm border border-solana-purple/30 p-1 rounded-xl shadow-lg">
+              {(['live', 'upcoming', 'all'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => handleTabChange(tab)}
+                  className={`
+                    px-6 py-3 font-cyber text-sm uppercase tracking-wider transition-all rounded-lg relative
+                    ${selectedTab === tab 
+                      ? 'bg-gradient-to-r from-solana-purple to-magicblock-primary text-white shadow-lg' 
+                      : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                    }
+                  `}
+                  data-testid={`tab-${tab}`}
+                >
+                  {tab === 'all' ? 'All Matches' : `${tab} Matches`}
+                  {selectedTab === tab && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute inset-0 bg-gradient-to-r from-solana-purple to-magicblock-primary rounded-lg -z-10"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
           {/* Page-level error display */}
           {pageError && (
             <motion.div
@@ -255,20 +310,26 @@ const MatchesPage: React.FC = () => {
             </motion.div>
           )}
 
-          {/* Main Match List */}
+          {/* Main Match List with User Story 3 Dynamic Filters */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
             <MatchList
-              filters={initialFilters}
+              filters={currentFilters}
               showFilters={true}
               enableInfiniteScroll={true}
               enableRealTimeUpdates={true}
               onMatchSelect={handleMatchSelect}
               onError={handleError}
-              emptyStateMessage="No active battles at the moment. New AI matches are starting soon!"
+              emptyStateMessage={`No ${selectedTab} matches at the moment. ${
+                selectedTab === 'live' 
+                  ? 'Check the upcoming tab for scheduled battles!' 
+                  : selectedTab === 'upcoming'
+                  ? 'New AI matches are starting soon!'
+                  : 'No matches available right now.'
+              }`}
               loadingComponent={MatchesLoadingComponent}
               className="space-y-6"
             />

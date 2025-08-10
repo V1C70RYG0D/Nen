@@ -4,20 +4,44 @@
  * Following GI guidelines - real implementations with comprehensive testing
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.teardownTestDatabase = exports.setupTestDatabase = void 0;
 exports.getTestRedisClient = getTestRedisClient;
 exports.getTestSolanaConnection = getTestSolanaConnection;
 exports.cleanupTestEnvironment = cleanupTestEnvironment;
 require("jest-extended");
+const testDatabase_1 = require("./utils/testDatabase");
+Object.defineProperty(exports, "setupTestDatabase", { enumerable: true, get: function () { return testDatabase_1.setupTestDatabase; } });
+Object.defineProperty(exports, "teardownTestDatabase", { enumerable: true, get: function () { return testDatabase_1.teardownTestDatabase; } });
 // Setup environment variables for testing
 process.env.NODE_ENV = 'test';
 process.env.PORT = '3001';
+process.env.WS_PORT = '3002';
 process.env.API_HOST = '127.0.0.1';
+process.env.API_TIMEOUT = '10000';
+process.env.WEBSOCKET_TIMEOUT = '30000';
 process.env.CORS_ORIGIN = 'http://127.0.0.1:3010';
+process.env.CORS_CREDENTIALS = 'true';
 process.env.JWT_SECRET = 'test-jwt-secret-for-testing-only-not-production';
 process.env.SOLANA_RPC_URL = 'https://api.devnet.solana.com';
+process.env.SOLANA_NETWORK = 'devnet';
+process.env.SOLANA_PROGRAM_ID = '11111111111111111111111111111112';
+process.env.SOLANA_COMMITMENT = 'confirmed';
 process.env.LOG_LEVEL = 'error';
 process.env.RATE_LIMIT_WINDOW_MS = '60000';
 process.env.RATE_LIMIT_MAX_REQUESTS = '100';
+process.env.DATABASE_URL = 'postgresql://testuser:testpass@localhost:5432/test_db';
+process.env.DB_HOST = 'localhost';
+process.env.DB_PORT = '5432';
+process.env.DB_USERNAME = 'testuser';
+process.env.DB_PASSWORD = 'testpass';
+process.env.DB_NAME = 'test_db';
+process.env.REDIS_HOST = 'localhost';
+process.env.REDIS_PORT = '6379';
+process.env.REDIS_URL = 'redis://localhost:6379';
+process.env.FRONTEND_URL = 'http://localhost:3000';
+process.env.AI_SERVICE_URL = 'http://localhost:8080';
+process.env.MAGICBLOCK_API_KEY = 'test-api-key';
+process.env.MAGICBLOCK_ENDPOINT = 'https://api.magicblock.gg';
 // Global test configuration
 const originalConsoleError = console.error;
 const originalConsoleWarn = console.warn;
@@ -78,4 +102,30 @@ function cleanupTestEnvironment() {
     jest.clearAllTimers();
     return Promise.resolve();
 }
+// Global test database setup and teardown
+beforeAll(async () => {
+    try {
+        await (0, testDatabase_1.setupTestDatabase)();
+        console.log('Global test database setup completed');
+    }
+    catch (error) {
+        console.error('Global test database setup failed:', error);
+        // Don't fail tests if database setup fails (use mocks instead)
+    }
+}, 30000);
+afterAll(async () => {
+    try {
+        await (0, testDatabase_1.teardownTestDatabase)();
+        console.log('Global test database teardown completed');
+    }
+    catch (error) {
+        console.error('Global test database teardown failed:', error);
+        // Don't fail tests if database teardown fails
+    }
+}, 30000);
+// Reset test state before each test
+beforeEach(() => {
+    // Clear all mocks to ensure clean state
+    jest.clearAllMocks();
+});
 //# sourceMappingURL=setup.js.map

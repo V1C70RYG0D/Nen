@@ -112,7 +112,7 @@ class ApiClient {
 
     if (!response.ok) {
       const errorCode = this.getErrorCode(response.status);
-      const errorMessage = data.message || data.error || errorMessages[errorCode];
+      const errorMessage = data.message || data.error || errorMessages[errorCode as keyof typeof errorMessages] || 'Unknown error occurred';
       
       const retryAfter = response.headers.get('Retry-After');
       throw new ApiError(
@@ -162,9 +162,9 @@ class ApiClient {
       apiErrors.NETWORK_ERROR,
       apiErrors.TIMEOUT_ERROR,
       apiErrors.SERVER_ERROR,
-    ];
+    ] as const;
 
-    return retryableErrors.includes(error.code);
+    return retryableErrors.includes(error.code as any);
   }
 
   private getRetryDelay(attempt: number, error: ApiError): number {
@@ -334,7 +334,22 @@ export const buildQueryParams = (params: Record<string, any>): string => {
   
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
-      searchParams.append(key, String(value));
+      if (Array.isArray(value)) {
+        // Handle arrays (like status: ['live', 'upcoming'])
+        // For single item arrays, just use the single value
+        if (value.length === 1) {
+          searchParams.append(key, String(value[0]));
+        } else {
+          // For multiple items, append each one
+          value.forEach(item => {
+            if (item !== undefined && item !== null && item !== '') {
+              searchParams.append(key, String(item));
+            }
+          });
+        }
+      } else {
+        searchParams.append(key, String(value));
+      }
     }
   });
   

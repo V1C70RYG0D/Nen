@@ -7,21 +7,26 @@ const express = require('express');
 const cors = require('cors');
 const { createServer } = require('http');
 const dotenv = require('dotenv');
+const path = require('path');
 
 // Load environment configuration
 dotenv.config();
+
+console.log('🔧 Loading environment...');
+console.log('PORT from env:', process.env.PORT);
+console.log('API_HOST from env:', process.env.API_HOST);
 
 const app = express();
 const httpServer = createServer(app);
 
 // Basic configuration
-const PORT = parseInt(process.env.PORT || '3001');
+const PORT = parseInt(process.env.PORT || '3011'); // Changed default to 3011
 const HOST = process.env.API_HOST || '127.0.0.1';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3010'; // Changed to match frontend port
 
 // Middleware setup
 app.use(cors({
-  origin: [CORS_ORIGIN, 'http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: [CORS_ORIGIN, 'http://localhost:3010', 'http://127.0.0.1:3010', 'http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -29,6 +34,15 @@ app.use(cors({
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Devnet training service (real devnet + IPFS integration)
+let trainingService;
+try {
+  trainingService = require('./services/training-devnet.js');
+  console.log('✅ Training service enabled');
+} catch (e) {
+  console.warn('[training] training-devnet service not available:', e?.message);
+}
 
 // Demo data for POC with comprehensive filtering support
 const demoMatches = [
@@ -553,6 +567,229 @@ app.get('/api/matches/:id', (req, res) => {
       message: error.message,
       timestamp: new Date().toISOString()
     });
+  }
+});
+
+// =========================
+// User Story 7: Training API
+// =========================
+// POST /api/v1/training/sessions
+app.post('/api/v1/training/sessions', async (req, res) => {
+  const startedAt = Date.now();
+  try {
+    if (!trainingService) {
+      return res.status(503).json({ success: false, error: 'Training service unavailable' });
+    }
+
+    const { walletPubkey, agentMint, params, cid, file } = req.body || {};
+    if (!walletPubkey || !agentMint) {
+      return res.status(400).json({ success: false, error: 'walletPubkey and agentMint are required' });
+    }
+
+    // Verify NFT ownership on devnet
+    const connection = trainingService.getConnection();
+    const owns = await trainingService.verifyNftOwnership(connection, walletPubkey, agentMint);
+    if (!owns) {
+      return res.status(403).json({ success: false, error: 'Wallet does not own agent NFT on devnet' });
+    }
+
+    // IPFS handling: accept CID or pin uploaded file if configured
+    let finalCid = cid;
+    if (!finalCid && file?.name && file?.base64) {
+      const pin = await trainingService.pinToIpfsIfConfigured(file.name, file.base64);
+      if (pin.pinned) finalCid = pin.cid;
+    }
+    if (!finalCid) {
+      return res.status(400).json({ success: false, error: 'IPFS CID missing and no file provided/pinned' });
+    }
+
+    // Optional head check (non-blocking)
+    try { await trainingService.validateCidAvailability(finalCid); } catch (_) {}
+
+    // Create a unique sessionId and write an on-chain memo as verifiable record
+    const sessionId = trainingService.uuidv4();
+    const payer = trainingService.loadServiceKeypair();
+    const memoPayload = {
+      kind: 'training_session_initiated',
+      sessionId,
+      walletPubkey,
+      agentMint,
+      cid: finalCid,
+      params: params || {},
+      ts: new Date().toISOString()
+    };
+    let signature = null;
+    const DISABLE_MEMO = (process.env.DISABLE_MEMO_TX || 'false').toLowerCase() === 'true';
+    if (!DISABLE_MEMO) {
+      signature = await trainingService.sendMemoWithSession(connection, payer, memoPayload);
+    }
+
+    const record = {
+      sessionId,
+      walletPubkey,
+      agentMint,
+      cid: finalCid,
+      params: params || {},
+      status: 'initiated',
+      tx: signature,
+  explorer: signature ? trainingService.explorerTx(signature) : undefined,
+      createdAt: new Date().toISOString()
+    };
+
+    trainingService.saveSession(record);
+
+    // Structured console log
+    console.log(JSON.stringify({
+      level: 'info', service: 'nen-backend', endpoint: '/api/v1/training/sessions',
+      message: 'Training session initiated',
+      wallet: walletPubkey, agent: agentMint, sessionId, tx: signature, durationMs: Date.now() - startedAt
+    }));
+
+    return res.json({ success: true, ...record });
+  } catch (error) {
+    console.error(JSON.stringify({
+      level: 'error', service: 'nen-backend', endpoint: '/api/v1/training/sessions',
+      message: error?.message || 'Internal error', stack: error?.stack, durationMs: Date.now() - startedAt
+    }));
+    return res.status(500).json({ success: false, error: error?.message || 'Internal error' });
+  }
+});
+
+// GET /api/v1/training/sessions/:id
+app.get('/api/v1/training/sessions/:id', async (req, res) => {
+  try {
+    if (!trainingService) {
+      return res.status(503).json({ success: false, error: 'Training service unavailable' });
+    }
+    const session = trainingService.getSession(req.params.id);
+    if (!session) return res.status(404).json({ success: false, error: 'Session not found' });
+    return res.json({ success: true, session });
+  } catch (error) {
+    console.error(JSON.stringify({
+      level: 'error', service: 'nen-backend', endpoint: '/api/v1/training/sessions/:id',
+      message: error?.message || 'Internal error', stack: error?.stack
+    }));
+    return res.status(500).json({ success: false, error: error?.message || 'Internal error' });
+  }
+});
+
+// Import and use training routes (User Story 7)
+try {
+  const trainingRoutes = require('./routes/training.js');
+  app.use('/api/training', trainingRoutes);
+  console.log('✅ Training routes loaded successfully');
+} catch (error) {
+  console.error('❌ Failed to load training routes:', error?.message);
+  console.error('❌ Stack:', error?.stack);
+}
+
+// Error handling
+
+// =========================
+// User Story 4: Place Bet API (Solana Devnet)
+// =========================
+const { Connection, PublicKey, Keypair, LAMPORTS_PER_SOL, SystemProgram, Transaction, sendAndConfirmTransaction } = require('@solana/web3.js');
+const bs58 = require('bs58');
+
+// Helper: Load user keypair from base58 secret (for demo; in production, use wallet adapter)
+function loadUserKeypair(secret) {
+  return Keypair.fromSecretKey(bs58.decode(secret));
+}
+
+// Helper: Get devnet connection
+function getDevnetConnection() {
+  return new Connection('https://api.devnet.solana.com', 'confirmed');
+}
+
+// POST /api/bets
+app.post('/api/bets', async (req, res) => {
+  const startedAt = Date.now();
+  try {
+    const { matchId, agentChoice, betAmountSol, userPubkey, userSecret } = req.body;
+    if (!matchId || !agentChoice || !betAmountSol || !userPubkey || !userSecret) {
+      return res.status(400).json({ success: false, error: 'Missing required fields' });
+    }
+
+    // Find match
+    const match = demoMatches.find(m => m.id === matchId);
+    if (!match || !match.bettingPool || !match.bettingPool.isOpenForBetting) {
+      return res.status(400).json({ success: false, error: 'Match not open for betting' });
+    }
+
+    // Validate bet amount
+    const minBet = match.bettingPool.minBet / LAMPORTS_PER_SOL;
+    const maxBet = match.bettingPool.maxBet / LAMPORTS_PER_SOL;
+    if (betAmountSol < minBet || betAmountSol > maxBet) {
+      return res.status(400).json({ success: false, error: `Bet amount must be between ${minBet} and ${maxBet} SOL` });
+    }
+
+    // Connect to devnet
+    const connection = getDevnetConnection();
+    const userKeypair = loadUserKeypair(userSecret);
+    const userWallet = new PublicKey(userPubkey);
+
+    // Check user balance
+    const userBalance = await connection.getBalance(userWallet);
+    if (userBalance < betAmountSol * LAMPORTS_PER_SOL) {
+      return res.status(400).json({ success: false, error: 'Insufficient SOL balance' });
+    }
+
+    // Reserve funds: transfer SOL to match escrow PDA (for demo, use a fixed escrow address)
+    const escrowPDA = PublicKey.findProgramAddressSync([
+      Buffer.from('escrow'), Buffer.from(matchId)
+    ], new PublicKey(process.env.BETTING_PROGRAM_ID || 'Bet111111111111111111111111111111111111111'))[0];
+
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: userWallet,
+        toPubkey: escrowPDA,
+        lamports: betAmountSol * LAMPORTS_PER_SOL
+      })
+    );
+
+    // Send transaction
+    const signature = await sendAndConfirmTransaction(connection, transaction, [userKeypair]);
+
+    // Create bet record (for demo, just return details)
+    const betId = `bet_${matchId}_${Date.now()}`;
+    // Update betting pool totals (simulate)
+    if (agentChoice === 1) {
+      match.bettingPool.agent1Pool += betAmountSol * LAMPORTS_PER_SOL;
+    } else {
+      match.bettingPool.agent2Pool += betAmountSol * LAMPORTS_PER_SOL;
+    }
+    match.bettingPool.totalPool += betAmountSol * LAMPORTS_PER_SOL;
+    match.bettingPool.betsCount += 1;
+
+    // Emit bet placed event (console log)
+    console.log(JSON.stringify({
+      level: 'info', service: 'nen-backend', endpoint: '/api/bets',
+      message: 'Bet placed', matchId, agentChoice, betAmountSol, userPubkey, betId, signature, durationMs: Date.now() - startedAt
+    }));
+
+    // Return result
+    return res.json({
+      success: true,
+      betId,
+      matchId,
+      agentChoice,
+      betAmountSol,
+      userPubkey,
+      signature,
+      explorer: `https://explorer.solana.com/tx/${signature}?cluster=devnet`,
+      updatedPool: {
+        agent1Pool: match.bettingPool.agent1Pool,
+        agent2Pool: match.bettingPool.agent2Pool,
+        totalPool: match.bettingPool.totalPool,
+        betsCount: match.bettingPool.betsCount
+      }
+    });
+  } catch (error) {
+    console.error(JSON.stringify({
+      level: 'error', service: 'nen-backend', endpoint: '/api/bets',
+      message: error?.message || 'Internal error', stack: error?.stack, durationMs: Date.now() - startedAt
+    }));
+    return res.status(500).json({ success: false, error: error?.message || 'Internal error' });
   }
 });
 

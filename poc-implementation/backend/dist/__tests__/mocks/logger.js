@@ -30,6 +30,7 @@ function createMockLogger() {
         silent: false,
         emitErrs: true,
         profiler: {},
+        profilers: {},
         handleExceptions: false,
         handleRejections: false,
         handleUncaughtExceptions: false,
@@ -52,6 +53,15 @@ function createMockLogger() {
         off: jest.fn(),
         end: jest.fn(),
         write: jest.fn(),
+        help: jest.fn(),
+        data: jest.fn(),
+        prompt: jest.fn(),
+        http: jest.fn(),
+        emerg: jest.fn(),
+        alert: jest.fn(),
+        crit: jest.fn(),
+        notice: jest.fn(),
+        input: jest.fn(),
         [Symbol.toStringTag]: 'Logger'
     };
 }

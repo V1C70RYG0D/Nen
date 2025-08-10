@@ -1,7 +1,7 @@
 import '@/styles/globals.css';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import type { AppProps } from 'next/app';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
@@ -16,7 +16,8 @@ const RealDevnetBettingApp = dynamic(() => import('../components/RealDevnetBetti
   ssr: false,
 });
 
-const queryClient = new QueryClient({
+// Create a stable QueryClient instance
+const queryClient = (globalThis as any).__NEN_QUERY_CLIENT__ || new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
@@ -24,8 +25,15 @@ const queryClient = new QueryClient({
     },
   },
 });
+;(globalThis as any).__NEN_QUERY_CLIENT__ = queryClient;
 
 export default function App({ Component, pageProps, router }: AppProps) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // REAL DEVNET CONFIGURATION - User Story 2
   const endpoint = useMemo(() => {
     // Real devnet endpoint - no simulations
@@ -41,8 +49,9 @@ export default function App({ Component, pageProps, router }: AppProps) {
     []
   );
 
-  // For User Story 2, use the real devnet implementation
-  if (router.pathname === '/' || router.pathname === '/betting') {
+  // For User Story 2, use the real devnet implementation ONLY on the dedicated route
+  // Do not override the homepage so the main landing page renders correctly
+  if (router.pathname === '/betting') {
     return (
       <>
         {/* Real Devnet Warning */}
@@ -58,7 +67,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
         </div>
         
         <ConnectionProvider endpoint={endpoint}>
-          <WalletProvider wallets={wallets} autoConnect>
+          <WalletProvider wallets={wallets} autoConnect={false}>
             <WalletModalProvider>
               <RealDevnetBettingApp />
             </WalletModalProvider>
@@ -71,20 +80,16 @@ export default function App({ Component, pageProps, router }: AppProps) {
   // Legacy pages use existing setup
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
+      <WalletProvider wallets={wallets} autoConnect={isClient}>
         <WalletModalProvider>
           <QueryClientProvider client={queryClient}>
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={router.asPath}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Component {...pageProps} />
-              </motion.div>
-            </AnimatePresence>
+            {/* Debug route indicator temporarily disabled for button testing */}
+            {false && process.env.NODE_ENV !== 'production' && (
+              <div className="fixed bottom-2 left-2 z-[9999] px-2 py-1 text-xs bg-black/70 text-white rounded border border-white/10">
+                route: {router.pathname}
+              </div>
+            )}
+            <Component {...pageProps} />
             
             {/* Toast Notifications */}
             <Toaster

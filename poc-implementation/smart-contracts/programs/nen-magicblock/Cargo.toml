@@ -22,9 +22,9 @@ borsh = "0.10.3"
 
 [dev-dependencies]
 tokio = { version = "1.0", features = ["macros", "rt", "rt-multi-thread"] }
-solana-sdk = "2.0.0"
-solana-program-test = "2.0.0"
-solana-logger = "2.0.0"
+solana-sdk = "1.17.0"
+solana-program-test = "1.17.0"
+solana-logger = "1.17.0"
 anyhow = "1.0"
 rand = "0.8"
 serde_json = "1.0"

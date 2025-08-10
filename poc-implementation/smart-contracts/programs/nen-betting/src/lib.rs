@@ -1,7 +1,6 @@
 use anchor_lang::prelude::*;
 
-// Aligned with Anchor.toml [programs.devnet].nen_betting
-declare_id!("34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5");
+declare_id!("C8uJ3ABMU87GjcB8moR1jiiAgYnFUDR17DBfiQE4eUcz");
 
 #[program]
 pub mod nen_betting {
@@ -9,29 +8,40 @@ pub mod nen_betting {
 
     pub fn create_betting_account(ctx: Context<CreateBettingAccount>) -> Result<()> {
         let betting_account = &mut ctx.accounts.betting_account;
-        betting_account.owner = ctx.accounts.user.key();
+        let user = ctx.accounts.user.key();
+        let current_time = Clock::get()?.unix_timestamp;
+        
+        betting_account.user = user;
         betting_account.balance = 0;
         betting_account.total_deposited = 0;
         betting_account.total_withdrawn = 0;
-        betting_account.locked_funds = 0;
-        betting_account.last_activity = Clock::get()?.unix_timestamp;
-        betting_account.last_withdrawal = 0; // No previous withdrawals
+        betting_account.locked_balance = 0;
+        betting_account.deposit_count = 0;
         betting_account.withdrawal_count = 0;
-        
+        betting_account.created_at = current_time;
+        betting_account.last_updated = current_time;
+        betting_account.last_withdrawal_time = 0; // User Story 2a: Initialize withdrawal timestamp
+        betting_account.bump = ctx.bumps.betting_account;
+
         emit!(BettingAccountCreated {
-            user: ctx.accounts.user.key(),
-            account: betting_account.key(),
-            timestamp: Clock::get()?.unix_timestamp,
+            user,
+            pda_address: betting_account.key(),
+            timestamp: current_time,
         });
         
         Ok(())
     }
 
-    pub fn deposit_sol(ctx: Context<DepositSol>, amount: u64) -> Result<()> {
-        require!(amount >= 100_000_000, ErrorCode::DepositTooSmall); // Min 0.1 SOL
-        require!(amount <= 100_000_000_000, ErrorCode::DepositTooLarge); // Max 100 SOL
+    /// Deposit SOL into betting account (User Story 2: Real SOL transfer)
+    pub fn deposit_sol(
+        ctx: Context<DepositSol>,
+        amount: u64,
+    ) -> Result<()> {
+        // Validate deposit amount (User Story 2: Enforce minimum deposit 0.1 SOL)
+        require!(amount >= 100_000_000, BettingError::BelowMinimumDeposit); // 0.1 SOL
+        require!(amount <= 100_000_000_000, BettingError::AboveMaximumDeposit); // 100 SOL
 
-        // Transfer SOL from user to betting account
+        // Transfer SOL from user wallet to betting PDA (User Story 2: Real transfer)
         let transfer_instruction = anchor_lang::system_program::Transfer {
             from: ctx.accounts.user.to_account_info(),
             to: ctx.accounts.betting_account.to_account_info(),
@@ -42,54 +52,54 @@ pub mod nen_betting {
         );
         anchor_lang::system_program::transfer(cpi_ctx, amount)?;
 
-        // Update betting account balance
         let betting_account = &mut ctx.accounts.betting_account;
-        betting_account.balance = betting_account.balance.checked_add(amount).unwrap();
-        betting_account.total_deposited = betting_account.total_deposited.checked_add(amount).unwrap();
-        betting_account.last_activity = Clock::get()?.unix_timestamp;
+        
+        // Update user's on-chain balance record (User Story 2 requirement)
+        let previous_balance = betting_account.balance;
+        betting_account.balance += amount;
+        betting_account.total_deposited += amount;
+        betting_account.deposit_count += 1;
+        betting_account.last_updated = Clock::get()?.unix_timestamp;
 
-        emit!(SolDeposited {
+        // Emit deposit event for tracking (User Story 2 requirement)
+        emit!(DepositCompleted {
             user: ctx.accounts.user.key(),
-            account: betting_account.key(),
+            pda_address: betting_account.key(),
             amount,
+            previous_balance,
             new_balance: betting_account.balance,
+            transaction_count: betting_account.deposit_count,
             timestamp: Clock::get()?.unix_timestamp,
         });
 
         Ok(())
     }
 
-    /// User Story 2a: Withdraw SOL from betting account
-    /// Implements the core on-chain requirements:
-    /// - Validate against locked funds on devnet PDA
-    /// - Transfer real SOL from PDA to wallet via devnet transaction
-    /// - Enforce cooldown using devnet timestamps
-    /// - Emit withdrawal event; update real balance records on devnet
-    pub fn withdraw_sol(ctx: Context<WithdrawSol>, amount: u64) -> Result<()> {
-        require!(amount > 0, ErrorCode::WithdrawalAmountInvalid);
-        require!(amount >= 10_000_000, ErrorCode::WithdrawalTooSmall); // Min 0.01 SOL
+    /// Withdraw SOL from betting account (User Story 2a)
+    pub fn withdraw_sol(
+        ctx: Context<WithdrawSol>,
+        amount: u64,
+    ) -> Result<()> {
+        require!(amount > 0, BettingError::InvalidWithdrawalAmount);
         
+        let betting_account = &mut ctx.accounts.betting_account;
         let current_time = Clock::get()?.unix_timestamp;
         
-        // User Story 2a: Enforce 24-hour cooldown for security
-        const COOLDOWN_SECONDS: i64 = 24 * 60 * 60; // 24 hours
-        if ctx.accounts.betting_account.last_withdrawal > 0 {
-            let time_since_last_withdrawal = current_time - ctx.accounts.betting_account.last_withdrawal;
-            require!(
-                time_since_last_withdrawal >= COOLDOWN_SECONDS,
-                ErrorCode::WithdrawalCooldownActive
-            );
+        // User Story 2a: Enforce 24-hour cooldown using devnet timestamps
+        let cooldown_period = 24 * 60 * 60; // 24 hours in seconds
+        if betting_account.withdrawal_count > 0 && 
+           current_time - betting_account.last_withdrawal_time < cooldown_period {
+            let remaining_time = cooldown_period - (current_time - betting_account.last_withdrawal_time);
+            msg!("24-hour cooldown active. Remaining time: {} seconds", remaining_time);
+            return Err(BettingError::WithdrawalCooldownActive.into());
         }
         
-        // Validate against locked funds - User Story 2a requirement
-        let available_balance = ctx.accounts.betting_account.balance.checked_sub(ctx.accounts.betting_account.locked_funds)
-            .ok_or(ErrorCode::InsufficientAvailableBalance)?;
-        
-        require!(amount <= available_balance, ErrorCode::InsufficientAvailableBalance);
-        
-        // Transfer SOL from betting account PDA to user wallet
-        // PDAs with data cannot use system_program::transfer, so we manually adjust lamports
-        let betting_account_info = ctx.accounts.betting_account.to_account_info();
+        // User Story 2a: Validate against locked funds on devnet PDA
+        let available_balance = betting_account.balance - betting_account.locked_balance;
+        require!(amount <= available_balance, BettingError::InsufficientBalance);
+
+        // User Story 2a: Transfer real SOL from PDA to wallet via devnet transaction
+        let betting_account_info = betting_account.to_account_info();
         let user_info = ctx.accounts.user.to_account_info();
         
         // Validate PDA has enough lamports for withdrawal plus rent
@@ -99,72 +109,70 @@ pub mod nen_betting {
         
         require!(
             account_lamports >= amount + required_rent, 
-            ErrorCode::InsufficientAccountLamports
+            BettingError::InsufficientBalance
         );
         
         // Manually transfer lamports from PDA to user
         **betting_account_info.try_borrow_mut_lamports()? -= amount;
         **user_info.try_borrow_mut_lamports()? += amount;
-        
-        // Now update betting account balances and counters
-        let betting_account = &mut ctx.accounts.betting_account;
-        betting_account.balance = betting_account.balance.checked_sub(amount).unwrap();
-        betting_account.total_withdrawn = betting_account.total_withdrawn.checked_add(amount).unwrap();
-        betting_account.withdrawal_count = betting_account.withdrawal_count.checked_add(1).unwrap();
-        betting_account.last_withdrawal = current_time;
-        betting_account.last_activity = current_time;
-        
-        // User Story 2a: Emit withdrawal event for tracking, verifiable on devnet
-        emit!(SolWithdrawn {
+
+        // Update balance records with real devnet timestamps
+        let previous_balance = betting_account.balance;
+        betting_account.balance -= amount;
+        betting_account.total_withdrawn += amount;
+        betting_account.withdrawal_count += 1;
+        betting_account.last_updated = current_time;
+        betting_account.last_withdrawal_time = current_time; // User Story 2a: Track withdrawal time
+
+        // User Story 2a: Emit withdrawal event; update real balance records on devnet
+        emit!(WithdrawalCompleted {
             user: ctx.accounts.user.key(),
-            account: betting_account.key(),
+            pda_address: betting_account.key(),
             amount,
+            previous_balance,
             new_balance: betting_account.balance,
-            available_balance: betting_account.balance - betting_account.locked_funds,
+            transaction_count: betting_account.withdrawal_count,
             timestamp: current_time,
         });
-        
+
         Ok(())
     }
 
-    /// Lock funds for active bets - prevents withdrawal of funds in active wagers
     pub fn lock_funds(ctx: Context<LockFunds>, amount: u64) -> Result<()> {
+        require!(amount > 0, BettingError::InvalidWithdrawalAmount);
+        
         let betting_account = &mut ctx.accounts.betting_account;
+        let available_balance = betting_account.balance - betting_account.locked_balance;
+        require!(amount <= available_balance, BettingError::InsufficientBalance);
         
-        require!(amount > 0, ErrorCode::LockAmountInvalid);
-        let available_balance = betting_account.balance.checked_sub(betting_account.locked_funds)
-            .ok_or(ErrorCode::InsufficientAvailableBalance)?;
-        require!(amount <= available_balance, ErrorCode::InsufficientAvailableBalance);
-        
-        betting_account.locked_funds = betting_account.locked_funds.checked_add(amount).unwrap();
-        betting_account.last_activity = Clock::get()?.unix_timestamp;
+        betting_account.locked_balance += amount;
+        betting_account.last_updated = Clock::get()?.unix_timestamp;
         
         emit!(FundsLocked {
             user: ctx.accounts.user.key(),
             account: betting_account.key(),
             amount,
-            total_locked: betting_account.locked_funds,
+            total_locked: betting_account.locked_balance,
             timestamp: Clock::get()?.unix_timestamp,
         });
         
         Ok(())
     }
 
-    /// Unlock funds after bet settlement
     pub fn unlock_funds(ctx: Context<UnlockFunds>, amount: u64) -> Result<()> {
+        require!(amount > 0, BettingError::InvalidWithdrawalAmount);
+        
         let betting_account = &mut ctx.accounts.betting_account;
+        require!(amount <= betting_account.locked_balance, BettingError::InsufficientLockedFunds);
         
-        require!(amount > 0, ErrorCode::UnlockAmountInvalid);
-        require!(amount <= betting_account.locked_funds, ErrorCode::UnlockAmountExceedsLocked);
-        
-        betting_account.locked_funds = betting_account.locked_funds.checked_sub(amount).unwrap();
-        betting_account.last_activity = Clock::get()?.unix_timestamp;
+        betting_account.locked_balance -= amount;
+        betting_account.last_updated = Clock::get()?.unix_timestamp;
         
         emit!(FundsUnlocked {
             user: ctx.accounts.user.key(),
             account: betting_account.key(),
             amount,
-            total_locked: betting_account.locked_funds,
+            total_locked: betting_account.locked_balance,
             timestamp: Clock::get()?.unix_timestamp,
         });
         
@@ -172,13 +180,17 @@ pub mod nen_betting {
     }
 }
 
+// ==========================================
+// ACCOUNT CONTEXTS
+// ==========================================
+
 #[derive(Accounts)]
 pub struct CreateBettingAccount<'info> {
     #[account(
         init,
         payer = user,
-        space = 8 + 32 + 8 + 8 + 8 + 8 + 8 + 8 + 8, // Account discriminator + Pubkey + 6 u64 + 2 i64
-        seeds = [b"betting-account", user.key().as_ref()],
+        space = 8 + 32 + 8 + 8 + 8 + 8 + 4 + 4 + 8 + 8 + 8 + 1, // discriminator + user + balances + counts + timestamps + bump
+        seeds = [b"betting_account", user.key().as_ref()],
         bump
     )]
     pub betting_account: Account<'info, BettingAccount>,
@@ -191,8 +203,8 @@ pub struct CreateBettingAccount<'info> {
 pub struct DepositSol<'info> {
     #[account(
         mut,
-        seeds = [b"betting-account", user.key().as_ref()],
-        bump
+        seeds = [b"betting_account", user.key().as_ref()],
+        bump = betting_account.bump
     )]
     pub betting_account: Account<'info, BettingAccount>,
     #[account(mut)]
@@ -205,26 +217,24 @@ pub struct DepositSol<'info> {
 pub struct WithdrawSol<'info> {
     #[account(
         mut,
-        seeds = [b"betting-account", user.key().as_ref()],
-        bump,
-        constraint = betting_account.owner == user.key() @ ErrorCode::UnauthorizedWithdrawal
+        seeds = [b"betting_account", user.key().as_ref()],
+        bump = betting_account.bump,
+        has_one = user
     )]
     pub betting_account: Account<'info, BettingAccount>,
     #[account(mut)]
     pub user: Signer<'info>,
-    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
 pub struct LockFunds<'info> {
     #[account(
         mut,
-        seeds = [b"betting-account", user.key().as_ref()],
-        bump,
-        constraint = betting_account.owner == user.key() @ ErrorCode::UnauthorizedLock
+        seeds = [b"betting_account", user.key().as_ref()],
+        bump = betting_account.bump,
+        has_one = user
     )]
     pub betting_account: Account<'info, BettingAccount>,
-    #[account(mut)]
     pub user: Signer<'info>,
 }
 
@@ -232,52 +242,63 @@ pub struct LockFunds<'info> {
 pub struct UnlockFunds<'info> {
     #[account(
         mut,
-        seeds = [b"betting-account", user.key().as_ref()],
-        bump,
-        constraint = betting_account.owner == user.key() @ ErrorCode::UnauthorizedUnlock
+        seeds = [b"betting_account", user.key().as_ref()],
+        bump = betting_account.bump,
+        has_one = user
     )]
     pub betting_account: Account<'info, BettingAccount>,
-    #[account(mut)]
     pub user: Signer<'info>,
 }
 
+// ==========================================
+// ACCOUNT STRUCTURES  
+// ==========================================
+
 #[account]
 pub struct BettingAccount {
-    pub owner: Pubkey,
-    pub balance: u64,
-    pub total_deposited: u64,
-    pub total_withdrawn: u64,
-    pub locked_funds: u64,
-    pub last_activity: i64,
-    /// User Story 2a: Track last withdrawal timestamp for 24-hour cooldown
-    pub last_withdrawal: i64,
-    pub withdrawal_count: u64,
+    pub user: Pubkey,              // Owner of this betting account
+    pub balance: u64,              // Current SOL balance in lamports
+    pub total_deposited: u64,      // Lifetime deposits
+    pub total_withdrawn: u64,      // Lifetime withdrawals
+    pub locked_balance: u64,       // Funds locked in active bets
+    pub deposit_count: u32,        // Number of deposits made
+    pub withdrawal_count: u32,     // Number of withdrawals made
+    pub created_at: i64,           // Account creation timestamp
+    pub last_updated: i64,         // Last transaction timestamp
+    pub last_withdrawal_time: i64, // Last withdrawal timestamp for cooldown (User Story 2a)
+    pub bump: u8,                  // PDA bump seed
 }
+
+// ==========================================
+// EVENTS (User Story 2: Emit deposit event for tracking)
+// ==========================================
 
 #[event]
 pub struct BettingAccountCreated {
     pub user: Pubkey,
-    pub account: Pubkey,
+    pub pda_address: Pubkey,
     pub timestamp: i64,
 }
 
 #[event]
-pub struct SolDeposited {
+pub struct DepositCompleted {
     pub user: Pubkey,
-    pub account: Pubkey,
+    pub pda_address: Pubkey,
     pub amount: u64,
+    pub previous_balance: u64,
     pub new_balance: u64,
+    pub transaction_count: u32,
     pub timestamp: i64,
 }
 
-/// User Story 2a: SOL withdrawal event for tracking, verifiable on devnet
 #[event]
-pub struct SolWithdrawn {
+pub struct WithdrawalCompleted {
     pub user: Pubkey,
-    pub account: Pubkey,
+    pub pda_address: Pubkey,
     pub amount: u64,
+    pub previous_balance: u64,
     pub new_balance: u64,
-    pub available_balance: u64,
+    pub transaction_count: u32,
     pub timestamp: i64,
 }
 
@@ -299,33 +320,30 @@ pub struct FundsUnlocked {
     pub timestamp: i64,
 }
 
+// ==========================================
+// ERROR CODES
+// ==========================================
+
 #[error_code]
-pub enum ErrorCode {
-    #[msg("Deposit amount too small (minimum 0.1 SOL)")]
-    DepositTooSmall,
-    #[msg("Deposit amount too large (maximum 100 SOL)")]
-    DepositTooLarge,
-    // User Story 2a: Withdrawal error codes
-    #[msg("Withdrawal amount must be greater than 0")]
-    WithdrawalAmountInvalid,
-    #[msg("Withdrawal amount too small (minimum 0.01 SOL)")]
-    WithdrawalTooSmall,
-    #[msg("Insufficient available balance (funds may be locked in active bets)")]
-    InsufficientAvailableBalance,
-    #[msg("Withdrawal cooldown active - must wait 24 hours between withdrawals")]
+pub enum BettingError {
+    #[msg("Deposit amount below minimum required")]
+    BelowMinimumDeposit,
+    
+    #[msg("Deposit amount above maximum allowed")]
+    AboveMaximumDeposit,
+    
+    #[msg("Invalid withdrawal amount")]
+    InvalidWithdrawalAmount,
+    
+    #[msg("Insufficient balance for this operation")]
+    InsufficientBalance,
+    
+    #[msg("Insufficient locked funds for this operation")]
+    InsufficientLockedFunds,
+    
+    #[msg("24-hour withdrawal cooldown is active")]
     WithdrawalCooldownActive,
-    #[msg("Unauthorized withdrawal attempt")]
-    UnauthorizedWithdrawal,
-    #[msg("Insufficient lamports in account for withdrawal plus rent")]
-    InsufficientAccountLamports,
-    #[msg("Lock amount must be greater than 0")]
-    LockAmountInvalid,
-    #[msg("Unauthorized lock attempt")]
-    UnauthorizedLock,
-    #[msg("Unlock amount must be greater than 0")]
-    UnlockAmountInvalid,
-    #[msg("Unlock amount exceeds locked funds")]
-    UnlockAmountExceedsLocked,
-    #[msg("Unauthorized unlock attempt")]
-    UnauthorizedUnlock,
+    
+    #[msg("Unauthorized access")]
+    Unauthorized,
 }

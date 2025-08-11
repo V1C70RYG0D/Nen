@@ -113,12 +113,12 @@ const TrainingClient: React.FC = () => {
   // Validation state
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
 
-  // API Base URL from environment with fallback to process.env check
+  // API Base URL from environment with fallback to our working backend
   const getApiBaseUrl = () => {
     if (typeof window !== 'undefined') {
-      return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:3011';
+      return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
     }
-    return 'http://127.0.0.1:3011';
+    return 'http://localhost:3001';
   };
   
   const API_BASE_URL = getApiBaseUrl();

@@ -32,8 +32,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-  // Prefer devnet-backed single match endpoint
-  const backendUrl = `${BACKEND_URL}/api/devnet/matches/${matchId}`;
+  // Use the standard matches endpoint
+  const backendUrl = `${BACKEND_URL}/api/matches/${matchId}`;
     
     const response = await fetch(backendUrl, {
       method: req.method,

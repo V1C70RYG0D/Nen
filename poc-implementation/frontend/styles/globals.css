@@ -203,6 +203,28 @@
     }
   }
 
+  /* Cyber Input Field */
+  .cyber-input {
+    @apply w-full px-4 py-3 bg-cyber-dark/50 border border-gray-700 text-white placeholder-gray-500 font-mono text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-solana-purple/50 focus:border-solana-purple/50;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+    
+    &:hover {
+      @apply border-gray-600;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 100%);
+    }
+    
+    &:focus {
+      background: linear-gradient(135deg, rgba(153, 69, 255, 0.1) 0%, transparent 100%);
+      box-shadow: 
+        0 0 20px rgba(153, 69, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    
+    &::placeholder {
+      @apply text-gray-500;
+    }
+  }
+
   /* Wallet Button Override */
   .wallet-adapter-button {
     @apply !bg-gradient-to-r !from-solana-purple !to-magicblock-primary !border-0 !rounded-none;

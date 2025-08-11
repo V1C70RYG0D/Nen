@@ -94,7 +94,7 @@ export class RealBettingClient {
    */
   private getBettingAccountPDA(userPublicKey: PublicKey): [PublicKey, number] {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('betting-account'), userPublicKey.toBuffer()],
+      [Buffer.from('betting_account'), userPublicKey.toBuffer()],
       BETTING_PROGRAM_ID
     );
   }

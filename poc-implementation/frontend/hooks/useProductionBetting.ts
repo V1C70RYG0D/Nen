@@ -120,8 +120,8 @@ export const useProductionBetting = () => {
         const balance = (account.balance && typeof account.balance === 'object' && typeof account.balance.toNumber === 'function') 
           ? account.balance.toNumber() / 1_000_000_000 
           : 0; // Convert lamports to SOL
-        const lockedBalance = (account.lockedFunds && typeof account.lockedFunds === 'object' && typeof account.lockedFunds.toNumber === 'function')
-          ? account.lockedFunds.toNumber() / 1_000_000_000
+        const lockedBalance = (account.lockedBalance && typeof account.lockedBalance === 'object' && typeof account.lockedBalance.toNumber === 'function')
+          ? account.lockedBalance.toNumber() / 1_000_000_000
           : 0;
         const availableBalance = balance - lockedBalance;
         
@@ -139,10 +139,8 @@ export const useProductionBetting = () => {
           lockedBalance: isNaN(lockedBalance) ? 0 : lockedBalance,
           totalDeposited: isNaN(totalDeposited) ? 0 : totalDeposited,
           totalWithdrawn: isNaN(totalWithdrawn) ? 0 : totalWithdrawn,
-          depositCount: 0, // Not available in current schema
-          withdrawalCount: (account.withdrawalCount && typeof account.withdrawalCount === 'object' && typeof account.withdrawalCount.toNumber === 'function')
-            ? account.withdrawalCount.toNumber()
-            : 0,
+          depositCount: typeof account.depositCount === 'object' && typeof (account.depositCount as any).toNumber === 'function' ? (account.depositCount as any).toNumber() : Number(account.depositCount || 0),
+          withdrawalCount: typeof account.withdrawalCount === 'object' && typeof (account.withdrawalCount as any).toNumber === 'function' ? (account.withdrawalCount as any).toNumber() : Number(account.withdrawalCount || 0),
           accountExists: true,
           isLoading: false,
           error: null,

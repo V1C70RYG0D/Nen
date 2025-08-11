@@ -59,8 +59,9 @@ export const endpoints = {
   // Betting endpoints
   betting: {
     placeBet: '/api/betting/place',
-    getBets: (address: string) => `/api/betting/user/${address}`,
-    pool: (matchId: string) => `/api/betting/pool/${matchId}`,
+  getBets: (address: string) => `/api/betting/user/${address}`,
+  pools: (matchId: string) => `/api/betting/pools/${matchId}`,
+  claim: (betId: string) => `/api/betting/claim/${betId}`,
   },
   
   // AI Agent endpoints

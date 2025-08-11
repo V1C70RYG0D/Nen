@@ -232,7 +232,7 @@ app.post('/api/user/withdraw', (req: Request, res: Response) => {
       userStory: 'User Story 2 - Real SOL withdrawals from betting PDA'
     }
   });
-
+});
 
 // 🚨 DEPRECATED SIMULATION - REPLACED WITH REAL SOLANA IMPLEMENTATION
 app.get('/api/user/transaction-history/:walletAddress', (req: Request, res: Response) => {

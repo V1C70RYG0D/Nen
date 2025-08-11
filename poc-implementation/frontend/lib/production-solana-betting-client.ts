@@ -22,8 +22,15 @@ import { WalletContextState } from '@solana/wallet-adapter-react';
 
 // Configuration from environment variables (no hardcoding)
 const CONFIG = {
-  PROGRAM_ID: new PublicKey(process.env.NEXT_PUBLIC_BETTING_PROGRAM_ID || '34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5'),
-  RPC_URL: process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com',
+  PROGRAM_ID: (() => {
+    const pid = process.env.NEXT_PUBLIC_BETTING_PROGRAM_ID || '34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5';
+    return new PublicKey(pid);
+  })(),
+  RPC_URL: (() => {
+    const url = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+    if (!url) throw new Error('NEXT_PUBLIC_SOLANA_RPC_URL is required');
+    return url;
+  })(),
   MIN_DEPOSIT_SOL: parseFloat(process.env.NEXT_PUBLIC_MIN_DEPOSIT_SOL || '0.1'),
   MAX_DEPOSIT_SOL: parseFloat(process.env.NEXT_PUBLIC_MAX_DEPOSIT_SOL || '1000'),
   COMMITMENT: 'confirmed' as const,
@@ -80,11 +87,8 @@ export class ProductionSolanaBettingClient {
   private wallet: WalletContextState | null = null;
 
   constructor() {
-    this.connection = new Connection(CONFIG.RPC_URL, CONFIG.COMMITMENT);
-    console.log(`🔗 Connected to Solana devnet: ${CONFIG.RPC_URL}`);
-    if (!process.env.NEXT_PUBLIC_BETTING_PROGRAM_ID) {
-      console.warn('⚠️ NEXT_PUBLIC_BETTING_PROGRAM_ID not set. Using default devnet program id fallback.');
-    }
+  this.connection = new Connection(CONFIG.RPC_URL, CONFIG.COMMITMENT);
+  console.log(`🔗 Connected to Solana devnet: ${CONFIG.RPC_URL}`);
   }
 
   /**
@@ -156,7 +160,7 @@ export class ProductionSolanaBettingClient {
    */
   getBettingAccountPDA(userPublicKey: PublicKey): [PublicKey, number] {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('betting-account'), userPublicKey.toBuffer()],
+  [Buffer.from('betting_account'), userPublicKey.toBuffer()],
       CONFIG.PROGRAM_ID
     );
   }

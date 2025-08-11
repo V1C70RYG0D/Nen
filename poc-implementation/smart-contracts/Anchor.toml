@@ -4,11 +4,11 @@ skip-lint = false
 
 [programs.localnet]
 nen_core = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
-nen_betting = "C8uJ3ABMU87GjcB8moR1jiiAgYnFUDR17DBfiQE4eUcz"
+nen_betting = "34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5"
 
 [programs.devnet]
 nen_core = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
-nen_betting = "C8uJ3ABMU87GjcB8moR1jiiAgYnFUDR17DBfiQE4eUcz"
+nen_betting = "34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5"
 
 [provider]
 cluster = "devnet"

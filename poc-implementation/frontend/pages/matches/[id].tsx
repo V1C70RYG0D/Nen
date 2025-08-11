@@ -70,23 +70,13 @@ export default function MatchDetailPage() {
     fetchMatchDetails();
   }, [id]);
 
+
   // Handle betting action with real devnet integration
   const handleBetClick = useCallback(async (agentChoice: 1 | 2) => {
     if (!match) return;
-
-    try {
-      // TODO: Implement real devnet betting with Solana wallet integration
-      console.log('User Story 3: Initiating bet on agent', agentChoice, 'for match', match.id);
-      
-      // For now, show that betting would work with real devnet transactions
-      alert(`User Story 3: Betting on ${agentChoice === 1 ? match.agent1.name : match.agent2.name}\\n\\nThis would integrate with:\\n- Real Solana wallet connection\\n- Devnet PDA transactions\\n- MagicBlock escrow accounts\\n- Real SOL transfers`);
-      
-      setSelectedAgent(agentChoice);
-    } catch (err) {
-      console.error('Betting error:', err);
-      setError('Failed to place bet. Please try again.');
-    }
-  }, [match]);
+    // Navigate to arena page for unified BettingPanel flow
+    router.push(`/arena/${match.id}?bet=${agentChoice}`);
+  }, [match, router]);
 
   // Handle live match viewing
   const handleWatchLive = useCallback(() => {

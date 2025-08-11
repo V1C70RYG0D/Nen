@@ -3,15 +3,18 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBetting } from '@/hooks/useBetting';
+import { useBettingProd } from '@/hooks/useBettingProd';
 import { formatSOL } from '@/utils/format';
 import toast from 'react-hot-toast';
 import Confetti from 'react-confetti';
+import { apiClient } from '@/lib/api-client';
+import { endpoints } from '@/lib/api-config';
 
 interface Agent {
   id: string;
   name: string;
   elo: number;
-  winRate: number;
+  winRate?: number;
   nenType: string;
   avatar?: string;
   specialAbility?: string;
@@ -21,19 +24,43 @@ interface BettingPanelProps {
   matchId: string;
   agent1: Agent;
   agent2: Agent;
+  initialSelectedAgent?: 1 | 2;
 }
 
 export const BettingPanel: React.FC<BettingPanelProps> = ({
   matchId,
   agent1,
   agent2,
+  initialSelectedAgent,
 }) => {
   const { publicKey, connected } = useWallet();
-  const { placeBet, pools, userBets, isLoading, refetch } = useBetting(matchId);
-  const [selectedAgent, setSelectedAgent] = useState<1 | 2 | null>(null);
+  const { placeBet: placeBetMock, pools, userBets, isLoading, refetch } = useBetting(matchId);
+  const { placeBet: placeBetProd } = useBettingProd();
+  const [selectedAgent, setSelectedAgent] = useState<1 | 2 | null>(initialSelectedAgent ?? null);
   const [betAmount, setBetAmount] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
   const [isPlacingBet, setIsPlacingBet] = useState(false);
+
+  const handleClaim = async (betId: string) => {
+    try {
+      const res = await apiClient.post(endpoints.betting.claim(betId));
+      const payout = (res as any)?.data?.payout || (res as any)?.payout;
+      if (payout?.amount) {
+        toast.success(`Payout claimed: ${payout.amount} SOL`);
+      } else {
+        toast.success('Claim processed');
+      }
+      refetch();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to claim payout');
+    }
+  };
+
+  useEffect(() => {
+    if (initialSelectedAgent) {
+      setSelectedAgent(initialSelectedAgent);
+    }
+  }, [initialSelectedAgent]);
 
   useEffect(() => {
     // Refetch betting data every 5 seconds
@@ -59,23 +86,39 @@ export const BettingPanel: React.FC<BettingPanelProps> = ({
 
     setIsPlacingBet(true);
     try {
-      await placeBet({
-        matchId,
-        agent: selectedAgent,
-        amount: parseFloat(betAmount) * LAMPORTS_PER_SOL,
-      });
+      const amountSol = parseFloat(betAmount);
+      if (amountSol < 0.1 || amountSol > 100) {
+        throw new Error('Bet amount must be between 0.1 and 100 SOL');
+      }
+
+  const result = await placeBetProd({ matchId, agent: selectedAgent, amountSol });
 
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 5000);
       
-      toast.success(`Bet placed on ${selectedAgent === 1 ? agent1.name : agent2.name}!`);
+      toast.success(
+        <span>
+          Bet placed on {selectedAgent === 1 ? agent1.name : agent2.name}! <a className="underline text-solana-green" target="_blank" rel="noreferrer" href={result.explorer}>View</a>
+        </span>
+      );
       
       // Reset form
       setSelectedAgent(null);
       setBetAmount('');
+      refetch();
+
+      // Proactively ask backend to prepare claim state for this bet (non-blocking)
+      try {
+        const betId = (result as any)?.betId;
+        if (betId) {
+          await apiClient.post(endpoints.betting.claim(betId));
+        }
+      } catch (e) {
+        console.debug('Claim prep call failed or skipped:', e);
+      }
     } catch (error) {
       console.error('Betting failed:', error);
-      toast.error('Failed to place bet. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Failed to place bet.');
     } finally {
       setIsPlacingBet(false);
     }
@@ -156,7 +199,7 @@ export const BettingPanel: React.FC<BettingPanelProps> = ({
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Win Rate</span>
                     <span className="font-mono font-bold text-solana-green">
-                      {(agent1.winRate * 100).toFixed(1)}%
+                      {(((agent1.winRate ?? 0) * 100)).toFixed(1)}%
                     </span>
                   </div>
                   {agent1.specialAbility && (
@@ -227,7 +270,7 @@ export const BettingPanel: React.FC<BettingPanelProps> = ({
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Win Rate</span>
                     <span className="font-mono font-bold text-solana-green">
-                      {(agent2.winRate * 100).toFixed(1)}%
+                      {(((agent2.winRate ?? 0) * 100)).toFixed(1)}%
                     </span>
                   </div>
                   {agent2.specialAbility && (
@@ -391,9 +434,19 @@ export const BettingPanel: React.FC<BettingPanelProps> = ({
                         {bet.agent === 1 ? agent1.name : agent2.name}
                       </span>
                     </div>
-                    <span className="font-mono font-bold text-solana-green">
-                      {formatSOL(bet.amount)} SOL
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono font-bold text-solana-green">
+                        {formatSOL(bet.amount)} SOL
+                      </span>
+                      {bet.status === 'won' && (
+                        <button
+                          onClick={() => handleClaim(bet.id)}
+                          className="px-3 py-1 text-xs bg-solana-green/20 border border-solana-green/50 hover:bg-solana-green/30 text-white transition"
+                        >
+                          Claim
+                        </button>
+                      )}
+                    </div>
                   </motion.div>
                 ))}
               </div>

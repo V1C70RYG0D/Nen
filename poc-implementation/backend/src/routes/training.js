@@ -239,7 +239,53 @@ router.post('/sessions/replay-based', async (req, res) => {
       });
     }
 
+    // Validate training parameters
+    const validFocusAreas = ['openings', 'midgame', 'endgame', 'all'];
+    const validIntensities = ['low', 'medium', 'high'];
+    
+    if (!validFocusAreas.includes(trainingParams.focusArea)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid focusArea: ${trainingParams.focusArea}. Must be one of: ${validFocusAreas.join(', ')}`
+      });
+    }
+    
+    if (!validIntensities.includes(trainingParams.intensity)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid intensity: ${trainingParams.intensity}. Must be one of: ${validIntensities.join(', ')}`
+      });
+    }
+    
+    if (!Number.isInteger(trainingParams.maxMatches) || trainingParams.maxMatches < 1 || trainingParams.maxMatches > 100) {
+      return res.status(400).json({
+        success: false,
+        error: 'maxMatches must be an integer between 1 and 100'
+      });
+    }
+
+    // Validate wallet and agent mint are valid PublicKeys
+    try {
+      new trainingService.getConnection().constructor.PublicKey || require('@solana/web3.js').PublicKey;
+      const { PublicKey } = require('@solana/web3.js');
+      new PublicKey(walletPubkey);
+      new PublicKey(agentMint);
+    } catch (keyError) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid wallet address or agent mint - must be valid Solana PublicKeys'
+      });
+    }
+
     console.log(`🚀 Starting training session for agent ${agentMint} with ${selectedReplays.length} replays`);
+    console.log(`Training parameters:`, {
+      focusArea: trainingParams.focusArea,
+      intensity: trainingParams.intensity,
+      maxMatches: trainingParams.maxMatches,
+      learningRate: trainingParams.learningRate,
+      epochs: trainingParams.epochs,
+      batchSize: trainingParams.batchSize
+    });
 
     // Load replay database to get commitment hashes
     const replayDatabase = loadReplayDatabase();
@@ -274,13 +320,31 @@ router.post('/sessions/replay-based', async (req, res) => {
     const sessionId = trainingService.uuidv4();
     
     // Create training session on-chain
-    const onChainResult = await trainingService.createTrainingSessionOnChain({
+    console.log('Creating training session on-chain with parameters:', {
       walletPubkey,
       agentMint,
       sessionId,
-      replayCommitments,
+      replayCommitmentsCount: replayCommitments.length,
       trainingParams
     });
+    
+    let onChainResult;
+    try {
+      onChainResult = await trainingService.createTrainingSessionOnChain({
+        walletPubkey,
+        agentMint,
+        sessionId,
+        replayCommitments,
+        trainingParams
+      });
+      console.log('✅ On-chain training session created:', onChainResult);
+    } catch (onChainError) {
+      console.error('❌ Failed to create on-chain training session:', onChainError.message);
+      if (onChainError.logs) {
+        console.error('Transaction logs:', onChainError.logs);
+      }
+      throw new Error(`On-chain session creation failed: ${onChainError.message}`);
+    }
 
     // Calculate training fee
     const baseRate = 0.05; // 0.05 SOL per hour

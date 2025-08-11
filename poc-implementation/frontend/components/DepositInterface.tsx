@@ -8,6 +8,8 @@ import {
   sendAndConfirmTransaction 
 } from '@solana/web3.js';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { apiClient } from '../lib/api-client';
+import { endpoints } from '../lib/api-config';
 
 /**
  * User Story 2: Deposit Interface Component
@@ -80,7 +82,7 @@ const DepositInterface: React.FC<DepositInterfaceProps> = ({
     try {
       // Generate PDA for betting account (User Story 2 requirement)
       const seeds = [
-        Buffer.from('betting-account'),
+        Buffer.from('betting_account'),
         publicKey.toBuffer()
       ];
       
@@ -162,6 +164,17 @@ const DepositInterface: React.FC<DepositInterfaceProps> = ({
       // Update balances
       await loadWalletData();
       
+      // Record deposit with backend for accounting (non-on-chain ledger)
+      try {
+        await apiClient.post(endpoints.user.deposit, {
+          walletAddress: publicKey.toString(),
+          amount,
+          transactionSignature: signature,
+        });
+      } catch (e) {
+        console.warn('Backend deposit recording failed:', e);
+      }
+
       // Add to transaction history
       const newTransaction = {
         signature,

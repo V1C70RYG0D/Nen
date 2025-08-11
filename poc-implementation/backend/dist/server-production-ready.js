@@ -30,6 +30,7 @@ const game_1 = __importDefault(require("./routes/game"));
 const user_1 = __importDefault(require("./routes/user"));
 const nft_1 = __importDefault(require("./routes/nft"));
 const auth_1 = __importDefault(require("./routes/auth"));
+const rooms_1 = __importDefault(require("./routes/rooms"));
 // Load environment variables
 dotenv_1.default.config();
 // Setup global error handlers
@@ -187,6 +188,7 @@ app.use('/api/v1/game', game_1.default);
 app.use('/api/v1/user', user_1.default);
 app.use('/api/v1/nft', nft_1.default);
 app.use('/api/v1/auth', auth_1.default);
+app.use('/api/v1/rooms', rooms_1.default);
 // Health check endpoint
 app.get('/health', highPerformance_1.healthCheck);
 // API documentation endpoint

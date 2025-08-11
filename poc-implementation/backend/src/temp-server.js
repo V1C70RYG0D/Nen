@@ -687,108 +687,259 @@ try {
 
 // =========================
 // User Story 4: Place Bet API (Solana Devnet)
+// Wallet-signed flow: backend builds an unsigned transaction that the
+// client signs and submits. No private keys from users ever touch backend.
 // =========================
-const { Connection, PublicKey, Keypair, LAMPORTS_PER_SOL, SystemProgram, Transaction, sendAndConfirmTransaction } = require('@solana/web3.js');
-const bs58 = require('bs58');
-
-// Helper: Load user keypair from base58 secret (for demo; in production, use wallet adapter)
-function loadUserKeypair(secret) {
-  return Keypair.fromSecretKey(bs58.decode(secret));
-}
+const { Connection, PublicKey, Keypair, LAMPORTS_PER_SOL, SystemProgram, Transaction } = require('@solana/web3.js');
+const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 
 // Helper: Get devnet connection
 function getDevnetConnection() {
-  return new Connection('https://api.devnet.solana.com', 'confirmed');
+  const rpc = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+  return new Connection(rpc, 'confirmed');
 }
 
-// POST /api/bets
-app.post('/api/bets', async (req, res) => {
+// Deterministic per-match escrow keypair derived from secret seed in env
+function deriveMatchEscrowKeypair(matchId) {
+  const seedSecret = process.env.ESCROW_SEED_SECRET;
+  if (!seedSecret) {
+    throw new Error('ESCROW_SEED_SECRET not set');
+  }
+  const hash = crypto.createHash('sha256').update(`${seedSecret}:${matchId}`).digest();
+  // Use first 32 bytes as seed
+  const seed32 = hash.subarray(0, 32);
+  return Keypair.fromSeed(seed32);
+}
+
+// Memo program id
+const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
+
+// Build a memo instruction
+function buildMemoInstruction(message, payer) {
+  const data = Buffer.from(message, 'utf8');
+  return new (require('@solana/web3.js').TransactionInstruction)({
+    keys: [{ pubkey: payer, isSigner: true, isWritable: false }],
+    programId: MEMO_PROGRAM_ID,
+    data,
+  });
+}
+
+// In-memory confirmed bets index (derived from on-chain confirmations)
+const confirmedBets = new Map(); // key: matchId -> array of bets
+
+// GET /api/betting/pools/:matchId -> real on-chain totals from escrow account + confirmed splits
+app.get('/api/betting/pools/:matchId', async (req, res) => {
+  try {
+    const { matchId } = req.params;
+    const match = demoMatches.find(m => m.id === matchId);
+    if (!match) return res.status(404).json({ success: false, error: 'Match not found' });
+
+    const connection = getDevnetConnection();
+    const escrow = deriveMatchEscrowKeypair(matchId).publicKey;
+    const balanceLamports = await connection.getBalance(escrow);
+
+    // Aggregate splits from confirmed bets cache
+    const bets = confirmedBets.get(matchId) || [];
+    const agent1Pool = bets.filter(b => b.agentChoice === 1).reduce((s, b) => s + b.amountLamports, 0);
+    const agent2Pool = bets.filter(b => b.agentChoice === 2).reduce((s, b) => s + b.amountLamports, 0);
+
+    // Fallback: if no split data yet, divide evenly (display only) but keep total from chain
+    const hasSplit = agent1Pool + agent2Pool > 0;
+    const computedAgent1 = hasSplit ? agent1Pool : Math.floor(balanceLamports / 2);
+    const computedAgent2 = hasSplit ? agent2Pool : balanceLamports - computedAgent1;
+    const totalPool = balanceLamports;
+
+    // Simple odds: total / side (floor for zero-safe)
+    const oddsAgent1 = computedAgent1 > 0 ? totalPool / computedAgent1 : 2.0;
+    const oddsAgent2 = computedAgent2 > 0 ? totalPool / computedAgent2 : 2.0;
+
+    return res.json({
+      success: true,
+      data: {
+        matchId,
+        escrow: escrow.toBase58(),
+        totalPool,
+        agent1Pool: computedAgent1,
+        agent2Pool: computedAgent2,
+        oddsAgent1,
+        oddsAgent2,
+        betsCount: bets.length,
+        minBet: match.bettingPool?.minBet ?? Math.floor(0.1 * LAMPORTS_PER_SOL),
+        maxBet: match.bettingPool?.maxBet ?? Math.floor(100 * LAMPORTS_PER_SOL),
+        isOpenForBetting: match.bettingPool?.isOpenForBetting ?? (match.status === 'upcoming' || match.status === 'live'),
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error?.message || 'Internal error' });
+  }
+});
+
+// POST /api/bets/build-transaction -> returns unsigned tx for wallet to sign and send
+app.post('/api/bets/build-transaction', async (req, res) => {
   const startedAt = Date.now();
   try {
-    const { matchId, agentChoice, betAmountSol, userPubkey, userSecret } = req.body;
-    if (!matchId || !agentChoice || !betAmountSol || !userPubkey || !userSecret) {
+    const { matchId, agentChoice, amountSol, userPubkey } = req.body || {};
+    if (!matchId || !agentChoice || !amountSol || !userPubkey) {
       return res.status(400).json({ success: false, error: 'Missing required fields' });
     }
 
-    // Find match
     const match = demoMatches.find(m => m.id === matchId);
     if (!match || !match.bettingPool || !match.bettingPool.isOpenForBetting) {
       return res.status(400).json({ success: false, error: 'Match not open for betting' });
     }
 
-    // Validate bet amount
-    const minBet = match.bettingPool.minBet / LAMPORTS_PER_SOL;
-    const maxBet = match.bettingPool.maxBet / LAMPORTS_PER_SOL;
-    if (betAmountSol < minBet || betAmountSol > maxBet) {
+    const minBet = (match.bettingPool.minBet || Math.floor(0.1 * LAMPORTS_PER_SOL)) / LAMPORTS_PER_SOL;
+    const maxBet = (match.bettingPool.maxBet || Math.floor(100 * LAMPORTS_PER_SOL)) / LAMPORTS_PER_SOL;
+    if (amountSol < minBet || amountSol > maxBet) {
       return res.status(400).json({ success: false, error: `Bet amount must be between ${minBet} and ${maxBet} SOL` });
     }
 
-    // Connect to devnet
     const connection = getDevnetConnection();
-    const userKeypair = loadUserKeypair(userSecret);
-    const userWallet = new PublicKey(userPubkey);
+    const payer = new PublicKey(userPubkey);
+    const escrow = deriveMatchEscrowKeypair(matchId).publicKey;
+    const lamports = Math.floor(amountSol * LAMPORTS_PER_SOL);
 
-    // Check user balance
-    const userBalance = await connection.getBalance(userWallet);
-    if (userBalance < betAmountSol * LAMPORTS_PER_SOL) {
+    // Check payer balance
+    const balance = await connection.getBalance(payer);
+    if (balance < lamports) {
       return res.status(400).json({ success: false, error: 'Insufficient SOL balance' });
     }
 
-    // Reserve funds: transfer SOL to match escrow PDA (for demo, use a fixed escrow address)
-    const escrowPDA = PublicKey.findProgramAddressSync([
-      Buffer.from('escrow'), Buffer.from(matchId)
-    ], new PublicKey(process.env.BETTING_PROGRAM_ID || 'Bet111111111111111111111111111111111111111'))[0];
-
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: userWallet,
-        toPubkey: escrowPDA,
-        lamports: betAmountSol * LAMPORTS_PER_SOL
-      })
-    );
-
-    // Send transaction
-    const signature = await sendAndConfirmTransaction(connection, transaction, [userKeypair]);
-
-    // Create bet record (for demo, just return details)
-    const betId = `bet_${matchId}_${Date.now()}`;
-    // Update betting pool totals (simulate)
-    if (agentChoice === 1) {
-      match.bettingPool.agent1Pool += betAmountSol * LAMPORTS_PER_SOL;
-    } else {
-      match.bettingPool.agent2Pool += betAmountSol * LAMPORTS_PER_SOL;
-    }
-    match.bettingPool.totalPool += betAmountSol * LAMPORTS_PER_SOL;
-    match.bettingPool.betsCount += 1;
-
-    // Emit bet placed event (console log)
-    console.log(JSON.stringify({
-      level: 'info', service: 'nen-backend', endpoint: '/api/bets',
-      message: 'Bet placed', matchId, agentChoice, betAmountSol, userPubkey, betId, signature, durationMs: Date.now() - startedAt
-    }));
-
-    // Return result
-    return res.json({
-      success: true,
+    const betId = uuidv4();
+    const memoPayload = JSON.stringify({
+      kind: 'bet_place',
       betId,
       matchId,
       agentChoice,
-      betAmountSol,
-      userPubkey,
-      signature,
-      explorer: `https://explorer.solana.com/tx/${signature}?cluster=devnet`,
-      updatedPool: {
-        agent1Pool: match.bettingPool.agent1Pool,
-        agent2Pool: match.bettingPool.agent2Pool,
-        totalPool: match.bettingPool.totalPool,
-        betsCount: match.bettingPool.betsCount
-      }
+      amountLamports: lamports,
+      ts: new Date().toISOString(),
+    });
+
+    const recent = await connection.getLatestBlockhash('confirmed');
+    const tx = new Transaction({ feePayer: payer, recentBlockhash: recent.blockhash });
+    tx.add(buildMemoInstruction(memoPayload, payer));
+    tx.add(SystemProgram.transfer({ fromPubkey: payer, toPubkey: escrow, lamports }));
+
+    const txSerialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
+
+    console.log(JSON.stringify({
+      level: 'info', service: 'nen-backend', endpoint: '/api/bets/build-transaction',
+      message: 'Built unsigned bet tx', matchId, agentChoice, amountSol, betId, escrow: escrow.toBase58(), durationMs: Date.now() - startedAt
+    }));
+
+    return res.json({
+      success: true,
+      betId,
+      escrow: escrow.toBase58(),
+      transactionBase64: txSerialized,
+      recentBlockhash: recent.blockhash,
+      lastValidBlockHeight: recent.lastValidBlockHeight,
+      memo: memoPayload,
     });
   } catch (error) {
     console.error(JSON.stringify({
-      level: 'error', service: 'nen-backend', endpoint: '/api/bets',
+      level: 'error', service: 'nen-backend', endpoint: '/api/bets/build-transaction',
       message: error?.message || 'Internal error', stack: error?.stack, durationMs: Date.now() - startedAt
     }));
+    return res.status(500).json({ success: false, error: error?.message || 'Internal error' });
+  }
+});
+
+// POST /api/bets/confirm -> verify signature on-chain and record split for odds
+app.post('/api/bets/confirm', async (req, res) => {
+  try {
+    const { matchId, agentChoice, amountSol, userPubkey, signature } = req.body || {};
+    if (!matchId || !agentChoice || !amountSol || !userPubkey || !signature) {
+      return res.status(400).json({ success: false, error: 'Missing required fields' });
+    }
+
+    const connection = getDevnetConnection();
+    const tx = await connection.getParsedTransaction(signature, { maxSupportedTransactionVersion: 0, commitment: 'confirmed' });
+    if (!tx || tx.meta?.err) {
+      return res.status(400).json({ success: false, error: 'Transaction not found or failed' });
+    }
+
+    const escrow = deriveMatchEscrowKeypair(matchId).publicKey.toBase58();
+    const payer = new PublicKey(userPubkey).toBase58();
+    const lamports = Math.floor(amountSol * LAMPORTS_PER_SOL);
+
+    // Validate transfer to escrow from payer
+    const transferIx = tx.transaction.message.instructions.find(ix => {
+      const parsed = ix; // ParsedInstruction
+      return parsed.program === 'system' && parsed.parsed?.type === 'transfer' && parsed.parsed?.info;
+    });
+    if (!transferIx) {
+      return res.status(400).json({ success: false, error: 'No transfer instruction found' });
+    }
+    const info = transferIx.parsed.info;
+    if (info.destination !== escrow || info.source !== payer || parseInt(info.lamports, 10) !== lamports) {
+      return res.status(400).json({ success: false, error: 'Transfer does not match expected bet details' });
+    }
+
+    const betRecord = {
+      matchId,
+      agentChoice,
+      amountLamports: lamports,
+      userPubkey: payer,
+      signature,
+      explorer: `https://explorer.solana.com/tx/${signature}?cluster=devnet`,
+      ts: new Date().toISOString(),
+    };
+    const list = confirmedBets.get(matchId) || [];
+    list.push(betRecord);
+    confirmedBets.set(matchId, list);
+
+    return res.json({ success: true, bet: betRecord });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error?.message || 'Internal error' });
+  }
+});
+
+// Deprecated insecure route guard
+app.post('/api/bets', (req, res) => {
+  return res.status(410).json({ success: false, error: 'Endpoint removed. Use /api/bets/build-transaction and wallet signing.' });
+});
+
+// POST /api/matches/:id/cancel -> auto-refund all bets if match canceled before start
+app.post('/api/matches/:id/cancel', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const match = demoMatches.find(m => m.id === id);
+    if (!match) return res.status(404).json({ success: false, error: 'Match not found' });
+    if (match.status !== 'upcoming') {
+      return res.status(400).json({ success: false, error: 'Refunds only allowed before match start' });
+    }
+
+    const bets = confirmedBets.get(id) || [];
+    if (bets.length === 0) {
+      match.status = 'cancelled';
+      return res.json({ success: true, message: 'No bets to refund', refunds: [] });
+    }
+
+    const connection = getDevnetConnection();
+    const escrowKeypair = deriveMatchEscrowKeypair(id);
+    const refunds = [];
+    for (const b of bets) {
+      const tx = new Transaction().add(SystemProgram.transfer({
+        fromPubkey: escrowKeypair.publicKey,
+        toPubkey: new PublicKey(b.userPubkey),
+        lamports: b.amountLamports,
+      }));
+      tx.feePayer = escrowKeypair.publicKey;
+      const { blockhash } = await connection.getLatestBlockhash('confirmed');
+      tx.recentBlockhash = blockhash;
+      const signed = await (async () => { tx.sign(escrowKeypair); return tx; })();
+      const sig = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false });
+      await connection.confirmTransaction(sig, 'confirmed');
+      refunds.push({ user: b.userPubkey, amountLamports: b.amountLamports, signature: sig, explorer: `https://explorer.solana.com/tx/${sig}?cluster=devnet` });
+    }
+
+    confirmedBets.delete(id);
+    match.status = 'cancelled';
+
+    return res.json({ success: true, refunds });
+  } catch (error) {
     return res.status(500).json({ success: false, error: error?.message || 'Internal error' });
   }
 });

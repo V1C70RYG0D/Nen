@@ -13,6 +13,7 @@ export interface Agent {
   personality?: 'aggressive' | 'defensive' | 'tactical' | 'unpredictable';
   winRate?: number;
   totalMatches?: number;
+  specialAbility?: string;
   recentPerformance?: {
     wins: number;
     losses: number;
@@ -286,6 +287,7 @@ export interface MatchListProps {
   enableInfiniteScroll?: boolean;
   enableRealTimeUpdates?: boolean;
   onMatchSelect?: (match: Match) => void;
+  onBetClick?: (match: Match, agent: 1 | 2) => void;
   onError?: (error: string) => void;
   className?: string;
   emptyStateMessage?: string;

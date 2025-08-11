@@ -124,10 +124,8 @@ export default function HomePage() {
 
   // User Story 3: Handle betting action from match detail
   const handleBetClick = useCallback((match: Match, agentChoice: 1 | 2) => {
-    // TODO: Implement betting flow with real devnet transactions
-    console.log('User Story 3: Bet placed on', agentChoice === 1 ? match.agent1.name : match.agent2.name);
-    // Navigate to full match page for betting
-    router.push(`/matches/${match.id}?bet=${agentChoice}`);
+    // Route to Arena page with matchId; BettingPanel on that page handles real devnet flow
+    router.push(`/arena/${match.id}?bet=${agentChoice}`);
   }, [router]);
 
   // User Story 3: Handle watch live action
@@ -502,6 +500,7 @@ export default function HomePage() {
               enableInfiniteScroll={false}
               enableRealTimeUpdates={false} // Disable to prevent offline UI
               onMatchSelect={handleMatchClick} // User Story 3: Enable match detail viewing
+              onBetClick={handleBetClick}
               emptyStateMessage={`No ${selectedTab} matches at the moment. ${
                 selectedTab === 'live' 
                   ? 'Check the upcoming tab for scheduled battles!' 

@@ -19,6 +19,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { RealBettingClient, WithdrawalResult } from '../lib/real-betting-client';
+import { apiClient } from '../lib/api-client';
+import { endpoints } from '../lib/api-config';
 
 interface WithdrawalComponentProps {
   onWithdrawalSuccess?: (result: WithdrawalResult) => void;
@@ -164,6 +166,17 @@ export const WithdrawalInterface: React.FC<WithdrawalComponentProps> = ({
       // Refresh account state
       await loadAccountState();
       
+      // Record withdrawal with backend for accounting
+      try {
+        await apiClient.post(endpoints.user.withdraw, {
+          walletAddress: publicKey.toString(),
+          amount,
+          destinationAddress: publicKey.toString(),
+        });
+      } catch (e) {
+        console.warn('Backend withdrawal recording failed:', e);
+      }
+
       // Call success callback
       if (onWithdrawalSuccess) {
         onWithdrawalSuccess(result);
@@ -312,13 +325,13 @@ export const WithdrawalInterface: React.FC<WithdrawalComponentProps> = ({
           Withdrawal Amount (SOL):
         </label>
         <input
-          type=\"number\"
-          step=\"0.001\"
-          min=\"0.01\"
+          type="number"
+          step="0.001"
+          min="0.01"
           max={accountState.availableBalance}
           value={withdrawalAmount}
           onChange={(e) => setWithdrawalAmount(e.target.value)}
-          placeholder=\"Enter amount to withdraw\"
+          placeholder="Enter amount to withdraw"
           disabled={isLoading || !accountState.canWithdraw}
           style={{
             width: '100%',

@@ -11,13 +11,13 @@ import {
   EyeIcon,
   ClockIcon,
   TrophyIcon,
-  BoltIcon,
   ChartBarIcon,
   CurrencyDollarIcon,
   UsersIcon,
   PlayIcon,
   StarIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  BoltIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Match } from '@/types/match';
@@ -51,14 +51,18 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
     if (match && onBetClick) {
       setSelectedAgent(agentChoice);
       onBetClick(match, agentChoice);
+      // Close the modal after navigation
+      setTimeout(() => onClose(), 100);
     }
-  }, [match, onBetClick]);
+  }, [match, onBetClick, onClose]);
 
   const handleWatchClick = useCallback(() => {
     if (match && onWatchClick) {
       onWatchClick(match);
+      // Close the modal after navigation
+      setTimeout(() => onClose(), 100);
     }
-  }, [match, onWatchClick]);
+  }, [match, onWatchClick, onClose]);
 
   const handleBackdropClick = useCallback((e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -211,6 +215,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        console.log('Bet button clicked for agent 1');
                         handleBetClick(1);
                       }}
                       className="mt-4 w-full py-2 bg-gradient-to-r from-solana-purple to-magicblock-primary text-white font-cyber text-sm rounded-lg hover:opacity-80 transition-opacity"
@@ -294,6 +299,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        console.log('Bet button clicked for agent 2');
                         handleBetClick(2);
                       }}
                       className="mt-4 w-full py-2 bg-gradient-to-r from-solana-green to-solana-purple text-white font-cyber text-sm rounded-lg hover:opacity-80 transition-opacity"
@@ -365,7 +371,10 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
                     {/* Watch Live Button */}
                     {isLive && (
                       <button
-                        onClick={handleWatchClick}
+                        onClick={(e) => {
+                          console.log('Watch live button clicked');
+                          handleWatchClick();
+                        }}
                         className="w-full py-3 bg-gradient-to-r from-red-600 to-red-500 text-white font-cyber rounded-lg hover:opacity-80 transition-opacity flex items-center justify-center space-x-2"
                       >
                         <BoltIcon className="w-5 h-5" />

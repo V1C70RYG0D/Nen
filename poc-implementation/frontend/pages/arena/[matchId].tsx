@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout/Layout';
 import { GameBoard } from '@/components/GameBoard/GameBoard';
@@ -12,6 +12,12 @@ import { Match } from '@/types/match';
 export default function MatchPage() {
   const router = useRouter();
   const { matchId } = router.query;
+  const initialBetAgent = useMemo<1 | 2 | null>(() => {
+    const betParam = router.query.bet as string | undefined;
+    if (!betParam) return null;
+    const n = parseInt(betParam, 10);
+    return n === 1 || n === 2 ? (n as 1 | 2) : null;
+  }, [router.query.bet]);
   const [selectedView, setSelectedView] = useState<'board' | 'stats' | 'history'>('board');
   const [showChat, setShowChat] = useState(false);
 
@@ -84,19 +90,19 @@ export default function MatchPage() {
               <div className="flex items-center justify-center space-x-4 text-sm">
                 <div className="flex items-center space-x-1">
                   <span className="text-gray-400">Moves:</span>
-                  <span className="font-mono text-white">{match.moveCount}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <span className="text-gray-400">Moves:</span>
                   <span className="font-mono text-white">{match.gameState?.currentMove ?? 0}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <span className="text-gray-400">Pool:</span>
-                  <span className="font-mono text-solana-green">{formatSOL(match.totalPool)} SOL</span>
+                  <span className="font-mono text-solana-green">
+                    {match.bettingPool && typeof match.bettingPool.totalPool === 'number'
+                      ? `${formatSOL(match.bettingPool.totalPool)} SOL`
+                      : '-'}
+                  </span>
                 </div>
               </div>
             </div>
-                  <span className="font-mono text-solana-green">{formatSOL(match.bettingPool?.totalPool || 0)} SOL</span>
+
             {/* Agent 2 */}
             <div className="flex items-center space-x-4">
               <div className="text-center">
@@ -177,14 +183,14 @@ export default function MatchPage() {
                             <div>
                               <div className="flex justify-between text-sm mb-1">
                                 <span className="text-gray-400">Win Rate</span>
-                                <span className="text-white font-mono">{(agent.winRate * 100).toFixed(1)}%</span>
+                                <span className="text-white font-mono">{(((agent.winRate ?? 0) * 100)).toFixed(1)}%</span>
                               </div>
                               <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
                                 <div 
                                   className={`h-full bg-gradient-to-r ${
                                     index === 0 ? 'from-red-500 to-orange-500' : 'from-blue-500 to-cyan-500'
                                   }`}
-                                  style={{ width: `${agent.winRate * 100}%` }}
+                                  style={{ width: `${(agent.winRate ?? 0) * 100}%` }}
                                 />
                               </div>
                             </div>
@@ -207,7 +213,7 @@ export default function MatchPage() {
                           
                           <div className="p-3 bg-cyber-dark/50 border border-solana-purple/20 rounded">
                             <p className="text-xs text-gray-400 mb-1">Special Ability</p>
-                            <p className="text-sm text-cyan-400">{agent.specialAbility}</p>
+                            <p className="text-sm text-cyan-400">{(agent as any).specialAbility ?? '—'}</p>
                           </div>
                         </div>
                       ))}
@@ -253,6 +259,7 @@ export default function MatchPage() {
               matchId={matchId as string}
               agent1={match.agent1}
               agent2={match.agent2}
+              initialSelectedAgent={initialBetAgent || undefined}
             />
           </div>
         </div>

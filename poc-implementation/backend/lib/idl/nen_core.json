@@ -1,6 +1,9 @@
 {
   "version": "0.1.0",
   "name": "nen_core",
+  "metadata": {
+    "address": "Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF"
+  },
   "instructions": [
     {
       "name": "startTrainingSessionLight",

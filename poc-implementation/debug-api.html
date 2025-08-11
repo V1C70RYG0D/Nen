@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Debug Test</title>
+</head>
+<body>
+    <h1>NEN Platform API Debug</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testAPI() {
+            const results = document.getElementById('results');
+            
+            try {
+                // Test match API
+                console.log('Testing match API...');
+                const matchRes = await fetch('http://127.0.0.1:3011/api/matches/live-match-2');
+                const matchData = await matchRes.json();
+                
+                results.innerHTML += `<h3>Match API Result:</h3><pre>${JSON.stringify(matchData, null, 2)}</pre>`;
+                
+                // Test betting pools API
+                console.log('Testing betting pools API...');
+                const bettingRes = await fetch('http://127.0.0.1:3011/api/betting/pools/live-match-2');
+                const bettingData = await bettingRes.json();
+                
+                results.innerHTML += `<h3>Betting Pools API Result:</h3><pre>${JSON.stringify(bettingData, null, 2)}</pre>`;
+                
+            } catch (error) {
+                results.innerHTML += `<h3>Error:</h3><pre>${error.message}</pre>`;
+                console.error('API test failed:', error);
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>

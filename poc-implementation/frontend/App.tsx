@@ -9,7 +9,7 @@ import {
 } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
-import RealDevnetBettingApp from './components/RealDevnetBettingApp';
+import SimpleBettingApp from './components/SimpleBettingApp';
 
 // Import wallet adapter CSS
 import '@solana/wallet-adapter-react-ui/styles.css';
@@ -85,7 +85,7 @@ const App: React.FC = () => {
               minHeight: '100vh',
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
             }}>
-              <RealDevnetBettingApp />
+              <SimpleBettingApp />
               
               {/* Footer with deployment info */}
               <footer style={{

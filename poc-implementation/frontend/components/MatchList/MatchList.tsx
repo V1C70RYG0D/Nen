@@ -179,6 +179,7 @@ export const MatchList: React.FC<MatchListProps> = ({
   enableInfiniteScroll = true,
   enableRealTimeUpdates = true,
   onMatchSelect,
+  onBetClick: onMatchBetClick,
   onError,
   className = '',
   emptyStateMessage = 'No matches available at the moment. Check back soon for new AI battles!',
@@ -278,10 +279,13 @@ export const MatchList: React.FC<MatchListProps> = ({
   }, [onMatchSelect]);
 
   const handleBetClick = useCallback((match: Match, agent: 1 | 2) => {
-    // This would typically open a betting modal
-    console.log(`Bet on agent ${agent} for match ${match.id}`);
+    if (onMatchBetClick) {
+      onMatchBetClick(match, agent);
+      return;
+    }
+    // Fallback toast if no handler provided
     toast.success(`Betting on ${agent === 1 ? match.agent1.name : match.agent2.name}`);
-  }, []);
+  }, [onMatchBetClick]);
 
   // Render loading state
   if (loading && matches.length === 0) {

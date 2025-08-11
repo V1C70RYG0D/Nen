@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("C8uJ3ABMU87GjcB8moR1jiiAgYnFUDR17DBfiQE4eUcz");
+declare_id!("34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5");
 
 #[program]
 pub mod nen_betting {

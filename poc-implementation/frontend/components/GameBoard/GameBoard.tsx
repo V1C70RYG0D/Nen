@@ -50,8 +50,48 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   const [isThinking, setIsThinking] = useState(false);
   const [lastMove, setLastMove] = useState<{ from: [number, number]; to: [number, number] } | null>(null);
 
+  // Fallback game state when no WebSocket data is available
+  const fallbackBoardState = useMemo(() => ({
+    pieces: [
+      // Player 1 pieces (bottom)
+      { id: 'p1-marshal', type: 'Marshal', owner: 1 as const, position: [8, 4] as [number, number], stackLevel: 0 },
+      { id: 'p1-general1', type: 'General', owner: 1 as const, position: [8, 3] as [number, number], stackLevel: 0 },
+      { id: 'p1-general2', type: 'General', owner: 1 as const, position: [8, 5] as [number, number], stackLevel: 0 },
+      { id: 'p1-lt1', type: 'Lieutenant', owner: 1 as const, position: [8, 2] as [number, number], stackLevel: 0 },
+      { id: 'p1-lt2', type: 'Lieutenant', owner: 1 as const, position: [8, 6] as [number, number], stackLevel: 0 },
+      { id: 'p1-maj1', type: 'Major', owner: 1 as const, position: [8, 1] as [number, number], stackLevel: 0 },
+      { id: 'p1-maj2', type: 'Major', owner: 1 as const, position: [8, 7] as [number, number], stackLevel: 0 },
+      { id: 'p1-min1', type: 'Minor', owner: 1 as const, position: [8, 0] as [number, number], stackLevel: 0 },
+      { id: 'p1-min2', type: 'Minor', owner: 1 as const, position: [8, 8] as [number, number], stackLevel: 0 },
+      { id: 'p1-pawn1', type: 'Pawn', owner: 1 as const, position: [7, 2] as [number, number], stackLevel: 0 },
+      { id: 'p1-pawn2', type: 'Pawn', owner: 1 as const, position: [7, 6] as [number, number], stackLevel: 0 },
+      { id: 'p1-bow', type: 'Bow', owner: 1 as const, position: [7, 4] as [number, number], stackLevel: 0 },
+      
+      // Player 2 pieces (top)
+      { id: 'p2-marshal', type: 'Marshal', owner: 2 as const, position: [0, 4] as [number, number], stackLevel: 0 },
+      { id: 'p2-general1', type: 'General', owner: 2 as const, position: [0, 3] as [number, number], stackLevel: 0 },
+      { id: 'p2-general2', type: 'General', owner: 2 as const, position: [0, 5] as [number, number], stackLevel: 0 },
+      { id: 'p2-lt1', type: 'Lieutenant', owner: 2 as const, position: [0, 2] as [number, number], stackLevel: 0 },
+      { id: 'p2-lt2', type: 'Lieutenant', owner: 2 as const, position: [0, 6] as [number, number], stackLevel: 0 },
+      { id: 'p2-maj1', type: 'Major', owner: 2 as const, position: [0, 1] as [number, number], stackLevel: 0 },
+      { id: 'p2-maj2', type: 'Major', owner: 2 as const, position: [0, 7] as [number, number], stackLevel: 0 },
+      { id: 'p2-min1', type: 'Minor', owner: 2 as const, position: [0, 0] as [number, number], stackLevel: 0 },
+      { id: 'p2-min2', type: 'Minor', owner: 2 as const, position: [0, 8] as [number, number], stackLevel: 0 },
+      { id: 'p2-pawn1', type: 'Pawn', owner: 2 as const, position: [1, 2] as [number, number], stackLevel: 0 },
+      { id: 'p2-pawn2', type: 'Pawn', owner: 2 as const, position: [1, 6] as [number, number], stackLevel: 0 },
+      { id: 'p2-bow', type: 'Bow', owner: 2 as const, position: [1, 4] as [number, number], stackLevel: 0 },
+    ],
+    currentPlayer: 1 as const,
+    moveCount: 0,
+    gameStatus: 'active' as const
+  }), []);
+
+  // Use fallback board state if no WebSocket data is available
+  const effectiveBoardState = boardState || fallbackBoardState;
+  const effectiveCurrentPlayer = currentPlayer || 1;
+
   const getPieceAt = (row: number, col: number): Piece | undefined => {
-    return boardState?.pieces.find(p => p.position[0] === row && p.position[1] === col);
+    return effectiveBoardState?.pieces.find(p => p.position[0] === row && p.position[1] === col);
   };
 
   const calculatePossibleMoves = (piece: Piece): [number, number][] => {
@@ -84,7 +124,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       const [fromRow, fromCol] = selectedSquare;
       const selectedPiece = getPieceAt(fromRow, fromCol);
       
-      if (selectedPiece && selectedPiece.owner === currentPlayer) {
+      if (selectedPiece && selectedPiece.owner === effectiveCurrentPlayer) {
         const isPossibleMove = possibleMoves.some(([r, c]) => r === row && c === col);
         
         if (isPossibleMove) {
@@ -120,7 +160,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           setPossibleMoves([]);
         }
       }
-    } else if (clickedPiece && clickedPiece.owner === currentPlayer) {
+    } else if (clickedPiece && clickedPiece.owner === effectiveCurrentPlayer) {
       // Select the piece
       setSelectedSquare([row, col]);
       setPossibleMoves(calculatePossibleMoves(clickedPiece));
@@ -181,9 +221,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         <div className="flex items-center space-x-2">
           <span className="text-sm font-cyber text-gray-400">TURN:</span>
           <span className={`text-sm font-bold ${
-            currentPlayer === 1 ? 'text-nen-enhancement' : 'text-nen-emission'
+            effectiveCurrentPlayer === 1 ? 'text-nen-enhancement' : 'text-nen-emission'
           }`}>
-            PLAYER {currentPlayer}
+            PLAYER {effectiveCurrentPlayer}
           </span>
         </div>
       </div>

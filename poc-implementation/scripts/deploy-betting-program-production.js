@@ -29,7 +29,7 @@ const path = require('path');
 // Configuration - no hardcoding, using environment variables
 const config = {
   rpcUrl: process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com',
-  programId: process.env.BETTING_PROGRAM_ID || 'Bet1111111111111111111111111111111111111111',
+  programId: process.env.BETTING_PROGRAM_ID || '34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5',
   walletPath: process.env.SOLANA_WALLET_PATH || `${process.env.HOME}/.config/solana/id.json`,
   minimumDeposit: parseFloat(process.env.MIN_DEPOSIT_SOL || '0.1') * LAMPORTS_PER_SOL,
   maximumDeposit: parseFloat(process.env.MAX_DEPOSIT_SOL || '1000') * LAMPORTS_PER_SOL,

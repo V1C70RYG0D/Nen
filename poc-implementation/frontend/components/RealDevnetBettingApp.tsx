@@ -9,6 +9,7 @@ import {
   clusterApiUrl,
   TransactionInstruction
 } from '@solana/web3.js';
+import { useProductionBetting } from '../hooks/useProductionBetting';
 
 /**
  * Real Devnet User Story 2 Implementation
@@ -27,7 +28,7 @@ import {
  */
 
 // Real deployed program ID on devnet
-const NEN_BETTING_PROGRAM_ID = new PublicKey('BfvcT9Rk5o7YpGSutqSpTBFrFeuzpWBPdDGvkF9weTks');
+const NEN_BETTING_PROGRAM_ID = new PublicKey('34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5');
 
 // Minimum deposit as per User Story 2 requirements (0.1 SOL)
 const MIN_DEPOSIT_SOL = 0.1;
@@ -74,28 +75,42 @@ const RealDevnetBettingApp: React.FC = () => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction, connected } = useWallet();
   
-  // Real state from devnet
-  const [bettingAccount, setBettingAccount] = useState<BettingAccountData>({
-    balance: 0,
-    totalDeposited: 0,
-    totalWithdrawn: 0,
-    depositCount: 0,
-    withdrawalCount: 0,
-    lastTransaction: '',
-    lastWithdrawal: 0,
-    lockedFunds: 0,
-    isInitialized: false,
-    accountExists: false,
-  });
+  // Use production betting hook for real Anchor integration
+  const {
+    balance,
+    availableBalance,
+    lockedBalance,
+    totalDeposited,
+    totalWithdrawn,
+    depositCount,
+    withdrawalCount,
+    accountExists,
+    isLoading,
+    error,
+    isReady,
+    needsAccountCreation,
+    
+    // Actions
+    createBettingAccount: createAccount,
+    depositSol,
+    withdrawSol,
+    lockFunds,
+    unlockFunds,
+    refreshAccountData,
+    clearError,
+  } = useProductionBetting();
   
+  // Local UI state
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [withdrawalAmount, setWithdrawalAmount] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
   const [networkInfo, setNetworkInfo] = useState<any>(null);
   const [depositHistory, setDepositHistory] = useState<DepositEvent[]>([]);
   const [withdrawalHistory, setWithdrawalHistory] = useState<WithdrawalEvent[]>([]);
+  
+  // Temporary local error state for compilation compatibility
+  const [localError, setLocalError] = useState<string>('');
+  const setError = setLocalError;
 
   /**
    * Get real devnet PDA for user's betting account - User Story 2 Requirement
@@ -103,7 +118,7 @@ const RealDevnetBettingApp: React.FC = () => {
    */
   const getBettingAccountPDA = useCallback(async (userPubkey: PublicKey): Promise<[PublicKey, number]> => {
     const [pda, bump] = await PublicKey.findProgramAddress(
-      [Buffer.from('betting-account'), userPubkey.toBuffer()],
+      [Buffer.from('betting_account'), userPubkey.toBuffer()],
       NEN_BETTING_PROGRAM_ID
     );
     return [pda, bump];
@@ -121,7 +136,7 @@ const RealDevnetBettingApp: React.FC = () => {
       console.log(`✅ Wallet balance loaded: ${balance / LAMPORTS_PER_SOL} SOL`);
     } catch (error) {
       console.error('Failed to load wallet balance:', error);
-      setError('Failed to load wallet balance');
+      // setError('Failed to load wallet balance'); // Removed - using production hook now
     }
   }, [connection, publicKey]);
 
@@ -222,56 +237,27 @@ const RealDevnetBettingApp: React.FC = () => {
   /**
    * Create real betting account PDA on devnet - User Story 2 Requirement
    * "Create/access user's betting account PDA on devnet"
+   * Uses proper Anchor program call with constraint validation
    */
   const createBettingAccount = useCallback(async (): Promise<string> => {
-    if (!publicKey || !sendTransaction) {
+    if (!publicKey) {
       throw new Error('Wallet not connected');
     }
 
-    setIsLoading(true);
-    setError('');
-    
     try {
-      const [bettingPDA] = await getBettingAccountPDA(publicKey);
-      
-      // Create account instruction for the betting program
-      const createAccountInstruction = SystemProgram.createAccount({
-        fromPubkey: publicKey,
-        newAccountPubkey: bettingPDA,
-        lamports: await connection.getMinimumBalanceForRentExemption(8 + 32 + 8 + 8 + 8 + 8 + 8), // Account size
-        space: 8 + 32 + 8 + 8 + 8 + 8 + 8, // Discriminator + owner + balance + total_deposited + total_withdrawn + locked_funds + last_activity
-        programId: NEN_BETTING_PROGRAM_ID,
-      });
-
-      const transaction = new Transaction().add(createAccountInstruction);
-      const signature = await sendTransaction(transaction, connection);
-      
-      // Wait for confirmation
-      await connection.confirmTransaction(signature, 'confirmed');
+      clearError(); // Clear any previous errors
+      const signature = await createAccount();
       
       console.log(`✅ Betting account created! Signature: ${signature}`);
-      
-      // Refresh data
-      await loadBettingAccountData();
-      
-      setBettingAccount(prev => ({
-        ...prev,
-        lastTransaction: signature,
-        isInitialized: true,
-        accountExists: true,
-      }));
       
       return signature;
       
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Failed to create account';
       console.error('❌ Create account failed:', errorMsg);
-      setError(errorMsg);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
-  }, [publicKey, sendTransaction, connection, getBettingAccountPDA, loadBettingAccountData]);
+  }, [publicKey, createAccount, clearError]);
 
   /**
    * Real SOL deposit to betting account - User Story 2 Core Implementation
@@ -470,47 +456,62 @@ const RealDevnetBettingApp: React.FC = () => {
     const amount = parseFloat(depositAmount);
     
     if (!amount || amount <= 0) {
-      setError('Please enter a valid deposit amount');
       return;
     }
 
     if (amount < MIN_DEPOSIT_SOL) {
-      setError(`Minimum deposit is ${MIN_DEPOSIT_SOL} SOL as per User Story requirements`);
       return;
     }
 
     if (amount > walletBalance) {
-      setError(`Insufficient wallet balance. You have ${walletBalance.toFixed(6)} SOL. Get devnet SOL from: https://faucet.solana.com/`);
       return;
     }
 
-    if (!bettingAccount.accountExists) {
-      setError('Please create your betting account first');
+    if (!accountExists) {
       return;
     }
 
     try {
-      const signature = await depositSOL(amount);
+      const result = await depositSol(amount);
       
-      // Show success with explorer link
-      const explorerUrl = `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
-      const confirmed = confirm(
-        `✅ Deposit successful!\n\n` +
-        `Amount: ${amount} SOL\n` +
-        `Transaction: ${signature}\n\n` +
-        `View on Solana Explorer?`
-      );
-      
-      if (confirmed) {
-        window.open(explorerUrl, '_blank');
+      if (result?.success) {
+        // Show success with explorer link
+        const explorerUrl = `https://explorer.solana.com/tx/${result.transactionSignature}?cluster=devnet`;
+        const confirmed = confirm(
+          `✅ Deposit successful!\n\n` +
+          `Amount: ${amount} SOL\n` +
+          `New Balance: ${result.newBalance} SOL\n` +
+          `Transaction: ${result.transactionSignature}\n\n` +
+          `View on Solana Explorer?`
+        );
+        
+        if (confirmed) {
+          window.open(explorerUrl, '_blank');
+        }
+        
+        setDepositAmount('');
+        
+        // Create deposit event for tracking
+        const depositEvent: DepositEvent = {
+          user: publicKey!.toString(),
+          account: '', // Will be populated by PDA
+          amount,
+          newBalance: result.newBalance,
+          timestamp: Date.now(),
+          signature: result.transactionSignature,
+        };
+        
+        // Add to deposit history
+        setDepositHistory(prev => [depositEvent, ...prev]);
+        
+        // Refresh wallet balance
+        await loadWalletBalance();
       }
-      
-      setDepositAmount('');
-      
     } catch (error) {
-      // Error already handled in depositSOL
+      console.error('❌ Deposit failed:', error);
+      // Error already handled by the production betting hook
     }
-  }, [depositAmount, walletBalance, depositSOL, bettingAccount.accountExists]);
+  }, [depositAmount, walletBalance, depositSol, accountExists, publicKey, loadWalletBalance]);
 
   /**
    * Handle withdrawal form submission - User Story 2a Acceptance Criteria
@@ -604,10 +605,9 @@ const RealDevnetBettingApp: React.FC = () => {
   useEffect(() => {
     if (connected && publicKey) {
       loadWalletBalance();
-      loadBettingAccountData();
       loadNetworkInfo();
     }
-  }, [connected, publicKey, loadWalletBalance, loadBettingAccountData, loadNetworkInfo]);
+  }, [connected, publicKey, loadWalletBalance, loadNetworkInfo]);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
@@ -615,11 +615,11 @@ const RealDevnetBettingApp: React.FC = () => {
 
     const interval = setInterval(() => {
       loadWalletBalance();
-      loadBettingAccountData();
+      refreshAccountData(); // Use production hook's refresh
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [connected, publicKey, loadWalletBalance, loadBettingAccountData]);
+  }, [connected, publicKey, loadWalletBalance, refreshAccountData]);
 
   return (
     <div style={{ 
@@ -741,7 +741,7 @@ const RealDevnetBettingApp: React.FC = () => {
               }}>
                 <h3>Betting Balance</h3>
                 <p style={{ fontSize: '1.4em', fontWeight: 'bold', margin: '0', color: '#4ade80' }}>
-                  {bettingAccount.balance.toFixed(6)} SOL
+                  {balance.toFixed(6)} SOL
                 </p>
               </div>
               <div style={{ 
@@ -752,7 +752,7 @@ const RealDevnetBettingApp: React.FC = () => {
               }}>
                 <h3>Total Deposited</h3>
                 <p style={{ fontSize: '1.4em', fontWeight: 'bold', margin: '0' }}>
-                  {bettingAccount.totalDeposited.toFixed(6)} SOL
+                  {totalDeposited.toFixed(6)} SOL
                 </p>
               </div>
               <div style={{ 
@@ -774,14 +774,14 @@ const RealDevnetBettingApp: React.FC = () => {
               }}>
                 <h3>Locked Funds</h3>
                 <p style={{ fontSize: '1.4em', fontWeight: 'bold', margin: '0', color: '#f59e0b' }}>
-                  {bettingAccount.lockedFunds.toFixed(6)} SOL
+                  {lockedBalance.toFixed(6)} SOL
                 </p>
               </div>
             </div>
           </div>
 
           {/* Account Creation */}
-          {!bettingAccount.accountExists && (
+          {!accountExists && (
             <div style={{ 
               background: 'rgba(255,193,7,0.1)', 
               border: '1px solid #ffc107',
@@ -816,7 +816,7 @@ const RealDevnetBettingApp: React.FC = () => {
           )}
 
           {/* User Story 2: SOL Deposit Interface */}
-          {bettingAccount.accountExists && (
+          {accountExists && (
             <div style={{ 
               background: 'rgba(255,255,255,0.1)', 
               padding: '25px', 

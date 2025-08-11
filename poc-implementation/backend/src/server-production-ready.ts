@@ -36,6 +36,7 @@ import gameRoutes from './routes/game';
 import userRoutes from './routes/user';
 import nftRoutes from './routes/nft';
 import authRoutes from './routes/auth';
+import roomsRoutes from './routes/rooms';
 
 // Load environment variables
 dotenv.config();
@@ -224,6 +225,7 @@ app.use('/api/v1/game', gameRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/nft', nftRoutes);
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/rooms', roomsRoutes);
 
 // Health check endpoint
 app.get('/health', healthCheck);

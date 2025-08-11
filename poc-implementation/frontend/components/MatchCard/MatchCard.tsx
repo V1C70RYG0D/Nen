@@ -395,8 +395,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
         {/* Quick Bet Buttons */}
         <AnimatePresence>
           {showBettingOptions && 
-           state.isHovered && 
-           match.status === 'upcoming' && 
+           (state.isHovered || match.status === 'upcoming') && 
            match.bettingPool.isOpenForBetting && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}

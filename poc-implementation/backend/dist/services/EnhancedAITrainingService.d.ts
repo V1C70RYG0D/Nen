@@ -73,6 +73,20 @@ declare class EnhancedAITrainingService {
     private selectOpponent;
     private executeAIGame;
     /**
+     * Finalize training, persist metrics, and publish on-chain memo (devnet)
+     */
+    finalizeSession(sessionId: string, agentMint: string, walletPubkey: string, stats: {
+        gamesPlayed: number;
+        wins: number;
+        losses: number;
+        draws: number;
+        winRate: number;
+        averageGameLength: number;
+        newElo?: number;
+    }): Promise<{
+        ok: boolean;
+    }>;
+    /**
      * Get current agent ELO
      */
     private getAgentElo;

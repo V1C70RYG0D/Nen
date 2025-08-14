@@ -409,6 +409,45 @@ class EnhancedAITrainingService {
   }
 
   /**
+   * Finalize training, persist metrics, and publish on-chain memo (devnet)
+   */
+  async finalizeSession(sessionId: string, agentMint: string, walletPubkey: string, stats: {
+    gamesPlayed: number; wins: number; losses: number; draws: number; winRate: number; averageGameLength: number; newElo?: number,
+  }): Promise<{ ok: boolean }>
+  {
+    try {
+      // Persist basic metrics to database if available
+      try {
+        await this.dbService.getPrismaClient().aiAgent.update({
+          where: { id: agentMint },
+          data: {
+            games_played: { increment: stats.gamesPlayed || 0 },
+            wins: { increment: stats.wins || 0 },
+            losses: { increment: stats.losses || 0 },
+            draws: { increment: stats.draws || 0 },
+            win_rate: stats.winRate || undefined,
+            elo_rating: stats.newElo || undefined,
+            updated_at: new Date()
+          }
+        });
+      } catch (_) { /* optional DB path */ }
+
+      // Publish devnet memo and update registry
+      try {
+        const devnet = require('./training-devnet.js');
+        await devnet.completeTrainingOnChain({ walletPubkey, agentMint, sessionId, modelVersion: 'v1.1', metrics: stats, unlock: true });
+      } catch (e) {
+        logger.warn('finalizeSession: devnet publish failed', { error: (e as Error).message });
+      }
+
+      return { ok: true };
+    } catch (error) {
+      logger.error('finalizeSession error', error as any);
+      throw error;
+    }
+  }
+
+  /**
    * Get current agent ELO
    */
   private async getAgentElo(agentId: string): Promise<number> {

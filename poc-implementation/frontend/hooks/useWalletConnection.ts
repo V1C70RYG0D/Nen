@@ -131,13 +131,31 @@ export const useWalletConnection = () => {
       const connection = await walletProvider.connect();
       const publicKey = connection.publicKey.toString();
 
-      // Verify wallet ownership through signature verification
-      if (walletProvider.signMessage) {
-        const message = new TextEncoder().encode(
-          `Sign this message to verify your wallet ownership: ${Date.now()}`
-        );
-        const signature = await walletProvider.signMessage(message);
-        console.log('Wallet signature verified:', signature);
+      // Verify wallet ownership through signature verification against backend
+      try {
+        if (walletProvider.signMessage) {
+          const timestamp = Date.now();
+          const messageStr = `Sign in to Nen Platform\nTimestamp: ${timestamp}`;
+          const message = new TextEncoder().encode(messageStr);
+          const signed = await walletProvider.signMessage(message);
+          const bs58 = (await import('bs58')).default || (await import('bs58'));
+          const signatureBase58 = bs58.encode(signed);
+          const authRes = await fetch('/api/auth/wallet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              publicKey,
+              signature: signatureBase58,
+              message: messageStr,
+              timestamp,
+            }),
+          });
+          if (!authRes.ok) {
+            throw new Error('Wallet authentication failed');
+          }
+        }
+      } catch (e) {
+        throw new Error(e instanceof Error ? e.message : 'Wallet signature verification failed');
       }
 
       // Check if wallet has existing platform account PDA (and initialize if needed)

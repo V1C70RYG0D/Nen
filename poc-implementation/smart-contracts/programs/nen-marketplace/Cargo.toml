@@ -1,0 +1,22 @@
+[package]
+name = "nen-marketplace"
+version = "0.1.0"
+description = "Nen Platform Marketplace Program"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "nen_marketplace"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+anchor-lang = { workspace = true, features = ["init-if-needed"] }
+anchor-spl = { workspace = true }
+## Use only anchor-spl CPIs to avoid global allocator conflicts

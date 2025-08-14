@@ -8,9 +8,28 @@ const cors = require('cors');
 const { createServer } = require('http');
 const dotenv = require('dotenv');
 const path = require('path');
+const fs = require('fs');
 
-// Load environment configuration
-dotenv.config();
+// Load environment configuration (prefer project root/config .env over process env)
+(() => {
+  const candidates = [
+    // Prefer shared config and project root envs over backend-local overrides
+    path.resolve(__dirname, '..', '..', 'config', '.env'),
+    path.resolve(__dirname, '..', '..', '.env'),
+    path.resolve(__dirname, '..', '.env'),
+  ];
+  for (const p of candidates) {
+    try {
+      if (fs.existsSync(p)) {
+    dotenv.config({ path: p, override: false });
+        console.log('🔑 Loaded environment file:', p);
+        return;
+      }
+    } catch (_) { /* ignore */ }
+  }
+  // Fallback to default .env in CWD
+  dotenv.config({ override: false });
+})();
 
 console.log('🔧 Loading environment...');
 console.log('PORT from env:', process.env.PORT);
@@ -20,13 +39,18 @@ const app = express();
 const httpServer = createServer(app);
 
 // Basic configuration
-const PORT = parseInt(process.env.PORT || '3011'); // Changed default to 3011
+const PORT = parseInt(process.env.PORT || '3001'); // Default to 3001 to align with frontend API URL
 const HOST = process.env.API_HOST || '127.0.0.1';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3010'; // Changed to match frontend port
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3030'; // Match updated frontend port
 
 // Middleware setup
 app.use(cors({
-  origin: [CORS_ORIGIN, 'http://localhost:3010', 'http://127.0.0.1:3010', 'http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: [
+    CORS_ORIGIN,
+    'http://localhost:3030', 'http://127.0.0.1:3030',
+    'http://localhost:3010', 'http://127.0.0.1:3010',
+    'http://localhost:3000', 'http://127.0.0.1:3000'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -570,6 +594,28 @@ app.get('/api/matches/:id', (req, res) => {
   }
 });
 
+// Lightweight agent ownership verification endpoint for Training UI
+// GET /api/agents/verify/:mint/:wallet
+app.get('/api/agents/verify/:mint/:wallet', async (req, res) => {
+  try {
+    const { mint, wallet } = req.params;
+    if (!trainingService) {
+      return res.status(503).json({ success: false, error: 'Training service unavailable' });
+    }
+    const connection = trainingService.getConnection();
+    const owned = await trainingService.verifyNftOwnership(connection, wallet, mint);
+    // Check if a training session PDA exists for service owner + mint to infer lock state
+    let isLocked = false;
+    try {
+      const info = await trainingService.fetchTrainingSessionForServiceOwner(mint);
+      isLocked = !!info?.exists;
+    } catch (_) { /* ignore */ }
+    return res.json({ success: true, verified: owned, owned, isLocked });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error?.message || 'Internal error' });
+  }
+});
+
 // =========================
 // User Story 7: Training API
 // =========================
@@ -680,6 +726,16 @@ try {
   console.log('✅ Training routes loaded successfully');
 } catch (error) {
   console.error('❌ Failed to load training routes:', error?.message);
+  console.error('❌ Stack:', error?.stack);
+}
+
+// Also load replay-based training routes (User Story 7 filtering + replay selection)
+try {
+  const replayTrainingRoutes = require('./routes/replayTraining.js');
+  app.use('/api/training', replayTrainingRoutes);
+  console.log('✅ Replay training routes loaded successfully');
+} catch (error) {
+  console.error('❌ Failed to load replay training routes:', error?.message);
   console.error('❌ Stack:', error?.stack);
 }
 

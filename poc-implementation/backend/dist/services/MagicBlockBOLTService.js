@@ -250,18 +250,21 @@ class MagicBlockBOLTService {
         // Minimal starting position with only essential pieces for faster initialization
         const pieces = [];
         // Only Marshal pieces for minimal setup
+        // IMPORTANT: entityId must encode board coordinates for findPieceAtPosition()
+        // Use starting Marshal coordinates consistent with simplified setup:
+        // Player 1 Marshal at (4,0,0) and Player 2 Marshal at (4,8,0)
         pieces.push({
             pieceType: PieceType.Marshal,
             owner: 1,
             hasMoved: false,
             captured: false,
-            entityId: 'p1_marshal'
+            entityId: 'pos_4_0_0'
         }, {
             pieceType: PieceType.Marshal,
             owner: 2,
             hasMoved: false,
             captured: false,
-            entityId: 'p2_marshal'
+            entityId: 'pos_4_8_0'
         });
         return pieces;
     }
@@ -325,6 +328,51 @@ class MagicBlockBOLTService {
             });
             return { success: false, moveHash: '', latency };
         }
+    }
+    /**
+     * Return current in-memory world state for a session (read-only snapshot)
+     */
+    getWorldState(sessionId) {
+        const session = this.sessionCache.get(sessionId);
+        return session ? session.worldState : null;
+    }
+    /**
+     * Compute valid destination squares for a selected piece without mutating state.
+     * This is used for client-side move highlighting.
+     */
+    async getValidMovesForPiece(sessionId, params) {
+        const session = this.sessionCache.get(sessionId);
+        if (!session)
+            throw new Error('Session not found');
+        // Bound checks for source
+        const { fromX, fromY, fromLevel, pieceType, player } = params;
+        if (fromX < 0 || fromX > 8 || fromY < 0 || fromY > 8)
+            return [];
+        if (fromLevel < 0 || fromLevel > 2)
+            return [];
+        const res = [];
+        for (let x = 0; x < 9; x++) {
+            for (let y = 0; y < 9; y++) {
+                for (let level = 0; level < 3; level++) {
+                    const ok = await this.validateMoveBOLTECS(session, {
+                        fromX,
+                        fromY,
+                        fromLevel,
+                        toX: x,
+                        toY: y,
+                        toLevel: level,
+                        pieceType,
+                        player,
+                        // Non-essential fields for validation; provide dummy timestamp/hash
+                        moveHash: '',
+                        timestamp: Date.now()
+                    });
+                    if (ok)
+                        res.push({ x, y, level });
+                }
+            }
+        }
+        return res;
     }
     async validateMoveBOLTECS(session, moveData) {
         // BOLT ECS validation logic

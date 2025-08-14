@@ -243,6 +243,10 @@ function jsonResponse(res, data, statusCode = 200) {
 }
 
 // Real devnet routes
+// Simple in-memory storage for NFT metadata documents (devnet only)
+const NFT_METADATA_STORE = new Map();
+let NFT_METADATA_COUNTER = 0;
+
 const routes = {
   '/api/v1/health': () => ({
     success: true,
@@ -344,6 +348,68 @@ const routes = {
     },
     message: 'Production AI agents for devnet',
   }),
+
+  // NFT Metadata creation (stores JSON and returns a stable, retrievable URL)
+  '/api/nft-metadata': (query, req, res) => {
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => (body += chunk));
+      req.on('end', () => {
+        try {
+          const json = JSON.parse(body || '{}');
+          // Basic validation
+          if (!json.name || !json.symbol || !json.description) {
+            return jsonResponse(res, { success: false, error: 'Invalid metadata: name, symbol, description required' }, 400);
+          }
+          const id = (++NFT_METADATA_COUNTER).toString();
+          const record = {
+            id,
+            ...json,
+            createdAt: new Date().toISOString(),
+            network: 'devnet',
+          };
+          NFT_METADATA_STORE.set(id, record);
+          const metadataUrl = `http://localhost:${PORT}/api/nft-metadata/${id}`;
+          return jsonResponse(res, { success: true, id, url: metadataUrl, data: record });
+        } catch (e) {
+          return jsonResponse(res, { success: false, error: 'Invalid JSON body', message: e.message }, 400);
+        }
+      });
+      return; // async
+    }
+    return jsonResponse(res, { success: false, error: 'Method not allowed' }, 405);
+  },
+
+  // Retrieve stored NFT metadata by id
+  '/api/nft-metadata/:id': (query, req, res, params) => {
+    const id = params.id;
+    const record = NFT_METADATA_STORE.get(id);
+    if (!record) {
+      return jsonResponse(res, { success: false, error: 'Not found' }, 404);
+    }
+    // Return the raw NFT metadata JSON structure expected by Metaplex
+    const nftJson = {
+      name: record.name,
+      symbol: record.symbol,
+      description: record.description,
+      image: record.image || null,
+      external_url: record.external_url || null,
+      attributes: record.attributes || [],
+      properties: {
+        creators: record.creators || [],
+        files: record.files || [],
+        category: record.category || 'image'
+      },
+      // Custom fields for AI agent
+      ai: record.ai || {},
+      modelHash: record.modelHash || null,
+    };
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
+    return res.end(JSON.stringify(nftJson));
+  },
 };
 
 // Create and start server
@@ -364,9 +430,17 @@ const server = http.createServer((req, res) => {
   }
 
   // Route handling
-  const handler = routes[pathname];
+  // Route handling with param support for /api/nft-metadata/:id
+  const handler = routes[pathname] || (pathname.startsWith('/api/nft-metadata/') ? routes['/api/nft-metadata/:id'] : undefined);
   if (handler) {
     try {
+      if (handler.length >= 4 && pathname.startsWith('/api/nft-metadata/')) {
+        const id = pathname.split('/').pop();
+        return handler(query, req, res, { id });
+      }
+      if (handler.length >= 3 && pathname === '/api/nft-metadata') {
+        return handler(query, req, res);
+      }
       const result = handler(query);
       jsonResponse(res, result);
     } catch (error) {

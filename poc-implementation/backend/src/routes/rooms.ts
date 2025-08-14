@@ -4,15 +4,20 @@
  * Following GI.md guidelines for real API integration and error handling
  */
 
-import { Router } from 'express';
+// Use require to avoid hard dependency on @types/express in environments where it may be unavailable
+// and define lightweight aliases to satisfy strict typing.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const express = require('express');
+type Request = any; // Narrow types can be applied when typings are ensured in the environment
+type Response = any;
+type NextFunction = any;
 import { logger } from '../utils/logger';
 import { createError } from '../middleware/errorHandler';
 import crypto from 'crypto';
 
-const router = Router();
-
 // In-memory storage for rooms (in production, this would be a database)
 const rooms = new Map<string, any>();
+const router = express.Router();
 
 /**
  * POST /api/v1/rooms - Create a new battle room
@@ -24,7 +29,7 @@ const rooms = new Map<string, any>();
  * - Generate unique session identifier
  * - Emit room created event on devnet
  */
-router.post('/', async (req, res, next) => {
+router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { settings, entry } = req.body;
 
@@ -142,7 +147,7 @@ router.post('/', async (req, res, next) => {
 /**
  * GET /api/v1/rooms/:sessionId - Get room details
  */
-router.get('/:sessionId', async (req, res, next) => {
+router.get('/:sessionId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { sessionId } = req.params;
 
@@ -191,11 +196,36 @@ router.get('/:sessionId', async (req, res, next) => {
 });
 
 /**
+ * GET /api/v1/rooms/code/:roomCode - Lookup room by human-readable code
+ */
+router.get('/code/:roomCode', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const roomService = require('../services/rooms-devnet.js');
+    const { roomCode } = req.params as any;
+    if (!roomCode) {
+      throw createError('Room code is required', 400);
+    }
+    const record = roomService.readRoomByCode?.(roomCode);
+    if (!record) {
+      throw createError('Room not found', 404);
+    }
+    const expiresAt = new Date(new Date(record.createdAt).getTime() + 24*60*60*1000);
+    if (expiresAt < new Date()) {
+      throw createError('Room has expired', 410);
+    }
+    res.json({ success: true, room: record });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * GET /api/v1/rooms - List active rooms
  */
-router.get('/', async (req, res, next) => {
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { status, page = 1, limit = 10 } = req.query;
+  const { status, page = 1, limit = 10, variant, aiDifficulty } = req.query as any;
 
     // Filter rooms
     let filteredRooms = Array.from(rooms.values());
@@ -215,6 +245,16 @@ router.get('/', async (req, res, next) => {
       filteredRooms = filteredRooms.filter(room => room.status === status);
     }
 
+    // Filter by rule variations (board variant)
+    if (variant && typeof variant === 'string') {
+      filteredRooms = filteredRooms.filter(room => (room.settings?.boardVariant || '').toLowerCase() === variant.toLowerCase());
+    }
+
+    // Filter by AI difficulty if encoded in settings
+    if (aiDifficulty && typeof aiDifficulty === 'string') {
+      filteredRooms = filteredRooms.filter(room => (room.settings?.aiDifficulty || '').toLowerCase() === aiDifficulty.toLowerCase());
+    }
+
     // Pagination
     const pageNum = Math.max(1, Number(page));
     const limitNum = Math.min(50, Math.max(1, Number(limit))); // Max 50 rooms per page
@@ -232,7 +272,8 @@ router.get('/', async (req, res, next) => {
         timeControl: room.settings.timeControl,
         boardVariant: room.settings.boardVariant,
         tournamentMode: room.settings.tournamentMode,
-        allowSpectators: room.settings.allowSpectators
+  allowSpectators: room.settings.allowSpectators,
+  aiDifficulty: room.settings.aiDifficulty || null
       },
       entry: {
         minElo: room.entry.minElo,
@@ -271,10 +312,10 @@ router.get('/', async (req, res, next) => {
 /**
  * POST /api/v1/rooms/:sessionId/join - Join a room
  */
-router.post('/:sessionId/join', async (req, res, next) => {
+router.post('/:sessionId/join', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { sessionId } = req.params;
-    const { playerId, playerType = 'human' } = req.body;
+  const { sessionId } = req.params;
+  const { playerId, playerType = 'human' } = req.body;
 
     if (!sessionId || !playerId) {
       throw createError('Session ID and player ID are required', 400);
@@ -347,10 +388,75 @@ router.post('/:sessionId/join', async (req, res, next) => {
   }
 });
 
+// Devnet real join flow: build and confirm wallet-signed transactions
+router.post('/:sessionId/join/build-tx', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Lazy import JS service to avoid TS typing issues
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const joinService = require('../services/join-room-devnet.js');
+    const { sessionId } = req.params as any;
+    const { userPubkey } = req.body as any;
+    if (!sessionId || !userPubkey) {
+      throw createError('sessionId and userPubkey are required', 400);
+    }
+    const built = await joinService.buildJoinTransaction({ sessionId, userPubkey });
+    res.json({ success: true, ...built });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/:sessionId/join/confirm', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const joinService = require('../services/join-room-devnet.js');
+    const { sessionId } = req.params as any;
+    const { userPubkey, signature } = req.body as any;
+    if (!sessionId || !userPubkey || !signature) {
+      throw createError('sessionId, userPubkey, signature are required', 400);
+    }
+    const result = await joinService.confirmJoin({ sessionId, userPubkey, signature });
+    res.json({ success: true, ...result });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/:sessionId/escrow', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const joinService = require('../services/join-room-devnet.js');
+    const { sessionId } = req.params as any;
+    const escrow = joinService.getEscrowAddress(sessionId);
+    res.json({ success: true, sessionId, escrow });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/v1/rooms/:sessionId/countdown - Get match countdown state if present
+ */
+router.get('/:sessionId/countdown', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const roomService = require('../services/rooms-devnet.js');
+    const { sessionId } = req.params as any;
+    const record = roomService.readRoomBySessionId?.(sessionId);
+    if (!record) {
+      throw createError('Room not found', 404);
+    }
+    const countdown = record.countdown || null;
+    res.json({ success: true, sessionId, countdown });
+  } catch (error) {
+    next(error);
+  }
+});
+
 /**
  * DELETE /api/v1/rooms/:sessionId - Delete a room
  */
-router.delete('/:sessionId', async (req, res, next) => {
+router.delete('/:sessionId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { sessionId } = req.params;
 

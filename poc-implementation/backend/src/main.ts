@@ -32,11 +32,13 @@ import bettingRoutes from './api/betting';
 import matchesRoutes from './api/matches';
 import usersRoutes from './api/users';
 import analyticsRoutes from './api/analytics';
+import blockchainRoutes from './routes/blockchain';
 
 // Import legacy routes for backward compatibility
 import legacyAiRoutes from './routes/ai';
 import legacyGameRoutes from './routes/game';
 import legacyEnhancedRoutes from './routes/enhanced';
+import legacyUserRoutes from './routes/user';
 import devnetRoutes from './routes/devnet';
 
 // Import services
@@ -167,20 +169,25 @@ private setupMiddleware(): void {
     this.app.use('/api/matches', matchesRoutes);
     this.app.use('/api/users', usersRoutes);
     this.app.use('/api/analytics', analyticsRoutes);
-  this.app.use('/api/devnet', devnetRoutes);
+    this.app.use('/api/blockchain', blockchainRoutes);
+    this.app.use('/api/devnet', devnetRoutes);
 
     // Versioned API routes
     this.app.use('/api/v1/auth', authRoutes);
     this.app.use('/api/v1/betting', bettingRoutes);
     this.app.use('/api/v1/matches', matchesRoutes);
     this.app.use('/api/v1/users', usersRoutes);
-  this.app.use('/api/v1/analytics', analyticsRoutes);
-  this.app.use('/api/v1/devnet', devnetRoutes);
+    this.app.use('/api/v1/blockchain', blockchainRoutes);
+    this.app.use('/api/v1/analytics', analyticsRoutes);
+    this.app.use('/api/v1/devnet', devnetRoutes);
+    // User Story 9: Training endpoints
+    this.app.use('/api/v1/training', require('./routes/training').default);
 
     // Legacy routes for backward compatibility
     this.app.use('/api/ai', legacyAiRoutes);
     this.app.use('/api/game', legacyGameRoutes);
-    this.app.use('/api/user', usersRoutes); // Redirect legacy user to new users
+    // Legacy user routes (provide /api/user/* endpoints used by verification scripts)
+    this.app.use('/api/user', legacyUserRoutes);
     this.app.use('/api/enhanced', legacyEnhancedRoutes);
     this.app.use('/metrics', metricsApp);
 

@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import config from '../config';
+import userRouterLegacy from '../routes/user';
+import blockchainRouter from '../routes/blockchain';
 
 const router = Router();
 
@@ -234,3 +236,7 @@ router.get('/leaderboard', async (req, res, next) => {
 });
 
 export default router;
+
+// Also export mounted legacy-compatible routers for SSR proxy setups if needed
+export const legacyUserRoutes = userRouterLegacy;
+export const blockchainRoutes = blockchainRouter;

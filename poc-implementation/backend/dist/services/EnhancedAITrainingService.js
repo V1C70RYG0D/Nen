@@ -314,6 +314,42 @@ class EnhancedAITrainingService {
         return { winnerId, moveCount };
     }
     /**
+     * Finalize training, persist metrics, and publish on-chain memo (devnet)
+     */
+    async finalizeSession(sessionId, agentMint, walletPubkey, stats) {
+        try {
+            // Persist basic metrics to database if available
+            try {
+                await this.dbService.getPrismaClient().aiAgent.update({
+                    where: { id: agentMint },
+                    data: {
+                        games_played: { increment: stats.gamesPlayed || 0 },
+                        wins: { increment: stats.wins || 0 },
+                        losses: { increment: stats.losses || 0 },
+                        draws: { increment: stats.draws || 0 },
+                        win_rate: stats.winRate || undefined,
+                        elo_rating: stats.newElo || undefined,
+                        updated_at: new Date()
+                    }
+                });
+            }
+            catch (_) { /* optional DB path */ }
+            // Publish devnet memo and update registry
+            try {
+                const devnet = require('./training-devnet.js');
+                await devnet.completeTrainingOnChain({ walletPubkey, agentMint, sessionId, modelVersion: 'v1.1', metrics: stats, unlock: true });
+            }
+            catch (e) {
+                logger_1.logger.warn('finalizeSession: devnet publish failed', { error: e.message });
+            }
+            return { ok: true };
+        }
+        catch (error) {
+            logger_1.logger.error('finalizeSession error', error);
+            throw error;
+        }
+    }
+    /**
      * Get current agent ELO
      */
     async getAgentElo(agentId) {

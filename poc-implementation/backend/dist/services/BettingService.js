@@ -12,7 +12,7 @@ class BettingService {
         this.platformFeeRate = 0.03; // 3% platform fee
         this.connection = new web3_js_1.Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
         this.cache = new redis_1.CacheService();
-        this.programId = new web3_js_1.PublicKey(process.env.NEN_BETTING_PROGRAM_ID || 'BetFg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS');
+        this.programId = new web3_js_1.PublicKey(process.env.NEN_BETTING_PROGRAM_ID || 'C8uJ3ABMU87GjcB8moR1jiiAgYnFUDR17DBfiQE4eUcz');
     }
     // Get or create betting account for user
     async getBettingAccount(walletAddress) {
@@ -37,7 +37,7 @@ class BettingService {
             const user = userResult[0];
             // Derive betting account PDA
             const walletPubkey = new web3_js_1.PublicKey(walletAddress);
-            const [bettingAccountPda] = web3_js_1.PublicKey.findProgramAddressSync([Buffer.from('betting'), walletPubkey.toBuffer()], this.programId);
+            const [bettingAccountPda] = web3_js_1.PublicKey.findProgramAddressSync([Buffer.from('betting_account'), walletPubkey.toBuffer()], this.programId);
             // Check if betting account exists on-chain
             const accountInfo = await this.connection.getAccountInfo(bettingAccountPda);
             let balance = parseFloat(user.betting_balance || '0');
@@ -79,9 +79,42 @@ class BettingService {
             if (amount > 1000) {
                 throw new Error('Maximum deposit amount is 1000 SOL');
             }
-            // Get or create betting account
+            // Get betting account and PDA
             const bettingAccount = await this.getBettingAccount(walletAddress);
-            // Create transaction record
+            const pdaAddress = new web3_js_1.PublicKey(bettingAccount.pdaAddress);
+            // Require a real devnet transaction signature to verify on-chain transfer
+            if (!transactionSignature) {
+                throw new Error('transactionSignature is required for deposit verification');
+            }
+            // Verify on-chain: the transaction must increase PDA lamports by expected amount
+            const lamports = Math.floor(amount * web3_js_1.LAMPORTS_PER_SOL);
+            const tx = await this.connection.getTransaction(transactionSignature, {
+                commitment: 'confirmed',
+                maxSupportedTransactionVersion: 0,
+            });
+            if (!tx || !tx.meta) {
+                throw new Error('Unable to fetch deposit transaction from devnet');
+            }
+            if (tx.meta.err) {
+                throw new Error(`Deposit transaction failed on-chain: ${JSON.stringify(tx.meta.err)}`);
+            }
+            const keys = tx.transaction.message.getAccountKeys().staticAccountKeys || tx.transaction.message.accountKeys;
+            const pre = tx.meta.preBalances;
+            const post = tx.meta.postBalances;
+            const pdaIndex = keys.findIndex((k) => k.toString ? k.toString() === pdaAddress.toString() : k === pdaAddress.toString());
+            const userIndex = keys.findIndex((k) => k.toString ? k.toString() === walletAddress : k === walletAddress);
+            if (pdaIndex === -1 || userIndex === -1) {
+                throw new Error('Deposit transaction does not reference expected accounts');
+            }
+            const pdaDelta = post[pdaIndex] - pre[pdaIndex];
+            const userDelta = post[userIndex] - pre[userIndex];
+            if (pdaDelta < lamports) {
+                throw new Error(`PDA balance did not increase by expected amount. Expected +${lamports}, got ${pdaDelta}`);
+            }
+            if (userDelta > -lamports) {
+                // User should decrease by at least lamports (plus fees). Allow smaller (more negative) due to fees.
+                throw new Error('User balance did not decrease as expected for deposit');
+            }
             const transactionId = (0, uuid_1.v4)();
             const transactionRecord = {
                 id: transactionId,
@@ -99,15 +132,7 @@ class BettingService {
             };
             // Store transaction record
             await this.storeTransactionRecord(transactionRecord);
-            // For POC: Simulate on-chain transaction
-            // In production, this would:
-            // 1. Verify the transaction signature on-chain
-            // 2. Check that funds were transferred to the betting PDA
-            // 3. Update the betting account balance
-            const mockTransactionHash = transactionSignature || `deposit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            // Simulate transaction confirmation delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            // Update betting account balance in database
+            // Update betting account balance in database based on on-chain verified amount
             const newBalance = bettingAccount.balance + amount;
             await (0, database_1.transaction)(async (client) => {
                 await client.query(`
@@ -117,12 +142,12 @@ class BettingService {
         `, [newBalance, new Date(), userId]);
             });
             // Update transaction status
-            await this.updateTransactionStatus(transactionId, 'confirmed', mockTransactionHash);
+            await this.updateTransactionStatus(transactionId, 'confirmed', transactionSignature);
             // Clear cache
             await this.cache.del(`betting_account:${walletAddress}`);
             const result = {
                 success: true,
-                transactionId: mockTransactionHash,
+                transactionId: transactionSignature,
                 newBalance,
                 depositAmount: amount,
                 pdaAddress: bettingAccount.pdaAddress,
@@ -131,7 +156,7 @@ class BettingService {
             logger_1.logger.info('Deposit completed successfully', {
                 walletAddress,
                 amount,
-                transactionId: mockTransactionHash,
+                transactionId: transactionSignature,
                 newBalance,
             });
             return result;
@@ -179,10 +204,41 @@ class BettingService {
                 createdAt: new Date(),
             };
             await this.storeTransactionRecord(transactionRecord);
-            // For POC: Simulate on-chain withdrawal
-            const mockTransactionHash = `withdrawal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            // Simulate transaction processing delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Require a recent on-chain withdrawal transaction signature to verify
+            // For backend API, expect client to pass it in destinationAddress field for now if present
+            const txSignature = withdrawalRequest.transactionSignature;
+            if (!txSignature) {
+                throw new Error('transactionSignature is required for withdrawal verification');
+            }
+            // Verify on-chain: PDA should decrease and user wallet should increase by amount
+            const lamports = Math.floor(amount * web3_js_1.LAMPORTS_PER_SOL);
+            const pdaAddress = new web3_js_1.PublicKey(bettingAccount.pdaAddress);
+            const tx = await this.connection.getTransaction(txSignature, {
+                commitment: 'confirmed',
+                maxSupportedTransactionVersion: 0,
+            });
+            if (!tx || !tx.meta) {
+                throw new Error('Unable to fetch withdrawal transaction from devnet');
+            }
+            if (tx.meta.err) {
+                throw new Error(`Withdrawal transaction failed on-chain: ${JSON.stringify(tx.meta.err)}`);
+            }
+            const keys = tx.transaction.message.getAccountKeys().staticAccountKeys || tx.transaction.message.accountKeys;
+            const pre = tx.meta.preBalances;
+            const post = tx.meta.postBalances;
+            const pdaIndex = keys.findIndex((k) => k.toString ? k.toString() === pdaAddress.toString() : k === pdaAddress.toString());
+            const userIndex = keys.findIndex((k) => k.toString ? k.toString() === walletAddress : k === walletAddress);
+            if (pdaIndex === -1 || userIndex === -1) {
+                throw new Error('Withdrawal transaction does not reference expected accounts');
+            }
+            const pdaDelta = post[pdaIndex] - pre[pdaIndex];
+            const userDelta = post[userIndex] - pre[userIndex];
+            if (pdaDelta > -lamports) {
+                throw new Error(`PDA balance did not decrease by expected amount. Expected <= -${lamports}, got ${pdaDelta}`);
+            }
+            if (userDelta < lamports) {
+                throw new Error('User balance did not increase as expected for withdrawal');
+            }
             // Update betting account balance in database
             const newBalance = bettingAccount.balance - amount;
             await (0, database_1.transaction)(async (client) => {
@@ -193,12 +249,12 @@ class BettingService {
         `, [newBalance, new Date(), userId]);
             });
             // Update transaction status
-            await this.updateTransactionStatus(transactionId, 'confirmed', mockTransactionHash);
+            await this.updateTransactionStatus(transactionId, 'confirmed', txSignature);
             // Clear cache
             await this.cache.del(`betting_account:${walletAddress}`);
             const result = {
                 success: true,
-                transactionId: mockTransactionHash,
+                transactionId: txSignature,
                 newBalance,
                 withdrawalAmount: amount,
                 message: `Successfully withdrew ${amount} SOL from betting account`,
@@ -206,7 +262,7 @@ class BettingService {
             logger_1.logger.info('Withdrawal completed successfully', {
                 walletAddress,
                 amount,
-                transactionId: mockTransactionHash,
+                transactionId: txSignature,
                 newBalance,
             });
             return result;

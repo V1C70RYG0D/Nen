@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { WalletBalance } from '@/components/WalletBalance/WalletBalance';
 import WalletBalanceDebug from '@/components/WalletBalance/WalletBalanceDebug';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -7,6 +7,8 @@ import { formatSOL, shortenAddress } from '@/utils/format';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { Layout } from '@/components/Layout/Layout';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { fetchUserAgentNfts, AgentNftSummary } from '@/lib/nft/fetchUserAgentNfts';
 
 // Simple test component to debug
 const TestWalletBalance = () => {
@@ -20,8 +22,12 @@ const TestWalletBalance = () => {
 
 const ProfilePage: React.FC = () => {
   const { publicKey, connected } = useWallet();
+  const { connection } = useConnection();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'agents' | 'bets' | 'history'>('overview');
+  const [agentNfts, setAgentNfts] = useState<AgentNftSummary[]>([]);
+  const [loadingAgents, setLoadingAgents] = useState(false);
+  const [agentsError, setAgentsError] = useState<string | null>(null);
 
   const handleReturnToArena = (e: React.MouseEvent) => {
     if (router.pathname === '/') {
@@ -32,31 +38,26 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  if (!connected || !publicKey) {
-    return (
-      <Layout>
-        <div className="min-h-screen bg-cyber-darker">
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <div className="text-6xl mb-4">🔒</div>
-              <h2 className="text-3xl font-hunter text-gray-400 mb-4">ACCESS DENIED</h2>
-              <p className="text-gray-500 mb-8">Connect your wallet to view your profile</p>
-              <button
-                onClick={handleReturnToArena}
-                className="cyber-button"
-              >
-                RETURN TO ARENA
-              </button>
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  // Load agent NFTs owned by the user (devnet)
+  useEffect(() => {
+    (async () => {
+      if (!connected || !publicKey) return;
+      setLoadingAgents(true);
+      setAgentsError(null);
+      try {
+        const list = await fetchUserAgentNfts(connection, publicKey);
+        setAgentNfts(list);
+      } catch (e: any) {
+        setAgentsError(e?.message || 'Failed to load NFTs');
+      } finally {
+        setLoadingAgents(false);
+      }
+    })();
+  }, [connected, publicKey, connection]);
 
-  // Mock user data
-  const userData = {
-    address: publicKey.toBase58(),
+  // Mock user data - move this inside component but after hooks
+  const userData = useMemo(() => ({
+    address: publicKey?.toBase58() || '',
     balance: 125500000000, // 125.5 SOL
     totalBets: 45,
     totalWinnings: 85000000000, // 85 SOL
@@ -101,7 +102,29 @@ const ProfilePage: React.FC = () => {
         payout: 0,
       },
     ],
-  };
+  }), [publicKey]);
+
+  if (!connected || !publicKey) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-cyber-darker">
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🔒</div>
+              <h2 className="text-3xl font-hunter text-gray-400 mb-4">ACCESS DENIED</h2>
+              <p className="text-gray-500 mb-8">Connect your wallet to view your profile</p>
+              <button
+                onClick={handleReturnToArena}
+                className="cyber-button"
+              >
+                RETURN TO ARENA
+              </button>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -237,32 +260,55 @@ const ProfilePage: React.FC = () => {
           )}
 
           {activeTab === 'agents' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userData.agents.map((agent) => (
-                <div key={agent.id} className="hunter-card p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className={`text-lg font-hunter nen-${agent.nenType}`}>{agent.name}</h4>
-                    <span className="text-xs font-cyber text-gray-400 uppercase">{agent.nenType}</span>
+            <div className="space-y-4">
+              {loadingAgents && (
+                <div className="text-center text-gray-400">Loading your agent NFTs…</div>
+              )}
+              {agentsError && (
+                <div className="text-center text-red-400">{agentsError}</div>
+              )}
+              {!loadingAgents && !agentsError && agentNfts.length === 0 && (
+                <div className="text-center text-gray-400">No agent NFTs found.</div>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {agentNfts.map((nft) => (
+                  <div key={nft.mint} className="hunter-card p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className={`text-lg font-hunter`}>{nft.name}</h4>
+                      <span className="text-xs font-cyber text-gray-400 uppercase">{nft.symbol}</span>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">ELO</span>
+                        <span className="font-mono">{nft.performance?.elo ?? '-'}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Win Rate</span>
+                        <span className="font-mono text-solana-green">{nft.performance?.winRate != null ? `${(nft.performance.winRate * 100).toFixed(1)}%` : '-'}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Matches</span>
+                        <span className="font-mono">{nft.performance?.totalMatches ?? '-'}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Personality</span>
+                        <span className="font-mono">{nft.traits?.personality ?? '-'}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Openings</span>
+                        <span className="font-mono">{nft.traits?.openings ?? '-'}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-500">Model Hash</span>
+                        <span className="font-mono text-gray-400">{nft.modelHash ? `${String(nft.modelHash).slice(0,6)}…${String(nft.modelHash).slice(-6)}` : '-'}</span>
+                      </div>
+                    </div>
+                    <a className="w-full mt-4 block text-center py-2 bg-solana-purple/20 hover:bg-solana-purple/30 border border-solana-purple/50 text-solana-purple font-cyber text-sm uppercase transition-all" href={`https://explorer.solana.com/address/${nft.mint}?cluster=devnet`} target="_blank" rel="noreferrer">
+                      View on Explorer
+                    </a>
                   </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">ELO Rating</span>
-                      <span className="font-mono">{agent.elo}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Win Rate</span>
-                      <span className="font-mono text-solana-green">{(agent.winRate * 100).toFixed(1)}%</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Games Played</span>
-                      <span className="font-mono">{agent.gamesPlayed}</span>
-                    </div>
-                  </div>
-                  <button className="w-full mt-4 py-2 bg-solana-purple/20 hover:bg-solana-purple/30 border border-solana-purple/50 text-solana-purple font-cyber text-sm uppercase transition-all">
-                    View Details
-                  </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
 

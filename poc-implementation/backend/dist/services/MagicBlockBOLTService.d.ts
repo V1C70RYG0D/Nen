@@ -97,6 +97,25 @@ export declare class MagicBlockBOLTService {
         moveHash: string;
         latency: number;
     }>;
+    /**
+     * Return current in-memory world state for a session (read-only snapshot)
+     */
+    getWorldState(sessionId: string): any | null;
+    /**
+     * Compute valid destination squares for a selected piece without mutating state.
+     * This is used for client-side move highlighting.
+     */
+    getValidMovesForPiece(sessionId: string, params: {
+        fromX: number;
+        fromY: number;
+        fromLevel: number;
+        pieceType: PieceType;
+        player: number;
+    }): Promise<Array<{
+        x: number;
+        y: number;
+        level: number;
+    }>>;
     private validateMoveBOLTECS;
     private findPieceAtPosition;
     private validatePieceMovement;

@@ -11,8 +11,8 @@ import { Toaster } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
-// Import Real Devnet Betting App for User Story 2
-const RealDevnetBettingApp = dynamic(() => import('../components/RealDevnetBettingApp'), {
+// Import Production Betting Component for stable UX
+const ProductionBettingComponent = dynamic(() => import('../components/ProductionBettingComponent'), {
   ssr: false,
 });
 
@@ -37,7 +37,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
   // REAL DEVNET CONFIGURATION - User Story 2
   const endpoint = useMemo(() => {
     // Real devnet endpoint - no simulations
-    return process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+    return process.env.NEXT_PUBLIC_MAGICBLOCK_ROUTER_RPC || process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://devnet-router.magicblock.app';
   }, []);
 
   // Real wallet adapters
@@ -69,7 +69,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
         <ConnectionProvider endpoint={endpoint}>
           <WalletProvider wallets={wallets} autoConnect={false}>
             <WalletModalProvider>
-              <RealDevnetBettingApp />
+              <ProductionBettingComponent />
             </WalletModalProvider>
           </WalletProvider>
         </ConnectionProvider>

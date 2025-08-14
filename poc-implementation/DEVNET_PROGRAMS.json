@@ -1,0 +1,39 @@
+{
+  "network": "devnet",
+  "rpc_url": "https://api.devnet.solana.com",
+  "websocket_url": "wss://api.devnet.solana.com/",
+  "programs": {
+    "nen_betting": {
+      "program_id": "34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5",
+      "name": "NEN Betting Program",
+      "description": "Handles all betting operations including deposits, withdrawals, bet placement, and payouts",
+      "deployed_slot": 400389615,
+      "size_bytes": 245584
+    },
+    "nen_core": {
+      "program_id": "Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF",
+      "name": "NEN Core Program",
+      "description": "Core platform functionality including AI agents, matches, and platform state",
+      "deployed_slot": 400395438,
+      "size_bytes": 405080
+    },
+    "nen_magicblock": {
+      "program_id": "AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX",
+      "name": "NEN MagicBlock Program",
+      "description": "Integration with MagicBlock ephemeral rollups for real-time gaming",
+      "deployed_slot": 400395452,
+      "size_bytes": 332992
+    },
+    "nen_marketplace": {
+      "program_id": "8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH",
+      "name": "NEN Marketplace Program",
+      "description": "NFT marketplace for fixed-price listings and purchases with fees and royalties",
+      "deployed_slot": null,
+      "size_bytes": null
+    }
+  },
+  "deployer_wallet": "84YCBt3bEkFUYFzUhh9xUCzqwp6nDUJdtj62WWh3hrnT",
+  "deployment_date": "2025-01-10",
+  "status": "FULLY_DEPLOYED"
+}
+

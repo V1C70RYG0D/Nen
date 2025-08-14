@@ -35,10 +35,12 @@ const betting_1 = __importDefault(require("./api/betting"));
 const matches_1 = __importDefault(require("./api/matches"));
 const users_1 = __importDefault(require("./api/users"));
 const analytics_1 = __importDefault(require("./api/analytics"));
+const blockchain_1 = __importDefault(require("./routes/blockchain"));
 // Import legacy routes for backward compatibility
 const ai_1 = __importDefault(require("./routes/ai"));
 const game_1 = __importDefault(require("./routes/game"));
 const enhanced_1 = __importDefault(require("./routes/enhanced"));
+const user_1 = __importDefault(require("./routes/user"));
 const devnet_1 = __importDefault(require("./routes/devnet"));
 // Import services
 const services_1 = require("./services");
@@ -144,18 +146,23 @@ class NenPlatformServer {
         this.app.use('/api/matches', matches_1.default);
         this.app.use('/api/users', users_1.default);
         this.app.use('/api/analytics', analytics_1.default);
+        this.app.use('/api/blockchain', blockchain_1.default);
         this.app.use('/api/devnet', devnet_1.default);
         // Versioned API routes
         this.app.use('/api/v1/auth', auth_1.default);
         this.app.use('/api/v1/betting', betting_1.default);
         this.app.use('/api/v1/matches', matches_1.default);
         this.app.use('/api/v1/users', users_1.default);
+        this.app.use('/api/v1/blockchain', blockchain_1.default);
         this.app.use('/api/v1/analytics', analytics_1.default);
         this.app.use('/api/v1/devnet', devnet_1.default);
+        // User Story 9: Training endpoints
+        this.app.use('/api/v1/training', require('./routes/training').default);
         // Legacy routes for backward compatibility
         this.app.use('/api/ai', ai_1.default);
         this.app.use('/api/game', game_1.default);
-        this.app.use('/api/user', users_1.default); // Redirect legacy user to new users
+        // Legacy user routes (provide /api/user/* endpoints used by verification scripts)
+        this.app.use('/api/user', user_1.default);
         this.app.use('/api/enhanced', enhanced_1.default);
         this.app.use('/metrics', metrics_1.metricsApp);
         // Root endpoint

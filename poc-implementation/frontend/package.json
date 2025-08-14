@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-  "dev": "next dev -p 3010",
+  "dev": "next dev -p 3030",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -11,7 +11,13 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+  "devnet:e2e:betting": "node scripts/devnet-betting-e2e.js",
+  "devnet:backend": "node ../backend/real-devnet-server.js",
+  "devnet:mint:agent": "node scripts/devnet-mint-agent.js",
+  "devnet:list:nft": "node scripts/devnet-create-listing.js",
+  "devnet:buy:nft": "node scripts/devnet-buy-nft.js",
+  "devnet:marketplace:e2e": "node scripts/devnet-marketplace-e2e.js"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.29.0",
@@ -23,7 +29,10 @@
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-react-ui": "^0.9.34",
     "@solana/wallet-adapter-wallets": "^0.19.26",
-    "@solana/web3.js": "^1.87.6",
+  "@solana/web3.js": "^1.87.6",
+  "@noble/hashes": "^1.4.0",
+  "@metaplex-foundation/js": "^0.18.1",
+  "@solana/spl-token": "^0.4.9",
     "aos": "^3.0.0-beta.6",
     "framer-motion": "^10.16.5",
     "lottie-react": "^2.4.0",
@@ -31,10 +40,10 @@
     "react": "^18.2.0",
     "react-confetti": "^6.1.0",
     "react-dom": "^18.2.0",
-    "react-hot-toast": "^2.4.1",
-    "react-particles": "^2.12.2",
     "react-hook-form": "^7.48.2",
+    "react-hot-toast": "^2.4.1",
     "react-intersection-observer": "^9.5.3",
+    "react-particles": "^2.12.2",
     "react-query": "^3.39.3",
     "socket.io-client": "^4.7.2",
     "swr": "^2.2.4",
@@ -42,7 +51,6 @@
     "tsparticles": "^3.0.2"
   },
   "devDependencies": {
-    "@next/swc-win32-x64-msvc": "^15.4.5",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",

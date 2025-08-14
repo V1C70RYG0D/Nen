@@ -9,7 +9,7 @@
     "db:seed": "npx tsx prisma/seed.ts",
     "start:production": "NODE_ENV=production node dist/main.js",
     "start:test": "NODE_ENV=test PORT=3001 node dist/main.js",
-    "dev": "node src/temp-server.js",
+    "dev": "node simple-working-server.js",
     "dev:optimized": "tsx watch src/server-optimized.ts",
     "test": "jest --coverage",
     "test:optimized": "jest --testPathPattern=optimized --verbose",
@@ -43,7 +43,13 @@
     "performance:profile": "clinic doctor -- node dist/server-optimized.js",
     "docker:build": "docker build -t nen-backend .",
     "docker:run": "docker run -p 3001:3001 nen-backend",
-    "launch:optimized": "bash launch-optimized.sh"
+    "launch:optimized": "bash launch-optimized.sh",
+    "room:create:devnet": "node scripts/test-create-room.js",
+    "rooms:server": "node rooms-server.js",
+  "test:join:e2e": "node scripts/test-join-room.js",
+  "test:user-story-12": "node scripts/test-user-story-12.js",
+    "test:magic-router": "node scripts/test-magic-router.js",
+    "delegate:session": "node scripts/delegate-session.js"
   },
   "keywords": [
     "blockchain",
@@ -118,6 +124,7 @@
     "@types/node": "^20.0.0",
     "@types/node-fetch": "^2.6.13",
     "@types/socket.io-client": "^1.4.36",
+    "@types/ssh2": "^1.15.5",
     "@types/superagent": "^8.1.9",
     "@types/supertest": "^6.0.3",
     "@types/uuid": "^10.0.0",

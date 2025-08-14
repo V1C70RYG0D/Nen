@@ -3,8 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.blockchainRoutes = exports.legacyUserRoutes = void 0;
 const express_1 = require("express");
 const config_1 = __importDefault(require("../config"));
+const user_1 = __importDefault(require("../routes/user"));
+const blockchain_1 = __importDefault(require("../routes/blockchain"));
 const router = (0, express_1.Router)();
 // GET /api/users/profile - Get user profile
 router.get('/profile', async (req, res, next) => {
@@ -224,4 +227,7 @@ router.get('/leaderboard', async (req, res, next) => {
     }
 });
 exports.default = router;
+// Also export mounted legacy-compatible routers for SSR proxy setups if needed
+exports.legacyUserRoutes = user_1.default;
+exports.blockchainRoutes = blockchain_1.default;
 //# sourceMappingURL=users.js.map

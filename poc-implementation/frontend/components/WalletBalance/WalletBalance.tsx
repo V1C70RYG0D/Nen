@@ -126,16 +126,13 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({ className = '' }) 
       return;
     }
 
-  setDepositing(true);
-  const dismiss = toast.loading('Preparing deposit transaction...');
+    setDepositing(true);
+    const dismiss = toast.loading('Preparing deposit transaction...');
 
     try {
-      // Auto-create betting account on first deposit if needed
-      if (!hasAccount) {
-        await createBettingAccount();
-      }
-
-  const result = await depositSol(amount);
+      // The deposit function will auto-create betting account if needed
+      console.log('💰 Starting deposit process...');
+      const result = await depositSol(amount);
       
       if (result) {
         // Refresh wallet balance to reflect the transfer
@@ -159,11 +156,34 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({ className = '' }) 
   };
 
   const handleCreateAccount = async () => {
+    console.log('🏗️ Create account button clicked');
     try {
-      await createBettingAccount();
+      const dismiss = toast.loading('Creating betting account...');
+      
+      const result = await createBettingAccount();
+      
+      if (result === 'ACCOUNT_ALREADY_EXISTS') {
+        toast.success('Betting account is ready!', { id: dismiss });
+      } else {
+        toast.success('Betting account created successfully!', { id: dismiss });
+      }
+      
+      // Refresh data to update UI
+      await refreshAccountData();
+      
     } catch (error) {
       console.error('Failed to create betting account:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to create betting account');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create betting account';
+      
+      // Provide specific guidance for common errors
+      if (errorMessage.includes('insufficient funds')) {
+        toast.error('Insufficient SOL for account creation. Get devnet SOL from: https://faucet.solana.com/');
+      } else if (errorMessage.includes('already in use') || errorMessage.includes('already exists')) {
+        toast.success('Betting account already exists!');
+        await refreshAccountData();
+      } else {
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -428,9 +448,9 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({ className = '' }) 
               
               <div className="space-y-4">
                 {!hasAccount && (
-                  <div className="bg-yellow-500/10 border border-yellow-500/30 p-3 rounded">
-                    <p className="text-yellow-400 text-sm">
-                      ⚠️ You need to create a betting account first. This will be done automatically with your first deposit.
+                  <div className="bg-blue-500/10 border border-blue-500/30 p-3 rounded">
+                    <p className="text-blue-400 text-sm">
+                      ℹ️ A betting account will be created automatically with your first deposit.
                     </p>
                   </div>
                 )}

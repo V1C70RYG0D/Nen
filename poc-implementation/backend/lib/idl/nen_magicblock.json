@@ -1,0 +1,86 @@
+{
+  "version": "0.1.0",
+  "name": "nen_magicblock",
+  "metadata": { "address": "AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX" },
+  "instructions": [
+    {
+      "name": "create_enhanced_session",
+      "accounts": [
+        { "name": "session", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "sessionId", "type": "u64" },
+        { "name": "player1", "type": "publicKey" },
+        { "name": "player2", "type": { "option": "publicKey" } },
+        { "name": "sessionConfig", "type": { "defined": "SessionConfig" } },
+        { "name": "geographicRegion", "type": { "defined": "GeographicRegion" } }
+      ]
+    },
+    {
+      "name": "delegate_session",
+      "accounts": [
+        { "name": "session", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true }
+      ],
+      "args": [
+        { "name": "params", "type": { "defined": "DelegateParams" } }
+      ]
+    },
+    {
+      "name": "commit_session",
+      "accounts": [
+        { "name": "session", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true }
+      ],
+      "args": []
+    },
+    {
+      "name": "undelegate_session",
+      "accounts": [
+        { "name": "session", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "magicContext", "isMut": false, "isSigner": false },
+        { "name": "magicProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    }
+  ],
+  "types": [
+    {
+      "name": "SessionConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "timeLimitSeconds", "type": "u32" },
+          { "name": "moveTimeLimitSeconds", "type": "u16" },
+          { "name": "enableSpectators", "type": "bool" },
+          { "name": "enableAnalysis", "type": "bool" },
+          { "name": "compressionLevel", "type": "u8" }
+        ]
+      }
+    },
+    {
+      "name": "GeographicRegion",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "regionCode", "type": "string" },
+          { "name": "latencyZone", "type": "u8" },
+          { "name": "serverCluster", "type": "string" }
+        ]
+      }
+    },
+    {
+      "name": "DelegateParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "commitFrequencyMs", "type": "u32" },
+          { "name": "validator", "type": "publicKey" }
+        ]
+      }
+    }
+  ]
+}

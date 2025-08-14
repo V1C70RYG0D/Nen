@@ -1,0 +1,2627 @@
+### 3. Refined User Stories & On-Chain Requirements
+
+**Note on Implementation for Final Development**: This represents the final user stories before launch. All implementation must be conducted completely on Solana devnet, using real RPC endpoints (e.g., https://api.devnet.solana.com). For all flows, create and use real user data on devnet (e.g., actual wallet accounts, PDAs, NFTs, and transactions via real signatures and program deployments). Do not use mocks, fakes, or off-chain simulations—leverage tools like Anchor for deployment, real wallets (e.g., Phantom devnet mode), and actual IPFS uploads for hashes. Test with real devnet SOL (airdropped via solana airdrop). Ensure all events, settlements, and data structures are verifiable on devnet explorers (e.g., Solana Explorer devnet view).
+
+#### **BETTING FLOW**
+
+**User Story 1: As a Betting Player, I want to connect my Solana wallet to the platform so that I can access my balance and participate in betting securely.**
+- Acceptance Criteria:
+  - User clicks "Connect Wallet" button.
+  - User selects wallet provider (Phantom, Solflare, etc.).
+  - User approves connection in wallet popup.
+  - User sees wallet address displayed on platform.
+  - If connection is rejected, display error message and offer retry option.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Verify wallet ownership through signature verification on devnet.
+- Check if wallet has existing platform account PDA via devnet query.
+- Query user's SOL balance for display using devnet RPC.
+- Initialize user account PDA if first-time connection, creating real data on devnet.
+
+**User Story 2: As a Betting Player, I want to deposit SOL into my betting account so that I can fund my wagers.**
+- Acceptance Criteria:
+  - User enters deposit amount in SOL.
+  - User clicks "Deposit" button.
+  - User approves transaction in wallet.
+  - User sees updated betting balance.
+  - If insufficient SOL in wallet, show error and suggest airdrop on devnet.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Create/access user's betting account PDA on devnet.
+- Transfer real SOL from user wallet to betting PDA via devnet transaction.
+- Update user's on-chain balance record with actual data.
+- Emit deposit event for tracking, verifiable on devnet.
+- Enforce minimum deposit (0.1 SOL); use real devnet SOL for testing.
+
+**User Story 2a: As a Betting Player, I want to withdraw SOL from my betting account so that I can access my funds outside the platform.**
+- Acceptance Criteria:
+  - User enters withdrawal amount in SOL.
+  - User approves transaction in wallet.
+  - User sees updated balance.
+  - Enforce 24-hour cooldown for security; show error if locked funds exceed amount.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Validate against locked funds on devnet PDA.
+- Transfer real SOL from PDA to wallet via devnet transaction.
+- Enforce cooldown using devnet timestamps.
+- Emit withdrawal event; update real balance records on devnet.
+
+**User Story 3: As a Betting Player, I want to view upcoming AI matches so that I can evaluate betting opportunities.**
+- Acceptance Criteria:
+  - User navigates to matches page.
+  - User sees list of scheduled matches.
+  - User filters by bet range, AI rating, or personality traits.
+  - User clicks match for details.
+  - If no matches available, show placeholder with scheduling info.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Query global matches account for active games on devnet.
+- Retrieve real AI agent metadata (names, ratings, stats) from devnet PDAs.
+- Calculate dynamic odds based on actual betting pools on devnet.
+- Check match status (open/closed for betting) via devnet state.
+
+**User Story 4: As a Betting Player, I want to place a bet on an AI agent so that I can wager on match outcomes.**
+- Acceptance Criteria:
+  - User selects AI agent to win.
+  - User enters bet amount in SOL.
+  - User reviews bet slip with odds.
+  - User confirms bet placement.
+  - If match canceled before start, automatically refund bet.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Validate bet amount against real user balance on devnet.
+- Check bet within match limits (min: 0.1 SOL, max: 100 SOL).
+- Reserve funds from user's betting account PDA on devnet.
+- Create bet record with unique ID using real devnet transaction.
+- Transfer funds to match escrow PDA.
+- Update betting pool totals with actual data.
+- Emit bet placed event, verifiable on devnet.
+
+**User Story 5: As a Betting Player, I want to watch a live AI match so that I can follow my bets in real-time.**
+- Acceptance Criteria:
+  - User clicks "Watch Live" on active match.
+  - User sees real-time board state updates.
+  - User views move history sidebar.
+  - User sees betting pool information.
+  - Handle connection drops with reconnect button.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Connect to MagicBlock ephemeral rollup for match on devnet.
+- Stream game state updates via MagicBlock WebSocket with real data.
+- Verify moves are being recorded in rollup on devnet.
+- Display current betting pools from devnet mainnet-equivalent state.
+- Show match timer and rollup status.
+- Ensure <100ms latency for move updates using devnet infrastructure.
+
+**User Story 6: As a Betting Player, I want to claim my winnings so that I can receive payouts after a match.**
+- Acceptance Criteria:
+  - User receives match end notification.
+  - User views payout calculation.
+  - User clicks "Claim Winnings" (or auto-claim if preference set).
+  - User receives SOL in wallet.
+  - If no winnings, show zero-balance message.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Verify match result from oracle/validator on devnet.
+- Calculate winnings: (bet_amount × odds) - platform_fee using real data.
+- Transfer real SOL from escrow to user PDA via devnet transaction.
+- Update user's balance and bet record with actual updates.
+- Mark bet as settled.
+- Emit payout event on devnet.
+
+#### **AI TRAINING FLOW**
+
+**User Story 7: As an AI Trainer, I want to select my on-chain match replays as training data so that I can improve my agent's performance without any file uploads.**
+- Acceptance Criteria:
+  - User selects an owned AI agent NFT.
+  - User browses and selects previous matches recorded on-chain in MagicBlock (filterable by opponent, date, result, opening).
+  - User configures simple training parameters (e.g., focus area: openings/midgame/endgame; intensity: low/medium/high; max matches to use).
+  - User submits the training request.
+  - Validate replay selection count/limits and parameter ranges; show clear errors if invalid.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Verify user owns the AI agent NFT on devnet.
+- Reference selected MagicBlock replay IDs/commitment hashes on-chain in a training session PDA; no file/IPFS uploads involved.
+- Lock the AI agent during the training period via PDA state update on devnet.
+- Create a training session record on devnet including replay references and parameters.
+- Validate staked $NEN for priority using real stakes on devnet.
+
+**User Story 8: As an AI Trainer, I want to pay the training fee so that I can initiate agent improvement.**
+- Acceptance Criteria:
+  - User reviews training cost estimate.
+  - User approves SOL payment.
+  - User sees training started confirmation.
+  - User receives completion estimate.
+  - If payment fails, retry with error message.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Calculate fee: base_rate × training_hours using devnet data.
+- Transfer real SOL fee to platform treasury PDA on devnet.
+- Allocate 20% to compute provider rewards via actual transfer.
+- Create payment receipt on-chain with real record.
+- Emit training started event on devnet.
+
+**User Story 9: As an AI Trainer, I want my updated AI model to activate automatically so that I can use the improved agent without any downloads.**
+- Acceptance Criteria:
+  - User receives training complete notification.
+  - User reviews performance improvements.
+  - Updated AI model is activated for the agent automatically; no file/IPFS download is required.
+  - User tests the agent in a practice match.
+  - Verify model integrity by checking on-chain commitment/hash; show error if mismatch.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Update AI agent metadata with a new model commitment/hash on devnet (no file link required).
+- Increment the agent version number in the agent PDA.
+- Record training metrics (games played, win rate) with actual data on devnet.
+- Unlock the agent for matches via devnet update.
+- Update Elo rating if applicable on devnet.
+
+#### **COMPETITIVE GAMING FLOW**
+
+**User Story 10: As a Competitive Gamer, I want to create a game room so that I can set up custom matches.**
+- Acceptance Criteria:
+  - User selects "Create Game" option.
+  - User configures match settings.
+  - User sets entry requirements.
+  - User shares room code.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Initialize MagicBlock session for the match on devnet.
+- Create ephemeral rollup with game parameters.
+- Deploy BOLT ECS entities for pieces using real devnet deployment.
+- Store session reference on devnet mainnet-equivalent.
+- Set room status to "waiting" in PDA.
+- Generate unique session identifier.
+- Emit room created event on devnet.
+
+**User Story 11: As a Competitive Gamer, I want to join a human match so that I can play against others.**
+- Acceptance Criteria:
+  - User enters room code or browses list.
+  - User views match settings.
+  - User clicks "Join Game".
+  - User sees match starting countdown.
+  - Filter rooms by rule variations or AI difficulty.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Verify user meets room requirements on devnet.
+- Add user to MagicBlock session permissions with real update.
+- Initialize player entity in BOLT ECS on devnet.
+- Update room status when full.
+- Start ephemeral rollup execution.
+- Transfer any entry fees to escrow using real SOL.
+- Begin real-time state streaming.
+
+**User Story 12: As a Competitive Gamer, I want to make a game move so that I can progress in the match, with automatic finalization on end.**
+- Acceptance Criteria:
+  - User selects piece on board.
+  - User sees valid move highlights.
+  - User selects destination square.
+  - User confirms move submission.
+  - Allow undo within 10s or resign to trigger early end.
+  - On end: Game reaches condition, winner determined, final state computed, settlement automatic.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Submit move to MagicBlock rollup on devnet.
+- BOLT system validates move in <100ms.
+- Update ECS components (position, stacking) with real data.
+- Broadcast state change to all clients.
+- Record move in rollup transaction log.
+- Check win/draw conditions via systems.
+- On end: Compute final state hash; Compress history using Merkle tree; Submit settlement to devnet; Update match result; Trigger payouts; Persist replay in MagicBlock rollup and publish replay index/commitment on devnet; Emit events.
+
+#### **NFT MARKETPLACE FLOW**
+
+**User Story 13: As an NFT Collector, I want to mint an AI agent NFT so that I can own and trade unique agents.**
+- Acceptance Criteria:
+  - User selects trained AI agent.
+  - User sets NFT metadata.
+  - User pays minting fee (0.1 SOL).
+  - User receives NFT in wallet.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Create new NFT using Metaplex standard on devnet.
+- Set AI performance data and custom traits (personality, openings) as attributes.
+- Transfer mint authority to user.
+- Store agent model hash reference in real metadata.
+- Apply 5% creator royalty settings.
+- Emit NFT minted event on devnet.
+
+**User Story 14: As an NFT Collector, I want to list an NFT for sale so that I can monetize my collection.**
+- Acceptance Criteria:
+  - User selects NFT from collection.
+  - User sets sale price in SOL.
+  - User chooses fixed price or auction format.
+  - User approves marketplace access.
+  - User sees listing confirmation.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Create listing account with price on devnet.
+- Transfer NFT to marketplace escrow PDA using real transaction.
+- Set listing expiration (30 days).
+- Calculate marketplace fee (2.5%).
+- Make listing searchable on-chain with actual data.
+- Emit listing created event on devnet.
+
+**User Story 15: As an NFT Collector, I want to purchase an NFT so that I can add to my collection.**
+- Acceptance Criteria:
+  - User browses marketplace listings.
+  - User clicks "Buy Now" on NFT.
+  - User approves purchase transaction.
+  - User receives NFT in wallet.
+  - Verify transfer; show error if insufficient SOL.
+
+*On-Chain Requirements (Devnet-Specific):*
+- Verify buyer has sufficient real SOL on devnet.
+- Transfer SOL to seller minus fees via transaction.
+- Transfer 2.5% fee to platform treasury.
+- Transfer 5% royalty to original creator.
+- Transfer NFT from escrow to buyer.
+- Update ownership records with real update.
+- Emit sale completed event on devnet.
+
+# Nen Platform: Complete Project Overview & Implementation
+
+## Executive Summary
+
+**Nen Platform** is a revolutionary blockchain-based gaming ecosystem that brings the strategic depth of Gungi (from Hunter x Hunter) to Web3, featuring AI-powered agents competing in automated matches with real SOL betting. Built on Solana and leveraging MagicBlock (https://www.magicblock.xyz/) for real-time on-chain execution, this platform combines cutting-edge reinforcement learning, high-performance blockchain technology, and anime culture to create the first truly decentralized AI gaming arena where users can train customizable AI agents tailored to their needs—such as specific personalities, openings, and playing styles—and trade them as NFTs.
+
+### Project Vision
+Transform traditional board gaming through the convergence of:
+- **Advanced AI**: Self-evolving agents using reinforcement learning and neural networks, with user-customizable training for personalities, openings, and playing styles
+- **Blockchain Technology**: Transparent, provably fair gaming on Solana, enhanced by MagicBlock's ephemeral rollups for seamless real-time interactions
+- **Community Ecosystem**: Player-driven AI training and NFT marketplaces for trading custom agents
+- **Cultural Bridge**: Connecting anime fandom with Web3 innovation
+
+### Core Value Proposition
+Nen delivers a seamless fusion of anime nostalgia, advanced AI-driven gameplay, provably fair crypto betting, and community-powered AI evolution. The platform enables users to experience empowerment through strategic mastery and personal growth—mirroring the "Nen" concept of awakening hidden potential—while allowing them to train AI agents according to their specific needs (e.g., aggressive personalities, custom openings, or defensive playing styles) and trade these agents as NFTs for profit or collection. This positions us at the intersection of multiple explosive growth markets:
+
+- **Blockchain Gaming**: $8.5B in 2024 → $314.3B by 2030 (67.6% CAGR)
+- **AI Agents Market**: $5.4B in 2024 → $50.3B by 2030 (45.8% CAGR)
+- **Crypto Betting**: $81.4B in revenue (2024), 500% growth since 2022
+- **Solana Ecosystem**: 7,625 new developers in 2024, first to surpass Ethereum
+
+## Core Concept & Features
+
+### Primary Platform: Gungi Arena
+- **Game Foundation**: Full implementation of Gungi from Hunter x Hunter
+  - 9x9 board with 3-tier stacking mechanics (Tsuke)
+  - 13 unique piece types with complex movement patterns
+  - Strategic depth exceeding traditional chess complexity
+  - Decision space orders of magnitude larger than traditional board games
+- **AI-Driven Gameplay**: Multiple AI agent personalities and skill levels, with user-customizable training options for personalities, openings, and playing styles
+- **Betting Ecosystem**: Real SOL wagering on AI vs AI matches
+- **NFT Integration**: Tradeable AI agents (custom-trained with unique traits), custom piece sets, and rare collectibles
+
+### Advanced Features
+- **Multi-Modal Gaming**:
+  - AI vs AI automated tournaments
+  - Human vs AI training matches
+  - Human vs Human competitive play
+  - Collaborative AI training sessions
+- **Dynamic AI Evolution**:
+  - Self-play reinforcement learning
+  - Community-contributed training data
+  - Elo rating system for agent ranking
+  - Personality-based playing styles, with user-defined customizations including specific openings and strategic preferences
+- **Blockchain Integration**:
+  - Provably fair RNG using Solana oracles
+  - Transparent match verification
+  - Decentralized betting escrow
+  - Cross-chain compatibility roadmap, powered by MagicBlock (https://www.magicblock.xyz/) for real-time on-chain sessions
+
+### Core User Personas (POC Focus)
+
+1. **Betting Player** (Primary Revenue Driver)
+   - Profile: Crypto-savvy users interested in wagering SOL on AI vs AI matches
+   - Motivation: Seeking provably fair betting with potential profits and entertainment
+   - Critical for POC: Validates core revenue model and blockchain integration
+
+2. **AI Trainer** (Content Creator)
+   - Profile: AI/ML enthusiasts and strategic gamers who develop custom AI agents
+   - Motivation: Creating unique AI personalities, openings, and playing styles; earning from successful agents through NFT trading
+   - Critical for POC: Demonstrates dynamic AI evolution and community engagement
+
+3. **Competitive Gamer** (Experience Validator)
+   - Profile: Anime fans and strategic game enthusiasts, particularly Hunter x Hunter fans
+   - Motivation: Testing skills against AI, learning Gungi, and competitive play
+   - Critical for POC: Provides training data and validates gameplay quality
+
+4. **NFT Collector** (Value Creator)
+   - Profile: Web3 natives interested in owning unique AI agents and game assets
+   - Motivation: Collecting rare AI agents (with custom-trained traits like personalities and openings), trading for profit, showcasing collections
+   - Critical for POC: Establishes secondary market and asset tokenization
+
+### Target Markets
+1. **Primary**: Crypto Gamers on Solana - $2B+ opportunity with 162M daily transactions
+2. **Secondary**: Hunter x Hunter anime community - 10M+ global fans, 84M manga copies sold
+3. **Tertiary**: AI/ML enthusiasts and researchers - 2,500+ active Solana developers
+4. **Quaternary**: Crypto betting market - $81.4B revenue, platforms like Stake generating $4.7B
+
+## Detailed Technical Implementation
+
+### 1. Game Engine Architecture
+
+#### Core Gungi Implementation
+```
+Gungi Rules Engine (Python/Rust hybrid)
+├── Board State Management
+│   ├── 9x9 grid with coordinate system
+│   ├── 3-tier stacking with validation
+│   ├── Move validation and execution
+│   └── Game state serialization/deserialization
+├── Piece Logic System
+│   ├── 13 piece types with unique behaviors
+│   ├── Dynamic movement calculation
+│   ├── Stacking interaction rules
+│   └── Promotion and capture mechanics
+└── Game Flow Controller
+    ├── Turn management
+    ├── Win condition detection
+    ├── Draw state handling
+    └── Match replay system
+```
+
+#### Technical Specifications
+- **Primary Language**: Rust for performance-critical components
+- **Secondary Language**: Python for AI training and rapid prototyping
+- **Game State**: Immutable state objects for blockchain verification
+- **Performance Target**: <100ms move calculation, 1000+ concurrent games
+
+#### Piece Types & Mechanics
+1. **Marshal**: King equivalent, must be protected (checkmate condition)
+2. **General**: Powerful attacker with 8-direction movement
+3. **Lieutenant**: Mid-range piece with diagonal preference
+4. **Major/Minor**: Varied movement patterns for tactical depth
+5. **Shinobi**: Stealth unit that can infiltrate enemy stacks
+6. **Bow**: Ranged attacker that shoots over obstacles
+7. **Cannon**: Stack destroyer with explosive attacks
+8. **Fort**: Defensive piece that blocks multiple attacks
+9. **Pawn**: Promotable unit with stacking bonuses
+10. **Fortress**: Advanced defensive structure
+11. **Lance**: Linear attacker with penetration ability
+12. **Knight**: L-shaped movement with unique properties
+13. **Spy**: Information gathering and disruption unit
+
+### 2. Advanced AI System
+
+#### Multi-Tier AI Architecture
+```
+AI Agent Ecosystem
+├── Level 1: Rule-Based Agents
+│   ├── Basic pattern recognition
+│   ├── Piece value heuristics
+│   ├── Simple tactical awareness
+│   └── Defensive positioning
+├── Level 2: Enhanced Heuristic Agents
+│   ├── Advanced position evaluation
+│   ├── Multi-move planning
+│   ├── Pattern matching from game database
+│   └── Opponent modeling
+├── Level 3: Neural Network Agents
+│   ├── Deep learning position evaluation
+│   ├── Monte Carlo Tree Search integration
+│   ├── Self-play training capabilities
+│   └── Adaptive learning from human games
+└── Level 4: Advanced RL Agents
+    ├── AlphaZero-style implementation
+    ├── Multi-agent self-play
+    ├── Transfer learning capabilities
+    └── Real-time strategy adaptation
+```
+
+#### AI Training Pipeline
+- **Stage 1**: Supervised learning from human expert games
+- **Stage 2**: Self-play reinforcement learning
+- **Stage 3**: Multi-agent competitive evolution
+- **Stage 4**: Community feedback integration, with user-customizable parameters for personalities, openings, and playing styles
+- **Stage 5**: Continuous learning from live matches
+
+#### Performance Metrics
+- **Elo Rating System**: Standard chess-style ranking
+- **Win Rate Tracking**: Against different agent types
+- **Style Analysis**: Aggressive, defensive, tactical classifications, including custom user-defined traits
+- **Learning Rate**: Improvement tracking over time
+- **Compute Efficiency**: Training cost optimization
+
+### 3. Blockchain Integration Layer
+
+#### Solana Smart Contract Architecture with MagicBlock Integration
+
+**MagicBlock Integration for Real-Time On-Chain Gaming**
+Nen Platform leverages MagicBlock's (https://www.magicblock.xyz/) ephemeral rollups and BOLT (Block Optimized for Low-latency Transactions) framework to enable fully on-chain Gungi matches with real-time move execution. This revolutionary approach eliminates the need for off-chain game state management while maintaining sub-second latency, allowing seamless AI training and NFT trading integrations.
+
+```
+Solana Program Suite with MagicBlock
+├── Core Game Program (MagicBlock BOLT)
+│   ├── Ephemeral rollup for game sessions
+│   ├── Real-time move validation (<100ms)
+│   ├── Optimistic state updates
+│   ├── Session finalization to Solana
+│   └── Anti-cheat mechanisms
+├── MagicBlock Integration Layer
+│   ├── BOLT ECS (Entity Component System)
+│   ├── Ephemeral account management
+│   ├── State compression and delegation
+│   ├── Session lifecycle management
+│   └── Real-time event streaming
+├── Betting Escrow Program
+│   ├── Wager placement and holding
+│   ├── Integration with MagicBlock sessions
+│   ├── Automated payout on session finalization
+│   └── Fee collection and management
+├── AI Registry Program
+│   ├── AI agent metadata tracking (including custom personalities, openings, styles)
+│   ├── Performance metrics from MagicBlock games
+│   ├── Training history records
+│   └── Version control system
+├── NFT Marketplace Program
+│   ├── AI agent tokenization (trade custom-trained agents as NFTs)
+│   ├── Custom piece minting
+│   ├── Listing and trading mechanics
+│   └── Royalty distribution
+├── User Account Program
+│   ├── Profile management
+│   ├── MagicBlock session permissions
+│   ├── Balance tracking
+│   └── Achievement system
+└── Governance Contract
+    ├── Platform parameter voting
+    ├── MagicBlock upgrade authorization
+    ├── Community treasury management
+    └── Protocol improvements
+```
+
+#### MagicBlock Technical Advantages for Nen
+- **Ephemeral Rollups**: Game sessions run in temporary rollups that settle to Solana, enabling complex game logic without mainnet congestion
+- **Sub-100ms Latency**: Real-time move execution rivaling Web2 gaming experiences
+- **Fully On-Chain**: Every move is cryptographically verified and stored, ensuring complete transparency
+- **Composability**: Seamless integration with existing Solana DeFi and NFT protocols, ideal for trading custom AI agents
+- **Cost Efficiency**: Session-based fee model reduces per-move transaction costs by 95%+
+
+#### On-Chain Data Structures (Enhanced with MagicBlock)
+- **Game Session**: session_id, rollup_address, players[], board_state_root, move_count, status
+- **Move Record**: move_id, session_id, player, piece, from_position, to_position, timestamp, validation_proof
+- **Session Settlement**: final_state_hash, winner, move_history_root, betting_pool_distribution
+- **Real-Time State**: Compressed game state using MagicBlock's state delegation pattern
+- **AI Agent Metadata**: agent_id, owner, personality_traits, openings_preference, playing_style, nft_token_id
+
+### 4. Frontend & User Experience
+
+#### Web Application Stack
+```
+Frontend Architecture
+├── React.js Application
+│   ├── Game board visualization
+│   ├── Real-time match watching
+│   ├── AI agent management (custom training interface for personalities, openings, styles)
+│   └── Betting interface
+├── Solana Wallet Integration
+│   ├── Phantom wallet support
+│   ├── Solflare compatibility
+│   ├── Ledger hardware wallet
+│   └── Mobile wallet adapters
+├── WebSocket Connection
+│   ├── Live match updates
+│   ├── Chat and social features
+│   ├── Notification system
+│   └── Real-time betting odds
+└── State Management
+    ├── Redux for global state
+    ├── Wallet connection handling
+    ├── Game state synchronization
+    └── User preference storage
+```
+
+#### Mobile Application
+- **React Native Implementation**: Cross-platform compatibility
+- **Solana Saga Optimization**: Native integration features
+- **Progressive Web App**: Offline capability and native feel
+- **Push Notifications**: Match updates and betting alerts
+
+#### VR/AR Integration (Future)
+- **Unity-based VR Client**: Immersive 3D Gungi experience
+- **Oculus Quest Support**: Standalone VR gaming
+- **AR Mobile Features**: Augmented reality board overlay
+- **Spatial Audio**: Enhanced immersion for matches
+
+### 5. Infrastructure & Scalability
+
+#### Backend Services (Enhanced with MagicBlock)
+```
+Microservices Architecture with MagicBlock
+├── MagicBlock Session Manager
+│   ├── Ephemeral rollup orchestration
+│   ├── Session creation and teardown
+│   ├── State synchronization
+│   └── Event streaming infrastructure
+├── Game Simulation Service
+│   ├── AI vs AI match execution on MagicBlock
+│   ├── Move validation using BOLT framework
+│   ├── Performance optimization
+│   └── Result settlement to mainnet
+├── AI Training Service
+│   ├── Neural network training with user-customizable parameters (personalities, openings, styles)
+│   ├── Analysis of MagicBlock game data
+│   ├── Model versioning and deployment
+│   └── Distributed computing coordination
+├── Data Analytics Service
+│   ├── Real-time game analytics from MagicBlock
+│   ├── Player behavior analysis
+│   ├── Betting trend analysis
+│   └── Performance metrics tracking
+└── API Gateway Service
+    ├── MagicBlock WebSocket integration
+    ├── Request routing and load balancing
+    ├── Authentication and authorization
+    └── Monitoring and logging
+```
+
+#### Database Design
+- **Primary Database**: PostgreSQL for transactional data
+- **Time-Series Database**: InfluxDB for performance metrics
+- **Cache Layer**: Redis for real-time data
+- **Blockchain Indexer**: Custom Solana transaction parsing
+- **File Storage**: IPFS for NFT metadata and game replays
+
+#### Deployment Strategy
+- **Development**: Local Docker containers
+- **Staging**: AWS ECS with auto-scaling
+- **Production**: Kubernetes cluster with geographic distribution
+- **CDN**: CloudFlare for global content delivery
+- **Monitoring**: Prometheus and Grafana stack
+
+## Comprehensive Market Analysis
+
+### Competitive Landscape & Market Gaps
+
+The competitive analysis reveals Nen operates in a unique intersection with no direct competitors offering the same combination of features:
+
+**Direct Competitors (Strategic Blockchain Games):**
+- **Gods Unchained**: ~3,500 DAU, declining engagement in traditional TCG format
+- **Chess Universe**: 140,000 DAU, strong demand for blockchain chess but limited innovation
+- **No blockchain Gungi implementations**: True blue ocean opportunity
+
+**AI & Gaming Platforms:**
+- **Virtuals Protocol**: $5B market cap peak, validates AI agent demand
+- **TARS AI**: NVIDIA partnership, institutional validation
+- **Star Atlas & Aurory**: Different genres without pure strategic gameplay
+
+**Competitive Advantages - "Trifecta Moat":**
+1. No competitor combines anime IP + 3D stacking mechanics + AI betting
+2. Anime NFT market (Azuki, 0N1 Force: $70M volume) remains untapped for strategic games
+3. Community-driven AI evolution creates sustainable competitive advantage, with unique customization and NFT trading
+4. Skill-based betting niche largely unoccupied despite $81.4B crypto betting market
+
+### Founder-Market Fit
+
+**Technical Foundation:**
+- AI/ML expertise with hands-on reinforcement learning experience
+- Solana development proficiency (Rust, hackathon participation)
+- Full-stack capabilities enabling end-to-end development
+- Built prototype Gungi implementation demonstrating commitment
+
+**Strategic Advantages:**
+- Positioned at convergence of major growth trends
+- Deep understanding of both anime and crypto communities
+- Network access to 2,500+ Solana developers
+- Clear awareness of team augmentation needs (game design, legal, community management)
+
+## Advanced Revenue Model & Tokenomics
+
+### Multi-Stream Revenue Architecture
+
+#### Primary Revenue Streams
+1. **Betting Commission**: 2-5% on all wagers
+   - Low-stakes matches: 2% commission
+   - High-stakes tournaments: 3-5% commission
+   - Premium betting pools: 5% commission
+   - Projected: $2M+ monthly at scale
+
+2. **Tournament Entry Fees**: 
+   - Weekly tournaments: 0.1-0.5 SOL entry
+   - Monthly championships: 1-5 SOL entry
+   - Special events: 10+ SOL entry
+   - Projected: $500K+ monthly revenue
+
+3. **Premium Subscriptions**:
+   - Basic Plan: $10/month - Advanced AI training access
+   - Pro Plan: $25/month - Unlimited games + analytics
+   - Elite Plan: $50/month - Custom AI development tools
+   - Projected: $1M+ monthly recurring revenue
+
+4. **NFT Marketplace**:
+   - Primary sales: Custom AI agents (with trained personalities, openings, styles), piece sets
+   - Secondary market: 2.5% royalty on all trades
+   - Rare collectibles: Limited edition releases
+   - Projected: $3M+ annual revenue
+
+#### Secondary Revenue Streams
+- **API Licensing**: Other games using our AI engine
+- **Educational Content**: Premium strategy courses
+- **Merchandise**: Physical Gungi boards and collectibles
+- **Partnership Revenue**: Integration fees and revenue sharing
+
+### Native Token Design: $NEN
+
+#### Token Utility Framework
+```
+$NEN Token Ecosystem
+├── Governance Rights
+│   ├── Platform development voting
+│   ├── AI training dataset approval
+│   ├── Tournament format decisions
+│   └── Revenue distribution parameters
+├── Staking Mechanisms
+│   ├── AI agent ownership staking
+│   ├── Revenue sharing from platform fees
+│   ├── Enhanced betting limits
+│   └── Priority access to new features
+├── In-Game Currency
+│   ├── Tournament entry payments
+│   ├── AI training session costs
+│   ├── Premium feature access
+│   └── NFT marketplace transactions
+└── Incentive Rewards
+    ├── Training data contribution rewards
+    ├── Community moderation incentives
+    ├── Referral program bonuses
+    └── Achievement unlocks
+```
+
+#### Tokenomics Structure
+- **Total Supply**: 1,000,000,000 $NEN
+- **Distribution**:
+  - Community Rewards: 35% (350M tokens)
+  - Development Team: 20% (200M tokens, 4-year vesting)
+  - Ecosystem Fund: 25% (250M tokens)
+  - Initial Liquidity: 10% (100M tokens)
+  - Strategic Partners: 10% (100M tokens)
+
+#### Deflationary Mechanisms
+- **Burn Schedule**: 50% of platform fees used for token burns
+- **Staking Burns**: Penalties for early unstaking
+- **Tournament Burns**: Entry fee portions permanently removed
+- **Target**: 2-5% annual deflation rate
+
+### Revenue Projections & Growth Model
+
+#### Year 1 Targets (Months 1-12)
+- **Users**: 10K registered, 2K daily active
+- **Revenue**: $1.2M total ($100K monthly average)
+- **Betting Volume**: $50M total wagered
+- **Token Market Cap**: $50-100M target
+
+#### Year 2 Expansion (Months 13-24)
+- **Users**: 100K registered, 25K daily active
+- **Revenue**: $15M total ($1.25M monthly average)
+- **Betting Volume**: $500M total wagered
+- **Token Market Cap**: $250-500M target
+
+#### Year 3+ Scale (Months 25+)
+- **Users**: 1M+ registered, 200K+ daily active
+- **Revenue**: $50M+ annually
+- **Betting Volume**: $2B+ annually
+- **Token Market Cap**: $1B+ target
+
+## Strategic Growth & Marketing Plan
+
+### Phase-Based Marketing Strategy
+
+#### Phase 1: Foundation Building (Months 1-6)
+**Objective**: Establish core community and prove concept viability
+
+**Key Activities**:
+- **Hunter x Hunter Community Engagement**:
+  - Recreate iconic Meruem vs. Komugi matches using AI
+  - Partner with anime content creators for authentic gameplay videos
+  - Host "Chimera Ant Arc" themed tournaments
+  - Target Reddit r/HunterXHunter and r/anime communities
+
+- **Solana Ecosystem Integration**:
+  - Apply for Solana Foundation grants ($50-100K target)
+  - Participate in Solana hackathons and developer events
+  - Integrate with popular Solana wallets and dApps
+  - Partner with existing Solana gaming projects
+
+- **Technical Demonstration**:
+  - Release public AI vs AI match videos
+  - Open beta with limited user access
+  - Developer documentation and open-source components
+  - Technical AMAs and conference presentations
+
+**Success Metrics**:
+- 5,000+ Discord community members
+- 10,000+ social media followers
+- 1,000+ beta users
+- $500K+ in beta betting volume
+
+#### Phase 2: Market Expansion (Months 7-18)
+**Objective**: Scale user base and establish revenue streams
+
+**Key Activities**:
+- **Viral Marketing Campaigns**:
+  - Celebrity anime streamer partnerships
+  - TikTok/YouTube Shorts viral content
+  - Meme marketing and community-generated content
+  - Influencer tournaments with SOL prizes
+
+- **Strategic Partnerships**:
+  - Gaming content creators and streamers
+  - Anime convention sponsorships
+  - Crypto education platforms
+  - Solana ecosystem cross-promotion
+
+- **Product Enhancement**:
+  - Mobile app launch
+  - Advanced AI personalities with custom training options
+  - NFT marketplace opening for AI agent trading
+  - Tournament and league systems
+
+**Success Metrics**:
+- 50,000+ registered users
+- $2M+ monthly betting volume
+- $500K+ monthly revenue
+- Top 10 Solana gaming platform ranking
+
+#### Phase 3: Global Domination (Months 19+)
+**Objective**: Become the premier AI gaming platform in Web3
+
+**Key Activities**:
+- **International Expansion**:
+  - Multi-language platform support
+  - Regional tournament systems
+  - Local partnership development
+  - Regulatory compliance in key markets
+
+- **Technology Leadership**:
+  - Advanced AI research partnerships
+  - Cross-chain integration
+  - VR/AR platform development
+  - Enterprise AI licensing
+
+- **Ecosystem Development**:
+  - Developer SDK release
+  - Third-party integration APIs
+  - Educational platform launch
+  - Research publication program
+
+**Success Metrics**:
+- 1M+ global users
+- $50M+ annual revenue
+- Industry recognition and awards
+- Successful exit opportunities ($1B+ valuation)
+
+### Community Building & Engagement
+
+#### Discord Community Strategy
+```
+Nen Platform Discord Server
+├── General Channels
+│   ├── #announcements (official updates)
+│   ├── #general-chat (community discussion)
+│   ├── #introductions (new member welcome)
+│   └── #feedback (user suggestions)
+├── Gaming Channels
+│   ├── #match-discussions (game analysis)
+│   ├── #ai-training (community AI development)
+│   ├── #tournaments (competitive events)
+│   └── #strategy-guides (educational content)
+├── Trading Channels
+│   ├── #nft-marketplace (NFT trading)
+│   ├── #price-discussion (token price talk)
+│   ├── #betting-tips (wagering strategies)
+│   └── #market-analysis (trend discussion)
+└── Developer Channels
+    ├── #technical-discussion (dev community)
+    ├── #api-support (developer assistance)
+    ├── #contributions (community development)
+    └── #research (AI and gaming research)
+```
+
+#### Engagement Mechanisms
+- **Daily Challenges**: AI vs community member matches
+- **Weekly Tournaments**: SOL prize pools
+- **Monthly Events**: Special themed competitions
+- **Seasonal Campaigns**: Major storyline events
+- **Achievement System**: Badges and recognition for contributions
+
+#### Community Incentives
+- **Training Data Rewards**: Tokens for improving AI
+- **Content Creation Bounties**: Payment for educational materials
+- **Referral Programs**: Bonuses for bringing new users
+- **Governance Participation**: Voting rewards and recognition
+- **Beta Testing**: Early access to new features
+
+## Detailed Development Roadmap
+
+### Pre-Launch Phase (Months -6 to 0)
+
+#### Technical Foundation
+- **Milestone 1.1**: Core Gungi engine development
+  - Complete rule implementation with unit tests
+  - Board state management and move validation
+  - Game replay and analysis systems
+  - Performance optimization (target: <50ms move calculation)
+
+- **Milestone 1.2**: Basic AI implementation
+  - Rule-based AI agents with difficulty levels
+  - Minimax algorithm with alpha-beta pruning
+  - Position evaluation heuristics
+  - Opening book and endgame tablebase
+
+- **Milestone 1.3**: Blockchain integration MVP
+  - Solana smart contract development using Anchor
+  - Basic betting escrow functionality
+  - Simple match verification system
+  - Wallet integration testing
+
+#### Team Building & Infrastructure
+- **Core Development Team**: 8-12 specialists
+  - Lead Developer (Rust/Solana expertise)
+  - AI/ML Engineer (PyTorch/TensorFlow experience)
+  - Frontend Developer (React/Web3 specialist)
+  - Blockchain Developer (Solana native)
+  - Game Designer (strategic game experience)
+  - UI/UX Designer (gaming interface focus)
+  - DevOps Engineer (cloud infrastructure)
+  - QA Engineer (automated testing specialist)
+
+- **Infrastructure Setup**:
+  - Development environment standardization
+  - CI/CD pipeline implementation
+  - Testing framework establishment
+  - Code review and quality assurance processes
+
+### Phase 1: MVP Launch (Months 1-6)
+
+#### Core Platform Development
+- **Month 1-2**: Enhanced Game Engine
+  - Advanced AI opponents with personality traits
+  - Comprehensive game statistics tracking
+  - Spectator mode for live matches
+  - Basic tournament bracket system
+
+- **Month 3-4**: Web Application Launch
+  - React-based frontend with Solana wallet integration
+  - Real-time match viewing with WebSocket connections
+  - User account management and profile systems
+  - Basic betting interface with SOL integration
+
+- **Month 5-6**: Community Features
+  - Discord bot integration for match notifications
+  - Leaderboard and ranking systems
+  - Friend lists and private matches
+  - Basic chat and social features
+
+#### Key Deliverables
+- ✅ Fully functional Gungi implementation
+- ✅ 3 difficulty levels of AI opponents
+- ✅ Web-based gaming platform
+- ✅ Basic betting with SOL
+- ✅ 1,000+ beta users
+- ✅ $100K+ in platform volume
+
+### Phase 2: AI Enhancement & NFT Integration (Months 7-12)
+
+#### Advanced AI Development
+- **Month 7-8**: Neural Network Implementation
+  - Deep learning position evaluation networks
+  - Monte Carlo Tree Search integration
+  - Self-play training infrastructure
+  - Distributed computing setup for training
+
+- **Month 9-10**: Multi-Agent Training
+  - Competitive AI evolution through self-play
+  - Personality-based playing styles with user customization (personalities, openings, styles)
+  - Elo rating system for AI agents
+  - Community training data integration
+
+- **Month 11-12**: NFT Marketplace Launch
+  - AI agent tokenization as NFTs (for trading custom-trained agents)
+  - Custom piece set creation and trading
+  - Rare collectible releases
+  - Secondary market with royalties
+
+#### Key Deliverables
+- ✅ Advanced AI with neural networks
+- ✅ Self-improving AI through reinforcement learning with custom traits
+- ✅ NFT marketplace with trading functionality
+- ✅ 10,000+ registered users
+- ✅ $1M+ monthly betting volume
+
+### Phase 3: Scaling & Expansion (Months 13-18)
+
+#### Platform Scaling
+- **Month 13-14**: Mobile Application
+  - React Native cross-platform app
+  - Optimized mobile game interface
+  - Push notifications for matches
+  - Offline game analysis tools
+
+- **Month 15-16**: Tournament System
+  - Automated tournament creation
+  - Multiple tournament formats (Swiss, knockout, round-robin)
+  - Sponsor integration capabilities
+  - Prize pool management system
+
+- **Month 17-18**: Advanced Features
+  - Live streaming integration
+  - Professional commentary tools
+  - Advanced analytics dashboard
+  - API for third-party developers
+
+#### Key Deliverables
+- ✅ Mobile app on iOS and Android
+- ✅ Comprehensive tournament system
+- ✅ 50,000+ registered users
+- ✅ $5M+ monthly betting volume
+- ✅ Professional esports events
+
+### Phase 4: Enterprise & Innovation (Months 19-24)
+
+#### Enterprise Solutions
+- **Month 19-20**: Educational Platform
+  - AI training courses and tutorials
+  - Strategy guides and analysis tools
+  - Certification programs for advanced players
+  - Educational institution partnerships
+
+- **Month 21-22**: Research & Development
+  - Advanced AI research partnerships
+  - Academic paper publications
+  - Open-source AI tools release
+  - Innovation lab establishment
+
+- **Month 23-24**: Global Expansion
+  - Multi-language platform support
+  - Regional tournament circuits
+  - International partnership development
+  - Regulatory compliance framework
+
+#### Key Deliverables
+- ✅ Educational ecosystem launch
+- ✅ Research partnerships established
+- ✅ International market expansion
+- ✅ 200,000+ global users
+- ✅ $20M+ annual revenue
+
+## Risk Assessment & Mitigation Strategies
+
+### Enhanced Risk Analysis (from Assignment 1 Feedback)
+
+#### Technical Risks
+- **AI Development Complexity**: Hybrid architecture with off-chain computation via DePIN networks
+- **Rule Canonization**: Community-driven process pre-development to ensure fanbase acceptance
+- **Smart Contract Security**: Multiple audits, bug bounties, gradual rollout with value limits
+
+#### Market Risks
+- **Economic Sustainability**: Multiple token sinks, betting-driven revenue model proven by comparable platforms
+- **Regulatory Compliance**: Phased geographic rollout with legal framework from launch
+- **Competition**: First-mover advantage in specific niche, continuous innovation
+
+## Success Metrics & KPIs
+
+### POC Validation Metrics
+- Core betting flow functional end-to-end with MagicBlock integration
+- AI vs AI matches running fully on-chain with <100ms move latency
+- MagicBlock session creation and settlement working smoothly
+- SOL transactions secure and reliable (>99.5% success rate)
+- Hunter x Hunter community engagement (1,000+ beta users)
+- Smooth user onboarding experience (<5 min to first bet)
+
+### Platform Performance Metrics
+- **Platform Uptime**: 99.9% availability target (including MagicBlock rollups)
+- **Transaction Success Rate**: >99.5% for all blockchain interactions
+- **Game Performance**: <100ms average response time via MagicBlock
+- **Session Settlement**: <30 seconds from game end to mainnet finalization
+- **Support Response**: <24 hours for user inquiries
+- **Security Incidents**: Zero tolerance for financial losses
+
+### User Engagement Metrics
+- **Daily Active Users (DAU)**: Target growth from 100 to 25,000+ in Year 1
+- **Monthly Active Users (MAU)**: Target 100,000+ by end of Year 1
+- **User Retention**: 30-day retention >40%, 90-day retention >25%
+- **Session Duration**: Average 45+ minutes per gaming session
+- **Games per User**: 15+ games per month per active user
+
+### Financial Metrics
+- **Monthly Recurring Revenue (MRR)**: $2M+ by end of Year 2
+- **Gross Transaction Volume (GTV)**: $500M+ annually by Year 2
+- **Take Rate**: Maintain 3-5% across all revenue streams
+- **Customer Acquisition Cost (CAC)**: <$50 per user
+- **Lifetime Value (LTV)**: >$500 per user (10:1 LTV:CAC ratio)
+
+### Community Growth Metrics
+- **Discord Community**: 100,000+ members by Year 2
+- **Social Media Following**: 500,000+ across all platforms
+- **Content Creation**: 1,000+ community-generated pieces monthly
+- **Tournament Participation**: 10,000+ monthly tournament entries
+- **Developer Adoption**: 50+ third-party integrations
+
+## Long-Term Vision & Future Expansion
+
+### 5-Year Strategic Vision
+
+#### Year 1-2: Platform Establishment
+- Become the leading AI gaming platform on Solana
+- Establish strong Hunter x Hunter community presence
+- Achieve $50M+ annual betting volume
+- Launch successful NFT marketplace for custom AI agents
+
+#### Year 3-4: Market Leadership
+- Expand to multiple blockchain networks
+- Launch VR/AR gaming experiences
+- Develop educational and enterprise solutions
+- Achieve $500M+ annual platform volume
+
+#### Year 5+: Ecosystem Dominance
+- Become the "Steam of AI gaming"
+- Launch multiple game titles beyond Gungi
+- Establish research and development labs
+- Consider public offering or strategic acquisition
+
+### Technology Roadmap
+
+#### Advanced AI Development
+- **Quantum Computing Integration**: Explore quantum algorithms for game optimization
+- **Natural Language Processing**: AI agents that can communicate with players
+- **Computer Vision**: Real-world board recognition for hybrid play
+- **Edge Computing**: Local AI processing for improved performance
+
+#### Blockchain Innovation
+- **Cross-Chain Bridges**: Seamless multi-blockchain gaming
+- **Layer-2 Solutions**: Custom scaling solutions for gaming
+- **Zero-Knowledge Proofs**: Enhanced privacy for competitive play
+- **Decentralized Storage**: IPFS integration for game data
+
+#### Platform Expansion
+- **Multi-Game Support**: Additional strategic board games
+- **Creator Tools**: User-generated content and game modes
+- **Social Features**: Advanced community and social systems
+- **Enterprise Solutions**: B2B AI training and gaming platforms
+
+### Partnership Strategy
+
+#### Strategic Technology Partners
+- **NVIDIA**: AI training acceleration and optimization
+- **Solana Labs**: Deep blockchain integration and support
+- **OpenAI**: Advanced AI model development
+- **Unity Technologies**: VR/AR game development
+
+#### Content and Media Partners
+- **Anime Streaming Platforms**: Crunchyroll, Funimation partnerships
+- **Gaming Content Creators**: Top Twitch/YouTube gaming channels
+- **Esports Organizations**: Professional team sponsorships
+- **Educational Institutions**: Research and development collaborations
+
+#### Distribution Partners
+- **Wallet Providers**: Deep integration with major Solana wallets
+- **Gaming Platforms**: Cross-promotion with existing gaming dApps
+- **NFT Marketplaces**: Partnership with Magic Eden and others
+- **DeFi Protocols**: Integration with lending and staking platforms
+
+## Conclusion
+
+The Nen Platform represents a revolutionary convergence of advanced AI, blockchain technology, and cultural phenomenon that creates a unique and defensible market position. By combining the strategic depth of Gungi with cutting-edge artificial intelligence and the transparency of blockchain technology—powered by MagicBlock (https://www.magicblock.xyz/)—we are creating not just a game, but an entire ecosystem that will redefine how people interact with AI-driven entertainment. Users can train AI agents to their exact specifications, including custom personalities, openings, and playing styles, and trade them as NFTs for a truly personalized and monetizable experience.
+
+Our comprehensive implementation plan addresses every aspect of building a world-class platform, from technical architecture to community building, from revenue generation to risk mitigation. The refined user stories and on-chain requirements provide a clear path from concept to implementation, ensuring all stakeholder needs are met while maintaining technical feasibility.
+
+With the strong foundation of the Hunter x Hunter fanbase, the growing Solana ecosystem, and the explosive interest in AI agents, Nen Platform is positioned to become the defining platform of the next generation of blockchain gaming.
+
+The future of gaming is intelligent, transparent, and community-driven. Nen Platform will lead this transformation, creating lasting value for users, investors, and the broader Web3 ecosystem while honoring the rich cultural heritage that inspired our vision.
+
+**Project Status**: Requirements defined, ready for technical implementation
+**Next Steps**: Team assembly, initial funding, and smart contract development
+**Timeline**: 24-month roadmap to full platform maturity
+**Vision**: Become the "AlphaGo of blockchain gaming" and the premier AI entertainment platform in Web3
+# Capstone Project Definition & Market Analysis
+
+## Part A: Final Project Proposal
+
+### Core Value Proposition & Product-Market Fit (PMF)
+Nen is an innovative on-chain platform built on Solana, drawing inspiration from the strategic board game Gungi featured in Hunter x Hunter, where AI agents engage in automated, high-stakes matches, and users bet SOL on outcomes while owning customizable NFTs for pieces and agents. The core value proposition lies in delivering a seamless fusion of anime nostalgia, advanced AI-driven gameplay, provably fair crypto betting, and community-powered AI evolution, enabling users to experience empowerment through strategic mastery and personal growth—mirroring the "Nen" concept of awakening hidden potential.
+
+The product-market fit is exceptionally strong, positioned at the intersection of multiple explosive growth markets. The blockchain gaming sector is experiencing unprecedented growth, valued at **$8.5 billion in 2024** and projected to reach **$314.3 billion by 2030** (67.6% CAGR), while the AI agents market is expanding from **$5.4 billion in 2024** to **$50.3 billion by 2030** (45.8% CAGR). Within the Solana ecosystem specifically, the network has emerged as the **fastest-growing blockchain for developers globally**, with **7,625 new developers** joining in 2024—the first time any blockchain surpassed Ethereum in annual developer onboarding. Solana's TVL has reached **$9.5 billion in 2025**, with daily transaction volumes of **138 million** and consistent throughput of **1,000+ TPS**.
+
+Key value areas include:
+1. **Entertainment & Strategic Depth**: Gungi's unique 3D stacking mechanic (Tsuke) creates a decision space orders of magnitude larger than traditional board games, ensuring long-term engagement and skill-based outcomes ideal for betting
+2. **Economic Incentives**: The crypto betting market generated **$81.4 billion in gross gaming revenue in 2024** (500% growth since 2022), validating strong demand for blockchain-based wagering with platforms like Stake generating **$4.7 billion in revenue**
+3. **Participatory Innovation**: Community-driven AI training creates a virtuous cycle where users contribute gameplay data to improve AI agents, earning rewards while enhancing the platform's core entertainment value
+
+### Key Target Markets
+1. **Crypto Gamers on Solana** (Primary Market): The Solana gaming ecosystem represents a **$2B+ opportunity** with users actively seeking low-fee, high-speed blockchain experiences. This segment includes players of successful projects like Genopets and STEPN who demonstrate willingness to engage with play-to-earn mechanics and are comfortable with crypto-native interfaces. Solana processes **162 million daily transactions** with sub-penny fees, making it ideal for high-frequency gaming interactions.
+
+2. **Anime Enthusiasts, Particularly Hunter x Hunter Fans** (Core Niche): The Hunter x Hunter manga has sold over **84 million copies worldwide**, with new volumes regularly selling **500,000+ copies** in their first week in Japan. The fanbase demonstrates strong commercial engagement through dedicated merchandise stores shipping to **200+ countries** and active online communities on Reddit (r/HunterXHunter with **500K+ members**). Gungi's central role in the acclaimed Chimera Ant arc creates deep emotional resonance, transforming it from a mere game mechanic into cherished lore.
+
+3. **AI and Blockchain Developers** (Technical Community): Solana's **83% year-over-year developer growth** and **2,500+ active developers** represent a technically sophisticated audience interested in cutting-edge AI implementations. Projects like Virtuals Protocol achieving **$5 billion market cap** peaks demonstrate strong developer and investor interest in AI agent platforms. This segment can contribute to the platform's technical evolution while experimenting with AI training and on-chain mechanics.
+
+4. **Crypto Bettors** (Economic Engine): The crypto betting sector's **$81.4 billion in revenue** indicates massive demand for decentralized wagering. Unlike traditional platforms focused on games of chance, Nen targets skill-based betting enthusiasts who value transparency and provable fairness. The success of platforms like Cryptorino (6,000+ games) and Raid Arena (10x user growth in Q2 2025) validates this market's appetite for innovative betting experiences.
+
+### Competitor Landscape
+
+The competitive analysis reveals Nen operates in a unique intersection with no direct competitors offering the same combination of features. The landscape can be segmented into three categories:
+
+**Direct Competitors (Strategic Blockchain Games):**
+- **Gods Unchained** (Immutable X): While sharing strategic TCG elements, it lacks board game spatial mechanics and has a declining DAU base of approximately **3,500 players**, indicating market saturation in traditional card games
+- **Chess Universe**: Boasts **140,000 DAU** demonstrating strong demand for classic strategy games with P2E mechanics, but limited to traditional chess rules without innovation in gameplay mechanics
+- **No blockchain Gungi implementations found**, validating a genuine blue ocean opportunity for the specific 3D stacking mechanics
+
+**AI & Gaming Platforms on Solana:**
+- **Virtuals Protocol**: Achieved **$5 billion market cap peak** in early 2025, validating massive market appetite for AI agents, but focuses on AI as infrastructure rather than entertainment spectacle
+- **Star Atlas & Aurory**: AAA production values with established communities, but cater to different genres (space MMORPG and JRPG respectively) without pure strategic gameplay
+- **TARS AI**: Secured NVIDIA partnership for voice NPCs, demonstrating institutional validation of AI in gaming, but lacks competitive gaming focus
+- **Neural**: AI-powered gaming platform expanding to Solana in 2025, representing potential future competition but currently without board game offerings
+
+**Crypto Betting Platforms:**
+- **Stake**: Generated **$4.7 billion in revenue in 2024**, validating massive betting demand but focused on games of chance rather than skill
+- **Mega Dice & Cryptorino**: Offer 6,000+ games but exclusively casino-style without strategic depth
+- **Raid Arena**: Achieved **10x user growth in Q2 2025** for play-to-earn battles, demonstrating market appetite for competitive wagering
+
+**Competitive Advantages & Market Gaps:**
+1. **"Quadruple Moat"**: No competitor simultaneously offers (1) beloved anime IP integration, (2) unique 3D stacking board game mechanics, (3) AI-driven spectator betting, and (4) fully on-chain gameplay via MagicBlock
+2. **Technical Innovation**: First to leverage MagicBlock's ephemeral rollups for real-time strategy gaming, solving the blockchain trilemma for complex games
+3. **Anime NFT Market Validation**: Successful collections like Azuki and 0N1 Force (with **$70M trading volume**) demonstrate strong intersection between anime culture and crypto, yet no strategic games capitalize on this
+4. **Community-Driven AI Evolution**: Unlike platforms where AI is static, Nen's model of users contributing training data from on-chain games creates a unique Web3-native differentiator
+5. **Skill-Based Betting Niche**: While the crypto betting market generated **$81.4 billion**, most platforms focus on chance-based games, leaving skill-based strategic betting with verifiable on-chain moves largely untapped
+
+### Founder-Market Fit (FMF)
+
+My founder-market fit for Nen represents a rare convergence of technical capabilities, domain expertise, and authentic passion that directly addresses the project's core requirements:
+
+**Technical Foundation:**
+- **AI/ML Expertise**: Computer science graduate with hands-on Python experience building reinforcement learning agents for chess variants, providing direct relevance to developing Gungi AI agents. Understanding of Monte Carlo Tree Search (MCTS) and self-play training methodologies positions me to tackle the technical challenge of creating compelling AI gameplay
+- **Solana Development**: Proficiency in Rust and participation in Solana hackathons including the Superior Agents Residency demonstrates ability to leverage Solana's high-performance infrastructure (1,000+ TPS, sub-penny fees) and new innovations like MagicBlock for real-time gaming applications
+- **Blockchain Gaming Innovation**: Early adopter of MagicBlock technology, understanding ephemeral rollups and BOLT framework for fully on-chain game development
+- **Full-Stack Capabilities**: Experience across the technical stack enables end-to-end development from smart contracts to user interfaces, critical for a complex platform integrating AI, blockchain, and gaming
+
+**Domain Expertise & Passion:**
+- **Hunter x Hunter Authority**: Deep immersion in the source material, including extensive analysis of Gungi rules from manga panels and fan interpretations. Built a prototype digital Gungi implementation, demonstrating commitment beyond casual interest
+- **Strategic Gaming Background**: Lifelong strategy game player with understanding of game balance, meta-evolution, and competitive dynamics essential for creating engaging gameplay
+- **Anime-Crypto Intersection**: Active participant in both anime and crypto communities, understanding the cultural nuances and engagement patterns of both audiences
+
+**Network & Market Access:**
+- **Solana Ecosystem Connections**: Established presence in Solana developer Discord servers and Reddit communities, providing access to the **2,500+ active developers** in the ecosystem
+- **AI Research Network**: University connections to AI/ML researchers and enthusiasts who can contribute to advanced agent development
+- **Beta Testing Pipeline**: Combined network spans all four target markets, enabling rapid user feedback and iteration
+
+**Strategic Advantages:**
+- **Timing Alignment**: Positioned at the forefront of converging trends with Solana's **83% YoY developer growth**, AI agents market expanding to **$50.3 billion by 2030**, and blockchain gaming reaching **$314.3 billion by 2030**
+- **Authentic Mission**: Personal investment in creating the definitive Gungi platform ensures long-term commitment beyond financial incentives
+- **Gap Awareness**: Recognize need to augment team with commercial game design, community management, and legal expertise, demonstrating strategic thinking beyond pure technical execution
+
+This founder-market fit is validated by the absence of any blockchain Gungi implementations despite the game's cultural significance, presenting a unique opportunity for someone with both the technical skills and cultural understanding to establish the canonical digital version.
+
+## Part B: Process Appendix
+
+### Initial Idea Overview
+Nen is an on-chain platform on Solana inspired by the Gungi board game from Hunter x Hunter, where AI agents compete in automated matches, and users bet SOL on outcomes. It features reinforcement learning-trained AI evolving through self-play and community contributions, integrated with NFTs for customizable pieces and agents. The platform combines anime nostalgia, blockchain gaming, AI innovation, and crypto betting, ensuring provably fair gameplay with on-chain escrow, verification, and rewards. This evokes empowerment and personal evolution, inspiring users to "awaken" their strategies mirroring AI's learning.
+
+### Part A: Initial Definition & Research
+
+#### 1) Core Value Proposition & Product-Market Fit (PMF)
+**AI Prompt Used**: "Based on my idea [pasted the 4-sentence overview above], help outline the core value proposition and initial thoughts on product-market fit. What are 2-3 key value areas?"
+
+**AI Output**: The core value proposition centers on creating a unique convergence of anime culture, AI technology, and blockchain betting. The platform addresses three distinct value propositions: entertainment through strategic gameplay, economic opportunity through betting and NFTs, and technological innovation through community-driven AI evolution. Initial PMF assessment suggests strong potential given Solana's growing ecosystem and rising interest in AI agents.
+
+**Synthesized Output (Initial)**: Basic value proposition focused on combining anime, AI, and betting elements. Initial PMF assessment was optimistic but lacked concrete market data.
+
+**Research Enhancement**: After consulting market data, I discovered the blockchain gaming market is valued at $8.5 billion (2024) growing to $314.3 billion by 2030 (67.6% CAGR), and the AI agents market expanding from $5.4 billion to $50.3 billion (45.8% CAGR). This concrete data significantly strengthened the PMF argument.
+
+**Personal Reflection**: The initial AI output was directionally correct but lacked the specificity needed for a compelling investment case. Adding concrete market sizing data transformed a vague assertion into a data-driven thesis.
+
+#### 2) Key Target Markets
+**AI Prompt Used**: "For this value proposition [pasted synthesized value prop], suggest 2-5 key target demographics or market segments."
+
+**AI Output**: Suggested five segments including crypto gamers, anime fans, developers, bettors, and esports viewers. Each segment was described generically without market sizing or behavioral data.
+
+**Research Enhancement**: Added specific market data:
+- Hunter x Hunter: 84 million manga copies sold, 500K+ first-week sales for new volumes
+- Solana ecosystem: 7,625 new developers in 2024, first to surpass Ethereum
+- Crypto betting: $81.4 billion market with 500% growth since 2022
+- Reddit communities: r/HunterXHunter with 500K+ members
+
+**Personal Reflection**: The AI correctly identified target segments but failed to quantify market opportunity. Manual research revealed the true scale of each segment, particularly the massive untapped Hunter x Hunter fanbase.
+
+#### 3) Competitor Landscape
+**AI Prompt Used**: "Identify key competitors for a project with this value prop targeting these markets. What are potential weaknesses in their offerings?"
+
+**AI Output**: Listed primarily Solana gaming projects but missed critical competitors in adjacent spaces like blockchain board games and anime-themed NFT projects.
+
+**Manual Research Findings**:
+- Chess Universe: 140,000 DAU proving demand for blockchain strategy games (but uses hybrid off-chain model)
+- Gods Unchained: Only 3,500 DAU showing market saturation in traditional formats
+- Virtuals Protocol: $5B market cap peak validating AI agent demand
+- No blockchain Gungi implementations found - true blue ocean for specific mechanic
+- **No competitors using MagicBlock for fully on-chain strategy games** - first-mover advantage
+
+**Critical Gaps Discovered**:
+1. AI overlooked the anime NFT market (Azuki, 0N1 Force with $70M volume)
+2. Missed skill-based betting platforms vs. chance-based casino games
+3. Failed to identify the "Quadruple Moat" - no competitor combines anime IP + 3D stacking mechanics + AI betting + fully on-chain via MagicBlock
+4. No existing games leverage ephemeral rollups for real-time strategy gameplay
+
+**Personal Reflection**: The competitive analysis revealed that while the broader market is crowded, Nen's specific intersection remains completely unoccupied. The AI's initial analysis was too surface-level to identify this crucial strategic insight.
+
+#### 4) Founder-Market Fit (FMF)
+**Initial Self-Assessment**: Generic description of technical skills and anime interest without demonstrating deep expertise or strategic thinking.
+
+**AI Enhancement Prompt**: "How can I better articulate my founder-market fit given my technical background and passion for the source material?"
+
+**Refined FMF**: Restructured to emphasize:
+- Specific technical achievements (RL agent development, Solana hackathon participation)
+- Domain authority (prototype Gungi implementation, rules analysis)
+- Network effects (2,500+ developer Solana ecosystem access)
+- Strategic awareness (identifying team augmentation needs)
+
+### Part B: Adversarial Analysis & Refinement
+
+#### 1) Adversarial AI Challenge
+**Enhanced Prompt Used**: "Acting as a skeptical investor, identify the three biggest risks in this project and explain why it might fail despite the market opportunity."
+
+**Critical AI Response**: 
+1. **Technical Feasibility**: "Creating superhuman Gungi AI is exponentially harder than claimed. DeepMind spent millions on AlphaZero; this project lacks resources for comparable achievement."
+2. **Rule Ambiguity**: "No canonical Gungi ruleset exists. Launching without community consensus risks rejection by core fanbase."
+3. **Economic Sustainability**: "GameFi 1.0 failures show token-based economies often collapse. Without proven token sinks, this risks becoming another unsustainable P2E scheme."
+
+**My Analysis**: All three critiques are valid and require strategic pivots:
+- Technical: Adopt hybrid architecture with off-chain AI computation
+- Rules: Launch community-driven canonization process pre-development
+- Economic: Focus on betting-driven revenue with multiple token sinks
+
+#### 2) Strategic Refinements Based on Adversarial Analysis
+
+**Technical Architecture Pivot**:
+- Original: "Fully on-chain AI agents"
+- Refined: "MagicBlock ephemeral rollups for game execution with off-chain AI computation via DePIN"
+- Rationale: MagicBlock enables fully on-chain games with real-time performance while AI training remains computationally intensive
+
+**Go-to-Market Strategy Evolution**:
+- Original: "Target all four segments simultaneously"
+- Refined: "Phase 1: HxH crypto-native fans → Phase 2: Broader Solana gamers → Phase 3: General crypto bettors"
+- Rationale: Reduces customer acquisition cost and leverages viral growth from passionate niche
+
+**Economic Model Refinement**:
+- Added: Detailed token sink mechanisms (betting rake, NFT minting, staking rewards)
+- Added: Revenue projections based on comparable platforms (Stake's $4.7B revenue)
+- Rationale: Addresses sustainability concerns with proven economic mechanics
+
+#### 3) Final FMF Critique and Enhancement
+**AI Challenge**: "You lack commercial game development experience and legal expertise for gambling operations. How will you overcome these critical gaps?"
+
+**Strategic Response**: Acknowledged gaps and outlined specific hiring priorities:
+1. Game Designer/Product Manager for user experience
+2. Community Manager for audience engagement
+3. Legal/Compliance Advisor for regulatory navigation
+
+**Rationale**: Demonstrated self-awareness and strategic thinking beyond solo development, showing investor-ready maturity.
+
+### Key Learnings from Process
+
+1. **Data Transforms Narratives**: Initial AI outputs provided direction, but concrete market data (blockchain gaming's $314B projection, Solana's 7,625 new developers) transformed vague assertions into compelling investment cases.
+
+2. **Adversarial Analysis Reveals Hidden Risks**: The AI's skeptical perspective uncovered critical technical limitations (on-chain AI impossibility) that required fundamental architecture changes.
+
+3. **Manual Research Uncovers Strategic Moats**: While AI identified obvious competitors, manual research revealed the unique "Quadruple Moat" that no competitor currently occupies.
+
+4. **Iterative Refinement Essential**: Each round of critique and refinement strengthened the proposal, moving from a hobbyist project to a fundable venture.
+
+5. **Founder-Market Fit Requires Brutal Honesty**: Acknowledging gaps (commercial experience, legal expertise) and planning to address them demonstrates maturity more than claiming perfection.
+
+The process validated that Nen occupies a genuine market opportunity at the intersection of massive growth trends, but success requires strategic pivots in technical architecture, phased go-to-market execution, and team augmentation to address critical expertise gaps.
+# Assignment 2: User Stories & On-Chain Requirements
+## Nen Platform - AI Gaming Arena on Solana
+
+---
+
+## Part A: User Stories & On-Chain Requirements Document
+
+### 1. Core User Personas (Prioritized for POC)
+
+Based on the Nen Platform's value proposition of creating a revolutionary blockchain-based gaming ecosystem featuring AI-powered Gungi matches with real SOL betting, the following 4 user personas are critical for the Proof-of-Concept:
+
+#### 1. **Betting Player** (Primary Revenue Driver)
+- **Profile**: Crypto-savvy users interested in wagering SOL on AI vs AI matches
+- **Motivation**: Seeking provably fair betting with potential profits and entertainment
+- **Critical for POC**: Validates core revenue model and blockchain integration
+
+#### 2. **AI Trainer** (Content Creator)
+- **Profile**: AI/ML enthusiasts and strategic gamers who develop custom AI agents
+- **Motivation**: Creating unique AI personalities and earning from successful agents
+- **Critical for POC**: Demonstrates dynamic AI evolution and community engagement
+
+#### 3. **Competitive Gamer** (Experience Validator)
+- **Profile**: Anime fans and strategic game enthusiasts, particularly Hunter x Hunter fans
+- **Motivation**: Testing skills against AI, learning Gungi, and competitive play
+- **Critical for POC**: Provides training data and validates gameplay quality
+
+#### 4. **NFT Collector** (Value Creator)
+- **Profile**: Web3 natives interested in owning unique AI agents and game assets
+- **Motivation**: Collecting rare AI agents, trading for profit, showcasing collections
+- **Critical for POC**: Establishes secondary market and asset tokenization
+
+### 2. Function Maps
+
+#### Betting Player Functions:
+- Browse upcoming AI vs AI matches with statistics
+- View AI agent performance history and ratings
+- Place SOL bets on match outcomes
+- Watch live matches with real-time updates
+- Claim winnings automatically after match completion
+- Track betting history and ROI
+
+#### AI Trainer Functions:
+- Upload game replays for AI training data
+- Configure AI personality parameters (aggression, style)
+- Initiate self-play training sessions
+- Monitor training progress and metrics
+- Test AI against benchmark opponents
+- Mint trained AI agents as NFTs
+
+#### Competitive Gamer Functions:
+- Create custom game rooms with rule variations
+- Play matches against various AI difficulty levels
+- Challenge other human players
+- Review game replays with move analysis
+- Track personal Elo rating and statistics
+- Participate in tournaments
+
+#### NFT Collector Functions:
+- Browse AI agent marketplace with filters
+- View detailed AI performance metrics and rarity
+- Purchase AI agents using SOL
+- List owned agents for sale or auction
+- Transfer agents between wallets
+- Display collection in profile
+
+### 3. Refined User Stories & On-Chain Requirements
+
+#### **BETTING FLOW**
+
+**User Story 1: User connects Solana wallet to platform**
+- User clicks "Connect Wallet" button
+- User selects wallet provider (Phantom, Solflare, etc.)
+- User approves connection in wallet popup
+- User sees wallet address displayed on platform
+
+*On-Chain Requirements:*
+- Verify wallet ownership through signature verification
+- Check if wallet has existing platform account PDA
+- Query user's SOL balance for display
+- Initialize user account if first-time connection
+
+**User Story 2: User deposits SOL into betting account**
+- User enters deposit amount in SOL
+- User clicks "Deposit" button
+- User approves transaction in wallet
+- User sees updated betting balance
+
+*On-Chain Requirements:*
+- Create/access user's betting account PDA
+- Transfer SOL from user wallet to betting PDA
+- Update user's on-chain balance record
+- Emit deposit event for tracking
+- Enforce minimum deposit (0.1 SOL)
+
+**User Story 3: User views upcoming AI matches**
+- User navigates to matches page
+- User sees list of scheduled matches
+- User filters by bet range or AI rating
+- User clicks match for details
+
+*On-Chain Requirements:*
+- Query global matches account for active games
+- Retrieve AI agent metadata (names, ratings, stats)
+- Calculate dynamic odds based on betting pools
+- Check match status (open/closed for betting)
+
+**User Story 4: User places bet on AI agent**
+- User selects AI agent to win
+- User enters bet amount in SOL
+- User reviews bet slip with odds
+- User confirms bet placement
+
+*On-Chain Requirements:*
+- Validate bet amount against user balance
+- Check bet within match limits (min: 0.1 SOL, max: 100 SOL)
+- Reserve funds from user's betting account
+- Create bet record with unique ID
+- Transfer funds to match escrow PDA
+- Update betting pool totals
+- Emit bet placed event
+
+**User Story 5: User watches live AI match**
+- User clicks "Watch Live" on active match
+- User sees real-time board state updates
+- User views move history sidebar
+- User sees betting pool information
+
+*On-Chain Requirements:*
+- Connect to MagicBlock ephemeral rollup for match
+- Stream game state updates via MagicBlock WebSocket
+- Verify moves are being recorded in rollup
+- Display current betting pools from mainnet
+- Show match timer and rollup status
+- Ensure <100ms latency for move updates
+
+**User Story 6: User claims winnings**
+- User receives match end notification
+- User views payout calculation
+- User clicks "Claim Winnings"
+- User receives SOL in wallet
+
+*On-Chain Requirements:*
+- Verify match result from oracle/validator
+- Calculate winnings: (bet_amount × odds) - platform_fee
+- Transfer SOL from escrow to user PDA
+- Update user's balance and bet record
+- Mark bet as settled
+- Emit payout event
+
+#### **AI TRAINING FLOW**
+
+**User Story 7: User uploads training data**
+- User selects owned AI agent
+- User uploads game replay file
+- User configures training parameters
+- User submits training request
+
+*On-Chain Requirements:*
+- Verify user owns the AI agent NFT
+- Store IPFS hash of training data on-chain
+- Lock AI agent during training period
+- Create training session record
+- Validate staked $NEN for priority
+
+**User Story 8: User pays training fee**
+- User reviews training cost estimate
+- User approves SOL payment
+- User sees training started confirmation
+- User receives completion estimate
+
+*On-Chain Requirements:*
+- Calculate fee: base_rate × training_hours
+- Transfer fee to platform treasury PDA
+- Allocate 20% to compute provider rewards
+- Create payment receipt on-chain
+- Emit training started event
+
+**User Story 9: User downloads updated AI**
+- User receives training complete notification
+- User reviews performance improvements
+- User downloads new AI model
+- User tests in practice match
+
+*On-Chain Requirements:*
+- Update AI agent metadata with new model hash
+- Increment agent version number
+- Record training metrics (games played, win rate)
+- Unlock agent for matches
+- Update Elo rating if applicable
+
+#### **COMPETITIVE GAMING FLOW**
+
+**User Story 10: User creates game room**
+- User selects "Create Game" option
+- User configures match settings
+- User sets entry requirements
+- User shares room code
+
+*On-Chain Requirements:*
+- Initialize MagicBlock session for the match
+- Create ephemeral rollup with game parameters
+- Deploy BOLT ECS entities for pieces
+- Store session reference on mainnet
+- Set room status to "waiting"
+- Generate unique session identifier
+- Emit room created event
+
+**User Story 11: User joins human match**
+- User enters room code or browses list
+- User views match settings
+- User clicks "Join Game"
+- User sees match starting countdown
+
+*On-Chain Requirements:*
+- Verify user meets room requirements
+- Add user to MagicBlock session permissions
+- Initialize player entity in BOLT ECS
+- Update room status when full
+- Start ephemeral rollup execution
+- Transfer any entry fees to escrow
+- Begin real-time state streaming
+
+**User Story 12: User makes game move**
+- User selects piece on board
+- User sees valid move highlights
+- User selects destination square
+- User confirms move submission
+
+*On-Chain Requirements:*
+- Submit move to MagicBlock rollup
+- BOLT system validates move in <100ms
+- Update ECS components (position, stacking)
+- Broadcast state change to all clients
+- Record move in rollup transaction log
+- Check win/draw conditions via systems
+- Prepare for mainnet settlement if game ends
+- Emit move made event
+
+**User Story 12a: Game finalizes to mainnet**
+- Game reaches end condition
+- Winner is determined
+- Final state is computed
+- Settlement occurs automatically
+
+*On-Chain Requirements:*
+- MagicBlock rollup computes final state hash
+- Compress game history using Merkle tree
+- Submit settlement transaction to mainnet
+- Update match result in core program
+- Trigger betting payout calculations
+- Store game replay reference in IPFS
+- Emit game finalized event
+
+#### **NFT MARKETPLACE FLOW**
+
+**User Story 13: User mints AI agent NFT**
+- User selects trained AI agent
+- User sets NFT metadata
+- User pays minting fee (0.1 SOL)
+- User receives NFT in wallet
+
+*On-Chain Requirements:*
+- Create new NFT using Metaplex standard
+- Set AI performance data as attributes
+- Transfer mint authority to user
+- Store agent model hash reference
+- Apply 5% creator royalty settings
+- Emit NFT minted event
+
+**User Story 14: User lists NFT for sale**
+- User selects NFT from collection
+- User sets sale price in SOL
+- User approves marketplace access
+- User sees listing confirmation
+
+*On-Chain Requirements:*
+- Create listing account with price
+- Transfer NFT to marketplace escrow PDA
+- Set listing expiration (30 days)
+- Calculate marketplace fee (2.5%)
+- Make listing searchable on-chain
+- Emit listing created event
+
+**User Story 15: User purchases NFT**
+- User browses marketplace listings
+- User clicks "Buy Now" on NFT
+- User approves purchase transaction
+- User receives NFT in wallet
+
+*On-Chain Requirements:*
+- Verify buyer has sufficient SOL
+- Transfer SOL to seller minus fees
+- Transfer 2.5% fee to platform treasury
+- Transfer 5% royalty to original creator
+- Transfer NFT from escrow to buyer
+- Update ownership records
+- Emit sale completed event
+
+### 4. Core On-Chain Architecture Summary
+
+#### Program Suite Overview (Enhanced with MagicBlock):
+1. **Core Game Program**: Integrates MagicBlock BOLT for real-time move execution
+2. **MagicBlock Session Manager**: Handles ephemeral rollup lifecycle
+3. **Betting Escrow Program**: Settles based on MagicBlock game results
+4. **AI Registry Program**: Tracks performance from on-chain games
+5. **NFT Marketplace Program**: Manages minting, listings, and trading
+6. **User Account Program**: Maintains profiles and MagicBlock permissions
+
+#### Key Data Structures (MagicBlock Enhanced):
+- **Game Session**: session_id, rollup_address, players[], current_state_root, move_count
+- **BOLT Entities**: piece_id, owner, position, stack_level, piece_type
+- **Move Transaction**: session_id, player, move_data, timestamp, rollup_signature
+- **Settlement Record**: final_state_hash, winner, compressed_history, mainnet_tx
+- **Match Account**: game_id, session_reference, settlement_status, betting_pool
+
+#### MagicBlock-Specific Security:
+- Rollup fraud proofs for move validation
+- Session permission management
+- Anti-MEV protections for competitive games
+- Rate limiting on move submissions
+- Automatic session timeout handling
+
+---
+
+## Part B: Process Appendix
+
+### Part A: Initial User & Function Mapping
+
+#### 1) Manual User Brainstorming
+
+Initial comprehensive list of potential user types identified:
+
+**Direct Users:**
+- Betting Players (wagering on matches)
+- AI Trainers (developing agents)
+- Competitive Gamers (playing matches)
+- NFT Collectors (trading assets)
+- Casual Players (learning Gungi)
+- Tournament Participants
+- Content Creators (streaming)
+- Strategy Analysts
+
+**Indirect Users/Beneficiaries:**
+- Match Spectators (watching without betting)
+- Data Analysts (studying patterns)
+- Anime Fans (Hunter x Hunter community)
+- Token Holders (governance participants)
+- Liquidity Providers
+
+**Administrators/Moderators:**
+- Platform Developers
+- Community Moderators
+- Tournament Organizers
+- AI Validators
+- Customer Support
+
+**Stakeholders:**
+- Investors ($NEN holders)
+- Strategic Partners (Solana projects)
+- Educational Institutions
+- Media Partners
+- Technology Providers
+
+#### 2) AI-Assisted User Prioritization
+
+**AI Prompt Used:**
+"My project's value proposition is a revolutionary blockchain-based gaming ecosystem on Solana featuring Gungi from Hunter x Hunter, with AI-powered agents competing in automated matches with real SOL betting, NFT integration, and community-driven evolution. Here is a brainstormed list of all potential user types: [full list provided]. Based on the value proposition, which 2-5 of these user types are the most critical to focus on for an initial Proof-of-Concept?"
+
+**AI Recommendations:**
+1. Betting Players - Core revenue validation
+2. AI Trainers - Unique differentiator
+3. Competitive Gamers - Gameplay validation
+4. NFT Collectors - Asset monetization
+5. Spectators - Community building
+
+**My Decision:**
+Agreed with top 4, excluded Spectators for POC as they're passive users. The selected four create the complete value loop: AI Trainers create content → Betting Players generate revenue → Competitive Gamers validate quality → NFT Collectors provide liquidity.
+
+#### 3) Core Function Mapping
+
+**AI Task Results:**
+Mapped 6-8 key functions per user type, focusing on actions that directly interact with blockchain and validate core value propositions.
+
+#### 4) Deriving Core POC Requirements
+
+**Manual Analysis:**
+Identified top 2 critical paths:
+1. Betting flow: View matches → Place bet → Watch game → Claim winnings
+2. AI training flow: Upload data → Pay fee → Download improved agent
+
+**AI Enhancement:**
+Added technical requirements for smart contracts, oracles, and state management.
+
+### Part B: Adversarial Analysis & Granularity Check
+
+**AI Critique Prompt:**
+"Review my core user functions and requirements. Considering my project's refined value proposition, do these stories truly hit the mark? Are the requirements granular enough to map to specific technical components? What's missing or unclear?"
+
+**Key Critiques Received:**
+1. Stories too high-level (e.g., "place bet" should be multiple steps)
+2. Missing error cases and edge conditions
+3. On-chain requirements need specific Solana program details
+4. Unclear connection between user actions and smart contract calls
+
+**Refinements Made:**
+- Split compound stories into atomic actions
+- Added specific on-chain data structures
+- Included validation requirements
+- Specified PDA usage and account relationships
+
+### Part C: Granularity & Clarity Refinement
+
+**Refinement Log:**
+
+1. **Before:** "User places bet on match"
+   **After:** Split into 4 stories: select agent, enter amount, review details, confirm
+   **Rationale:** Atomicity - each represents a distinct user decision/action
+
+2. **Before:** "User interacts with smart contract to wager"
+   **After:** "User approves transaction in wallet"
+   **Rationale:** De-jargon - removed technical blockchain terminology
+
+3. **Before:** "User participates in tournament and claims rewards"
+   **After:** Separated into individual tournament actions
+   **Rationale:** Granularity - complex flow broken into simple steps
+
+4. **Before:** "AI Trainer improves agent"
+   **After:** Upload data, pay fee, download model as separate stories
+   **Rationale:** Clarity - each step has distinct on-chain requirements
+
+5. **Before:** Overlapping betting and gaming stories
+   **After:** Clear separation between betting flow and gameplay flow
+   **Rationale:** No overlap - distinct user journeys
+
+### Part D: On-Chain Requirements Brainstorming
+
+For each refined user story, systematically identified:
+1. Required Solana accounts and PDAs
+2. MagicBlock session and rollup management
+3. BOLT ECS entity and system requirements
+4. Real-time streaming infrastructure
+5. Settlement and finalization logic
+6. Security considerations for ephemeral state
+
+**Example Process:**
+User Story: "User makes game move"
+- Need: MagicBlock session with player permissions
+- Need: BOLT system for move validation
+- Need: Real-time state broadcast to all players
+- Need: Optimistic updates with fraud proof window
+- Need: Efficient state compression for settlement
+- Need: WebSocket events for UI reactivity
+
+This comprehensive analysis ensures all on-chain requirements leverage MagicBlock's capabilities for truly real-time, fully on-chain gaming while maintaining the security and verifiability expected from blockchain applications.
+
+```mermaid
+flowchart TD
+    %% ========== POC ARCHITECTURE FOR NEN PLATFORM ==========
+    subgraph Legend["🔍 POC Component Legend"]
+        direction LR
+        ProgramLegend["📋 Solana Program<br/>• Core smart contracts<br/>• On-chain logic"]:::program
+        ServiceLegend["⚙️ Backend Service<br/>• API & WebSocket<br/>• AI processing"]:::service  
+        ExternalLegend["🌐 External System<br/>• Third-party services<br/>• Infrastructure"]:::external
+        DatabaseLegend["💾 Database<br/>• PostgreSQL/Redis<br/>• Data persistence"]:::database
+        FrontendLegend["🖥️ Frontend<br/>• React SPA<br/>• User interface"]:::frontend
+    end
+
+    %% ========== FRONTEND LAYER ==========
+    subgraph Frontend["🖥️ Frontend Application (React SPA)"]
+        direction LR
+        HomePage["🏠 Home Page<br/>• Active matches<br/>• Quick betting<br/>• Live odds"]:::frontend
+        MatchPage["🎮 Match Viewer<br/>• Live Gungi board<br/>• Move history<br/>• Real-time updates"]:::frontend
+        BettingPage["💰 Betting Interface<br/>• Place bets<br/>• View pools<br/>• Manage balance"]:::frontend
+        ProfilePage["👤 Profile<br/>• User stats<br/>• Bet history<br/>• Wallet connect"]:::frontend
+    end
+
+    %% ========== BACKEND SERVICES ==========
+    subgraph Backend["⚙️ Backend Services (Node.js)"]
+        direction TB
+        APIServer["🔗 Express API<br/>• REST endpoints<br/>• Auth middleware<br/>• Request validation"]:::service
+        WebSocketServer["📡 WebSocket Server<br/>• Real-time updates<br/>• Match streaming<br/>• Live notifications"]:::service
+        GungiEngine["🎯 Gungi Engine (Rust)<br/>• Game logic<br/>• Move validation<br/>• Board state"]:::service
+        AIRunner["🤖 AI Runner (Python)<br/>• AI agent execution<br/>• Decision making<br/>• Custom personalities"]:::service
+        MatchOrchestrator["🎭 Match Orchestrator<br/>• Game scheduling<br/>• AI coordination<br/>• Result processing"]:::service
+    end
+
+    %% ========== BLOCKCHAIN LAYER (POC) ==========
+    subgraph Blockchain["⛓️ Solana Blockchain Layer"]
+        direction TB
+        
+        subgraph CoreProgram["📋 Core Nen Program (Anchor)"]
+            direction LR
+            UserAccounts["👤 User Accounts<br/>• Profile data<br/>• Balance tracking<br/>• Permissions"]:::program
+            MatchRegistry["📊 Match Registry<br/>• Active games<br/>• Results storage<br/>• Statistics"]:::program
+            BettingEscrow["💰 Betting Escrow<br/>• Wager collection<br/>• Payout logic<br/>• Fee management"]:::program
+        end
+        
+        subgraph MagicBlockLayer["⚡ MagicBlock Integration"]
+            direction LR
+            GameSessions["🎮 Game Sessions<br/>• Ephemeral rollups<br/>• Real-time moves<br/>• Sub-100ms latency"]:::magicblock
+            StateManagement["📊 State Management<br/>• BOLT ECS<br/>• Move validation<br/>• Settlement"]:::magicblock
+        end
+    end
+
+    %% ========== DATA LAYER ==========
+    subgraph DataLayer["💾 Data Storage Layer"]
+        direction LR
+        PostgreSQL["🗄️ PostgreSQL<br/>• User profiles<br/>• Match history<br/>• Betting records"]:::database
+        Redis["⚡ Redis Cache<br/>• Session data<br/>• Real-time state<br/>• Performance optimization"]:::database
+        IPFS["🌐 IPFS<br/>• Game replays<br/>• AI models<br/>• Static assets"]:::external
+    end
+
+    %% ========== EXTERNAL SERVICES ==========
+    subgraph External["🌐 External Dependencies"]
+        direction TB
+        SolanaRPC["🌐 Solana RPC<br/>• Blockchain queries<br/>• Transaction submission<br/>• Account monitoring"]:::external
+        WalletAdapters["👛 Wallet Adapters<br/>• Phantom integration<br/>• Solflare support<br/>• Transaction signing"]:::external
+        PythOracle["💱 Pyth Price Oracle<br/>• SOL/USD pricing<br/>• Real-time feeds<br/>• Betting calculations"]:::external
+    end
+
+    %% ========== CORE CONNECTIONS ==========
+    %% Frontend to Backend
+    Frontend -->|"REST API & WebSocket"| Backend
+    
+    %% Backend Internal Connections
+    APIServer <--> WebSocketServer
+    APIServer --> MatchOrchestrator
+    MatchOrchestrator --> GungiEngine
+    MatchOrchestrator --> AIRunner
+    WebSocketServer --> GungiEngine
+    
+    %% Backend to Blockchain
+    Backend -->|"Program Calls"| CoreProgram
+    Backend -->|"Session Management"| MagicBlockLayer
+    MatchOrchestrator -->|"Create/Settle Games"| GameSessions
+    
+    %% Backend to Data
+    Backend -->|"Queries & Updates"| DataLayer
+    
+    %% Backend to External
+    Backend --> External
+    
+    %% Blockchain Connections
+    CoreProgram <--> MagicBlockLayer
+    GameSessions -->|"Settlement"| MatchRegistry
+    BettingEscrow -->|"User Verification"| UserAccounts
+    
+    %% External to Blockchain
+    SolanaRPC <--> Blockchain
+    WalletAdapters <--> CoreProgram
+    PythOracle -->|"Price Data"| BettingEscrow
+    
+    %% Data Persistence
+    Backend -->|"Store Replays"| IPFS
+    MatchOrchestrator -->|"Cache State"| Redis
+    APIServer -->|"Persist Data"| PostgreSQL
+
+    %% ========== STYLING DEFINITIONS ==========
+    classDef program fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+    classDef service fill:#fff8e1,stroke:#e65100,stroke-width:3px
+    classDef frontend fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
+    classDef external fill:#fce4ec,stroke:#ad1457,stroke-width:2px
+    classDef database fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef magicblock fill:#b3e5fc,stroke:#0277bd,stroke-width:4px
+```
+
+
+```mermaid
+flowchart TD
+    %% ========== PROGRAM INTERACTIONS ==========
+    %% Primary Cross-Program Invocations with Flow Direction
+    CoreGame -.->|"CPI: init_session()"| MagicBlock
+    MagicBlock -.->|"CPI: finalize_match()"| CoreGame
+    CoreGame -.->|"CPI: trigger_settlement()"| BettingEscrow
+    BettingEscrow -.->|"CPI: update_performance()"| AIRegistry
+    BettingEscrow -.->|"CPI: verify_balance()"| UserAccount
+    AIRegistry -.->|"CPI: mint_agent_nft()"| NFTMarketplace
+    NFTMarketplace -.->|"CPI: transfer_ownership()"| UserAccount
+    UserAccount -.->|"CPI: check_permissions()"| CoreGame
+    Governance -.->|"CPI: update_parameters()"| CoreGame
+    Governance -.->|"CPI: allocate_rewards()"| BettingEscrow
+    NFTMarketplace -.->|"CPI: record_sale()"| AIRegistry
+    AIRegistry -.->|"CPI: update_owner_stats()"| UserAccount
+
+    %% ========== EXTERNAL DEPENDENCIES ==========
+    subgraph ExternalSystems["🌐 External Dependencies & Integration Map"]
+        direction TB
+        
+        subgraph BlockchainInfra["⛓️ Blockchain Infrastructure Layer"]
+            SolanaMainnet["🌐 Solana Mainnet<br/>• Primary settlement layer<br/>• 400ms block time<br/>• Transaction finality<br/>• Validator network<br/>• Consensus mechanism"]:::external
+            
+            MagicBlockRollup["⚡ MagicBlock Rollups<br/>• Ephemeral execution environment<br/>• <100ms latency achievement<br/>• Real-time gaming optimization<br/>• BOLT ECS framework<br/>• Elastic throughput scaling"]:::magicblock
+            
+            SolanaRPC["🌐 RPC Provider Network<br/>• GenesysGo infrastructure<br/>• Helius API services<br/>• QuickNode endpoints<br/>• Load balancing system<br/>• Failover redundancy"]:::external
+        end
+        
+        subgraph DataStorageLayer["💾 Distributed Data & Storage"]
+            IPFS["🗂️ IPFS Network<br/>• Game replay storage<br/>• AI model distribution<br/>• NFT metadata hosting<br/>• Training dataset archives<br/>• Decentralized content delivery"]:::database
+            
+            Arweave["♾️ Arweave Network<br/>• Permanent storage solution<br/>• Historical data preservation<br/>• Immutable record keeping<br/>• Legal compliance archives<br/>• Long-term data availability"]:::database
+        end
+        
+        subgraph OracleEcosystem["🔮 Oracle & Data Services"]
+            PythOracle["💱 Pyth Network<br/>• SOL/USD price feeds<br/>• Real-time market data<br/>• High precision pricing<br/>• Low latency updates<br/>• DeFi integration support"]:::oracle
+            
+            ChainlinkVRF["🎲 Chainlink VRF<br/>• Verifiable randomness<br/>• Tournament seeding<br/>• Fair game initialization<br/>• Cryptographic proof system<br/>• Manipulation prevention"]:::oracle
+        end
+        
+        subgraph DeFiIntegration["💰 DeFi Protocol Integration"]
+            JupiterAgg["🔄 Jupiter Aggregator<br/>• Optimal token swap routing<br/>• Best price discovery<br/>• Low slippage execution<br/>• Deep liquidity access<br/>• Multi-DEX integration"]:::external
+            
+            OrcaDex["🏊 Orca DEX<br/>• Concentrated liquidity pools<br/>• AMM trading capabilities<br/>• SOL/NEN pair support<br/>• Yield farming opportunities<br/>• Low fee structure"]:::external
+        end
+        
+        subgraph ComplianceServices["⚖️ Compliance & Security Services"]
+            ChainalysisKYT["🕵️ Chainalysis KYT<br/>• Transaction monitoring<br/>• AML compliance automation<br/>• Risk assessment scoring<br/>• Regulatory reporting<br/>• Sanctions screening"]:::compliance
+            
+            KYCProvider["🆔 KYC Service Provider<br/>• Identity verification<br/>• Document validation<br/>• Age verification process<br/>• Biometric authentication<br/>• Compliance status tracking"]:::compliance
+        end
+        
+        subgraph SecurityInfrastructure["🔐 Security & Vault Infrastructure"]
+            SquadsProtocol["👥 Squads Protocol<br/>• Multi-signature management<br/>• Treasury security enhancement<br/>• Transaction approval workflow<br/>• Access control management<br/>• Security policy enforcement"]:::vault
+        end
+    end
+
+    %% ========== SYSTEM CONNECTIONS ==========
+    %% Core Program Connections to Infrastructure
+    CorePrograms <--> SolanaMainnet
+    CorePrograms <--> MagicBlockRollup
+    CorePrograms --> SolanaRPC
+    
+    %% Data Storage Connections
+    CorePrograms --> IPFS
+    CorePrograms --> Arweave
+    
+    %% Oracle Connections
+    CorePrograms --> PythOracle
+    CorePrograms --> ChainlinkVRF
+    
+    %% DeFi Connections
+    CorePrograms <--> JupiterAgg
+    CorePrograms <--> OrcaDex
+    
+    %% Compliance Connections
+    CorePrograms --> ChainalysisKYT
+    CorePrograms --> KYCProvider
+    
+    %% Security Connections
+    CorePrograms --> SquadsProtocol
+    
+    %% Inter-service Dependencies
+    MagicBlockRollup --> SolanaMainnet
+    ChainlinkVRF --> SolanaMainnet
+    PythOracle --> SolanaMainnet
+    SquadsProtocol --> SolanaMainnet
+
+    %% ========== STYLING DEFINITIONS ==========
+    classDef program fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+    classDef pda fill:#fff8e1,stroke:#e65100,stroke-width:2px
+    classDef token fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    classDef external fill:#fce4ec,stroke:#ad1457,stroke-width:2px
+    classDef database fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef oracle fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    classDef vault fill:#fff3e0,stroke:#ef6c00,stroke-width:3px
+    classDef compliance fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef coregame fill:#c8e6c9,stroke:#1b5e20,stroke-width:4px
+    classDef magicblock fill:#b3e5fc,stroke:#0277bd,stroke-width:4px
+    classDef betting fill:#ffcdd2,stroke:#c62828,stroke-width:4px
+    classDef ai fill:#d1c4e9,stroke:#4527a0,stroke-width:4px
+    classDef nft fill:#ffe0b2,stroke:#e65100,stroke-width:4px
+    classDef user fill:#dcedc1,stroke:#33691e,stroke-width:4px
+    classDef governance fill:#f8bbd9,stroke:#880e4f,stroke-width:4px
+```
+```mermaid
+flowchart TD
+    %% ========== ACCOUNT TYPE CLASSIFICATION ==========
+    subgraph AccountStructure["🔗 Complete Account Structure & PDA Architecture"]
+        direction TB
+        
+        subgraph UserPDAs["👤 User-Related PDAs with Detailed Seeds"]
+            UserProfilePDA["👤 User Profile PDA<br/>🔑 Seeds: ['user', wallet_pubkey]<br/>👑 Owner: User Account Program<br/>📊 Size: 1000 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • username, avatar_url, created_at<br/>  • total_games, wins, current_elo<br/>  • betting_balance, total_wagered<br/>  • preferences, subscription_tier<br/>🔄 Updates: real-time via WebSocket<br/>⚖️ Compliance: KYC status, geo location"]:::pda
+            
+            UserBettingPDA["💰 User Betting PDA<br/>🔑 Seeds: ['betting', user_pubkey]<br/>👑 Owner: Betting Escrow Program<br/>📊 Size: 500 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • available_balance, locked_funds<br/>  • daily_limit, weekly_limit, monthly_limit<br/>  • bet_history[], roi_stats<br/>  • last_deposit, last_withdrawal<br/>🛡️ Security: multi-sig vault integration<br/>⚖️ Compliance: AML flags, risk score"]:::pda
+            
+            UserAchievementsPDA["🏆 User Achievements PDA<br/>🔑 Seeds: ['achievements', user_pubkey]<br/>👑 Owner: User Account Program<br/>📊 Size: 2000 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • unlocked_badges[], progress_tracking<br/>  • milestone_rewards[], social_shares<br/>  • leaderboard_rankings[], friend_stats<br/>  • achievement_timestamps[], xp_points<br/>🎯 Dynamic: real-time progress tracking<br/>🎁 Rewards: NFT badges, bonus SOL"]:::pda
+        end
+        
+        subgraph GamePDAs["🎮 Game Session PDAs with Lifecycle Management"]
+            GameSessionPDA["🎮 Game Session PDA<br/>🔑 Seeds: ['session', match_id, timestamp]<br/>👑 Owner: Core Game Program<br/>📊 Size: 800 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • player1, player2, ai_agent1, ai_agent2<br/>  • session_id (MagicBlock), rollup_address<br/>  • status, board_state_root, move_count<br/>  • time_control, betting_enabled, winner<br/>⚡ Real-time: <100ms via MagicBlock BOLT<br/>🔒 Verification: cryptographic state proofs"]:::pda
+            
+            MoveRecordPDA["📝 Move Record PDA<br/>🔑 Seeds: ['move', session_id, move_number]<br/>👑 Owner: MagicBlock Program<br/>📊 Size: 200 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • move_data (piece, from, to, special)<br/>  • timestamp, player_signature<br/>  • validation_proof, fraud_proof<br/>  • board_state_hash_before, after<br/>🔒 Immutable: fraud-proof generation<br/>📊 Analytics: performance optimization"]:::pda
+            
+            SessionSettlementPDA["🏁 Session Settlement PDA<br/>🔑 Seeds: ['settlement', session_id]<br/>👑 Owner: Core Game Program<br/>📊 Size: 400 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • final_board_state, winner_determination<br/>  • game_duration, total_moves<br/>  • betting_pool_distribution[], fees_collected<br/>  • oracle_verification, dispute_status<br/>🔐 Verification: multi-oracle consensus<br/>💰 Automation: instant payout triggers"]:::pda
+            
+            MatchEscrowPDA["🏦 Match Escrow PDA<br/>🔑 Seeds: ['escrow', match_id]<br/>👑 Owner: Betting Escrow Program<br/>📊 Size: 600 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • total_pool_agent1, total_pool_agent2<br/>  • bet_records[], odds_history[]<br/>  • platform_fee_rate, escrow_balance<br/>  • betting_deadline, settlement_status<br/>💰 Security: time-locked withdrawals<br/>🛡️ Protection: multi-sig oversight"]:::pda
+        end
+        
+        subgraph AIPDAs["🤖 AI Agent PDAs with Training & Performance"]
+            AIAgentPDA["🤖 AI Agent Metadata PDA<br/>🔑 Seeds: ['agent', agent_id]<br/>👑 Owner: AI Registry Program<br/>📊 Size: 1500 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • owner, nft_mint, model_hash, version<br/>  • personality_traits (aggression, creativity)<br/>  • custom_openings[], playing_style<br/>  • elo_rating, games_played, win_rate<br/>🎯 Customization: user-defined traits<br/>🎨 NFT Integration: tokenization support<br/>📈 Analytics: comprehensive performance metrics"]:::pda
+            
+            AITrainingPDA["🎓 AI Training Session PDA<br/>🔑 Seeds: ['training', agent_id, session_id]<br/>👑 Owner: AI Registry Program<br/>📊 Size: 1000 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • training_data_hash (IPFS), parameters<br/>  • progress_percentage, cost_paid<br/>  • estimated_completion, actual_duration<br/>  • quality_metrics, performance_improvements<br/>💰 Economics: SOL-based pricing (0.5 SOL/hour)<br/>🔒 Security: agent locked during training"]:::pda
+            
+            AIPerformancePDA["📊 AI Performance Tracking PDA<br/>🔑 Seeds: ['performance', agent_id]<br/>👑 Owner: AI Registry Program<br/>📊 Size: 800 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • match_history[], elo_progression[]<br/>  • win_rates_by_opponent_strength<br/>  • average_game_duration, move_patterns<br/>  • revenue_generated, training_roi<br/>📈 Advanced Analytics: ML-driven insights<br/>🎯 Optimization: weakness identification"]:::pda
+        end
+        
+        subgraph NFTPDAs["💎 NFT & Marketplace PDAs with Trading"]
+            NFTMetadataPDA["💎 NFT Metadata PDA<br/>🔑 Seeds: ['nft_meta', nft_mint]<br/>👑 Owner: NFT Marketplace Program<br/>📊 Size: 1200 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • agent_performance_embedded<br/>  • rarity_attributes, visual_traits<br/>  • royalty_config (creator 5%, platform 2.5%)<br/>  • creation_timestamp, edition_number<br/>🎨 Standards: Metaplex compliant<br/>📊 Dynamic: performance-based rarity updates"]:::pda
+            
+            NFTListingPDA["🏪 NFT Listing PDA<br/>🔑 Seeds: ['listing', nft_mint, seller]<br/>👑 Owner: NFT Marketplace Program<br/>📊 Size: 400 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • asking_price, listing_duration<br/>  • terms_conditions, auction_type<br/>  • bid_history[], reserve_price<br/>  • expiry_timestamp, auto_renewal<br/>⏰ Flexibility: multiple duration options<br/>💰 Economics: competitive fee structure"]:::pda
+            
+            NFTEscrowPDA["🔒 NFT Escrow PDA<br/>🔑 Seeds: ['nft_escrow', listing_id]<br/>👑 Owner: NFT Marketplace Program<br/>📊 Size: 300 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • nft_mint, seller_pubkey, buyer_pubkey<br/>  • trade_status, escrow_expiry<br/>  • payment_amount, fees_breakdown<br/>  • dispute_resolution_data<br/>🛡️ Security: atomic swap guarantee<br/>⚖️ Disputes: arbitration system"]:::pda
+        end
+        
+        subgraph SystemPDAs["⚙️ System & Governance PDAs with Multi-sig"]
+            TreasuryPDA["🏛️ Treasury Management PDA<br/>🔑 Seeds: ['treasury']<br/>👑 Owner: Governance Program<br/>📊 Size: 500 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • total_fees_collected, allocation_rules<br/>  • distribution_schedule[], reserve_funds<br/>  • community_rewards_pool, development_fund<br/>  • emergency_fund, insurance_pool<br/>🗳️ Governance: community-controlled allocations<br/>📊 Transparency: public fund tracking"]:::pda
+            
+            GovernancePDA["🗳️ Governance & Voting PDA<br/>🔑 Seeds: ['governance']<br/>👑 Owner: Governance Program<br/>📊 Size: 2000 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • active_proposals[], voting_history[]<br/>  • parameter_configs, upgrade_schedule<br/>  • voting_power_distribution, quorum_rules<br/>  • execution_timelock, veto_powers<br/>⚖️ Democracy: transparent decision making<br/>🔒 Security: time-locked execution"]:::pda
+            
+            MultiSigVaultPDA["🔐 Multi-signature Vault PDA<br/>🔑 Seeds: ['vault', vault_id]<br/>👑 Owner: Governance Program<br/>📊 Size: 800 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • signers_list[], signature_threshold<br/>  • pending_transactions[], approval_status<br/>  • daily_limits, monthly_limits<br/>  • emergency_contacts[], time_locks<br/>🛡️ Security: 5-of-9 signature requirement<br/>⏰ Protection: 48-hour time delays"]:::vault
+            
+            CompliancePDA["⚖️ Compliance Registry PDA<br/>🔑 Seeds: ['compliance', user_pubkey]<br/>👑 Owner: User Account Program<br/>📊 Size: 600 bytes (rent-exempt)<br/>💾 Core Data:<br/>  • kyc_tier, verification_documents<br/>  • geo_location, jurisdiction_restrictions<br/>  • aml_risk_score, transaction_monitoring<br/>  • betting_limits, self_exclusion_status<br/>🌍 Global: jurisdiction compliance<br/>🔍 Monitoring: real-time risk assessment"]:::compliance
+        end
+        
+        subgraph TokenAccounts["🪙 Token Account Types & Standards"]
+            SOLTokenAccount["💰 SOL Token Account<br/>👑 Owner: System Program<br/>💾 Data: Native SOL balance<br/>⛽ Usage: Gas fees, betting, payments<br/>🔄 Operations: transfers, staking<br/>📊 Tracking: transaction history"]:::token
+            
+            NENTokenAccount["🎯 NEN Utility Token Account<br/>👑 Owner: Token Program (SPL)<br/>💾 Data: Platform token balance<br/>🎁 Usage: Governance rights, rewards<br/>💎 Benefits: 10% training discount<br/>🗳️ Voting: Protocol governance power"]:::token
+            
+            NFTTokenAccount["💎 AI Agent NFT Account<br/>👑 Owner: Token Program (SPL)<br/>💾 Data: NFT ownership & metadata<br/>🎨 Standard: Metaplex compliant<br/>🤖 Content: AI agent representation<br/>💰 Trading: Marketplace integration"]:::token
+        end
+    end
+
+    %% ========== PDA DERIVATION RELATIONSHIPS ==========
+    subgraph DerivationMappings["🔗 PDA Derivation Relationships & Dependencies"]
+        direction LR
+        
+        WalletSource["👤 User Wallet Pubkey"]
+        MatchSource["🎮 Match ID Generator"]
+        AgentSource["🤖 Agent ID Generator"]
+        VaultSource["🔐 Vault ID Generator"]
+        NFTSource["💎 NFT Mint Address"]
+        SessionSource["⚡ Session ID Generator"]
+        
+        WalletSource -.->|"['user', wallet_pubkey]"| UserProfilePDA
+        WalletSource -.->|"['betting', wallet_pubkey]"| UserBettingPDA
+        WalletSource -.->|"['achievements', wallet_pubkey]"| UserAchievementsPDA
+        WalletSource -.->|"['compliance', wallet_pubkey]"| CompliancePDA
+        
+        MatchSource -.->|"['session', match_id, timestamp]"| GameSessionPDA
+        MatchSource -.->|"['escrow', match_id]"| MatchEscrowPDA
+        
+        SessionSource -.->|"['move', session_id, move_num]"| MoveRecordPDA
+        SessionSource -.->|"['settlement', session_id]"| SessionSettlementPDA
+        
+        AgentSource -.->|"['agent', agent_id]"| AIAgentPDA
+        AgentSource -.->|"['training', agent_id, session_id]"| AITrainingPDA
+        AgentSource -.->|"['performance', agent_id]"| AIPerformancePDA
+        
+        NFTSource -.->|"['nft_meta', nft_mint]"| NFTMetadataPDA
+        NFTSource -.->|"['listing', nft_mint, seller]"| NFTListingPDA
+        
+        VaultSource -.->|"['vault', vault_id]"| MultiSigVaultPDA
+    end
+
+    %% ========== ACCOUNT RELATIONSHIPS ==========
+    subgraph AccountRelationships["🔄 Account Data Relationships & Cross-References"]
+        direction TB
+        
+        UserProfilePDA -->|"references"| UserBettingPDA
+        UserBettingPDA -->|"references"| MatchEscrowPDA
+        AIAgentPDA -->|"links to"| NFTTokenAccount
+        NFTListingPDA -->|"escrows to"| NFTEscrowPDA
+        TreasuryPDA -->|"receives from"| MatchEscrowPDA
+        CompliancePDA -->|"validates"| UserBettingPDA
+        GameSessionPDA -->|"generates"| MoveRecordPDA
+        MoveRecordPDA -->|"feeds into"| SessionSettlementPDA
+        SessionSettlementPDA -->|"triggers"| MatchEscrowPDA
+        AIAgentPDA -->|"updates from"| AIPerformancePDA
+        AITrainingPDA -->|"modifies"| AIAgentPDA
+        NFTMetadataPDA -->|"embeds data from"| AIAgentPDA
+    end
+
+    %% ========== STYLING ==========
+    classDef pda fill:#fff8e1,stroke:#e65100,stroke-width:2px
+    classDef token fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    classDef vault fill:#fff3e0,stroke:#ef6c00,stroke-width:3px
+    classDef compliance fill:#ffebee,stroke:#c62828,stroke-width:2px
+    ```
+
+```mermaid
+graph TD
+    subgraph SecurityLayers["🛡️ Multi-layered Security Framework"]
+        UserRequest["👤 User Action Request"] --> RateLimitGateway["🚦 Rate Limiting Gateway<br/>• 100 requests/minute/IP<br/>• 500 requests/minute/user<br/>• Sliding window algorithm<br/>• DDoS protection<br/>• Bot detection"]
+        
+        RateLimitGateway --> RateLimitCheck{🚦 Rate Limit Check}
+        RateLimitCheck -->|❌ Exceeded| RateLimitBlock["🚫 Rate Limit Exceeded<br/>• 429 Too Many Requests<br/>• Exponential backoff<br/>• Temporary IP block<br/>• Alert monitoring team"]
+        RateLimitCheck -->|✅ Passed| SignatureValidation["🔐 Signature Validation<br/>• Ed25519 verification<br/>• Message integrity<br/>• Timestamp validation<br/>• Replay attack prevention"]
+        
+        SignatureValidation --> SigValidationResult{🔐 Signature Valid?}
+        SigValidationResult -->|❌ Invalid| InvalidSignature["❌ Invalid Signature<br/>• Reject transaction<br/>• Log security event<br/>• Alert user<br/>• Monitor for patterns"]
+        SigValidationResult -->|✅ Valid| InputSanitization["🧹 Input Sanitization<br/>• SQL injection prevention<br/>• XSS protection<br/>• Parameter validation<br/>• Type checking<br/>• Range validation"]
+        
+        InputSanitization --> SanitizationResult{🧹 Input Valid?}
+        SanitizationResult -->|❌ Invalid| MaliciousInput["🚨 Malicious Input Detected<br/>• Block request<br/>• Log incident<br/>• Flag IP address<br/>• Security team alert"]
+        SanitizationResult -->|✅ Valid| AuthorizationCheck["🔒 Authorization Check<br/>• PDA ownership verification<br/>• Permission level validation<br/>• Resource access rights<br/>• Role-based control"]
+        
+        AuthorizationCheck --> AuthResult{🔒 Authorized?}
+        AuthResult -->|❌ Unauthorized| UnauthorizedAccess["🚫 403 Forbidden<br/>• Access denied<br/>• Log attempt<br/>• User notification<br/>• Admin alert"]
+        AuthResult -->|✅ Authorized| ExecuteAction["✅ Execute Authorized Action"]
+        
+        ExecuteAction --> AuditLogging["📋 Comprehensive Audit Logging<br/>• Transaction hash<br/>• User identification<br/>• Action type & params<br/>• Timestamp (UTC)<br/>• IP address & geolocation<br/>• Success/failure status"]
+        
+        AuditLogging --> SecurityMonitoring["🔍 Real-time Security Monitoring<br/>• Anomaly detection<br/>• Pattern analysis<br/>• Threat intelligence<br/>• Behavioral analysis<br/>• Risk scoring"]
+    end
+    
+    subgraph ComplianceFramework["⚖️ Comprehensive Compliance Framework"]
+        TransactionInitiation["💰 Financial Transaction Initiated"] --> GeoComplianceCheck["🌍 Geographic Compliance<br/>• IP geolocation lookup<br/>• VPN/Proxy detection<br/>• Jurisdiction validation<br/>• Regulatory mapping<br/>• Restriction enforcement"]
+        
+        GeoComplianceCheck --> GeoResult{🌍 Geographic Check}
+        GeoResult -->|🚫 Blocked Region| GeoBlocking["🚫 Geographic Restriction<br/>• Transaction blocked<br/>• Legal notice displayed<br/>• Alternative options<br/>• Support contact info<br/>• Compliance documentation"]
+        GeoResult -->|⚠️ Restricted| RestrictedRegion["⚠️ Restricted Region<br/>• Limited functionality<br/>• Enhanced verification<br/>• Lower transaction limits<br/>• Increased monitoring"]
+        GeoResult -->|✅ Allowed| AgeVerification["🆔 Age Verification Process<br/>• KYC status check<br/>• Document validation<br/>• Biometric verification<br/>• Legal age confirmation<br/>• Parental consent (if minor)"]
+        
+        RestrictedRegion --> EnhancedDueDiligence["🔍 Enhanced Due Diligence<br/>• Additional documentation<br/>• Source of funds verification<br/>• Enhanced monitoring<br/>• Regular review cycles<br/>• Compliance officer approval"]
+        
+        AgeVerification --> AgeResult{🆔 Age Verification}
+        AgeResult -->|❌ Underage| AgeRestriction["🚫 Age Restriction Applied<br/>• Access denied<br/>• Parental consent required<br/>• Educational resources<br/>• Alternative platforms<br/>• Legal compliance notice"]
+        AgeResult -->|⚠️ Partial| ParentConsent["👨‍👩‍👧‍👦 Parental Consent Required<br/>• Guardian verification<br/>• Consent documentation<br/>• Limited account features<br/>• Enhanced protections<br/>• Regular review"]
+        AgeResult -->|✅ Verified| BettingLimitCheck["💰 Betting Limit Validation<br/>• Daily limit: 100 SOL<br/>• Weekly limit: 500 SOL<br/>• Monthly limit: 1000 SOL<br/>• Self-imposed limits<br/>• Responsible gambling tools"]
+        
+        EnhancedDueDiligence --> BettingLimitCheck
+        ParentConsent --> BettingLimitCheck
+        
+        BettingLimitCheck --> LimitResult{💰 Within Limits?}
+        LimitResult -->|❌ Exceeded| LimitExceeded["⚠️ Betting Limit Exceeded<br/>• Transaction blocked<br/>• Limit warning displayed<br/>• Responsible gambling resources<br/>• Cooling-off period option<br/>• Self-exclusion tools"]
+        LimitResult -->|⚠️ Approaching| LimitWarning["⚠️ Approaching Limit Warning<br/>• Warning notification<br/>• Remaining limit display<br/>• Responsible gambling tips<br/>• Limit adjustment options<br/>• Support resources"]
+        LimitResult -->|✅ Within Limits| AMLScreening["🕵️ AML Screening Process<br/>• Suspicious activity detection<br/>• Pattern analysis<br/>• Blacklist checking<br/>• PEP screening<br/>• Sanctions verification"]
+        
+        LimitWarning --> AMLScreening
+        
+        AMLScreening --> AMLResult{🕵️ AML Screening Result}
+        AMLResult -->|🚨 High Risk| HighRiskAML["🚨 High Risk AML Alert<br/>• Transaction suspended<br/>• Manual review required<br/>• Compliance team notification<br/>• Enhanced monitoring<br/>• Possible SAR filing"]
+        AMLResult -->|⚠️ Medium Risk| MediumRiskAML["⚠️ Medium Risk AML<br/>• Enhanced verification<br/>• Additional documentation<br/>• Increased monitoring<br/>• Compliance review<br/>• Regular assessment"]
+        AMLResult -->|✅ Low Risk| LowRiskAML["✅ Low Risk - Proceed<br/>• Normal processing<br/>• Standard monitoring<br/>• Regular compliance updates<br/>• Automated review cycle"]
+        
+        HighRiskAML --> ManualComplianceReview["👨‍⚖️ Manual Compliance Review<br/>• Compliance officer review<br/>• Risk assessment update<br/>• Decision documentation<br/>• Regulatory reporting<br/>• Appeal process"]
+        
+        MediumRiskAML --> EnhancedMonitoring["🔍 Enhanced Monitoring<br/>• Increased transaction scrutiny<br/>• Pattern monitoring<br/>• Regular review cycles<br/>• Risk score updates<br/>• Compliance reporting"]
+        
+        ManualComplianceReview --> ComplianceDecision{👨‍⚖️ Compliance Decision}
+        ComplianceDecision -->|✅ Approved| LowRiskAML
+        ComplianceDecision -->|❌ Rejected| ComplianceRejection["❌ Compliance Rejection<br/>• Transaction blocked<br/>• Account restrictions<br/>• Explanation provided<br/>• Appeal process<br/>• Legal compliance"]
+        
+        EnhancedMonitoring --> LowRiskAML
+        LowRiskAML --> ProcessCompliantTransaction["✅ Process Compliant Transaction"]
+    end
+    
+    subgraph MultiSigVaults["🔐 Multi-signature Vault Architecture"]
+        TreasuryOperations["🏛️ Treasury Operations"] --> VaultType{🔐 Vault Type Selection}
+        
+        VaultType -->|🏛️ Main Treasury| MainTreasuryVault["🏛️ Main Treasury Vault<br/>💰 Primary fund storage<br/>👥 5-of-9 multisig<br/>⏰ 48-hour timelock<br/>💎 Cold storage integration<br/>🔒 Hardware security modules"]
+        VaultType -->|⚡ Operational| OperationalVault["⚡ Operational Vault<br/>💰 Daily operations<br/>👥 3-of-5 multisig<br/>⏰ 6-hour timelock<br/>🔄 Automated workflows<br/>📊 Spending limits"]
+        VaultType -->|🚨 Emergency| EmergencyVault["🚨 Emergency Vault<br/>💰 Emergency reserves<br/>👥 7-of-11 multisig<br/>⏰ 72-hour timelock<br/>🔒 Maximum security<br/>⚖️ Legal oversight"]
+        VaultType -->|🏆 Rewards| RewardsVault["🏆 Community Rewards Vault<br/>💰 User incentives<br/>👥 2-of-3 multisig<br/>⏰ 2-hour timelock<br/>🎁 Automated distributions<br/>📊 Performance tracking"]
+        
+        MainTreasuryVault --> MainVaultValidation["🔍 Main Treasury Validation<br/>• 5 required signatures<br/>• Timelock verification<br/>• Amount threshold check<br/>• Purpose validation<br/>• Regulatory compliance"]
+        OperationalVault --> OpVaultValidation["🔍 Operational Validation<br/>• 3 required signatures<br/>• Daily limit check<br/>• Business logic validation<br/>• Automated approvals<br/>• Real-time monitoring"]
+        EmergencyVault --> EmergencyValidation["🔍 Emergency Validation<br/>• 7 required signatures<br/>• Crisis verification<br/>• Legal authorization<br/>• Audit trail<br/>• Regulatory notification"]
+        RewardsVault --> RewardsValidation["🔍 Rewards Validation<br/>• 2 required signatures<br/>• Performance criteria<br/>• Fair distribution<br/>• Anti-gaming measures<br/>• Community verification"]
+        
+        MainVaultValidation --> MainVaultExecution["⚡ Execute Main Treasury Transaction"]
+        OpVaultValidation --> OpVaultExecution["⚡ Execute Operational Transaction"]
+        EmergencyValidation --> EmergencyExecution["⚡ Execute Emergency Transaction"]
+        RewardsValidation --> RewardsExecution["⚡ Execute Rewards Distribution"]
+        
+        MainVaultExecution --> VaultAuditLog["📋 Vault Audit Logging<br/>• Transaction details<br/>• Signer identities<br/>• Timestamp records<br/>• Purpose documentation<br/>• Regulatory reporting"]
+        OpVaultExecution --> VaultAuditLog
+        EmergencyExecution --> VaultAuditLog
+        RewardsExecution --> VaultAuditLog
+        
+        VaultAuditLog --> VaultMonitoring["📊 Vault Monitoring & Alerts<br/>• Real-time balance tracking<br/>• Unusual activity detection<br/>• Signer behavior analysis<br/>• Performance metrics<br/>• Security assessments"]
+    end
+    
+    subgraph IncidentResponse["🚨 Incident Response & Recovery"]
+        SecurityIncident["🚨 Security Incident Detected"] --> IncidentClassification["🏷️ Incident Classification<br/>• Severity assessment<br/>• Impact analysis<br/>• Threat categorization<br/>• Response priority<br/>• Stakeholder identification"]
+        
+        IncidentClassification --> SeverityLevel{🚨 Severity Level}
+        
+        SeverityLevel -->|🔴 Critical| CriticalResponse["🔴 Critical Incident Response<br/>• Immediate system shutdown<br/>• Emergency team activation<br/>• All hands response<br/>• External expert consultation<br/>• Regulatory notification"]
+        SeverityLevel -->|🟡 High| HighResponse["🟡 High Priority Response<br/>• Partial system isolation<br/>• Core team activation<br/>• Enhanced monitoring<br/>• User notifications<br/>• Stakeholder updates"]
+        SeverityLevel -->|🟢 Medium| MediumResponse["🟢 Medium Priority Response<br/>• Targeted countermeasures<br/>• Standard response team<br/>• Increased monitoring<br/>• Internal notifications<br/>• Documentation updates"]
+        SeverityLevel -->|⚪ Low| LowResponse["⚪ Low Priority Response<br/>• Automated responses<br/>• Routine monitoring<br/>• Standard procedures<br/>• Logging and analysis<br/>• Preventive measures"]
+        
+        CriticalResponse --> EmergencyProtocols["🛡️ Emergency Protection Protocols<br/>• Asset freezing<br/>• Transaction halting<br/>• User fund protection<br/>• Communication lockdown<br/>• Legal preparation"]
+        HighResponse --> ContainmentMeasures["🔒 Containment Measures<br/>• Threat isolation<br/>• Access restriction<br/>• Monitoring enhancement<br/>• Evidence preservation<br/>• Recovery planning"]
+        MediumResponse --> StandardContainment["🔧 Standard Containment<br/>• Automated responses<br/>• Policy enforcement<br/>• Monitoring updates<br/>• Process improvements<br/>• Team notifications"]
+        LowResponse --> RoutineHandling["📋 Routine Incident Handling<br/>• Standard procedures<br/>• Automated logging<br/>• Regular review<br/>• Process optimization<br/>• Preventive updates"]
+        
+        EmergencyProtocols --> RecoveryPlanning["🔄 Recovery Planning & Execution<br/>• System restoration<br/>• Data recovery<br/>• Service resumption<br/>• User communication<br/>• Lessons learned"]
+        ContainmentMeasures --> RecoveryPlanning
+        StandardContainment --> RecoveryPlanning
+        RoutineHandling --> RecoveryPlanning
+        
+        RecoveryPlanning --> PostIncidentReview["📊 Post-Incident Review<br/>• Root cause analysis<br/>• Response effectiveness<br/>• Process improvements<br/>• Security enhancements<br/>• Documentation updates"]
+    end
+    
+    %% Security flow connections
+    RateLimitBlock --> IncidentResponse
+    InvalidSignature --> IncidentResponse
+    MaliciousInput --> IncidentResponse
+    UnauthorizedAccess --> SecurityMonitoring
+    ExecuteAction --> MultiSigVaults
+    GeoBlocking --> ComplianceFramework
+    AgeRestriction --> ComplianceFramework
+    LimitExceeded --> ComplianceFramework
+    HighRiskAML --> IncidentResponse
+    ComplianceRejection --> IncidentResponse
+    ProcessCompliantTransaction --> MultiSigVaults
+```
+
+
+```mermaid
+
+flowchart TD
+    %% ========== WALLET CONNECTION & AUTHENTICATION ==========
+    Start([🎮 User Wants to Bet on AI Match]) --> CheckWallet{💳 Wallet Connected?}
+    CheckWallet -->|No| ConnectWallet[🔗 Connect Wallet Interface]
+    CheckWallet -->|Yes| CheckKYC{⚖️ KYC Verified?}
+    
+    ConnectWallet --> SelectProvider{🔧 Connect Wallet Provider}
+    SelectProvider --> Phantom[🟣 Phantom]
+    SelectProvider --> Solflare[🟠 Solflare]
+    SelectProvider --> Backpack[🎒 Backpack]
+    
+    Phantom --> WalletConnectSuccess[✅ Wallet Connected Successfully]
+    Solflare --> WalletConnectSuccess
+    Backpack --> WalletConnectSuccess
+    
+    WalletConnectSuccess --> CheckKYC
+    
+    CheckKYC -->|No| KYCProcess[⚖️ Initiate KYC Verification<br/>• Document upload<br/>• Biometric check<br/>• Age verification 18+<br/>• Geographic compliance]
+    CheckKYC -->|Yes| CheckBalance{💰 Sufficient SOL Balance?}
+    
+    KYCProcess --> KYCResult{✅ KYC Approved?}
+    KYCResult -->|✅ Yes| CheckBalance
+    KYCResult -->|❌ No| KYCRejected[❌ KYC Rejected<br/>• Show error message<br/>• Provide support link<br/>• Alternative options<br/>• Retry after correction]
+    
+    CheckBalance -->|No| DepositFunds[💸 Deposit Funds Interface<br/>• Show current balance<br/>• Suggest deposit amount<br/>• Integration with Jupiter/Orca<br/>• Fiat on-ramp options<br/>• Confirm transaction]
+    CheckBalance -->|Yes| SelectMatch{🎮 Select AI Match}
+    
+    DepositFunds --> DepositMethod{💳 Deposit Method?}
+    DepositMethod -->|Crypto Swap| CryptoSwap[🔄 Execute Token Swap<br/>• Jupiter aggregator<br/>• Optimal routing<br/>• Slippage protection<br/>• Confirm transaction]
+    DepositMethod -->|Fiat On-ramp| FiatOnramp[💵 Fiat Purchase<br/>• Integration with Moonpay/Ramp<br/>• KYC re-verification if needed<br/>• Currency selection<br/>• Amount confirmation]
+    
+    CryptoSwap --> DepositSuccessCheck{✅ Deposit Successful?}
+    FiatOnramp --> DepositSuccessCheck
+    
+    DepositSuccessCheck -->|✅ Yes| SelectMatch
+    DepositSuccessCheck -->|❌ No| DepositError[❌ Deposit Failed<br/>• Show error details<br/>• Retry option<br/>• Alternative methods<br/>• Support contact<br/>• Refund if applicable]
+    
+    %% Allow proceeding if partial success or retry
+    DepositError --> SelectMatch
+    
+    SelectMatch --> BrowseMatches[🔍 Browse Available Matches<br/>• List ongoing/upcoming AI vs AI<br/>• Filter by Elo rating<br/>• View agent stats<br/>• Real-time odds from Pyth<br/>• Spectator count]
+    
+    BrowseMatches --> MatchSelected[🎮 Match Selected<br/>• Display match details<br/>• AI Agent 1 vs Agent 2<br/>• Betting pool status<br/>• Current odds<br/>• Time until start]
+    
+    MatchSelected --> PlaceBet{💰 Place Bet?}
+    PlaceBet -->|No| WatchMatch[👀 Watch Match Live<br/>• MagicBlock real-time stream<br/>• WebSocket updates<br/>• Board visualization<br/>• Move commentary<br/>• Chat integration]
+    PlaceBet -->|Yes| ChooseAgent{🤖 Choose AI Agent to Bet On}
+    
+    ChooseAgent --> EnterAmount[💲 Enter Bet Amount<br/>• Min/max limits check<br/>• Calculate potential payout<br/>• Show current odds<br/>• Risk warning<br/>• Responsible gambling notice]
+    
+    EnterAmount --> BetValidation{✅ Bet Valid?}
+    BetValidation -->|❌ Invalid| BetError[❌ Bet Validation Error<br/>• Insufficient balance<br/>• Limit exceeded<br/>• Betting closed<br/>• Show specific reason<br/>• Adjustment suggestions]
+    BetValidation -->|✅ Valid| ConfirmBet[✅ Confirm Bet Placement<br/>• Review details<br/>• Odds lock-in<br/>• Fee disclosure<br/>• Signature request<br/>• Transaction submission]
+    
+    %% Loop back to adjust
+    BetError --> EnterAmount
+    
+    ConfirmBet --> BetPlacementResult{✅ Transaction Success?}
+    BetPlacementResult -->|✅ Yes| BetPlaced[🎉 Bet Placed Successfully<br/>• Update user balance<br/>• Add to escrow PDA<br/>• Real-time pool update<br/>• Notification sent<br/>• Join spectator mode]
+    BetPlacementResult -->|❌ No| PlacementError[❌ Placement Failed<br/>• Network congestion<br/>• Gas fee issue<br/>• Retry with higher fee<br/>• Alternative RPC<br/>• Support ticket]
+    
+    %% Retry loop
+    PlacementError --> ConfirmBet
+    
+    BetPlaced --> GameStart{🎮 Game Starts?}
+    GameStart -->|Yes| RealTimeGame[⚡ Real-time Game Execution<br/>• MagicBlock rollup session<br/>• <100ms move validation<br/>• Anti-cheat checks<br/>• State compression<br/>• WebSocket broadcasts]
+    GameStart -->|No| WaitForStart[⏳ Wait for Match Start<br/>• Countdown timer<br/>• Pre-game analysis<br/>• Agent stats display<br/>• Last-minute betting if open<br/>• Notifications setup]
+    
+    WaitForStart --> RealTimeGame
+    
+    RealTimeGame --> MoveProcessing[🔄 Process Game Moves<br/>• Validate move rules<br/>• Update board state<br/>• Broadcast to spectators<br/>• Anti-cheat monitoring<br/>• Time control enforcement]
+    
+    MoveProcessing --> WinConditionCheck{🏆 Win Condition Met?}
+    WinConditionCheck -->|No| MoveProcessing
+    WinConditionCheck -->|Yes| GameEnd[🏁 Game Completed<br/>• Determine winner<br/>• Final state proof<br/>• Settlement trigger<br/>• Replay generation<br/>• Performance update]
+    
+    GameEnd --> SettlementProcess[💰 Betting Settlement<br/>• Calculate payouts<br/>• Distribute winnings<br/>• Collect fees<br/>• Update user balances<br/>• Treasury allocation]
+    
+    SettlementProcess --> PayoutResult{✅ Payout Successful?}
+    PayoutResult -->|✅ Yes| PayoutSuccess[🎉 Winnings Credited<br/>• Update user profile<br/>• Elo rating adjustment<br/>• Achievement check<br/>• Notification sent<br/>• Replay available]
+    PayoutResult -->|❌ No| SettlementError[❌ Settlement Error<br/>• Emergency refund<br/>• Dispute initiation<br/>• Governance alert<br/>• Manual review<br/>• Compensation protocol]
+    
+    PayoutSuccess --> PostGame[📊 Post-Game Actions<br/>• View replay<br/>• Share results<br/>• Train AI agent<br/>• NFT marketplace<br/>• Next match suggestion]
+    
+    SettlementError --> DisputeResolution[⚖️ Dispute Resolution<br/>• Evidence submission<br/>• Oracle verification<br/>• Governance vote<br/>• Final settlement<br/>• Appeal process]
+    
+    DisputeResolution --> PayoutSuccess
+    
+    %% Error Handling Paths
+    KYCRejected --> EndFlow[🏁 End Flow]
+    DepositError --> CheckBalance
+    BetError --> PlaceBet
+    PlacementError --> PlaceBet
+    
+    %% Subgraphs for Organization
+    subgraph WalletConnection["💳 Wallet Connection Flow"]
+        CheckWallet --> ConnectWallet --> SelectProvider --> Phantom --> WalletConnectSuccess
+    end
+    
+    subgraph KYCCompliance["⚖️ KYC & Compliance"]
+        CheckKYC --> KYCProcess --> KYCResult
+    end
+    
+    subgraph Funding["💸 Funding Management"]
+        CheckBalance --> DepositFunds --> DepositMethod --> CryptoSwap --> DepositSuccessCheck
+    end
+    
+    subgraph MatchSelection["🎮 Match Selection"]
+        BrowseMatches --> MatchSelected
+    end
+    
+    subgraph BettingProcess["💰 Betting Process"]
+        PlaceBet --> ChooseAgent --> EnterAmount --> BetValidation --> ConfirmBet --> BetPlacementResult --> BetPlaced
+    end
+    
+    subgraph GameExecution["⚡ Game Execution"]
+        GameStart --> RealTimeGame --> MoveProcessing --> WinConditionCheck --> GameEnd
+    end
+    
+    subgraph Settlement["🏁 Settlement & Payout"]
+        SettlementProcess --> PayoutResult --> PayoutSuccess --> PostGame
+    end
+    
+    %% Flow connections between subgraphs
+    WalletConnection --> KYCCompliance
+    KYCCompliance --> Funding
+    Funding --> MatchSelection
+    MatchSelection --> BettingProcess
+    BettingProcess --> GameExecution
+    GameExecution --> Settlement
+```
+```mermaid
+flowchart TD
+    subgraph ErrorHandlingFramework["🚨 Complete Error Handling Framework"]
+        direction TB
+        
+        subgraph ErrorDetectionLayer["🔍 Error Detection & Classification"]
+            ErrorTrigger["⚡ System Error Detected"] --> ErrorCapture["📥 Error Capture Engine<br/>• Stack trace collection<br/>• Context preservation<br/>• User session data<br/>• Transaction state<br/>• Environmental factors<br/>• Performance metrics"]
+            
+            ErrorCapture --> ErrorClassifier["🏷️ Intelligent Error Classification<br/>• Error type analysis<br/>• Severity assessment<br/>• Impact evaluation<br/>• Recovery feasibility<br/>• User impact scope<br/>• System component identification"]
+            
+            ErrorClassifier --> ErrorTypeRouter{🔀 Error Type Routing}
+            
+            ErrorTypeRouter -->|💰 Transaction Error| TransactionErrorHandler["💰 Transaction Error Processing<br/>• Blockchain transaction failures<br/>• Insufficient fund scenarios<br/>• Gas fee complications<br/>• Network congestion issues<br/>• Slippage exceeded conditions"]
+            
+            ErrorTypeRouter -->|🌐 Network Error| NetworkErrorHandler["🌐 Network Error Processing<br/>• RPC endpoint failures<br/>• Connection timeouts<br/>• Bandwidth limitations<br/>• WebSocket disconnections<br/>• DNS resolution issues"]
+            
+            ErrorTypeRouter -->|⚙️ Program Error| ProgramErrorHandler["⚙️ Program Error Processing<br/>• Smart contract execution failures<br/>• Account access violations<br/>• PDA derivation errors<br/>• Cross-program invocation failures<br/>• State desynchronization"]
+            
+            ErrorTypeRouter -->|🎮 Game State Error| GameStateErrorHandler["🎮 Game State Error Processing<br/>• MagicBlock rollup failures<br/>• Session timeout scenarios<br/>• Move validation errors<br/>• State compression failures<br/>• Settlement discrepancies"]
+        end
+        
+        subgraph AutomaticRecoverySystem["🔄 Automatic Recovery Mechanisms"]
+            TransactionErrorHandler --> TxRecoveryEngine["💰 Transaction Recovery Engine<br/>🔍 Analysis Phase:<br/>• Determine failure cause<br/>• Check balance availability<br/>• Validate gas fee sufficiency<br/>• Assess network conditions<br/>🔧 Recovery Actions:<br/>• Automatic retry with backoff<br/>• Gas fee adjustment<br/>• Alternative RPC routing<br/>• Transaction optimization"]
+            
+            NetworkErrorHandler --> NetworkRecoveryEngine["🌐 Network Recovery Engine<br/>🔍 Analysis Phase:<br/>• Endpoint health checking<br/>• Connection quality assessment<br/>• Bandwidth utilization review<br/>• Geographic routing analysis<br/>🔧 Recovery Actions:<br/>• Automatic endpoint failover<br/>• Connection re-establishment<br/>• Load balancer adjustment<br/>• CDN cache optimization"]
+            
+            ProgramErrorHandler --> ProgramRecoveryEngine["⚙️ Program Recovery Engine<br/>🔍 Analysis Phase:<br/>• Account state verification<br/>• Permission validation<br/>• Program instruction analysis<br/>• Data consistency checking<br/>🔧 Recovery Actions:<br/>• State synchronization<br/>• Account reinitialization<br/>• Instruction retry logic<br/>• Alternative program paths"]
+            
+            GameStateErrorHandler --> GameRecoveryEngine["🎮 Game State Recovery Engine<br/>🔍 Analysis Phase:<br/>• Rollup health assessment<br/>• Session validity checking<br/>• Move history verification<br/>• State hash validation<br/>🔧 Recovery Actions:<br/>• Session restoration<br/>• State rollback to checkpoint<br/>• Emergency settlement<br/>• Compensation protocols"]
+        end
+        
+        subgraph RecoveryOutcomes["📊 Recovery Result Processing"]
+            TxRecoveryEngine --> TxRecoveryResult{📊 Transaction Recovery Result}
+            NetworkRecoveryEngine --> NetworkRecoveryResult{📊 Network Recovery Result}
+            ProgramRecoveryEngine --> ProgramRecoveryResult{📊 Program Recovery Result}
+            GameRecoveryEngine --> GameRecoveryResult{📊 Game Recovery Result}
+            
+            TxRecoveryResult -->|✅ Success| SuccessfulRecovery["✅ Recovery Successful<br/>• Transaction completed<br/>• User notified<br/>• Performance logged<br/>• Recovery time recorded<br/>• Success rate updated"]
+            
+            TxRecoveryResult -->|❌ Failed| EscalationRequired["❌ Escalation Required<br/>• Manual intervention needed<br/>• Support ticket creation<br/>• User compensation review<br/>• Technical team notification<br/>• Root cause analysis"]
+            
+            NetworkRecoveryResult -->|✅ Success| SuccessfulRecovery
+            NetworkRecoveryResult -->|❌ Failed| EscalationRequired
+            
+            ProgramRecoveryResult -->|✅ Success| SuccessfulRecovery
+            ProgramRecoveryResult -->|❌ Failed| EscalationRequired
+            
+            GameRecoveryResult -->|✅ Success| SuccessfulRecovery
+            GameRecoveryResult -->|❌ Failed| EscalationRequired
+        end
+    end
+    
+    subgraph PerformanceOptimization["⚡ Performance Optimization & Scaling"]
+        direction TB
+        
+        subgraph LoadManagement["⚖️ Intelligent Load Management"]
+            LoadMonitor["📊 Real-time Load Monitor<br/>• CPU utilization tracking<br/>• Memory usage analysis<br/>• Network bandwidth monitoring<br/>• Database connection pools<br/>• API request rates<br/>• User concurrency levels"]
+            
+            LoadMonitor --> LoadAnalyzer["🔍 Load Pattern Analyzer<br/>• Peak usage identification<br/>• Bottleneck detection<br/>• Resource utilization trends<br/>• Performance degradation prediction<br/>• Scalability requirement assessment<br/>• Cost optimization opportunities"]
+            
+            LoadAnalyzer --> ScalingDecisionEngine["⚙️ Scaling Decision Engine<br/>• Horizontal vs vertical scaling<br/>• Resource allocation optimization<br/>• Geographic distribution planning<br/>• Service mesh configuration<br/>• Auto-scaling trigger points<br/>• Performance target maintenance"]
+            
+            ScalingDecisionEngine --> AutoScalingActions["🔄 Automatic Scaling Actions<br/>• Container orchestration<br/>• Database replica scaling<br/>• CDN cache expansion<br/>• Load balancer adjustment<br/>• Geographic redundancy<br/>• Resource reallocation"]
+        end
+        
+        subgraph CachingStrategy["💾 Multi-tier Caching Strategy"]
+            L1Cache["⚡ L1 Cache Layer (Redis)<br/>📈 Performance Targets:<br/>• <1ms response time<br/>• 99.9% hit rate for hot data<br/>• 16GB memory allocation<br/>• Real-time data consistency<br/>📊 Cached Data Types:<br/>• Active game states<br/>• User session data<br/>• Betting pool information<br/>• Live odds calculations<br/>• Real-time leaderboards"]
+            
+            L2Cache["💾 L2 Cache Layer (Database)<br/>📈 Performance Targets:<br/>• <10ms response time<br/>• 95% hit rate for warm data<br/>• 1TB SSD storage<br/>• Eventual consistency model<br/>📊 Cached Data Types:<br/>• Historical game data<br/>• AI agent metadata<br/>• User profile information<br/>• Transaction history<br/>• Performance analytics"]
+            
+            L3Cache["☁️ L3 Cache Layer (CDN)<br/>📈 Performance Targets:<br/>• <100ms response time<br/>• Global edge distribution<br/>• 10TB storage capacity<br/>• 99.95% uptime SLA<br/>📊 Cached Data Types:<br/>• Static game assets<br/>• NFT metadata<br/>• Documentation<br/>• Archived game replays<br/>• Media content"]
+            
+            L1Cache --> L2Cache
+            L2Cache --> L3Cache
+            
+            CacheCoherence["🔄 Cache Coherence Manager<br/>• Invalidation strategies<br/>• Update propagation<br/>• Consistency guarantees<br/>• Version control<br/>• Conflict resolution<br/>• Performance monitoring"]
+            
+            L1Cache <--> CacheCoherence
+            L2Cache <--> CacheCoherence
+            L3Cache <--> CacheCoherence
+        end
+        
+        subgraph DatabaseOptimization["🗄️ Database Performance Optimization"]
+            DatabaseSharding["🔀 Intelligent Database Sharding<br/>📊 Sharding Strategy:<br/>• User-based partitioning<br/>• Geographic distribution<br/>• Load-based balancing<br/>• Temporal data separation<br/>• Cross-shard query optimization<br/>🔧 Shard Management:<br/>• Automatic rebalancing<br/>• Hot spot detection<br/>• Replica synchronization<br/>• Backup coordination<br/>• Performance monitoring"]
+            
+            QueryOptimization["🔍 Query Performance Optimization<br/>📈 Optimization Techniques:<br/>• Index strategy optimization<br/>• Query plan analysis<br/>• N+1 query elimination<br/>• Batch operation implementation<br/>• Materialized view management<br/>📊 Performance Metrics:<br/>• Query execution time<br/>• Index utilization rate<br/>• Cache hit ratios<br/>• Connection pool efficiency<br/>• Resource utilization"]
+            
+            ConnectionPooling["🔗 Advanced Connection Pooling<br/>⚙️ Pool Configuration:<br/>• Dynamic pool sizing<br/>• Connection health monitoring<br/>• Load-based allocation<br/>• Geographic distribution<br/>• Failover mechanisms<br/>📊 Performance Monitoring:<br/>• Connection utilization<br/>• Wait time analysis<br/>• Throughput optimization<br/>• Error rate tracking<br/>• Resource efficiency"]
+        end
+    end
+
+    %% ========== SYSTEM INTEGRATION FLOWS ==========
+    SuccessfulRecovery --> LoadMonitor
+    EscalationRequired --> LoadMonitor
+    AutoScalingActions --> CacheCoherence
+    QueryOptimization --> DatabaseSharding
+    ConnectionPooling --> QueryOptimization
+
+    %% ========== STYLING ==========
+    style SuccessfulRecovery fill:#c8e6c9
+    style EscalationRequired fill:#ffcdd2
+    style AutoScalingActions fill:#b3e5fc
+    style CacheCoherence fill:#e1f5fe
+    style DatabaseSharding fill:#f3e5f5
+    ```
+
+```mermaid
+flowchart LR
+    subgraph DecisionMatrix["🎯 Critical Decision Points in Architecture"]
+        direction TB
+        
+        UserDecisions[👤 User Decision Points<br/>• Wallet selection choice<br/>• Deposit method preference<br/>• Bet amount determination<br/>• Risk tolerance confirmation<br/>• Match selection criteria<br/>• Post-match actions]
+        
+        SystemDecisions[⚙️ System Decision Points<br/>• Compliance approval routing<br/>• Error recovery strategies<br/>• Scaling trigger activation<br/>• Cache invalidation timing<br/>• Security threat response<br/>• Performance optimization]
+        
+        BusinessDecisions[💼 Business Logic Decisions<br/>• Betting limit enforcement<br/>• Fee structure application<br/>• Reward distribution logic<br/>• Market making strategies<br/>• Risk management protocols<br/>• Compliance requirements]
+        
+        UserDecisions --> AlternatePaths[🛤️ Alternate Path Handling<br/>• Success flow continuation<br/>• Error recovery mechanisms<br/>• User preference accommodation<br/>• Compliance workarounds<br/>• Performance degradation graceful handling<br/>• Security incident response]
+        
+        SystemDecisions --> AlternatePaths
+        BusinessDecisions --> AlternatePaths
+        
+        AlternatePaths --> OutcomeOptimization[🎯 Outcome Optimization<br/>• User experience enhancement<br/>• System reliability improvement<br/>• Business metric optimization<br/>• Security posture strengthening<br/>• Performance target achievement<br/>• Compliance requirement satisfaction]
+    end
+```
+
+
+```mermaid
+flowchart TD
+    subgraph ErrorDetection["🔍 Error Detection & Classification System"]
+        ErrorTrigger["⚡ Error Event Triggered"] --> ErrorCapture["📥 Error Capture & Logging<br/>• Stack trace collection<br/>• Context preservation<br/>• User session data<br/>• Transaction state<br/>• Environmental factors"]
+        
+        ErrorCapture --> ErrorClassification["🏷️ Error Classification Engine<br/>• Error type analysis<br/>• Severity assessment<br/>• Impact evaluation<br/>• Recovery feasibility<br/>• User impact scope"]
+        
+        ErrorClassification --> ErrorType{🔍 Error Type Classification}
+        
+        ErrorType -->|💰 Transaction Error| TransactionErrorFlow["💰 Transaction Error Handling"]
+        ErrorType -->|🌐 Network Error| NetworkErrorFlow["🌐 Network Error Handling"]
+        ErrorType -->|⚙️ Program Error| ProgramErrorFlow["⚙️ Program Error Handling"]
+        ErrorType -->|🎮 Game State Error| GameStateErrorFlow["🎮 Game State Error Handling"]
+    end
+    
+    subgraph TransactionErrorHandling["💰 Transaction Error Recovery"]
+        TransactionErrorFlow --> TxErrorType{💰 Transaction Error Type}
+        
+        TxErrorType -->|💸 Insufficient Funds| InsufficientFundsHandler["💸 Insufficient Funds Recovery<br/>• Check actual balance<br/>• Calculate required amount<br/>• Suggest deposit options<br/>• Offer alternative amounts<br/>• Show funding methods"]
+        TxErrorType -->|⛽ Gas Fee Error| GasFeeErrorHandler["⛽ Gas Fee Error Recovery<br/>• Recalculate current gas<br/>• Adjust fee estimation<br/>• Suggest SOL deposit<br/>• Auto-retry with higher fee<br/>• Show network status"]
+        TxErrorType -->|🌐 Network Congestion| NetworkCongestionHandler["🌐 Network Congestion Recovery<br/>• Monitor network status<br/>• Implement retry backoff<br/>• Switch RPC endpoints<br/>• Queue transaction<br/>• Notify estimated delay"]
+        TxErrorType -->|📊 Slippage Exceeded| SlippageErrorHandler["📊 Slippage Error Recovery<br/>• Recalculate current price<br/>• Show new amount<br/>• Adjust slippage tolerance<br/>• Offer manual confirmation<br/>• Update market data"]
+        
+        InsufficientFundsHandler --> TxRecoveryAction["💰 Transaction Recovery Action"]
+        GasFeeErrorHandler --> TxRecoveryAction
+        NetworkCongestionHandler --> TxRecoveryAction
+        SlippageErrorHandler --> TxRecoveryAction
+        
+        TxRecoveryAction --> TxRetryDecision{🔄 Retry Transaction?}
+        TxRetryDecision -->|✅ Auto Retry| AutoRetryTx["🔄 Automatic Retry<br/>• Exponential backoff<br/>• Max 3 attempts<br/>• Updated parameters<br/>• Progress tracking<br/>• Timeout handling"]
+        TxRetryDecision -->|❌ Cancel| CancelTx["❌ Cancel Transaction<br/>• Rollback state<br/>• Release locked funds<br/>• User notification<br/>• Alternative suggestions<br/>• Support options"]
+        
+        AutoRetryTx --> TxRetryResult{📊 Retry Result}
+        TxRetryResult -->|✅ Success| TxRecoverySuccess["✅ Transaction Recovery Successful"]
+        TxRetryResult -->|❌ Failed| TxFinalFailure["❌ Transaction Final Failure<br/>• Log detailed error<br/>• Create support ticket<br/>• Refund if applicable<br/>• Alternative solutions<br/>• Escalation process"]
+    end
+    
+    subgraph GameStateErrorHandling["🎮 Game State Error Recovery"]
+        GameStateErrorFlow --> GameErrorType{🎮 Game Error Type}
+        
+        GameErrorType -->|🔄 State Desync| StateDeSyncHandler["🔄 State Desynchronization Recovery<br/>• Compare state hashes<br/>• Identify divergence point<br/>• Request state from peers<br/>• Rollback to known good state<br/>• Re-apply valid moves"]
+        GameErrorType -->|⏰ Session Timeout| SessionTimeoutHandler["⏰ Session Timeout Recovery<br/>• Check session validity<br/>• Attempt reconnection<br/>• Restore from checkpoint<br/>• Notify participants<br/>• Extend timeout if needed"]
+        GameErrorType -->|🌊 Rollup Failure| RollupFailureHandler["🌊 Rollup Failure Recovery<br/>• Detect rollup status<br/>• Fallback to mainnet<br/>• Emergency settlement<br/>• Preserve game state<br/>• Compensate participants"]
+        
+        StateDeSyncHandler --> GameRecoveryAction["🎮 Game Recovery Action"]
+        SessionTimeoutHandler --> GameRecoveryAction
+        RollupFailureHandler --> GameRecoveryAction
+        
+        GameRecoveryAction --> GameRecoveryResult{📊 Game Recovery Result}
+        GameRecoveryResult -->|✅ Recovered| GameRecoverySuccess["✅ Game State Recovery Successful"]
+        GameRecoveryResult -->|❌ Failed| GameRecoveryFailure["❌ Game Recovery Failed<br/>• Emergency game end<br/>• Fair compensation<br/>• Detailed explanation<br/>• Support escalation<br/>• Full refunds"]
+    end
+    
+    %% Error flow connections
+    TxRecoverySuccess --> ErrorResolution["✅ Error Successfully Resolved"]
+    TxFinalFailure --> EscalationProcess["📞 Escalation Process"]
+    GameRecoverySuccess --> ErrorResolution
+    GameRecoveryFailure --> EscalationProcess
+    CancelTx --> ErrorResolution
+    
+    ErrorResolution --> PostErrorAnalysis["📊 Post-Error Analysis<br/>• Root cause identification<br/>• Impact assessment<br/>• Process improvements<br/>• Prevention strategies<br/>• Documentation updates"]
+    
+    EscalationProcess --> ExternalSupport["🆘 External Support<br/>• Technical experts<br/>• Vendor assistance<br/>• Community resources<br/>• Legal consultation<br/>• Emergency funding"]
+    
+    %% Styling for error flows
+    style TxRecoverySuccess fill:#c8e6c9
+    style GameRecoverySuccess fill:#c8e6c9
+    style ErrorResolution fill:#c8e6c9
+    style TxFinalFailure fill:#ffcdd2
+    style GameRecoveryFailure fill:#ffcdd2
+    style EscalationProcess fill:#ffcdd2
+    style InsufficientFundsHandler fill:#fff9c4
+    style GasFeeErrorHandler fill:#fff9c4
+    style NetworkCongestionHandler fill:#fff9c4
+    style SlippageErrorHandler fill:#fff9c4
+    style StateDeSyncHandler fill:#fff9c4
+    style SessionTimeoutHandler fill:#fff9c4
+    style RollupFailureHandler fill:#fff9c4
+```
+
+```mermaid
+---
+config:
+  look: handDrawn
+  layout: dagre
+---
+flowchart TB
+ subgraph MagicBlockScaling["🌊 MagicBlock Rollup Scaling"]
+        LoadBalancer["⚖️ Intelligent Load Balancer<br>• Geographic routing<br>• Latency optimization<br>• Capacity monitoring<br>• Health checking<br>• Auto-scaling triggers"]
+        MB1["🌊 Rollup Cluster 1<br>🎮 Games 1-1000<br>🌍 Americas Region<br>⚡ &lt;50ms latency<br>💾 16GB memory pool"]
+        MB2["🌊 Rollup Cluster 2<br>🎮 Games 1001-2000<br>🌍 Europe/Africa Region<br>⚡ &lt;50ms latency<br>💾 16GB memory pool"]
+        MB3["🌊 Rollup Cluster 3<br>🎮 Games 2001-3000<br>🌍 Asia/Pacific Region<br>⚡ &lt;50ms latency<br>💾 16GB memory pool"]
+        MBN["🌊 Rollup Cluster N<br>🎮 Games N×1000<br>🌍 Dynamic Regions<br>⚡ Auto-provisioned<br>💾 Elastic scaling"]
+  end
+ subgraph CachingLayer["💾 Multi-tier Caching System"]
+        L1Cache["⚡ L1 Cache (Redis)<br>🔥 Hot data: &lt;1ms<br>🎮 Active game states<br>👤 User sessions<br>💰 Betting pools<br>📊 Real-time metrics"]
+        L2Cache["💾 L2 Cache (Database)<br>⚡ Warm data: &lt;10ms<br>📈 Historical statistics<br>🤖 AI agent metadata<br>🏆 Leaderboards<br>📊 Analytics data"]
+        L3Cache["☁️ L3 Cache (CDN)<br>⚡ Cold data: &lt;100ms<br>🖼️ Static assets<br>📄 Documentation<br>🎨 NFT metadata<br>📁 Archived replays"]
+  end
+ subgraph DatabaseSharding["🗄️ Database Sharding Strategy"]
+        ShardingLogic["🎯 Intelligent Sharding Logic<br>• User-based partitioning<br>• Geographic distribution<br>• Load balancing<br>• Cross-shard queries<br>• Replication strategy"]
+        UserShard1["👤 User Shard 1<br>🔤 Users A-H<br>🌍 Primary: US-East<br>🔄 Replica: US-West<br>💾 500GB capacity"]
+        UserShard2["👤 User Shard 2<br>🔤 Users I-P<br>🌍 Primary: EU-Central<br>🔄 Replica: EU-West<br>💾 500GB capacity"]
+        UserShard3["👤 User Shard 3<br>🔤 Users Q-Z<br>🌍 Primary: Asia-Pacific<br>🔄 Replica: Asia-Southeast<br>💾 500GB capacity"]
+        GameShard1["🎮 Game Data Shard 1<br>📅 Current games<br>⚡ High IOPS<br>🔄 Real-time replication<br>💾 1TB NVMe storage"]
+        GameShard2["🎮 Game Data Shard 2<br>📚 Historical games<br>💾 Archive optimized<br>🗜️ Compressed storage<br>💾 10TB HDD storage"]
+  end
+ subgraph AutoScaling["🔄 Auto-scaling Infrastructure"]
+        MetricsCollector["📊 Metrics Collection<br>• CPU utilization<br>• Memory usage<br>• Network throughput<br>• Response times<br>• Error rates<br>• User concurrency"]
+        ScalingEngine["⚙️ Scaling Decision Engine<br>• Threshold monitoring<br>• Predictive analytics<br>• Resource optimization<br>• Cost efficiency<br>• Performance targets"]
+        HorizontalScaling["↔️ Horizontal Scaling<br>• Add/remove instances<br>• Container orchestration<br>• Service mesh routing<br>• Load redistribution<br>• Zero-downtime deployment"]
+        VerticalScaling["↕️ Vertical Scaling<br>• CPU/Memory increase<br>• Storage expansion<br>• Network bandwidth<br>• Performance optimization<br>• Resource reallocation"]
+  end
+ subgraph ScalingStrategy["📈 Comprehensive Scaling Strategy"]
+        MagicBlockScaling
+        CachingLayer
+        DatabaseSharding
+        AutoScaling
+  end
+ subgraph PerformanceOptimization["⚡ Performance Optimization Techniques"]
+        ConnectionOptimization["🔗 Connection Optimization<br>• Connection pooling<br>• Keep-alive optimization<br>• WebSocket reuse<br>• Compression algorithms<br>• Protocol optimization"]
+        QueryOptimization["🔍 Query Optimization<br>• Index optimization<br>• Query plan analysis<br>• N+1 query prevention<br>• Batch operations<br>• Materialized views"]
+        CodeOptimization["⚙️ Code Optimization<br>• Hot path optimization<br>• Memory pool management<br>• Garbage collection tuning<br>• Async processing<br>• Parallel execution"]
+        NetworkOptimization["🌐 Network Optimization<br>• CDN utilization<br>• Edge computing<br>• Compression protocols<br>• Bandwidth optimization<br>• Latency reduction"]
+  end
+    LoadBalancer --> MB1 & MB2 & MB3 & MBN
+    L1Cache --> L2Cache
+    L2Cache --> L3Cache
+    ShardingLogic --> UserShard1 & UserShard2 & UserShard3
+    MetricsCollector --> ScalingEngine
+    ScalingEngine --> HorizontalScaling & VerticalScaling
+    MagicBlockScaling --> CachingLayer
+    CachingLayer --> DatabaseSharding
+    DatabaseSharding --> AutoScaling
+    AutoScaling --> PerformanceOptimization
+```

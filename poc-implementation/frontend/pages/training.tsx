@@ -18,7 +18,7 @@ import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Transaction, SystemProgram, TransactionInstruction } from '@solana/web3.js';
 import { 
   CpuChipIcon, 
   PlayIcon, 
@@ -204,7 +204,7 @@ interface TrainingResult {
 
 const TrainingPage: React.FC = () => {
   const router = useRouter();
-  const { connected, publicKey } = useWallet();
+  const { connected, publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
   
   // User Story 7: Training workflow state
@@ -236,6 +236,19 @@ const TrainingPage: React.FC = () => {
   const [result, setResult] = useState<TrainingResult | null>(null);
   const [mounted, setMounted] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  // User Story 8: fee estimate and payment
+  const [estimatedMinutes, setEstimatedMinutes] = useState<number | null>(null);
+  const [estimatedHours, setEstimatedHours] = useState<number | null>(null);
+  const [feeQuote, setFeeQuote] = useState<{
+    totalLamports: number;
+    totalSOL: number;
+    treasuryShareLamports: number;
+    providerShareLamports: number;
+    providerRewardBps: number;
+  } | null>(null);
+  const [paymentRetryCount, setPaymentRetryCount] = useState(0);
+  const [paymentSignatures, setPaymentSignatures] = useState<string[]>([]);
+  const [isPaying, setIsPaying] = useState(false);
 
   // GI.md Compliance: Proper lifecycle management
   useEffect(() => {
@@ -257,29 +270,38 @@ const TrainingPage: React.FC = () => {
   // GI.md Compliance: Real API integration - Load owned AI agent NFTs
   const loadOwnedAgents = async () => {
     if (!publicKey) return;
-    
     setIsLoadingAgents(true);
     try {
-      const response = await axios.get(`${apiConfig.baseUrl}/api/agents/owned/${publicKey.toString()}`, {
+      const response = await axios.get(`${apiConfig.baseUrl}/api/training/owned-agents`, {
+        params: { walletAddress: publicKey.toString() },
         timeout: 10000,
         headers: { 'Accept': 'application/json' }
       });
-      
-      const agents: AgentNFT[] = response.data.agents || [];
+      const rawAgents = response.data?.data || response.data?.agents || [];
+      const agents: AgentNFT[] = rawAgents.map((a: any) => ({
+        mint: a.mint,
+        name: a.name || `AI Agent ${String(a.mint).slice(0, 6)}`,
+        image: a.image,
+        description: a.description,
+        attributes: a.attributes,
+        verified: !!a.verified,
+        owner: a.onChainData?.owner || publicKey.toString(),
+        onChainData: {
+          mint: a.onChainData?.mint || a.mint,
+          owner: a.onChainData?.owner || publicKey.toString(),
+          verified: !!a.onChainData?.verified || !!a.verified,
+          lastVerified: a.onChainData?.lastVerified || new Date().toISOString(),
+          isLocked: !!a.onChainData?.isLocked,
+          currentTrainingSession: a.onChainData?.currentTrainingSession,
+        }
+      }));
       setOwnedAgents(agents);
-      
       if (agents.length === 0) {
-        toast.error('No AI agent NFTs found in your wallet', {
-          icon: '🤖',
-          duration: 5000,
-        });
+        toast.error('No AI agent NFTs found in your wallet', { icon: '🤖', duration: 5000 });
       }
     } catch (error: any) {
       console.error('Failed to load owned agents:', error);
-      toast.error('Failed to load your AI agents', {
-        icon: '❌',
-        duration: 5000,
-      });
+      toast.error('Failed to load your AI agents', { icon: '❌', duration: 5000 });
     } finally {
       setIsLoadingAgents(false);
     }
@@ -289,31 +311,40 @@ const TrainingPage: React.FC = () => {
   const loadMatchReplays = async (agentMint: string) => {
     setIsLoadingReplays(true);
     try {
-      const response = await axios.get(`${apiConfig.baseUrl}/api/replays/agent/${agentMint}`, {
+      const response = await axios.get(`${apiConfig.baseUrl}/api/training/match-replays`, {
+        params: { agentMint, walletAddress: publicKey?.toString(), limit: 50 },
         timeout: 15000,
         headers: { 'Accept': 'application/json' }
       });
-      
-      const replays: MatchReplay[] = response.data.replays || [];
+      const raw = response.data?.data || response.data?.replays || [];
+      const replays: MatchReplay[] = raw.map((r: any) => ({
+        replayId: r.replayId || r.id,
+        magicBlockHash: r.magicBlockHash || r.commitment || r.onChainReference?.commitment,
+        commitment: r.magicBlockHash || r.commitment,
+        agentMint: r.agentMint || agentMint,
+        opponentMint: r.opponent?.mint || '',
+        opponent: { name: r.opponent?.name || 'Unknown', rating: r.opponent?.rating, mint: r.opponent?.mint || '' },
+        date: r.date || r.metadata?.recordedAt,
+        timestamp: r.timestamp || (r.date ? new Date(r.date).getTime() : Date.now()),
+        result: r.result || 'loss',
+        opening: r.opening || 'unknown',
+        moves: r.moves || r.gameData?.moveCount || 0,
+        duration: r.duration || r.gameData?.gameDuration || 0,
+        gameType: r.gameType || 'ranked',
+        onChainVerified: !!(r.metadata?.onChain || r.metadata?.verified),
+        magicBlockRollup: !!(r.metadata?.magicBlockRollup),
+        compressed: !!(r.metadata?.compressed),
+        metadata: r.metadata || {},
+      }));
       setMatchReplays(replays);
-      
       if (replays.length === 0) {
-        toast.error('No match replays found for this agent', {
-          icon: '📼',
-          duration: 5000,
-        });
+        toast.error('No match replays found for this agent', { icon: '📼', duration: 5000 });
       } else {
-        toast.success(`Found ${replays.length} match replays`, {
-          icon: '📼',
-          duration: 3000,
-        });
+        toast.success(`Found ${replays.length} match replays`, { icon: '📼', duration: 3000 });
       }
     } catch (error: any) {
       console.error('Failed to load match replays:', error);
-      toast.error('Failed to load match replays', {
-        icon: '❌',
-        duration: 5000,
-      });
+      toast.error('Failed to load match replays', { icon: '❌', duration: 5000 });
       setMatchReplays([]);
     } finally {
       setIsLoadingReplays(false);
@@ -516,6 +547,78 @@ const TrainingPage: React.FC = () => {
     setResult(null);
     
     try {
+      // User Story 8: Pay training fee first (devnet transfer to treasury and provider)
+      try {
+        const hours = estimatedHours || ((selectedReplays.length * trainingParams.epochs) / 600);
+        const payPlanResp = await axios.post(`${apiConfig.baseUrl}/api/training/fee/pay`, {
+          walletPubkey: publicKey.toString(),
+          trainingHours: hours,
+        }, { timeout: 15000 });
+        const plan = payPlanResp.data?.paymentPlan as Array<{ to: string; amountLamports: number; reason: string }>;
+        if (!Array.isArray(plan) || plan.length === 0) throw new Error('Payment plan unavailable');
+        const recent = await connection.getLatestBlockhash('confirmed');
+        const tx = new Transaction({ feePayer: publicKey!, recentBlockhash: recent.blockhash });
+        // Compact memo for fee payment record: f|hrs|lamports|ts
+        const totalLamports = plan.reduce((s, p) => s + (p.amountLamports || 0), 0);
+        const memoStr = `f|${(hours || 0).toFixed(2)}|${totalLamports}|${Math.floor(Date.now()/1000)}`;
+        const memoIx = new TransactionInstruction({
+          keys: [{ pubkey: publicKey!, isSigner: true, isWritable: false }],
+          programId: new PublicKey(process.env.NEXT_PUBLIC_MEMO_PROGRAM_ID || 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'),
+          data: Buffer.from(memoStr, 'utf8')
+        });
+        tx.add(memoIx);
+        for (const step of plan) {
+          tx.add(SystemProgram.transfer({ fromPubkey: publicKey!, toPubkey: new PublicKey(step.to), lamports: step.amountLamports }));
+        }
+        const sig = await sendTransaction(tx, connection, { skipPreflight: false, preflightCommitment: 'confirmed' });
+        await connection.confirmTransaction({ signature: sig, ...recent }, 'confirmed');
+        setPaymentSignatures([sig]);
+        // Verify payment
+        await axios.post(`${apiConfig.baseUrl}/api/training/fee/verify`, {
+          signatures: [sig],
+          expectedTotalLamports: totalLamports
+        }, { timeout: 15000 });
+      } catch (feeErr: any) {
+        // Retry once on transient errors
+        if (paymentRetryCount < 1) {
+          setPaymentRetryCount((c) => c + 1);
+          toast.loading('Retrying fee payment...', { duration: 2000 });
+          try {
+            const hours = estimatedHours || ((selectedReplays.length * trainingParams.epochs) / 600);
+            const payPlanResp = await axios.post(`${apiConfig.baseUrl}/api/training/fee/pay`, {
+              walletPubkey: publicKey.toString(),
+              trainingHours: hours,
+            }, { timeout: 15000 });
+            const plan = payPlanResp.data?.paymentPlan as Array<{ to: string; amountLamports: number; reason: string }>;
+            if (!Array.isArray(plan) || plan.length === 0) throw new Error('Payment plan unavailable');
+            const recent = await connection.getLatestBlockhash('confirmed');
+            const tx = new Transaction({ feePayer: publicKey!, recentBlockhash: recent.blockhash });
+            const totalLamports = plan.reduce((s, p) => s + (p.amountLamports || 0), 0);
+            const memoStr = `f|${(hours || 0).toFixed(2)}|${totalLamports}|${Math.floor(Date.now()/1000)}`;
+            const memoIx = new TransactionInstruction({
+              keys: [{ pubkey: publicKey!, isSigner: true, isWritable: false }],
+              programId: new PublicKey(process.env.NEXT_PUBLIC_MEMO_PROGRAM_ID || 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'),
+              data: Buffer.from(memoStr, 'utf8')
+            });
+            tx.add(memoIx);
+            for (const step of plan) {
+              tx.add(SystemProgram.transfer({ fromPubkey: publicKey!, toPubkey: new PublicKey(step.to), lamports: step.amountLamports }));
+            }
+            const sig = await sendTransaction(tx, connection, { skipPreflight: false, preflightCommitment: 'confirmed' });
+            await connection.confirmTransaction({ signature: sig, ...recent }, 'confirmed');
+            setPaymentSignatures([sig]);
+            await axios.post(`${apiConfig.baseUrl}/api/training/fee/verify`, {
+              signatures: [sig],
+              expectedTotalLamports: totalLamports
+            }, { timeout: 15000 });
+          } catch (retryErr: any) {
+            throw new Error(retryErr?.response?.data?.error || retryErr?.message || 'Training fee payment failed');
+          }
+        } else {
+          throw new Error(feeErr?.response?.data?.error || feeErr?.message || 'Training fee payment failed');
+        }
+      }
+
       // GI.md Compliance: Real API endpoint with all required fields
       const trainingRequest = {
         walletPubkey: publicKey.toString(),
@@ -566,12 +669,7 @@ const TrainingPage: React.FC = () => {
                           error.message || 
                           'Unknown error occurred';
       
-      setResult({
-        success: false,
-        signature: '',
-        sessionPda: '',
-        error: errorMessage
-      });
+      setResult({ success: false, signature: '', sessionPda: '', error: errorMessage });
       
       toast.error(`Training failed: ${errorMessage}`, {
         icon: '❌',
@@ -583,6 +681,38 @@ const TrainingPage: React.FC = () => {
   };
 
   // Navigation between steps
+  const prepareFeeEstimateAndQuote = async () => {
+    try {
+      const replayCount = selectedReplays.length || trainingParams.maxMatches;
+      const est = await axios.get(`${apiConfig.baseUrl}/api/training/fee/estimate`, {
+        params: {
+          focusArea: trainingParams.focusArea,
+          intensity: trainingParams.intensity,
+          maxMatches: trainingParams.maxMatches,
+          replayCount
+        },
+        timeout: 10000
+      });
+      const minutes = Number(est.data?.minutes || 0);
+      const hours = Number(est.data?.hours || 0);
+      setEstimatedMinutes(isFinite(minutes) && minutes > 0 ? Math.ceil(minutes) : 30);
+      setEstimatedHours(isFinite(hours) && hours > 0 ? hours : 0.5);
+      const q = await axios.get(`${apiConfig.baseUrl}/api/training/fee/quote`, { params: { trainingHours: hours || 0.5 }, timeout: 10000 });
+      const quote = q.data?.quote;
+      if (quote) {
+        setFeeQuote({
+          totalLamports: quote.totalLamports,
+          totalSOL: quote.totalSOL,
+          treasuryShareLamports: quote.treasuryShareLamports,
+          providerShareLamports: quote.providerShareLamports,
+          providerRewardBps: quote.providerRewardBps,
+        });
+      }
+    } catch (_) {
+      // ignore; UI will show defaults
+    }
+  };
+
   const handleNextStep = () => {
     switch (currentStep) {
       case 'select-agent':
@@ -598,6 +728,7 @@ const TrainingPage: React.FC = () => {
       case 'configure-params':
         const errors = validateTrainingConfig();
         if (errors.length === 0) {
+          void prepareFeeEstimateAndQuote();
           setCurrentStep('review-submit');
         } else {
           setValidationErrors(errors);
@@ -627,6 +758,12 @@ const TrainingPage: React.FC = () => {
     setSelectedReplays([]);
     setResult(null);
     setValidationErrors([]);
+    setEstimatedMinutes(null);
+    setEstimatedHours(null);
+    setFeeQuote(null);
+    setPaymentSignatures([]);
+    setPaymentRetryCount(0);
+    setIsPaying(false);
   };
 
   // GI.md Compliance: SSR-safe rendering
@@ -1292,21 +1429,34 @@ const TrainingPage: React.FC = () => {
                               <span className="text-gray-400">Estimated Time:</span>
                               <span className="text-white">~{Math.ceil(selectedReplays.length * trainingParams.epochs / 10)} minutes</span>
                             </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-400">Base Fee:</span>
-                              <span className="text-white">0.01 SOL</span>
-                            </div>
-                            {trainingParams.priorityBoost && (
+                            {feeQuote ? (
+                              <>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Total Fee (SOL):</span>
+                                  <span className="text-white">{(feeQuote.totalSOL || 0).toFixed(4)} SOL</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-gray-400">Treasury (80%):</span>
+                                  <span className="text-gray-300">{(feeQuote.treasuryShareLamports / 1_000_000_000).toFixed(4)} SOL</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-gray-400">Compute Provider (20%):</span>
+                                  <span className="text-gray-300">{(feeQuote.providerShareLamports / 1_000_000_000).toFixed(4)} SOL</span>
+                                </div>
+                              </>
+                            ) : (
                               <div className="flex justify-between">
-                                <span className="text-gray-400">Priority Fee:</span>
-                                <span className="text-purple-400">+0.005 SOL</span>
+                                <span className="text-gray-400">Total Fee (est.):</span>
+                                <span className="text-white">Calculating...</span>
                               </div>
                             )}
                             <div className="border-t border-gray-600 pt-2">
-                              <div className="flex justify-between font-medium">
-                                <span className="text-gray-300">Total Cost:</span>
-                                <span className="text-white">{trainingParams.priorityBoost ? '0.015' : '0.01'} SOL</span>
-                              </div>
+                              {feeQuote && (
+                                <div className="flex justify-between font-medium">
+                                  <span className="text-gray-300">Payable Now:</span>
+                                  <span className="text-white">{(feeQuote.totalSOL || 0).toFixed(4)} SOL</span>
+                                </div>
+                              )}
                             </div>
                           </div>
 

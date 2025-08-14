@@ -8,13 +8,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
+// Use require to avoid hard dependency on @types/express in environments where it may be unavailable
+// and define lightweight aliases to satisfy strict typing.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const express = require('express');
 const logger_1 = require("../utils/logger");
 const errorHandler_1 = require("../middleware/errorHandler");
 const crypto_1 = __importDefault(require("crypto"));
-const router = (0, express_1.Router)();
 // In-memory storage for rooms (in production, this would be a database)
 const rooms = new Map();
+const router = express.Router();
 /**
  * POST /api/v1/rooms - Create a new battle room
  * Implements User Story 10 on-chain requirements:
@@ -175,11 +178,36 @@ router.get('/:sessionId', async (req, res, next) => {
     }
 });
 /**
+ * GET /api/v1/rooms/code/:roomCode - Lookup room by human-readable code
+ */
+router.get('/code/:roomCode', async (req, res, next) => {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const roomService = require('../services/rooms-devnet.js');
+        const { roomCode } = req.params;
+        if (!roomCode) {
+            throw (0, errorHandler_1.createError)('Room code is required', 400);
+        }
+        const record = roomService.readRoomByCode?.(roomCode);
+        if (!record) {
+            throw (0, errorHandler_1.createError)('Room not found', 404);
+        }
+        const expiresAt = new Date(new Date(record.createdAt).getTime() + 24 * 60 * 60 * 1000);
+        if (expiresAt < new Date()) {
+            throw (0, errorHandler_1.createError)('Room has expired', 410);
+        }
+        res.json({ success: true, room: record });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+/**
  * GET /api/v1/rooms - List active rooms
  */
 router.get('/', async (req, res, next) => {
     try {
-        const { status, page = 1, limit = 10 } = req.query;
+        const { status, page = 1, limit = 10, variant, aiDifficulty } = req.query;
         // Filter rooms
         let filteredRooms = Array.from(rooms.values());
         // Remove expired rooms
@@ -194,6 +222,14 @@ router.get('/', async (req, res, next) => {
         // Filter by status if provided
         if (status && typeof status === 'string') {
             filteredRooms = filteredRooms.filter(room => room.status === status);
+        }
+        // Filter by rule variations (board variant)
+        if (variant && typeof variant === 'string') {
+            filteredRooms = filteredRooms.filter(room => (room.settings?.boardVariant || '').toLowerCase() === variant.toLowerCase());
+        }
+        // Filter by AI difficulty if encoded in settings
+        if (aiDifficulty && typeof aiDifficulty === 'string') {
+            filteredRooms = filteredRooms.filter(room => (room.settings?.aiDifficulty || '').toLowerCase() === aiDifficulty.toLowerCase());
         }
         // Pagination
         const pageNum = Math.max(1, Number(page));
@@ -210,7 +246,8 @@ router.get('/', async (req, res, next) => {
                 timeControl: room.settings.timeControl,
                 boardVariant: room.settings.boardVariant,
                 tournamentMode: room.settings.tournamentMode,
-                allowSpectators: room.settings.allowSpectators
+                allowSpectators: room.settings.allowSpectators,
+                aiDifficulty: room.settings.aiDifficulty || null
             },
             entry: {
                 minElo: room.entry.minElo,
@@ -307,6 +344,71 @@ router.post('/:sessionId/join', async (req, res, next) => {
             sessionId: req.params.sessionId,
             body: req.body
         });
+        next(error);
+    }
+});
+// Devnet real join flow: build and confirm wallet-signed transactions
+router.post('/:sessionId/join/build-tx', async (req, res, next) => {
+    try {
+        // Lazy import JS service to avoid TS typing issues
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const joinService = require('../services/join-room-devnet.js');
+        const { sessionId } = req.params;
+        const { userPubkey } = req.body;
+        if (!sessionId || !userPubkey) {
+            throw (0, errorHandler_1.createError)('sessionId and userPubkey are required', 400);
+        }
+        const built = await joinService.buildJoinTransaction({ sessionId, userPubkey });
+        res.json({ success: true, ...built });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+router.post('/:sessionId/join/confirm', async (req, res, next) => {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const joinService = require('../services/join-room-devnet.js');
+        const { sessionId } = req.params;
+        const { userPubkey, signature } = req.body;
+        if (!sessionId || !userPubkey || !signature) {
+            throw (0, errorHandler_1.createError)('sessionId, userPubkey, signature are required', 400);
+        }
+        const result = await joinService.confirmJoin({ sessionId, userPubkey, signature });
+        res.json({ success: true, ...result });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+router.get('/:sessionId/escrow', async (req, res, next) => {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const joinService = require('../services/join-room-devnet.js');
+        const { sessionId } = req.params;
+        const escrow = joinService.getEscrowAddress(sessionId);
+        res.json({ success: true, sessionId, escrow });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+/**
+ * GET /api/v1/rooms/:sessionId/countdown - Get match countdown state if present
+ */
+router.get('/:sessionId/countdown', async (req, res, next) => {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const roomService = require('../services/rooms-devnet.js');
+        const { sessionId } = req.params;
+        const record = roomService.readRoomBySessionId?.(sessionId);
+        if (!record) {
+            throw (0, errorHandler_1.createError)('Room not found', 404);
+        }
+        const countdown = record.countdown || null;
+        res.json({ success: true, sessionId, countdown });
+    }
+    catch (error) {
         next(error);
     }
 });

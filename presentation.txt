@@ -1,0 +1,71 @@
+Set Up Your Environment
+
+Install VS Code (for Copilot) or download Cursor.
+Enable Copilot in VS Code (via GitHub login) or use Cursor's built-in AI.
+Install python-pptx: Open a terminal in your IDE and run pip install python-pptx.
+Create a new Python file, e.g., generate_pitch_deck.py.
+
+
+Prepare Your Content
+
+Structure it simply, e.g., in content.json:
+text[
+  {"title": "Problem", "bullets": ["Issue 1", "Issue 2"]},
+  {"title": "Solution", "bullets": ["Fix 1", "Fix 2"]}
+]
+
+Or use plain text/Markdown and parse it in code.
+
+
+Write the Script with AI Assistance
+
+In your IDE, start typing and let the AI suggest/complete. Prompt example (type as a comment): "# Write a Python script using python-pptx to create a PPTX pitch deck from JSON content. Add one slide per section with title and bullets."
+Sample script (AI-generated and verified via examples):
+pythonfrom pptx import Presentation
+import json
+
+# Load your content
+with open('content.json', 'r') as f:
+    slides_data = json.load(f)
+
+# Create presentation
+prs = Presentation()  # Or load a template: Presentation('template.pptx')
+
+for slide_info in slides_data:
+    # Add a title and content slide (layout index 1)
+    slide_layout = prs.slide_layouts[1]
+    slide = prs.slides.add_slide(slide_layout)
+    
+    # Add title
+    title = slide.shapes.title
+    title.text = slide_info['title']
+    
+    # Add bullets to content placeholder
+    body_shape = slide.placeholders[1]
+    tf = body_shape.text_frame
+    for bullet in slide_info['bullets']:
+        p = tf.add_paragraph()
+        p.text = bullet
+
+# Save the deck
+prs.save('pitch_deck.pptx')
+print("Pitch deck generated!")
+
+In Cursor: Use Cmd+I on a selection to refine (e.g., "Add images to slides"). In Copilot: Tab-complete suggestions.
+Run the script: python generate_pitch_deck.py.
+
+
+
+
+Customize and Iterate
+
+Add images: Use AI to suggest code like slide.shapes.add_picture('image.jpg', left, top, width, height).
+Themes: Start with a blank template.pptx for branding, then load it in the script.
+Test: Generate one slide first, open in PowerPoint, tweak manually if needed.
+Tips from users: "Work file by file; generate, test, and review in small chunks." Use Cursor's @git for version control.
+
+
+Run and Output
+
+The script outputs pitch_deck.pptx. Open in PowerPoint/Google Slides for final touches.
+Time: 10-30 minutes for setup; seconds to regenerate with new content.

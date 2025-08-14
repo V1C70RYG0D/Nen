@@ -2,10 +2,13 @@
   "name": "nen-smart-contracts-tests",
   "version": "1.0.0",
   "description": "Comprehensive testing suite for Nen Platform smart contracts",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "anchor test",
-  "verify:user-story-2": "node scripts/verify-user-story-2-onchain.js",
+    "test:anchor": "ts-mocha -p ./tsconfig.json -t 1000000 tests/anchor/*.ts",
+    "test:anchor:coverage": "nyc --include 'tests/anchor/**/*.ts' --all npm run test:anchor",
+    "verify:user-story-2": "node scripts/verify-user-story-2-onchain.js",
     "test:unit": "mocha --require ts-node/register tests/unit/**/*.test.ts",
     "test:integration": "mocha --require ts-node/register tests/integration/**/*.test.ts",
     "test:security": "mocha --require ts-node/register tests/security/**/*.test.ts",
@@ -62,6 +65,7 @@
     "chai": "^4.4.1",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
+    "ts-mocha": "^11.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },

@@ -9,7 +9,7 @@ require('dotenv').config();
 
 const express = require('express');
 const router = express.Router();
-const { Connection, PublicKey } = require('@solana/web3.js');
+const { Connection, PublicKey, LAMPORTS_PER_SOL, SystemProgram } = require('@solana/web3.js');
 const trainingService = require('../services/training-devnet.js');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
@@ -20,6 +20,10 @@ const axios = require('axios');
 const SOLANA_RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
 const MAGICBLOCK_API_BASE = process.env.MAGICBLOCK_API_BASE || 'https://api.devnet.magicblock.app';
 const TRAINING_SESSION_FEE_SOL = parseFloat(process.env.TRAINING_SESSION_FEE_SOL || '0.1');
+const TRAINING_BASE_RATE_LAMPORTS_PER_HOUR = parseInt(process.env.TRAINING_BASE_RATE_LAMPORTS_PER_HOUR || `${0.05 * 1_000_000_000}`, 10);
+const TREASURY_PUBLIC_KEY = process.env.TREASURY_PUBLIC_KEY || process.env.NEXT_PUBLIC_TREASURY_PUBLIC_KEY || '';
+const COMPUTE_PROVIDER_REWARD_BPS = parseInt(process.env.COMPUTE_PROVIDER_REWARD_BPS || '200', 10); // 20%
+const DEFAULT_COMPUTE_PROVIDER_PUBLIC_KEY = process.env.COMPUTE_PROVIDER_PUBLIC_KEY || '';
 const MAX_REPLAY_SELECTION_COUNT = parseInt(process.env.MAX_REPLAY_SELECTION_COUNT || '50');
 const MIN_REPLAY_SELECTION_COUNT = parseInt(process.env.MIN_REPLAY_SELECTION_COUNT || '1');
 const MAGICBLOCK_REPLAY_DB_FILE = process.env.MAGICBLOCK_REPLAY_DB_FILE || path.resolve(process.cwd(), 'magicblock-replay-database.json');
@@ -39,6 +43,39 @@ function loadReplayDb() {
     return replayDbCache || { wallet: null, agents: [], replays: [] };
   } catch (e) {
     return { wallet: null, agents: [], replays: [] };
+  }
+}
+
+// Helper: resolve nen_core program id (from env or IDL file)
+function resolveNenCoreProgramIdString() {
+  const fromEnv = process.env.NEN_CORE_PROGRAM_ID;
+  if (fromEnv) return fromEnv;
+  try {
+    const candidates = [
+      path.join(process.cwd(), 'backend', 'lib', 'idl', 'nen_core.json'),
+      path.join(process.cwd(), 'lib', 'idl', 'nen_core.json')
+    ];
+    for (const p of candidates) {
+      if (fs.existsSync(p)) {
+        const idl = JSON.parse(fs.readFileSync(p, 'utf8'));
+        const addr = idl?.metadata?.address;
+        if (addr) return addr;
+      }
+    }
+  } catch (_) {}
+  return null;
+}
+
+// Helper: resolve treasury recipient address (env wins; else derive PDA with seed "treasury")
+async function resolveTreasuryRecipient() {
+  if (TREASURY_PUBLIC_KEY) return TREASURY_PUBLIC_KEY;
+  const programIdStr = resolveNenCoreProgramIdString();
+  if (!programIdStr) return null;
+  try {
+    const [pda] = await PublicKey.findProgramAddress([Buffer.from('treasury')], new PublicKey(programIdStr));
+    return pda.toBase58();
+  } catch (_) {
+    return null;
   }
 }
 
@@ -392,7 +429,8 @@ router.post('/sessions/replay-based', async (req, res) => {
       walletPubkey,
       agentMint,
       selectedReplays, // Array of replay IDs/hashes
-      trainingParams
+      trainingParams,
+      clientSessionId
     } = req.body;
 
     // Validation
@@ -435,7 +473,7 @@ router.post('/sessions/replay-based', async (req, res) => {
     const stakeValidation = await trainingService.validateNENStakeForPriority(walletPubkey);
 
     // Create training session record with replay references
-    const sessionId = uuidv4();
+    const sessionId = clientSessionId || uuidv4();
     // Map replay IDs to commitment hashes from DB if present
     const db = loadReplayDb();
     const commitmentIndex = new Map();
@@ -465,9 +503,10 @@ router.post('/sessions/replay-based', async (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    // Create on-chain training session record (Anchor)
+    // Create on-chain training session record (Anchor or memo fallback handled in service)
     const payer = trainingService.loadServiceKeypair();
     let sessionPdaBase58 = null;
+    let anchorRes = null;
     try {
       // Build a single aggregate commitment (32 bytes hex) from selected replay references
       const crypto = require('crypto');
@@ -476,7 +515,7 @@ router.post('/sessions/replay-based', async (req, res) => {
         .update(sessionData.selectedReplays.map(r => r.magicBlockHash || r.replayId).join(','))
         .digest('hex');
       const replayCommitments = [ `0x${aggHashHex}` ];
-      const anchorRes = await trainingService.createTrainingSessionOnChain({
+      anchorRes = await trainingService.createTrainingSessionOnChain({
         walletPubkey,
         agentMint,
         sessionId,
@@ -512,9 +551,9 @@ router.post('/sessions/replay-based', async (req, res) => {
       signature = await trainingService.sendMemoWithSession(connection, payer, memoStr);
     }
     
-  sessionData.tx = signature;
-  if (sessionPdaBase58) sessionData.sessionPda = sessionPdaBase58;
-  if (signature) sessionData.explorer = trainingService.explorerTx(signature);
+    sessionData.tx = signature;
+    if (sessionPdaBase58) sessionData.sessionPda = sessionPdaBase58;
+    if (signature && !signature.startsWith('DISABLED_MEMO_')) sessionData.explorer = trainingService.explorerTx(signature);
 
     // Save session to storage
     trainingService.saveSession(sessionData);
@@ -735,3 +774,203 @@ function calculateEstimatedCompletionTime(params, replayCount) {
 }
 
 module.exports = router;
+
+/**
+ * Fee Quote and Payment Endpoints for User Story 8
+ * - GET /api/training/fee/quote: returns fee breakdown for base_rate × training_hours
+ * - POST /api/training/fee/pay: processes payment on devnet to treasury and compute provider
+ */
+
+// GET /api/training/fee/quote
+router.get('/fee/quote', async (req, res) => {
+  try {
+    const hours = parseFloat(req.query.trainingHours || req.query.hours || '1');
+    if (Number.isNaN(hours) || hours <= 0) {
+      return res.status(400).json({ success: false, error: 'Invalid trainingHours' });
+    }
+    // base_rate × training_hours
+    const baseRateLamportsPerHour = TRAINING_BASE_RATE_LAMPORTS_PER_HOUR;
+    const totalLamports = Math.ceil(baseRateLamportsPerHour * hours);
+    const providerShareLamports = Math.floor((totalLamports * COMPUTE_PROVIDER_REWARD_BPS) / 10_000);
+    const treasuryShareLamports = totalLamports - providerShareLamports;
+    const treasuryRecipient = await resolveTreasuryRecipient();
+    return res.json({
+      success: true,
+      quote: {
+        hours,
+        baseRateLamportsPerHour,
+        totalLamports,
+        totalSOL: totalLamports / LAMPORTS_PER_SOL,
+        treasuryShareLamports,
+        treasuryShareSOL: treasuryShareLamports / LAMPORTS_PER_SOL,
+        providerShareLamports,
+        providerShareSOL: providerShareLamports / LAMPORTS_PER_SOL,
+        providerRewardBps: COMPUTE_PROVIDER_REWARD_BPS,
+      },
+      treasury: treasuryRecipient || null
+    });
+  } catch (e) {
+    return res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+// GET /api/training/fee/estimate
+// Params: focusArea, intensity, maxMatches, replayCount
+router.get('/fee/estimate', async (req, res) => {
+  try {
+    const { focusArea = 'all', intensity = 'medium', maxMatches = '10', replayCount = '10' } = req.query;
+    const params = {
+      focusArea,
+      intensity,
+      maxMatches: parseInt(maxMatches, 10) || 10,
+    };
+    const minutes = calculateEstimatedCompletionTime({
+      intensity: params.intensity,
+      maxMatches: params.maxMatches,
+      focusArea: params.focusArea,
+    }, parseInt(replayCount, 10) || params.maxMatches);
+    const hours = minutes / 60;
+    return res.json({ success: true, minutes, hours });
+  } catch (e) {
+    return res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+// POST /api/training/fee/pay
+// Body: { walletPubkey, trainingHours, providerPubkey }
+router.post('/fee/pay', async (req, res) => {
+  const startTime = Date.now();
+  try {
+    const { walletPubkey, trainingHours, providerPubkey } = req.body || {};
+    if (!walletPubkey || !trainingHours) {
+      return res.status(400).json({ success: false, error: 'walletPubkey and trainingHours are required' });
+    }
+    const treasuryRecipient = await resolveTreasuryRecipient();
+    if (!treasuryRecipient) {
+      return res.status(500).json({ success: false, error: 'Treasury not configured or derivation failed' });
+    }
+
+    const hours = parseFloat(trainingHours);
+    if (Number.isNaN(hours) || hours <= 0) {
+      return res.status(400).json({ success: false, error: 'Invalid trainingHours' });
+    }
+
+    // Compute amounts
+    const baseRate = TRAINING_BASE_RATE_LAMPORTS_PER_HOUR;
+    const totalLamports = Math.ceil(baseRate * hours);
+    const providerShareLamports = Math.floor((totalLamports * COMPUTE_PROVIDER_REWARD_BPS) / 10_000);
+    const treasuryShareLamports = totalLamports - providerShareLamports;
+
+    // We will return a payment plan for the client wallet to execute two transfers:
+    // 1) to Treasury PDA
+    // 2) to Compute Provider (if provided)
+    // Client will sign/send these; we validate on-chain afterwards.
+
+    const plan = [
+      {
+        to: treasuryRecipient,
+        amountLamports: treasuryShareLamports,
+        reason: 'training_fee_treasury'
+      }
+    ];
+    // Prefer client-provided provider; else env default; else backend service wallet as fallback
+    let providerRecipient = providerPubkey || DEFAULT_COMPUTE_PROVIDER_PUBLIC_KEY || null;
+    try {
+      if (!providerRecipient) {
+        const svc = require('../services/training-devnet.js');
+        const svcKey = svc.loadServiceKeypair();
+        providerRecipient = svcKey.publicKey.toBase58();
+      }
+    } catch (_) { /* if backend wallet missing, providerRecipient remains null */ }
+    if (providerRecipient && providerShareLamports > 0) {
+      plan.push({
+        to: providerRecipient,
+        amountLamports: providerShareLamports,
+        reason: 'compute_provider_reward'
+      });
+    }
+
+    return res.json({
+      success: true,
+      paymentPlan: plan,
+      quote: {
+        hours,
+        totalLamports,
+        totalSOL: totalLamports / LAMPORTS_PER_SOL,
+        treasuryShareLamports,
+        providerShareLamports,
+        providerRewardBps: COMPUTE_PROVIDER_REWARD_BPS
+      },
+      treasury: treasuryRecipient,
+      provider: providerRecipient
+    });
+  } catch (e) {
+    console.error('fee/pay error', e);
+    return res.status(500).json({ success: false, error: e.message, durationMs: Date.now() - startTime });
+  }
+});
+
+// POST /api/training/fee/verify
+// Body: { signatures: string[], expectedTotalLamports, from: walletPubkey }
+router.post('/fee/verify', async (req, res) => {
+  const startTime = Date.now();
+  try {
+    const { signatures, expectedTotalLamports } = req.body || {};
+    if (!Array.isArray(signatures) || signatures.length === 0) {
+      return res.status(400).json({ success: false, error: 'signatures array required' });
+    }
+    const connection = trainingService.getConnection();
+    const treasuryRecipient = await resolveTreasuryRecipient();
+    let observedToTreasury = 0;
+    let observedToProvider = 0;
+    for (const sig of signatures) {
+      try {
+        const tx = await connection.getParsedTransaction(sig, { maxSupportedTransactionVersion: 0, commitment: 'confirmed' });
+        if (!tx || !tx.transaction) continue;
+        const ix = tx.transaction.message.instructions || [];
+        for (const i of ix) {
+          const parsed = i;
+          if (parsed.program === 'system' && parsed.parsed?.type === 'transfer') {
+            const info = parsed.parsed.info;
+            const dest = info?.destination;
+            const lamports = parseInt(info?.lamports || '0', 10);
+            if (treasuryRecipient && dest === treasuryRecipient) observedToTreasury += lamports;
+            else observedToProvider += lamports;
+          }
+        }
+      } catch (_) { /* ignore one-off errors */ }
+    }
+    const observedTotal = observedToTreasury + observedToProvider;
+    if (expectedTotalLamports && observedTotal < expectedTotalLamports) {
+      return res.status(400).json({ success: false, error: 'Observed total less than expected', observedTotal });
+    }
+    // Create on-chain payment receipt via compact memo from backend service wallet
+    let receiptSignature = null;
+    try {
+      const payer = trainingService.loadServiceKeypair();
+      // r|sig0|total|toT|toP|ts
+      const receiptMemo = [
+        'r',
+        String(signatures[0]).slice(0, 16),
+        String(observedTotal),
+        String(observedToTreasury),
+        String(observedToProvider),
+        Math.floor(Date.now() / 1000).toString()
+      ].join('|');
+      receiptSignature = await trainingService.sendMemoWithSession(connection, payer, receiptMemo);
+    } catch (e) {
+      // Non-fatal: continue without receipt signature
+      console.warn('[receipt] failed to write memo receipt:', e?.message);
+    }
+    return res.json({
+      success: true,
+      observedToTreasury,
+      observedToProvider,
+      observedTotal,
+      receiptSignature,
+      explorer: receiptSignature ? trainingService.explorerTx(receiptSignature) : null
+    });
+  } catch (e) {
+    return res.status(500).json({ success: false, error: e.message, durationMs: Date.now() - startTime });
+  }
+});

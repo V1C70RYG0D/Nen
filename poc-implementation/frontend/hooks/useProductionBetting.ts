@@ -139,8 +139,8 @@ export const useProductionBetting = () => {
           lockedBalance: isNaN(lockedBalance) ? 0 : lockedBalance,
           totalDeposited: isNaN(totalDeposited) ? 0 : totalDeposited,
           totalWithdrawn: isNaN(totalWithdrawn) ? 0 : totalWithdrawn,
-          depositCount: typeof account.depositCount === 'object' && typeof (account.depositCount as any).toNumber === 'function' ? (account.depositCount as any).toNumber() : Number(account.depositCount || 0),
-          withdrawalCount: typeof account.withdrawalCount === 'object' && typeof (account.withdrawalCount as any).toNumber === 'function' ? (account.withdrawalCount as any).toNumber() : Number(account.withdrawalCount || 0),
+          depositCount: Number(account.depositCount || 0),
+          withdrawalCount: Number(account.withdrawalCount || 0),
           accountExists: true,
           isLoading: false,
           error: null,
@@ -190,16 +190,46 @@ export const useProductionBetting = () => {
       
       const transactionSignature = await client.createBettingAccount(publicKey);
       
+      // Handle case where account already exists
+      if (transactionSignature === 'ACCOUNT_ALREADY_EXISTS') {
+        console.log('✅ Betting account already exists, skipping creation');
+        
+        // Refresh account data to get current state
+        await refreshAccountData();
+        
+        setState(prev => ({ ...prev, isLoading: false }));
+        return 'ACCOUNT_ALREADY_EXISTS';
+      }
+      
       console.log(`✅ Betting account created! Transaction: ${transactionSignature}`);
+      
+      // Wait a moment for the transaction to be processed
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Refresh account data
       await refreshAccountData();
       
+      setState(prev => ({ ...prev, isLoading: false }));
       return transactionSignature;
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to create betting account';
       console.error('❌ Account creation failed:', errorMessage);
+      
+      // Handle specific "already in use" error gracefully
+      if (errorMessage.includes('already in use') || 
+          errorMessage.includes('already exists') ||
+          errorMessage.includes('AccountAlreadyInUse')) {
+        console.log('⚠️  Account appears to already exist, attempting to refresh data...');
+        try {
+          await refreshAccountData();
+          setState(prev => ({ ...prev, isLoading: false }));
+          return 'ACCOUNT_ALREADY_EXISTS';
+        } catch (refreshError) {
+          console.error('Failed to refresh account data:', refreshError);
+        }
+      }
+      
       setState(prev => ({ ...prev, error: errorMessage, isLoading: false }));
       throw new Error(errorMessage);
     }

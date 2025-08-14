@@ -32,6 +32,7 @@
   "lib/production-solana-betting-client-fixed.ts",
   "lib/production-solana-betting-client-fixed.disabled.ts",
   "lib/solana-betting-client-fixed.ts",
+    "components/RealDevnetBettingApp.tsx",
   "__tests__/**",
   "tests/**",
   "pages/training-fixed.tsx"

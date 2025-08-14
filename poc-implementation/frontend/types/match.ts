@@ -10,7 +10,7 @@ export interface Agent {
   elo: number;
   avatar?: string;
   nenType: 'enhancement' | 'emission' | 'transmutation' | 'conjuration' | 'manipulation' | 'specialization';
-  personality?: 'aggressive' | 'defensive' | 'tactical' | 'unpredictable';
+  personality?: 'aggressive' | 'defensive' | 'tactical' | 'unpredictable' | 'strategic' | string;
   winRate?: number;
   totalMatches?: number;
   specialAbility?: string;
@@ -124,6 +124,7 @@ export interface MatchFilters {
   minAiRating?: number;
   maxAiRating?: number;
   nenTypes?: string[];
+  personalities?: string[];
   gameTypes?: string[];
   timeControls?: string[];
   sortBy?: 'startTime' | 'totalPool' | 'rating' | 'viewerCount' | 'created';

@@ -165,3 +165,74 @@ router.post('/validate-stake', async (req, res) => {
 });
 
 export default router;
+
+// =============================
+// User Story 9 Endpoints
+// =============================
+
+// POST /api/v1/training/complete
+// Body: { walletPubkey, agentMint, sessionId, modelVersion?, metrics: { gamesPlayed, wins, losses, draws, winRate, averageGameLength, newElo }, modelCommitmentHex? }
+router.post('/complete', async (req, res) => {
+  const startedAt = Date.now();
+  try {
+    const { walletPubkey, agentMint, sessionId, modelVersion, metrics, modelCommitmentHex } = req.body || {};
+    if (!walletPubkey || !agentMint) {
+      return res.status(400).json({ success: false, error: 'walletPubkey and agentMint are required' });
+    }
+
+    // Compute commitment if not provided
+    const commitment = (modelCommitmentHex && String(modelCommitmentHex)) || devnet.computeModelCommitmentHex({ agentMint, sessionId, metrics, modelVersion });
+
+    // Send on-chain memo marking training completed
+    const onchain = await devnet.completeTrainingOnChain({ walletPubkey, agentMint, sessionId, modelCommitmentHex: commitment, modelVersion, metrics, unlock: true });
+
+    // Verify memo back from chain
+    const verify = await devnet.verifyModelCommitmentOnChain({ agentMint, expectedCommitment: commitment });
+    if (!verify.ok) {
+      return res.status(409).json({ success: false, error: 'Model commitment mismatch on-chain', details: verify });
+    }
+
+    // Update local devnet registry for quick reads and UI
+    devnet.updateDevnetAgentRegistry(agentMint, { modelCommitment: commitment, modelVersion: modelVersion || 'v1.1', metrics, unlocked: true });
+
+    // Emit trainer notification (in-app only path)
+    try {
+      const { NotificationService } = require('../services/NotificationService');
+      const service = new NotificationService({
+        logger,
+        environment: process.env.NODE_ENV || 'development',
+        enableCaching: false,
+        enableMetrics: false
+      });
+      await service.sendNotification({
+        userId: walletPubkey,
+        type: 'SYSTEM' as any,
+        title: 'Training Complete',
+        message: `Your agent ${agentMint} model ${modelVersion || 'v1.1'} is active. Commitment ${commitment.slice(0, 8)}…`,
+        channels: ['IN_APP'] as any
+      });
+    } catch (e) {
+      logger.warn('NotificationService unavailable or failed', { error: (e as Error).message });
+    }
+
+    // Auto-publish a practice match memo so the user can test immediately
+    try {
+      const registry = require('../services/devnet-match-registry.js');
+      const practiceId = `practice_${Date.now()}`;
+      await registry.publishMatch({ id: practiceId, status: 'scheduled', agents: [agentMint, agentMint], scheduledAt: new Date(Date.now() + 60_000).toISOString() });
+    } catch (e) {
+      logger.warn('Failed to publish practice match memo', { error: (e as Error).message });
+    }
+
+    res.json({
+      success: true,
+      message: 'Training completed and model activated on devnet',
+      onchain,
+      verify
+    });
+  } catch (error: any) {
+    logger.apiError('/api/v1/training/complete', error, { durationMs: Date.now() - startedAt });
+    res.status(500).json({ success: false, error: error?.message || 'Internal error' });
+  }
+});
+

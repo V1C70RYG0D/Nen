@@ -3,12 +3,16 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-nen_core = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+nen_core = "Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF"
 nen_betting = "34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5"
+nen_marketplace = "8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH"
+nen_magicblock = "AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX"
 
 [programs.devnet]
-nen_core = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+nen_core = "Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF"
 nen_betting = "34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5"
+nen_marketplace = "8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH"
+nen_magicblock = "AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX"
 
 [provider]
 cluster = "devnet"

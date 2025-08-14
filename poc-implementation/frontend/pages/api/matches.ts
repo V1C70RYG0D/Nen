@@ -11,9 +11,15 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
+import { transformMatches } from '../../utils/match-transformer';
 
-// Use the configured API URL from environment or fallback to port 3011 (correct backend port)
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || 'http://127.0.0.1:3011';
+// Use the configured API URL from environment or fallback to port 3001 (correct backend port)
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || 'http://127.0.0.1:3001';
+
+function toArray(value: string | string[] | undefined): string[] | undefined {
+  if (!value) return undefined;
+  return Array.isArray(value) ? value : [value];
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -30,160 +36,123 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Build query string for filtering as per User Story 3
     const queryParams = new URLSearchParams();
-    
-    // User filters by bet range or AI rating - pass through query parameters
-    if (req.query.status) queryParams.set('status', req.query.status as string);
-    if (req.query.minRating) queryParams.set('minRating', req.query.minRating as string);
-    if (req.query.maxRating) queryParams.set('maxRating', req.query.maxRating as string);
-    if (req.query.minBet) queryParams.set('minBet', req.query.minBet as string);
-    if (req.query.maxBet) queryParams.set('maxBet', req.query.maxBet as string);
+
+    // Status can be single or array
+    const status = toArray(req.query.status as any);
+    status?.forEach((s) => queryParams.append('status', s));
+
+    // AI rating filters (support both minAiRating/maxAiRating and minRating/maxRating)
+    const minAiRating = (req.query.minAiRating as string) || (req.query.minRating as string);
+    const maxAiRating = (req.query.maxAiRating as string) || (req.query.maxRating as string);
+    if (minAiRating) queryParams.set('minAiRating', String(minAiRating));
+    if (maxAiRating) queryParams.set('maxAiRating', String(maxAiRating));
+
+    // Bet range: UI sends lamports for minBetRange/maxBetRange via useMatches; convert to SOL for backend
+    const minBetRange = req.query.minBetRange as string | undefined;
+    const maxBetRange = req.query.maxBetRange as string | undefined;
+    const minBetSol = minBetRange ? Number(minBetRange) / 1e9 : undefined;
+    const maxBetSol = maxBetRange ? Number(maxBetRange) / 1e9 : undefined;
+    const minBet = (req.query.minBet as string) || (minBetSol !== undefined ? String(minBetSol) : undefined);
+    const maxBet = (req.query.maxBet as string) || (maxBetSol !== undefined ? String(maxBetSol) : undefined);
+    if (minBet) queryParams.set('minBet', minBet);
+    if (maxBet) queryParams.set('maxBet', maxBet);
+
+    // Personality and Nen Types filters
+    const personalities = toArray(req.query.personalities as any);
+    personalities?.forEach((p) => queryParams.append('personality', p));
+    const nenTypes = toArray(req.query.nenTypes as any);
+    nenTypes?.forEach((t) => queryParams.append('nenType', t));
+
+    // Search and sorting/pagination
+    if (req.query.search) queryParams.set('search', String(req.query.search));
+    if (req.query.sortBy) queryParams.set('sortBy', String(req.query.sortBy));
+    if (req.query.sortOrder) queryParams.set('sortOrder', String(req.query.sortOrder));
+    if (req.query.page) queryParams.set('page', String(req.query.page));
+    if (req.query.limit) queryParams.set('limit', String(req.query.limit));
 
     const queryString = queryParams.toString();
-  // Prefer devnet-backed matches endpoint for real on-chain data
-  const backendUrl = `${BACKEND_URL}/api/devnet/matches${queryString ? `?${queryString}` : ''}`;
-    
-    // Forward request to backend
-    const response = await fetch(backendUrl, {
-      method: req.method,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(req.headers.authorization && { Authorization: req.headers.authorization }),
-      },
-      ...(req.method !== 'GET' && { body: JSON.stringify(req.body) }),
-    });
+    // Use standard matches endpoint
+    const primaryUrl = `${BACKEND_URL}/api/matches${queryString ? `?${queryString}` : ''}`;
+    const fallbackUrl = `${BACKEND_URL}/api/matches${queryString ? `?${queryString}` : ''}`;
 
-    if (!response.ok) {
-      throw new Error(`Backend responded with status: ${response.status}`);
+    // Try primary (devnet) then fallback to generic matches if needed
+    let data: any | null = null;
+    try {
+      const response = await fetch(primaryUrl, {
+        method: req.method,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(req.headers.authorization && { Authorization: req.headers.authorization }),
+        },
+        ...(req.method !== 'GET' && { body: JSON.stringify(req.body) }),
+      });
+      if (response.ok) {
+        data = await response.json();
+      }
+    } catch (_) {
+      // ignore and try fallback
     }
 
-    const data = await response.json();
+    if (!data) {
+      const response2 = await fetch(fallbackUrl, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response2.ok) {
+        throw new Error(`Backend responded with status: ${response2.status}`);
+      }
+      data = await response2.json();
+    }
 
     // Normalize shape to { success, data: { matches, ... } }
-    const matches = Array.isArray(data.data) ? data.data : data.data?.matches || [];
+    let matches = Array.isArray(data.data) ? data.data : data.data?.matches || [];
+
+    // Apply additional filtering not handled by some backends (personalities, nenTypes, search)
+    const personalitiesFilter = personalities && personalities.length > 0 ? new Set(personalities) : null;
+    const nenTypesFilter = nenTypes && nenTypes.length > 0 ? new Set(nenTypes) : null;
+    const searchTerm = req.query.search ? String(req.query.search).toLowerCase() : '';
+    if (personalitiesFilter || nenTypesFilter || searchTerm) {
+      matches = matches.filter((m: any) => {
+        const agent1 = m.agent1 || {};
+        const agent2 = m.agent2 || {};
+        if (personalitiesFilter) {
+          const p1 = agent1.personality && String(agent1.personality).toLowerCase();
+          const p2 = agent2.personality && String(agent2.personality).toLowerCase();
+          if (!personalitiesFilter.has(p1) && !personalitiesFilter.has(p2)) return false;
+        }
+        if (nenTypesFilter) {
+          const n1 = agent1.nenType && String(agent1.nenType).toLowerCase();
+          const n2 = agent2.nenType && String(agent2.nenType).toLowerCase();
+          if (!nenTypesFilter.has(n1) && !nenTypesFilter.has(n2)) return false;
+        }
+        if (searchTerm) {
+          const a1 = (agent1.name || '').toLowerCase();
+          const a2 = (agent2.name || '').toLowerCase();
+          if (!a1.includes(searchTerm) && !a2.includes(searchTerm)) return false;
+        }
+        return true;
+      });
+    }
+    
+    // Transform matches to ensure complete data structure
+    const transformedMatches = transformMatches(matches);
+    
     res.status(200).json({
       success: true,
       data: {
-        matches,
-        total: matches.length,
-        page: parseInt((req.query.page as string) || '1'),
-        limit: parseInt((req.query.limit as string) || '50'),
-        hasNext: false,
-        hasPrev: false
+        matches: transformedMatches,
+        total: typeof data.data?.total === 'number' ? data.data.total : transformedMatches.length,
+        page: parseInt((req.query.page as string) || String(data.data?.page || 1)),
+        limit: parseInt((req.query.limit as string) || String(data.data?.limit || 50)),
+        hasNext: Boolean(data.data?.hasNext || false),
+        hasPrev: Boolean(data.data?.hasPrev || false)
       },
-      count: matches.length,
+      count: transformedMatches.length,
       message: data.message || 'Devnet matches'
     });
 
   } catch (error) {
     console.error('Error proxying matches request:', error);
-    
-    // Provide fallback demo data for User Story 3 if backend is unavailable
-    // This ensures User Story 3 always works even during development
-    const fallbackData = {
-      success: true,
-      data: {
-        matches: [
-          {
-            id: 'fallback-match-1',
-            matchType: 'ai_vs_ai',
-            status: 'live',
-            aiAgent1Id: 'netero_ai',
-            aiAgent2Id: 'meruem_ai',
-            agent1: {
-              id: 'netero_ai',
-              name: 'Chairman Netero',
-              elo: 1850,
-              nenType: 'enhancement',
-              personality: 'tactical',
-              avatar: '/avatars/netero.png',
-              winRate: 0.78,
-              totalMatches: 156
-            },
-            agent2: {
-              id: 'meruem_ai', 
-              name: 'Meruem',
-              elo: 2100,
-              nenType: 'specialization',
-              personality: 'aggressive',
-              avatar: '/avatars/meruem.png',
-              winRate: 0.89,
-              totalMatches: 89
-            },
-            bettingPoolSol: 15.6,
-            isBettingActive: true,
-            viewerCount: 127,
-            scheduledStartTime: new Date(Date.now() - 600000),
-            createdAt: new Date(Date.now() - 900000),
-            updatedAt: new Date(),
-            bettingPool: {
-              totalPool: 15.6 * 1e9,
-              agent1Pool: (15.6 * 0.6) * 1e9,
-              agent2Pool: (15.6 * 0.4) * 1e9,
-              oddsAgent1: 1.6,
-              oddsAgent2: 2.4,
-              betsCount: 23,
-              minBet: 100000000,
-              maxBet: 100000000000,
-              isOpenForBetting: true,
-              closesAt: new Date(Date.now() + 300000)
-            }
-          },
-          {
-            id: 'fallback-match-2',
-            matchType: 'ai_vs_ai',
-            status: 'upcoming',
-            aiAgent1Id: 'komugi_ai',
-            aiAgent2Id: 'ging_ai',
-            agent1: {
-              id: 'komugi_ai',
-              name: 'Komugi',
-              elo: 2200,
-              nenType: 'conjuration',
-              personality: 'defensive',
-              avatar: '/avatars/komugi.png',
-              winRate: 0.94,
-              totalMatches: 203
-            },
-            agent2: {
-              id: 'ging_ai',
-              name: 'Ging Freecss',
-              elo: 1950,
-              nenType: 'transmutation',
-              personality: 'unpredictable',
-              avatar: '/avatars/ging.png',
-              winRate: 0.82,
-              totalMatches: 178
-            },
-            bettingPoolSol: 8.3,
-            isBettingActive: true,
-            viewerCount: 67,
-            scheduledStartTime: new Date(Date.now() + 300000),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            bettingPool: {
-              totalPool: 8.3 * 1e9,
-              agent1Pool: (8.3 * 0.4) * 1e9,
-              agent2Pool: (8.3 * 0.6) * 1e9,
-              oddsAgent1: 2.1,
-              oddsAgent2: 1.7,
-              betsCount: 15,
-              minBet: 100000000,
-              maxBet: 100000000000,
-              isOpenForBetting: true,
-              closesAt: new Date(Date.now() + 300000)
-            }
-          }
-        ],
-        total: 2,
-        page: 1,
-        limit: 50,
-        hasNext: false,
-        hasPrev: false
-      },
-      count: 2,
-      message: 'Fallback demo matches for User Story 3 (backend unavailable)'
-    };
-
-    res.status(200).json(fallbackData);
+    res.status(502).json({ success: false, error: 'Failed to fetch matches from backend' });
   }
 }

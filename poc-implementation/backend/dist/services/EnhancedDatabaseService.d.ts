@@ -9,7 +9,7 @@
  * - Performance monitoring
  * - Connection health checking
  */
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import IORedis from 'ioredis';
 interface QueryPerformanceMetrics {
     totalQueries: number;
@@ -51,104 +51,15 @@ declare class EnhancedDatabaseService {
     /**
      * Optimized user operations
      */
-    getUserWithStats(walletAddress: string): Promise<({
-        bets: {
-            amount: number;
-            status: import(".prisma/client").$Enums.BetStatus;
-            payout: number | null;
-        }[];
-    } & {
-        level: number;
-        id: string;
-        username: string;
-        email: string;
-        password: string | null;
-        publicKey: string | null;
-        address: string | null;
-        experience: number;
-        winRate: number;
-        totalGames: number;
-        oauthProvider: string | null;
-        oauthId: string | null;
-        isActive: boolean;
-        lastLoginAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
-    }) | null>;
+    getUserWithStats(walletAddress: string): Promise<any>;
     /**
      * Optimized game operations with caching
      */
-    getActiveGames(): Promise<({
-        bets: {
-            agentId: string | null;
-            amount: number;
-        }[];
-        player1: {
-            level: number;
-            id: string;
-            username: string;
-            email: string;
-            password: string | null;
-            publicKey: string | null;
-            address: string | null;
-            experience: number;
-            winRate: number;
-            totalGames: number;
-            oauthProvider: string | null;
-            oauthId: string | null;
-            isActive: boolean;
-            lastLoginAt: Date | null;
-            createdAt: Date;
-            updatedAt: Date;
-        };
-        player2: {
-            level: number;
-            id: string;
-            username: string;
-            email: string;
-            password: string | null;
-            publicKey: string | null;
-            address: string | null;
-            experience: number;
-            winRate: number;
-            totalGames: number;
-            oauthProvider: string | null;
-            oauthId: string | null;
-            isActive: boolean;
-            lastLoginAt: Date | null;
-            createdAt: Date;
-            updatedAt: Date;
-        } | null;
-    } & {
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        status: import(".prisma/client").$Enums.GameStatus;
-        player1Id: string;
-        player2Id: string | null;
-        winnerId: string | null;
-        aiDifficulty: string | null;
-        betAmount: number;
-        boardState: Prisma.JsonValue;
-        moveHistory: Prisma.JsonValue;
-        startedAt: Date | null;
-        completedAt: Date | null;
-    })[]>;
+    getActiveGames(): Promise<any>;
     /**
      * Optimized betting operations
      */
-    placeBetOptimized(betData: any): Promise<{
-        id: string;
-        userId: string;
-        gameId: string;
-        agentId: string | null;
-        amount: number;
-        odds: number;
-        status: import(".prisma/client").$Enums.BetStatus;
-        payout: number | null;
-        placedAt: Date;
-        settledAt: Date | null;
-    }>;
+    placeBetOptimized(betData: any): Promise<any>;
     /**
      * Get performance metrics
      */

@@ -11,7 +11,7 @@ import { Program, AnchorProvider, web3, BN, Idl } from '@coral-xyz/anchor';
 import { WalletContextState } from '@solana/wallet-adapter-react';
 
 // Betting Program ID - This should match the declare_id! in the Rust program
-export const BETTING_PROGRAM_ID = new PublicKey('Bet1111111111111111111111111111111111111111');
+export const BETTING_PROGRAM_ID = new PublicKey('34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5');
 
 // IDL type definitions
 export interface BettingPlatform {
@@ -158,34 +158,77 @@ export class SolanaBettingClient {
 
   /**
    * Create betting account for user if it doesn't exist
-   * Real account creation implementation
+   * Uses the actual betting program instruction
    */
   async createBettingAccount(userPublicKey: PublicKey): Promise<string> {
     console.log('Creating betting account for', userPublicKey.toString());
     
-    // Real implementation: Initialize account data structure
-    const [bettingAccountPDA] = this.getBettingAccountPDA(userPublicKey);
-    
-    // Create initial account data
-    const accountData = {
-      user: userPublicKey,
-      balance: 0,
-      totalDeposited: 0,
-      totalWithdrawn: 0,
-      lockedBalance: 0,
-      depositCount: 0,
-      withdrawalCount: 0,
-      createdAt: Math.floor(Date.now() / 1000),
-      lastUpdated: Math.floor(Date.now() / 1000),
-      bump: 255,
-    };
-    
-    // Store account data
-    await this.updateBettingAccountData(bettingAccountPDA, accountData);
-    
-    const transactionId = `account_created_${Date.now()}_${userPublicKey.toString().slice(0, 8)}`;
-    console.log('Betting account creation completed:', transactionId);
-    return transactionId;
+    if (!this.provider || !this.program) {
+      throw new Error('Client not initialized. Call initialize() first.');
+    }
+
+    try {
+      const [bettingAccountPDA] = this.getBettingAccountPDA(userPublicKey);
+      
+      // Check if account already exists
+      const existingAccount = await this.connection.getAccountInfo(bettingAccountPDA);
+      if (existingAccount) {
+        console.log('Betting account already exists:', bettingAccountPDA.toString());
+        return `existing_account_${Date.now()}`;
+      }
+
+      console.log('Creating new betting account via program instruction...');
+
+      // Use the actual program instruction to create the betting account
+      const tx = await this.program.methods
+        .createBettingAccount()
+        .accountsStrict({
+          bettingAccount: bettingAccountPDA,
+          user: userPublicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .transaction();
+
+      // Get recent blockhash
+      const latestBlockhash = await this.connection.getLatestBlockhash();
+      tx.recentBlockhash = latestBlockhash.blockhash;
+      tx.feePayer = userPublicKey;
+
+      // Sign and send transaction
+      const signedTx = await this.provider.wallet.signTransaction(tx);
+      const signature = await this.connection.sendRawTransaction(signedTx.serialize(), {
+        skipPreflight: false,
+        preflightCommitment: 'processed',
+      });
+
+      // Confirm transaction
+      await this.connection.confirmTransaction({
+        signature,
+        blockhash: latestBlockhash.blockhash,
+        lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+      });
+
+      console.log('Betting account created successfully:', signature);
+      return signature;
+
+    } catch (error) {
+      console.error('Failed to create betting account:', error);
+      
+      if (error instanceof Error) {
+        // Handle the specific "account already in use" error
+        if (error.message.includes('already in use') || error.message.includes('already been processed')) {
+          console.log('Account may already exist, checking...');
+          const [bettingAccountPDA] = this.getBettingAccountPDA(userPublicKey);
+          const existingAccount = await this.connection.getAccountInfo(bettingAccountPDA);
+          if (existingAccount) {
+            return `existing_account_${Date.now()}`;
+          }
+        }
+        throw error;
+      }
+      
+      throw new Error(`Failed to create betting account: ${String(error)}`);
+    }
   }
 
   /**
@@ -218,12 +261,7 @@ export class SolanaBettingClient {
 
   /**
    * Execute real SOL deposit transaction to devnet
-   * Implements User Story 2: Real SOL deposits with proper PDA management and wallet approval
-   * Enhanced with transaction uniqueness and error handling
-   * 
-   * FIXED: For POC deployment, we're using a simplified approach where SOL is transferred
-   * to a user-controlled PDA that serves as the betting account. In production, this would
-   * be managed by the deployed betting program with proper escrow mechanics.
+   * Uses the actual betting program's deposit_sol instruction
    */
   private async executeRealSolDeposit(
     userPublicKey: PublicKey,
@@ -246,6 +284,11 @@ export class SolanaBettingClient {
     
     // Store current transaction attempt
     localStorage.setItem(recentTxKey, currentTime.toString());
+    
+    // Check if client is properly initialized
+    if (!this.provider || !this.program) {
+      throw new Error('Client not initialized. Call initialize() first.');
+    }
     
     // Step 1: Check user's wallet balance first
     console.log('📊 Checking wallet balance...');
@@ -272,80 +315,74 @@ export class SolanaBettingClient {
         transactionCount = existingAccount.depositCount || 0;
         console.log(`📈 Found existing betting account with balance: ${previousBalance} SOL`);
       } else {
-        console.log('🆕 Creating new betting account');
+        console.log('🆕 No existing betting account found');
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.log('⚠️ Account check error (will create new):', errorMessage);
+      console.log('⚠️ Account check error (will create if needed):', errorMessage);
     }
 
-    // Step 3: Create real SOL transfer transaction to betting PDA
-    // User Story 2: Transfer SOL from user wallet to betting PDA
+    // Step 3: Get betting account PDA
+    const [bettingAccountPDA] = this.getBettingAccountPDA(userPublicKey);
+    
+    // Check if betting account exists, create if not
+    const accountInfo = await this.connection.getAccountInfo(bettingAccountPDA);
+    if (!accountInfo) {
+      console.log('🆕 Creating betting account first...');
+      try {
+        await this.createBettingAccount(userPublicKey);
+        console.log('✅ Betting account created successfully');
+        // Wait a moment for account creation to be processed
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } catch (createError) {
+        console.error('❌ Failed to create betting account:', createError);
+        if (createError instanceof Error && !createError.message.includes('already in use')) {
+          throw new Error(`Failed to create betting account: ${createError.message}`);
+        }
+        // Continue if account already exists
+      }
+    }
+
+    // Step 4: Execute deposit using program instruction
     try {
-      console.log('🔄 Creating real SOL deposit transaction...');
+      console.log('🔄 Creating deposit transaction via program instruction...');
       
       // Get the latest blockhash to ensure transaction uniqueness
       const latestBlockhash = await this.connection.getLatestBlockhash('finalized');
-      console.log(`📋 Using fresh blockhash: ${latestBlockhash.blockhash.slice(0, 8)}...`);
+      console.log(`� Using fresh blockhash: ${latestBlockhash.blockhash.slice(0, 8)}...`);
       
-      const transaction = new Transaction();
-      const [depositPDA] = this.getBettingAccountPDA(userPublicKey);
-      
-      // Check if PDA needs to be created (rent-exempt balance)
-      const pdaAccountInfo = await this.connection.getAccountInfo(depositPDA);
-      
-      if (!pdaAccountInfo) {
-        // Create the PDA account first
-        const rentExemptLamports = await this.connection.getMinimumBalanceForRentExemption(128); // Space for account data
-        
-        const createAccountIx = SystemProgram.createAccount({
-          fromPubkey: userPublicKey,
-          newAccountPubkey: depositPDA,
-          lamports: rentExemptLamports,
-          space: 128, // Space for betting account data
-          programId: SystemProgram.programId, // For now, owned by system program
-        });
-        
-        transaction.add(createAccountIx);
-        console.log(`💳 Creating betting PDA account with rent: ${rentExemptLamports / LAMPORTS_PER_SOL} SOL`);
-      }
-      
-      // Add the actual deposit transfer instruction
-      const depositTransferIx = SystemProgram.transfer({
-        fromPubkey: userPublicKey,
-        toPubkey: depositPDA, // Transfer to betting PDA
-        lamports: amountLamports, // Full deposit amount
-      });
-      
-      transaction.add(depositTransferIx);
+      // Use the program's deposit_sol instruction
+      const tx = await this.program.methods
+        .depositSol(new BN(amountLamports))
+        .accounts({
+          bettingAccount: bettingAccountPDA,
+          user: userPublicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .transaction();
 
       // Set transaction parameters with fresh blockhash
-      transaction.recentBlockhash = latestBlockhash.blockhash;
-      transaction.feePayer = userPublicKey;
+      tx.recentBlockhash = latestBlockhash.blockhash;
+      tx.feePayer = userPublicKey;
 
-      // Step 4: Request wallet to sign and send the transaction
-      console.log('✍️ Requesting wallet signature for real SOL deposit transaction...');
+      // Step 5: Request wallet to sign and send the transaction
+      console.log('✍️ Requesting wallet signature for deposit transaction...');
       
-      if (!this.provider || !this.provider.wallet.signTransaction) {
-        throw new Error('Wallet not properly connected. Please reconnect your wallet.');
-      }
-
       // Sign the transaction with the wallet - this will show approval popup
-      const signedTransaction = await this.provider.wallet.signTransaction(transaction);
+      const signedTransaction = await this.provider.wallet.signTransaction(tx);
       
-      console.log('📝 Real deposit transaction signed by wallet, sending to network...');
+      console.log('📝 Deposit transaction signed by wallet, sending to network...');
       
       // Send the signed transaction with proper error handling
       let signature: string;
       try {
-        // Use sendAndConfirmTransaction for better reliability
         signature = await this.connection.sendRawTransaction(signedTransaction.serialize(), {
           skipPreflight: false,
           preflightCommitment: 'processed',
           maxRetries: 3,
         });
 
-        console.log(`🚀 Real SOL deposit transaction sent to devnet: ${signature}`);
+        console.log(`🚀 Deposit transaction sent to devnet: ${signature}`);
         
         // Wait for confirmation with timeout
         const confirmationLatestBlockhash = await this.connection.getLatestBlockhash();
@@ -359,8 +396,8 @@ export class SolanaBettingClient {
           throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`);
         }
 
-        console.log(`✅ Real SOL deposit confirmed on devnet: ${signature}`);
-        console.log(`💰 Successfully transferred ${amountSol} SOL to betting account!`);
+        console.log(`✅ Deposit confirmed on devnet: ${signature}`);
+        console.log(`💰 Successfully deposited ${amountSol} SOL to betting account!`);
         
       } catch (sendError: any) {
         console.error('❌ Transaction sending failed:', sendError);
@@ -378,6 +415,10 @@ export class SolanaBettingClient {
             throw new Error('Insufficient SOL balance in wallet for this transaction.');
           }
           
+          if (sendError.message.includes('already in use')) {
+            throw new Error('Betting account address conflict. Please try again.');
+          }
+          
           throw new Error(`Transaction failed: ${sendError.message}`);
         }
         
@@ -393,13 +434,11 @@ export class SolanaBettingClient {
         throw new Error(`Transaction failed: ${sendError.message || sendError.toString()}`);
       }
 
-      // Step 5: Calculate new balance (accumulative)
-      // Real implementation: The SOL has been actually transferred to the betting PDA
+      // Step 6: Calculate new balance (accumulative)
       const newTotalBalance = previousBalance + amountSol;
       console.log(`📊 Balance update: ${previousBalance} SOL + ${amountSol} SOL = ${newTotalBalance} SOL`);
-      console.log(`💳 SOL successfully transferred from wallet to betting PDA!`);
       
-      // Step 6: Update account data for persistence with real transaction signature
+      // Step 7: Update local storage for UI persistence
       const existingTotalDeposited = existingAccount?.totalDeposited && typeof existingAccount.totalDeposited.toNumber === 'function'
         ? existingAccount.totalDeposited.toNumber() / LAMPORTS_PER_SOL
         : 0;
@@ -416,7 +455,7 @@ export class SolanaBettingClient {
         ? existingAccount.createdAt.toNumber()
         : Math.floor(Date.now() / 1000);
         
-      await this.updateBettingAccountData(depositPDA, {
+      await this.updateBettingAccountData(bettingAccountPDA, {
         user: userPublicKey,
         balance: Math.floor(newTotalBalance * LAMPORTS_PER_SOL),
         totalDeposited: Math.floor((existingTotalDeposited + amountSol) * LAMPORTS_PER_SOL),
@@ -427,20 +466,20 @@ export class SolanaBettingClient {
         createdAt: existingCreatedAt,
         lastUpdated: Math.floor(Date.now() / 1000),
         bump: 255,
-        realTransactionSignature: signature, // Store the real deposit transaction signature
-        depositMode: 'REAL_TRANSFER', // Flag indicating this is a real SOL transfer
+        realTransactionSignature: signature,
+        depositMode: 'PROGRAM_INSTRUCTION',
       });
 
       console.log('💾 Account data updated successfully');
 
-      // Emit deposit event for tracking (User Story 2 requirement)
+      // Emit deposit event for tracking
       this.emitDepositEvent({
         user: userPublicKey,
         amount: amountSol,
         previousBalance,
         newBalance: newTotalBalance,
         transactionSignature: signature,
-        pdaAddress: depositPDA.toString(),
+        pdaAddress: bettingAccountPDA.toString(),
       });
 
       return {
@@ -448,13 +487,13 @@ export class SolanaBettingClient {
         transactionSignature: signature,
         newBalance: newTotalBalance,
         depositAmount: amountSol,
-        pdaAddress: depositPDA.toString(),
+        pdaAddress: bettingAccountPDA.toString(),
         previousBalance,
         transactionCount: transactionCount + 1,
       };
 
     } catch (error) {
-      console.error('❌ Real SOL deposit failed:', error);
+      console.error('❌ Deposit transaction failed:', error);
       
       const errorMessage = error instanceof Error ? error.message : String(error);
       

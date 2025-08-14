@@ -7,6 +7,7 @@ import {
 } from '@solana/web3.js';
 import { Program, AnchorProvider, BN } from '@coral-xyz/anchor';
 import { WalletContextState } from '@solana/wallet-adapter-react';
+import { DEVNET_CONFIG, BETTING_PROGRAM_ID } from './devnet-config';
 
 /**
  * Production Solana Betting Client
@@ -20,12 +21,9 @@ import { WalletContextState } from '@solana/wallet-adapter-react';
  * - Production-ready error handling
  */
 
-// Configuration from environment variables (no hardcoding)
+// Configuration from devnet deployment
 const CONFIG = {
-  PROGRAM_ID: (() => {
-    const pid = process.env.NEXT_PUBLIC_BETTING_PROGRAM_ID || '34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5';
-    return new PublicKey(pid);
-  })(),
+  PROGRAM_ID: BETTING_PROGRAM_ID,
 
 export interface BettingAccount {
   owner: PublicKey;

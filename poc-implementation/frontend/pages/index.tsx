@@ -5,6 +5,7 @@ import { MatchList } from '@/components/MatchList';
 import { MatchDetailModal } from '@/components/MatchDetail';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { formatNumber } from '@/utils/format';
 import { MatchFilters, Match } from '@/types/match';
 import { useMatches } from '@/hooks/useMatches';
@@ -12,6 +13,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 export default function HomePage() {
+  const WalletConnection = useMemo(() => dynamic(() => import('@/components/WalletConnection'), { ssr: false }), []);
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<'live' | 'upcoming' | 'all'>('live');
   const [showFilters, setShowFilters] = useState(false); // Don't auto-expand on homepage
@@ -218,7 +220,7 @@ export default function HomePage() {
               </motion.p>
             </motion.div>
             
-            {/* Enhanced Action Buttons */}
+            {/* Enhanced Action Buttons & Wallet Connect */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}

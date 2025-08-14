@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * MatchFilter Component
  * Provides filtering capabilities for match listing as per User Story 3
@@ -24,11 +26,25 @@ const NEN_TYPES = [
   { value: 'specialization', label: 'Specialization', color: 'pink' },
 ];
 
+const PERSONALITIES = [
+  { value: 'aggressive', label: 'Aggressive' },
+  { value: 'defensive', label: 'Defensive' },
+  { value: 'tactical', label: 'Tactical' },
+  { value: 'unpredictable', label: 'Unpredictable' },
+  { value: 'strategic', label: 'Strategic' },
+];
+
 const MATCH_STATUSES = [
   { value: 'upcoming', label: 'Upcoming', color: 'yellow' },
   { value: 'live', label: 'Live', color: 'red' },
   { value: 'completed', label: 'Completed', color: 'gray' },
 ];
+
+const STATUS_COLOR_CLASSES: Record<string, string> = {
+  yellow: 'text-yellow-400',
+  red: 'text-red-400',
+  gray: 'text-gray-400',
+};
 
 const SORT_OPTIONS = [
   { value: 'startTime', label: 'Start Time' },
@@ -178,14 +194,16 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
   );
 };
 
-export const MatchFilter: React.FC<MatchFilterProps> = ({
-  filters,
-  onFiltersChange,
-  availableNenTypes = NEN_TYPES.map(t => t.value),
-  availableTimeControls = TIME_CONTROLS.map(t => t.value),
-  onReset,
-  className = '',
-}) => {
+export function MatchFilter(props: MatchFilterProps): JSX.Element {
+  const {
+    filters,
+    onFiltersChange,
+    // defaults resolved locally to avoid any TSX parsing quirks in param destructuring
+    onReset,
+    className = '',
+  } = props;
+  const availableNenTypes = props.availableNenTypes ?? NEN_TYPES.map(t => t.value);
+  const availableTimeControls = props.availableTimeControls ?? TIME_CONTROLS.map(t => t.value);
   const [isExpanded, setIsExpanded] = useState(true); // Expand filters by default for User Story 3
   const [expandedSections, setExpandedSections] = useState({
     search: true,
@@ -193,6 +211,7 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
     betting: true, // Show bet range filter by default for User Story 3
     rating: true,  // Show AI rating filter by default for User Story 3
     types: true,   // Expand nen types for User Story 3
+    personality: false,
     sorting: false,
   });
 
@@ -226,6 +245,12 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
     });
   }, [filters.nenTypes, onFiltersChange]);
 
+  const handlePersonalityChange = useCallback((personality: string, checked: boolean) => {
+    const current = filters.personalities || [];
+    const next = checked ? [...current, personality] : current.filter(p => p !== personality);
+    onFiltersChange({ personalities: next.length > 0 ? next : undefined });
+  }, [filters.personalities, onFiltersChange]);
+
   const handleBetRangeChange = useCallback((range: [number, number]) => {
     onFiltersChange({
       minBetRange: range[0] > 0 ? range[0] : undefined,
@@ -258,6 +283,7 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
     if (filters.nenTypes?.length) count++;
     if (filters.minBetRange !== undefined || filters.maxBetRange !== undefined) count++;
     if (filters.minAiRating !== undefined || filters.maxAiRating !== undefined) count++;
+    if (filters.personalities?.length) count++;
     return count;
   }, [filters]);
 
@@ -356,7 +382,7 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
                         onChange={(e) => handleStatusChange(status.value, e.target.checked)}
                         className="form-checkbox h-4 w-4 text-solana-purple bg-gray-800 border-gray-600 rounded focus:ring-solana-purple focus:ring-2"
                       />
-                      <span className={`text-sm text-${status.color}-400`}>
+                      <span className={`text-sm ${STATUS_COLOR_CLASSES[status.color] ?? 'text-gray-400'}`}>
                         {status.label}
                       </span>
                     </label>
@@ -426,6 +452,29 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
                       />
                       <span className={`text-sm nen-${nenType.value}`}>
                         {nenType.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </FilterSection>
+
+              {/* Personality Traits */}
+              <FilterSection
+                title="Personality Traits"
+                isExpanded={expandedSections.personality}
+                onToggle={() => toggleSection('personality')}
+              >
+                <div className="grid grid-cols-2 gap-2">
+                  {PERSONALITIES.map((p) => (
+                    <label key={p.value} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={filters.personalities?.includes(p.value) || false}
+                        onChange={(e) => handlePersonalityChange(p.value, e.target.checked)}
+                        className="form-checkbox h-4 w-4 text-solana-purple bg-gray-800 border-gray-600 rounded focus:ring-solana-purple focus:ring-2"
+                      />
+                      <span className="text-sm text-gray-300">
+                        {p.label}
                       </span>
                     </label>
                   ))}
@@ -514,8 +563,20 @@ export const MatchFilter: React.FC<MatchFilterProps> = ({
               </button>
             </div>
           ))}
+
+          {filters.personalities?.map(p => (
+            <div key={p} className="flex items-center space-x-1 px-2 py-1 bg-green-500/20 border border-green-500/50 rounded-full text-xs">
+              <span>{p}</span>
+              <button
+                onClick={() => handlePersonalityChange(p, false)}
+                className="text-gray-400 hover:text-gray-300"
+              >
+                <XMarkIcon className="w-3 h-3" />
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>
   );
-};
+}

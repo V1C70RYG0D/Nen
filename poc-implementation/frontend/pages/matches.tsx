@@ -289,8 +289,39 @@ const MatchesPage: React.FC = () => {
             </div>
           </motion.div>
 
+          {/* Backend connection status banner */}
+          <AnimatePresence>
+            {pageError && pageError.includes('Network') && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-6 p-4 bg-blue-500/10 border border-blue-500/50 rounded-lg"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
+                    <span className="text-blue-400">ℹ️</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-blue-400 font-medium">Demo Mode Active</p>
+                    <p className="text-gray-300 text-sm">
+                      Backend service is unavailable. Showing demo matches for exploration. 
+                      <span className="text-blue-400"> Start the backend service to see live data.</span>
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setPageError(null)}
+                    className="text-blue-400 hover:text-blue-300"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Page-level error display */}
-          {pageError && (
+          {pageError && !pageError.includes('Network') && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}

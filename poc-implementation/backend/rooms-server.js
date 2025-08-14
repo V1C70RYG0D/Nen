@@ -7,8 +7,28 @@
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
+const path = require('path');
+require('dotenv').config();
+
+// Use real devnet room service for on-chain memo + persistence
+const roomService = require(path.join(process.cwd(), 'src/services/rooms-devnet.js'));
 
 const app = express();
+const joinService = require(path.join(process.cwd(), 'src/services/join-room-devnet.js'));
+const eventBus = require(path.join(process.cwd(), 'src/services/event-bus.js'));
+const boltServiceProvider = () => {
+  try {
+    // Load compiled JS MagicBlockBOLTService for runtime
+    const mod = require(path.join(process.cwd(), 'dist/services/MagicBlockBOLTService.js'));
+    const { Connection, Keypair } = require('@solana/web3.js');
+    const connection = new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+    const kp = Keypair.generate();
+    const provider = { wallet: { publicKey: kp.publicKey } };
+    return new mod.MagicBlockBOLTService(connection, provider, console);
+  } catch (e) {
+    return null;
+  }
+};
 
 // Middleware
 app.use(cors({
@@ -16,9 +36,28 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+// Optional Socket.IO bridge if server is launched in an environment that attaches a socket server
+let io = null;
+try {
+  // If an external module sets global.io, use it
+  // eslint-disable-next-line no-undef
+  if (global && global.io) io = global.io;
+} catch (_) {}
+let gameNs = null;
+try {
+  if (io) gameNs = io.of('/game');
+} catch (_) {}
 
-// In-memory storage for rooms (in production, this would be a database)
-const rooms = new Map();
+// Read-only cache for quick listing; source of truth is logs/rooms.json via service
+let roomsCache = [];
+function refreshRoomsCache() {
+  try {
+    roomsCache = roomService.listRooms();
+  } catch (_) {
+    roomsCache = [];
+  }
+}
+refreshRoomsCache();
 
 // Logger utility
 const logger = {
@@ -40,7 +79,7 @@ const createError = (message, status = 500) => {
  */
 app.post('/api/v1/rooms', async (req, res) => {
   try {
-    const { settings, entry } = req.body;
+  const { settings, entry } = req.body;
 
     // Validate required fields
     if (!settings || typeof settings !== 'object') {
@@ -50,11 +89,7 @@ app.post('/api/v1/rooms', async (req, res) => {
       });
     }
 
-    // Generate unique identifiers
-    const sessionId = `session_${Date.now()}_${crypto.randomBytes(8).toString('hex')}`;
-    const roomCode = crypto.randomBytes(3).toString('hex').toUpperCase();
-
-    // Validate settings
+  // Validate settings
     const validatedSettings = {
       timeControl: settings.timeControl || '10+5',
       boardVariant: settings.boardVariant || 'standard',
@@ -81,71 +116,51 @@ app.post('/api/v1/rooms', async (req, res) => {
       }
     }
 
-    // Create room object
-    const room = {
-      sessionId,
-      roomCode,
-      status: 'waiting',
+    // Create real devnet memo + persisted record via service
+    const record = await roomService.createGameRoom({
       settings: validatedSettings,
       entry: validatedEntry,
-      createdAt: new Date().toISOString(),
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
-      players: [],
-      maxPlayers: 2,
-      spectators: [],
-      // On-chain data (simulated for devnet)
-      blockchain: {
-        network: 'devnet',
-        pdaAddress: `pda_${sessionId}`,
-        magicBlockSession: {
-          sessionId: sessionId,
-          rollupId: `rollup_${sessionId}`,
-          status: 'initialized'
-        },
-        transactionHash: `tx_${crypto.randomBytes(16).toString('hex')}`,
-        explorer: `https://explorer.solana.com/tx/${crypto.randomBytes(16).toString('hex')}?cluster=devnet`
-      }
-    };
-
-    // Store room in memory
-    rooms.set(sessionId, room);
+      creator: req.body?.creator || 'api'
+    });
+    refreshRoomsCache();
 
     // Log room creation
     logger.info('Battle room created successfully', {
-      sessionId,
-      roomCode,
+      sessionId: record.sessionId,
+      roomCode: record.roomCode,
       settings: validatedSettings,
-      entry: validatedEntry
+      entry: validatedEntry,
+      signature: record.signature
     });
 
     // Simulate on-chain event emission
     logger.info('Room created event emitted on devnet', {
       event: 'room_created',
-      sessionId,
-      pdaAddress: room.blockchain.pdaAddress,
+      sessionId: record.sessionId,
+      memoSig: record.signature,
+      explorer: record.explorer,
       network: 'devnet'
     });
 
-    // Return success response
+  // Return success response
     res.status(201).json({
       success: true,
       room: {
-        sessionId: room.sessionId,
-        roomCode: room.roomCode,
-        status: room.status,
-        settings: room.settings,
-        entry: room.entry,
-        createdAt: room.createdAt,
-        expiresAt: room.expiresAt,
-        playersCount: room.players.length,
-        maxPlayers: room.maxPlayers,
-        explorer: room.blockchain.explorer,
-        // Include MagicBlock session info
-        magicBlock: {
-          sessionId: room.blockchain.magicBlockSession.sessionId,
-          rollupId: room.blockchain.magicBlockSession.rollupId,
-          status: room.blockchain.magicBlockSession.status
-        }
+        sessionId: record.sessionId,
+        roomCode: record.roomCode,
+        status: record.status,
+        settings: record.settings,
+        entry: record.entry,
+        createdAt: record.createdAt,
+        // 24h expiry policy for waiting rooms
+        expiresAt: new Date(new Date(record.createdAt).getTime() + 24*60*60*1000).toISOString(),
+        playersCount: 0,
+        maxPlayers: 2,
+        explorer: record.explorer,
+    magicBlock: record.rollup,
+    anchorSig: record.anchorSig || null,
+    sessionPda: record.sessionPda || null,
+    anchorExplorer: record.anchorExplorer || null
       }
     });
 
@@ -178,9 +193,9 @@ app.get('/api/v1/rooms/:sessionId', async (req, res) => {
       });
     }
 
-    const room = rooms.get(sessionId);
+  const record = roomService.readRoomBySessionId(sessionId);
 
-    if (!room) {
+  if (!record) {
       return res.status(404).json({
         success: false,
         error: 'Room not found'
@@ -188,8 +203,8 @@ app.get('/api/v1/rooms/:sessionId', async (req, res) => {
     }
 
     // Check if room has expired
-    if (new Date(room.expiresAt) < new Date()) {
-      rooms.delete(sessionId);
+  const expiresAt = new Date(new Date(record.createdAt).getTime() + 24*60*60*1000);
+  if (expiresAt < new Date()) {
       return res.status(410).json({
         success: false,
         error: 'Room has expired'
@@ -199,19 +214,19 @@ app.get('/api/v1/rooms/:sessionId', async (req, res) => {
     res.json({
       success: true,
       room: {
-        sessionId: room.sessionId,
-        roomCode: room.roomCode,
-        status: room.status,
-        settings: room.settings,
-        entry: room.entry,
-        createdAt: room.createdAt,
-        expiresAt: room.expiresAt,
-        players: room.players,
-        playersCount: room.players.length,
-        maxPlayers: room.maxPlayers,
-        spectators: room.spectators.length,
-        explorer: room.blockchain.explorer,
-        magicBlock: room.blockchain.magicBlockSession
+        sessionId: record.sessionId,
+        roomCode: record.roomCode,
+        status: record.status,
+        settings: record.settings,
+        entry: record.entry,
+        createdAt: record.createdAt,
+        expiresAt: expiresAt.toISOString(),
+        players: [],
+        playersCount: 0,
+        maxPlayers: 2,
+        spectators: 0,
+        explorer: record.explorer,
+        magicBlock: record.rollup
       }
     });
 
@@ -229,28 +244,66 @@ app.get('/api/v1/rooms/:sessionId', async (req, res) => {
 });
 
 /**
+ * GET /api/v1/rooms/code/:roomCode - Lookup room by human-readable code
+ */
+app.get('/api/v1/rooms/code/:roomCode', async (req, res) => {
+  try {
+    const { roomCode } = req.params;
+    if (!roomCode) {
+      return res.status(400).json({ success: false, error: 'Room code is required' });
+    }
+    const record = roomService.readRoomBySessionId(roomCode) || roomService.readRoomByCode?.(roomCode);
+    if (!record) {
+      return res.status(404).json({ success: false, error: 'Room not found' });
+    }
+    const expiresAt = new Date(new Date(record.createdAt).getTime() + 24*60*60*1000);
+    if (expiresAt < new Date()) {
+      return res.status(410).json({ success: false, error: 'Room has expired' });
+    }
+    return res.json({ success: true, room: record });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error?.message || 'Internal server error' });
+  }
+});
+
+/**
  * GET /api/v1/rooms - List active rooms
  */
 app.get('/api/v1/rooms', async (req, res) => {
   try {
-    const { status, page = 1, limit = 10 } = req.query;
+  const { status, page = 1, limit = 10, variant, aiDifficulty } = req.query;
 
     // Filter rooms
-    let filteredRooms = Array.from(rooms.values());
+    refreshRoomsCache();
+    let filteredRooms = roomsCache.map(r => ({
+      sessionId: r.sessionId,
+      roomCode: r.roomCode,
+      status: r.status,
+      settings: r.settings,
+      entry: r.entry,
+      createdAt: r.createdAt
+    }));
 
     // Remove expired rooms
     const now = new Date();
     filteredRooms = filteredRooms.filter(room => {
-      if (new Date(room.expiresAt) < now) {
-        rooms.delete(room.sessionId);
-        return false;
-      }
-      return true;
+      const exp = new Date(new Date(room.createdAt).getTime() + 24*60*60*1000);
+      return exp >= now;
     });
 
     // Filter by status if provided
     if (status && typeof status === 'string') {
       filteredRooms = filteredRooms.filter(room => room.status === status);
+    }
+
+    // Filter by rule variations (board variant)
+    if (variant && typeof variant === 'string') {
+      filteredRooms = filteredRooms.filter(room => (room.settings?.boardVariant || '').toLowerCase() === variant.toLowerCase());
+    }
+
+    // Filter by AI difficulty if encoded in settings
+    if (aiDifficulty && typeof aiDifficulty === 'string') {
+      filteredRooms = filteredRooms.filter(room => (room.settings?.aiDifficulty || '').toLowerCase() === aiDifficulty.toLowerCase());
     }
 
     // Pagination
@@ -270,18 +323,19 @@ app.get('/api/v1/rooms', async (req, res) => {
         timeControl: room.settings.timeControl,
         boardVariant: room.settings.boardVariant,
         tournamentMode: room.settings.tournamentMode,
-        allowSpectators: room.settings.allowSpectators
+  allowSpectators: room.settings.allowSpectators,
+  aiDifficulty: room.settings.aiDifficulty || null
       },
       entry: {
         minElo: room.entry.minElo,
         entryFeeSol: room.entry.entryFeeSol,
         hasWhitelist: Boolean(room.entry.whitelistMint)
       },
-      playersCount: room.players.length,
-      maxPlayers: room.maxPlayers,
-      spectatorsCount: room.spectators.length,
+      playersCount: 0,
+      maxPlayers: 2,
+      spectatorsCount: 0,
       createdAt: room.createdAt,
-      expiresAt: room.expiresAt
+      expiresAt: new Date(new Date(room.createdAt).getTime() + 24*60*60*1000).toISOString()
     }));
 
     res.json({
@@ -310,8 +364,213 @@ app.get('/api/v1/rooms', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/v1/rooms/:sessionId/move - Process a move via BOLT ECS + rollup logging
+ * Body: { userPubkey: string, move: { fromX, fromY, fromLevel, toX, toY, toLevel, pieceType } }
+ */
+app.post('/api/v1/rooms/:sessionId/move', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { userPubkey, move } = req.body || {};
+    if (!sessionId || !userPubkey || !move) {
+      return res.status(400).json({ success: false, error: 'sessionId, userPubkey, move are required' });
+    }
+
+    const roomSvc = require(path.join(process.cwd(), 'src/services/rooms-devnet.js'));
+    const record = roomSvc.readRoomBySessionId(sessionId);
+    if (!record) return res.status(404).json({ success: false, error: 'Room not found' });
+    const allowed = (record.permissions?.players || []);
+    if (!allowed.includes(userPubkey)) {
+      return res.status(403).json({ success: false, error: 'User not permitted to submit moves for this session' });
+    }
+
+    // Delegate to move service
+    const moveService = require(path.join(process.cwd(), 'src/services/move-service.js'));
+    const result = await moveService.processMove({ sessionId, userPubkey, move });
+
+    // Emit WS events if available
+    if (io) {
+      try {
+        const evt = { sessionId, userPubkey, move, moveHash: result.moveHash, latencyMs: result.latencyMs, totalMoves: result.totalMoves };
+        io.to(sessionId).emit('game:move_applied', evt);
+        if (gameNs) gameNs.to(`game_${sessionId}`).emit('game:move_applied', evt);
+        if (result.ended) {
+          const endEvt = { sessionId, userPubkey, result: result.result, settlement: result.settlement };
+          io.to(sessionId).emit('game:ended', endEvt);
+          if (gameNs) gameNs.to(`game_${sessionId}`).emit('game:ended', endEvt);
+        }
+      } catch (_) {}
+    }
+
+    return res.json({ success: true, ...result });
+  } catch (error) {
+    return res.status(400).json({ success: false, error: error?.message || 'Move processing failed' });
+  }
+});
+
+/**
+ * POST /api/v1/rooms/:sessionId/valid-moves - Get valid destination squares for a selected piece
+ * Body: { userPubkey: string, fromX, fromY, fromLevel, pieceType }
+ */
+app.post('/api/v1/rooms/:sessionId/valid-moves', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { userPubkey, fromX, fromY, fromLevel, pieceType } = req.body || {};
+    if (!sessionId || !userPubkey || typeof fromX !== 'number' || typeof fromY !== 'number' || typeof fromLevel !== 'number' || !pieceType) {
+      return res.status(400).json({ success: false, error: 'sessionId, userPubkey, fromX, fromY, fromLevel, pieceType are required' });
+    }
+    const record = roomService.readRoomBySessionId(sessionId);
+    if (!record) return res.status(404).json({ success: false, error: 'Room not found' });
+    const allowed = (record.permissions?.players || []);
+    if (!allowed.includes(userPubkey)) return res.status(403).json({ success: false, error: 'Not permitted' });
+
+  // Delegate to move-service getValidMoves to avoid depending on TS build artifacts
+  const moveService = require(path.join(process.cwd(), 'src/services/move-service.js'));
+  const result = await moveService.getValidMoves({ sessionId, userPubkey, fromX, fromY, fromLevel, pieceType });
+  return res.json({ success: true, destinations: result.destinations || [] });
+  } catch (error) {
+    return res.status(400).json({ success: false, error: error?.message || 'Failed to compute valid moves' });
+  }
+});
+
+/**
+ * GET /api/v1/rooms/:sessionId/state - Return snapshot of world state for clients
+ */
+app.get('/api/v1/rooms/:sessionId/state', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    if (!sessionId) return res.status(400).json({ success: false, error: 'sessionId required' });
+    const record = roomService.readRoomBySessionId(sessionId);
+    if (!record) return res.status(404).json({ success: false, error: 'Room not found' });
+  const moveService = require(path.join(process.cwd(), 'src/services/move-service.js'));
+  const state = await moveService.getWorldStateSnapshot(sessionId).catch(() => null);
+  return res.json({ success: true, state: state || {} });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error?.message || 'Failed to load state' });
+  }
+});
+
+/**
+ * POST /api/v1/rooms/:sessionId/move/undo - Undo the last move within 10 seconds by its author
+ * Body: { userPubkey: string }
+ */
+app.post('/api/v1/rooms/:sessionId/move/undo', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { userPubkey } = req.body || {};
+    if (!sessionId || !userPubkey) {
+      return res.status(400).json({ success: false, error: 'sessionId and userPubkey are required' });
+    }
+    const moveService = require(path.join(process.cwd(), 'src/services/move-service.js'));
+    const result = await moveService.undoLastMove({ sessionId, userPubkey });
+    if (io) {
+      try {
+        const evt = { sessionId, userPubkey, totalMoves: result.totalMoves };
+        io.to(sessionId).emit('game:move_undone', evt);
+        if (gameNs) gameNs.to(`game_${sessionId}`).emit('game:move_undone', evt);
+      } catch (_) {}
+    }
+    return res.json({ success: true, ...result });
+  } catch (error) {
+    return res.status(400).json({ success: false, error: error?.message || 'Undo failed' });
+  }
+});
+
+/**
+ * POST /api/v1/rooms/:sessionId/resign - Resign and finalize the match
+ * Body: { userPubkey: string }
+ */
+app.post('/api/v1/rooms/:sessionId/resign', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { userPubkey } = req.body || {};
+    if (!sessionId || !userPubkey) {
+      return res.status(400).json({ success: false, error: 'sessionId and userPubkey are required' });
+    }
+    const moveService = require(path.join(process.cwd(), 'src/services/move-service.js'));
+    const result = await moveService.resignGame({ sessionId, userPubkey });
+    if (io) {
+      try {
+        const evt = { sessionId, userPubkey, result: result.result, settlement: result.settlement };
+        io.to(sessionId).emit('game:ended', evt);
+        if (gameNs) gameNs.to(`game_${sessionId}`).emit('game:ended', evt);
+      } catch (_) {}
+    }
+    return res.json({ success: true, ...result });
+  } catch (error) {
+    return res.status(400).json({ success: false, error: error?.message || 'Resign failed' });
+  }
+});
+
+/**
+ * POST /api/v1/rooms/:sessionId/join/build-tx - Build unsigned join tx for wallet signing
+ * - Verifies whitelist and balance
+ * - Returns base64 transaction (Memo + optional transfer to deterministic escrow)
+ */
+app.post('/api/v1/rooms/:sessionId/join/build-tx', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { userPubkey } = req.body || {};
+    if (!sessionId || !userPubkey) {
+      return res.status(400).json({ success: false, error: 'sessionId and userPubkey are required' });
+    }
+    const built = await joinService.buildJoinTransaction({ sessionId, userPubkey });
+    return res.json({ success: true, ...built });
+  } catch (error) {
+    return res.status(400).json({ success: false, error: error?.message || 'Failed to build join transaction' });
+  }
+});
+
+/**
+ * POST /api/v1/rooms/:sessionId/join/confirm - Confirm a signed join tx by signature
+ * - Checks on-chain transaction contents
+ * - Updates room status when full
+ */
+app.post('/api/v1/rooms/:sessionId/join/confirm', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { userPubkey, signature } = req.body || {};
+    if (!sessionId || !userPubkey || !signature) {
+      return res.status(400).json({ success: false, error: 'sessionId, userPubkey, signature are required' });
+    }
+    const result = await joinService.confirmJoin({ sessionId, userPubkey, signature });
+    return res.json({ success: true, ...result });
+  } catch (error) {
+    return res.status(400).json({ success: false, error: error?.message || 'Failed to confirm join' });
+  }
+});
+
+/**
+ * GET /api/v1/rooms/:sessionId/escrow - Get deterministic escrow address for a room
+ */
+app.get('/api/v1/rooms/:sessionId/escrow', (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const escrow = joinService.getEscrowAddress(sessionId);
+    return res.json({ success: true, sessionId, escrow });
+  } catch (error) {
+    return res.status(400).json({ success: false, error: error?.message || 'Failed to derive escrow' });
+  }
+});
+
+/**
+ * GET /api/v1/rooms/:sessionId/countdown - Get match countdown state if present
+ */
+app.get('/api/v1/rooms/:sessionId/countdown', (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const record = roomService.readRoomBySessionId(sessionId);
+    if (!record) return res.status(404).json({ success: false, error: 'Room not found' });
+    const countdown = record.countdown || null;
+    return res.json({ success: true, sessionId, countdown });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error?.message || 'Internal server error' });
+  }
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
+  refreshRoomsCache();
   res.json({
     success: true,
     status: 'healthy',
@@ -319,10 +578,50 @@ app.get('/health', (req, res) => {
     uptime: process.uptime(),
     memory: process.memoryUsage(),
     rooms: {
-      total: rooms.size,
-      active: Array.from(rooms.values()).filter(room => room.status === 'waiting' || room.status === 'ready').length
+      total: roomsCache.length,
+      active: roomsCache.filter(room => room.status === 'waiting' || room.status === 'ready').length
     }
   });
+});
+
+// Event bus listeners (placeholder for websockets)
+eventBus.on('room:countdown_started', (evt) => {
+  logger.info('Countdown started', evt);
+  if (io) {
+    try {
+      // Emit to generic and game namespace rooms
+      io.to(evt.sessionId).emit('room:countdown_started', evt);
+      if (gameNs) gameNs.to(`game_${evt.sessionId}`).emit('room:countdown_started', evt);
+    } catch (_) {}
+  }
+});
+
+eventBus.on('room:activated', async (evt) => {
+  logger.info('Room activated event', evt);
+  try {
+    const mb = require(path.join(process.cwd(), 'src/services/magicblock-client.js'));
+    const start = await mb.startRollupForSession(evt.sessionId);
+    const ready = await mb.waitUntilRollupReady(start.rollupId).catch(() => null);
+    // Update persisted room to reflect started rollup
+    const roomSvc = require(path.join(process.cwd(), 'src/services/rooms-devnet.js'));
+    roomSvc.updateRoom(evt.sessionId, (r) => {
+      r.rollup = r.rollup || {};
+      r.rollup.status = ready ? 'ready' : 'starting';
+      r.rollup.endpoint = start.endpoint;
+      r.rollup.rollupId = start.rollupId;
+      r.rollup.readyAt = ready?.readyAt || null;
+      return r;
+    });
+    logger.info('Rollup started for room', { sessionId: evt.sessionId, endpoint: start.endpoint, rollupId: start.rollupId, ready: !!ready });
+    if (io) {
+      try {
+        io.to(evt.sessionId).emit('room:rollup_started', { sessionId: evt.sessionId, endpoint: start.endpoint, rollupId: start.rollupId, ready: !!ready });
+        if (gameNs) gameNs.to(`game_${evt.sessionId}`).emit('room:rollup_started', { sessionId: evt.sessionId, endpoint: start.endpoint, rollupId: start.rollupId, ready: !!ready });
+      } catch (_) {}
+    }
+  } catch (e) {
+    logger.error('Failed to start rollup on activation', { sessionId: evt.sessionId, error: e.message });
+  }
 });
 
 // 404 handler

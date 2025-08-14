@@ -1,0 +1,52 @@
+(node:39282) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+  Nen Programs - Deployment Readiness Tests
+    Devnet Connection Tests
+Connected to Solana devnet, version: 2.3.6
+      ✔ Should connect to Solana devnet successfully (342ms)
+Recent blockhash: 2T71ppGy...
+Last valid block height: 389091622
+      ✔ Should get recent blockhash from devnet (89ms)
+    Program Account Validation
+Program Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF exists on devnet
+   Owner: BPFLoaderUpgradeab1e11111111111111111111111
+   Executable: true
+   Data length: 36 bytes
+Program 34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5 exists on devnet
+   Owner: BPFLoaderUpgradeab1e11111111111111111111111
+   Executable: true
+   Data length: 36 bytes
+Program 8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH not found on devnet (will be deployed)
+Program AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX exists on devnet
+   Owner: BPFLoaderUpgradeab1e11111111111111111111111
+   Executable: true
+   Data length: 36 bytes
+      ✔ Should check if program accounts exist on devnet (356ms)
+    PDA Account Validation
+Platform PDA account not found (will be created during initialization)
+      ✔ Should check platform PDA account status (90ms)
+platform account rent: 1343280 lamports (0.00134328 SOL)
+user account rent: 1593840 lamports (0.00159384 SOL)
+betting account rent: 1419840 lamports (0.00141984 SOL)
+listing account rent: 1566000 lamports (0.001566 SOL)
+session account rent: 1733040 lamports (0.00173304 SOL)
+      ✔ Should validate rent exemption requirements (441ms)
+    Network Performance Tests
+Network latency: 87ms
+      ✔ Should measure transaction confirmation time (88ms)
+Slot progression: 401138749 -> 401138752 (3 slots)
+      ✔ Should check slot progression (1176ms)
+    Program Deployment Prerequisites
+All program IDs are valid and unique
+      ✔ Should validate program ID format and uniqueness
+nen_core: Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF
+nen_betting: 34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5
+nen_marketplace: 8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH
+nen_magicblock: AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX
+      ✔ Should validate Anchor.toml configuration
+
+
+  9 passing (3s)
+

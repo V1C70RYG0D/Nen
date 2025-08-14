@@ -108,7 +108,7 @@ class TestUtils {
         console.log(`   Can Fund Accounts: ${this.environment.canFundAccounts ? 'Yes' : 'No'}`);
         console.log(`   Connection: ${this.environment.connection.rpcEndpoint}`);
         if (!this.environment.isValidatorRunning) {
-            console.log("ℹ️  Running in offline test mode - structure validation only");
+            console.log("Running in offline test mode - structure validation only");
         }
     }
     async checkAccountExists(address) {

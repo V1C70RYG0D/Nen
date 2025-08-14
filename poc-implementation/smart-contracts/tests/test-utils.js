@@ -103,7 +103,7 @@ class TestUtils {
             console.log("Test environment not initialized");
             return;
         }
-        console.log("🔧 Test Environment Status:");
+        console.log("Test Environment Status:");
         console.log(`   Validator Running: ${this.environment.isValidatorRunning ? 'Yes' : 'No'}`);
         console.log(`   Can Fund Accounts: ${this.environment.canFundAccounts ? 'Yes' : 'No'}`);
         console.log(`   Connection: ${this.environment.connection.rpcEndpoint}`);

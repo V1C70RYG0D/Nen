@@ -389,7 +389,7 @@ describe("Nen MagicBlock Program - Working Tests", () => {
           console.log("Session delegation transaction failed (expected):", (txError as Error).message.substring(0, 100));
         }
       } catch (error) {
-        console.log("⚠️ Session delegation preparation failed (expected):", (error as Error).message.substring(0, 100));
+        console.log("Session delegation preparation failed (expected):", (error as Error).message.substring(0, 100));
       }
     });
   });

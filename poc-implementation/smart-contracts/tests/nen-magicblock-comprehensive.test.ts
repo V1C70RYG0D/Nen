@@ -91,7 +91,7 @@ describe("Nen MagicBlock Program - Comprehensive Testing", () => {
         .signers([authority])
         .rpc();
 
-      console.log("✅ Enhanced session creation transaction signature:", tx);
+      console.log("Enhanced session creation transaction signature:", tx);
 
       // Verify session account was created and has correct data
       const session = await program.account.enhancedGameSession.fetch(sessionPda);
@@ -137,7 +137,7 @@ describe("Nen MagicBlock Program - Comprehensive Testing", () => {
         .signers([player1])
         .rpc();
 
-      console.log("✅ AI session creation transaction signature:", tx);
+      console.log("AI session creation transaction signature:", tx);
 
       // Verify AI session account was created
       const session = await program.account.enhancedGameSession.fetch(sessionPda2);
@@ -179,7 +179,7 @@ describe("Nen MagicBlock Program - Comprehensive Testing", () => {
         .signers([player2])
         .rpc();
 
-      console.log("✅ Advanced session creation transaction:", tx);
+      console.log("Advanced session creation transaction:", tx);
 
       const session = await program.account.enhancedGameSession.fetch(sessionPda3);
       expect(session.sessionConfig.timeLimitSeconds).to.equal(3600);
@@ -231,7 +231,7 @@ describe("Nen MagicBlock Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with invalid session configuration");
       } catch (error: any) {
         expect(error).to.exist;
-        console.log("✅ Successfully rejected invalid session configuration");
+        console.log("Successfully rejected invalid session configuration");
       }
     });
   });
@@ -271,7 +271,7 @@ describe("Nen MagicBlock Program - Comprehensive Testing", () => {
         .signers([player1])
         .rpc();
 
-      console.log("✅ Submit BOLT ECS move transaction:", tx);
+      console.log("Submit BOLT ECS move transaction:", tx);
 
       // Verify move was processed
       const session = await program.account.enhancedGameSession.fetch(sessionPda);
@@ -384,7 +384,7 @@ describe("Nen MagicBlock Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with invalid move position");
       } catch (error: any) {
         expect(error.message).to.include("InvalidMove");
-        console.log("✅ Successfully rejected invalid move position");
+        console.log("Successfully rejected invalid move position");
       }
     });
 
@@ -445,7 +445,7 @@ describe("Nen MagicBlock Program - Comprehensive Testing", () => {
         expect.fail("Should have failed due to move submitted too quickly");
       } catch (error: any) {
         expect(error.message).to.include("MoveTooFast");
-        console.log("✅ Successfully enforced anti-spam protection");
+        console.log("Successfully enforced anti-spam protection");
       }
     });
 
@@ -503,7 +503,7 @@ describe("Nen MagicBlock Program - Comprehensive Testing", () => {
           if (updatedSession.status.completed) {
             expect(updatedSession.winner).to.not.be.null;
             expect(updatedSession.completedAt.toNumber()).to.be.greaterThan(0);
-            console.log(`✅ Game completed after ${updatedSession.moveNumber} moves`);
+            console.log(`Game completed after ${updatedSession.moveNumber} moves`);
             break;
           }
         } catch (error: any) {
@@ -542,7 +542,7 @@ describe("Nen MagicBlock Program - Comprehensive Testing", () => {
         .signers([player1])
         .rpc();
 
-      console.log("✅ Update session config transaction:", tx);
+      console.log("Update session config transaction:", tx);
 
       // Verify configuration update
       const session = await program.account.enhancedGameSession.fetch(sessionPda2);

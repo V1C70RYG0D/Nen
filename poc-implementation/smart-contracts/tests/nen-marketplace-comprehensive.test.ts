@@ -172,7 +172,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         .signers([seller])
         .rpc();
 
-      console.log("✅ Fixed-price listing creation transaction:", tx);
+      console.log("Fixed-price listing creation transaction:", tx);
 
       // Verify listing was created
       const listing = await program.account.listing.fetch(listing1Pda);
@@ -214,7 +214,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         .signers([seller])
         .rpc();
 
-      console.log("✅ Auction listing creation transaction:", tx);
+      console.log("Auction listing creation transaction:", tx);
 
       // Verify auction listing was created
       const listing = await program.account.listing.fetch(listing2Pda);
@@ -293,7 +293,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with invalid fee BPS");
       } catch (error: any) {
         expect(error.message).to.include("InvalidFeeBps");
-        console.log("✅ Successfully rejected listing with invalid fee BPS");
+        console.log("Successfully rejected listing with invalid fee BPS");
       }
     });
 
@@ -364,7 +364,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with zero price");
       } catch (error: any) {
         expect(error.message).to.include("InvalidPrice");
-        console.log("✅ Successfully rejected listing with zero price");
+        console.log("Successfully rejected listing with zero price");
       }
     });
 
@@ -428,7 +428,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with insufficient NFT balance");
       } catch (error: any) {
         expect(error.message).to.include("amount >= 1");
-        console.log("✅ Successfully rejected listing without owning NFT");
+        console.log("Successfully rejected listing without owning NFT");
       }
     });
   });
@@ -449,7 +449,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         .signers([seller])
         .rpc();
 
-      console.log("✅ Listing cancellation transaction:", tx);
+      console.log("Listing cancellation transaction:", tx);
 
       // Verify listing status was updated
       const listing = await program.account.listing.fetch(listing2Pda);
@@ -483,7 +483,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with unauthorized cancellation");
       } catch (error: any) {
         expect(error.message).to.include("has_one");
-        console.log("✅ Successfully rejected unauthorized listing cancellation");
+        console.log("Successfully rejected unauthorized listing cancellation");
       }
     });
 
@@ -506,7 +506,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with listing not active");
       } catch (error: any) {
         expect(error.message).to.include("ListingNotActive");
-        console.log("✅ Successfully rejected cancellation of already cancelled listing");
+        console.log("Successfully rejected cancellation of already cancelled listing");
       }
     });
   });
@@ -579,7 +579,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         .signers([seller])
         .rpc();
 
-      console.log("✅ Maximum fee listing creation transaction:", tx);
+      console.log("Maximum fee listing creation transaction:", tx);
 
       // Verify listing with maximum fee
       const listing = await program.account.listing.fetch(advancedListingPda);
@@ -645,7 +645,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         .signers([seller])
         .rpc();
 
-      console.log("✅ High-value listing creation transaction:", tx);
+      console.log("High-value listing creation transaction:", tx);
 
       const listing = await program.account.listing.fetch(advancedListingPda);
       expect(listing.price.toString()).to.equal(highPrice.toString());
@@ -676,7 +676,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         expect(escrowAta).to.be.instanceOf(PublicKey);
       }
 
-      console.log("✅ All escrow PDA derivations are secure");
+      console.log("All escrow PDA derivations are secure");
     });
 
     it("Should verify listing PDA uniqueness", async () => {
@@ -697,7 +697,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         }
       }
 
-      console.log(`✅ All ${listingPdas.size} listing PDAs are unique`);
+      console.log(`All ${listingPdas.size} listing PDAs are unique`);
     });
 
     it("Should verify token account constraints", async () => {
@@ -709,7 +709,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
       expect(escrowAccount.mint.toString()).to.equal(nftMint1.toString());
       expect(escrowAccount.owner.toString()).to.equal(escrowAuthority1.toString());
 
-      console.log("✅ Token account constraints are properly enforced");
+      console.log("Token account constraints are properly enforced");
     });
   });
 
@@ -790,7 +790,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
       const successCount = results.filter(r => r.status === 'fulfilled').length;
 
       expect(successCount).to.be.greaterThan(0);
-      console.log(`✅ Concurrent listings: ${successCount}/${concurrentOperations.length} succeeded`);
+      console.log(`Concurrent listings: ${successCount}/${concurrentOperations.length} succeeded`);
     });
 
     it("Should handle listing with minimal price", async () => {
@@ -854,7 +854,7 @@ describe("Nen Marketplace Program - Comprehensive Testing", () => {
         .signers([seller])
         .rpc();
 
-      console.log("✅ Minimal price listing transaction:", tx);
+      console.log("Minimal price listing transaction:", tx);
 
       const listing = await program.account.listing.fetch(minimalListingPda);
       expect(listing.price.toString()).to.equal(minimalPrice.toString());

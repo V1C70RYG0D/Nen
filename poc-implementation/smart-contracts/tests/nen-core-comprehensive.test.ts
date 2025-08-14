@@ -113,7 +113,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         .signers([admin])
         .rpc();
 
-      console.log("✅ Platform initialization transaction:", tx);
+      console.log("Platform initialization transaction:", tx);
 
       // Verify platform account was created
       const platformAccount = await program.account.platform.fetch(platformPda);
@@ -148,7 +148,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with invalid fee percentage");
       } catch (error: any) {
         expect(error.message).to.include("InvalidFeePercentage");
-        console.log("✅ Successfully rejected invalid fee percentage");
+        console.log("Successfully rejected invalid fee percentage");
       }
     });
   });
@@ -168,7 +168,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ Basic user account creation transaction:", tx);
+      console.log("Basic user account creation transaction:", tx);
 
       // Verify user account was created
       const userAccount = await program.account.userAccount.fetch(userAccount1Pda);
@@ -194,7 +194,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         .signers([user2])
         .rpc();
 
-      console.log("✅ Enhanced user account creation transaction:", tx);
+      console.log("Enhanced user account creation transaction:", tx);
 
       // Verify enhanced user account was created
       const userAccount = await program.account.userAccount.fetch(userAccount2Pda);
@@ -223,7 +223,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with invalid username");
       } catch (error: any) {
         expect(error.message).to.include("UsernameTooShort");
-        console.log("✅ Successfully rejected invalid username");
+        console.log("Successfully rejected invalid username");
       }
     });
 
@@ -246,7 +246,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with invalid region");
       } catch (error: any) {
         expect(error.message).to.include("InvalidRegion");
-        console.log("✅ Successfully rejected invalid region");
+        console.log("Successfully rejected invalid region");
       }
     });
   });
@@ -279,7 +279,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ Match creation transaction:", tx);
+      console.log("Match creation transaction:", tx);
 
       // Verify match was created
       const matchAccount = await program.account.matchAccount.fetch(matchPda);
@@ -311,7 +311,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ Move submission transaction:", tx);
+      console.log("Move submission transaction:", tx);
 
       // Verify move was recorded
       const matchAccount = await program.account.matchAccount.fetch(matchPda);
@@ -340,7 +340,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with invalid position");
       } catch (error: any) {
         expect(error.message).to.include("InvalidPosition");
-        console.log("✅ Successfully rejected invalid move position");
+        console.log("Successfully rejected invalid move position");
       }
     });
 
@@ -365,7 +365,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with suspicious timestamp");
       } catch (error: any) {
         expect(error.message).to.include("SuspiciousTimestamp");
-        console.log("✅ Successfully rejected suspicious timestamp");
+        console.log("Successfully rejected suspicious timestamp");
       }
     });
   });
@@ -399,7 +399,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ Bet placement transaction:", tx);
+      console.log("Bet placement transaction:", tx);
 
       // Verify bet was created
       const betAccount = await program.account.betAccount.fetch(betPda);
@@ -451,7 +451,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with insufficient KYC");
       } catch (error: any) {
         expect(error.message).to.include("InsufficientKyc");
-        console.log("✅ Successfully rejected bet with insufficient KYC");
+        console.log("Successfully rejected bet with insufficient KYC");
       }
     });
   });
@@ -492,7 +492,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ AI Agent NFT minting transaction:", tx);
+      console.log("AI Agent NFT minting transaction:", tx);
 
       // Verify NFT was minted
       const nftAccount = await program.account.aiAgentNft.fetch(nftPda);
@@ -540,7 +540,7 @@ describe("Nen Core Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with name too long");
       } catch (error: any) {
         expect(error.message).to.include("NameTooLong");
-        console.log("✅ Successfully rejected NFT with long name");
+        console.log("Successfully rejected NFT with long name");
       }
     });
   });

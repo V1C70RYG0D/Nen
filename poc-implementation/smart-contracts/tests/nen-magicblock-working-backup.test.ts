@@ -35,9 +35,9 @@ describe("Nen MagicBlock Program - Working Tests", () => {
     // Try to load program from workspace
     try {
       program = anchor.workspace.NenMagicblock;
-      console.log("✅ MagicBlock program loaded from workspace");
+      console.log("MagicBlock program loaded from workspace");
     } catch (error) {
-      console.log("⚠️ MagicBlock program workspace not available, using program ID");
+      console.log("MagicBlock program workspace not available, using program ID");
       program = null;
     }
 
@@ -53,9 +53,9 @@ describe("Nen MagicBlock Program - Working Tests", () => {
       );
       await Promise.all(airdropPromises);
       await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log("✅ MagicBlock test accounts funded");
+      console.log("MagicBlock test accounts funded");
     } catch (error) {
-      console.log("⚠️ Failed to fund MagicBlock test accounts (expected in test environment)");
+      console.log("Failed to fund MagicBlock test accounts (expected in test environment)");
     }
   });
 
@@ -63,7 +63,7 @@ describe("Nen MagicBlock Program - Working Tests", () => {
     it("Should have valid MagicBlock program configuration", () => {
       const programId = new PublicKey(config.programId);
       expect(programId).to.be.instanceOf(PublicKey);
-      console.log("✅ MagicBlock Program ID is valid:", programId.toString());
+      console.log("MagicBlock Program ID is valid:", programId.toString());
     });
 
     it("Should derive gaming session PDAs correctly", () => {
@@ -83,7 +83,7 @@ describe("Nen MagicBlock Program - Working Tests", () => {
       expect(sessionPda2).to.be.instanceOf(PublicKey);
       expect(sessionPda1.toString()).to.not.equal(sessionPda2.toString());
       
-      console.log("✅ Gaming Session PDAs derived:");
+      console.log("Gaming Session PDAs derived:");
       console.log("   Authority Session PDA:", sessionPda1.toString(), "Bump:", bump1);
       console.log("   Player1 Session PDA:", sessionPda2.toString(), "Bump:", bump2);
     });
@@ -102,7 +102,7 @@ describe("Nen MagicBlock Program - Working Tests", () => {
       expect(bump).to.be.a('number');
       expect(bump).to.be.lessThan(256);
       
-      console.log("✅ Match State PDA derived:");
+      console.log("Match State PDA derived:");
       console.log("   Match State PDA:", matchStatePda.toString(), "Bump:", bump);
     });
 
@@ -133,10 +133,10 @@ describe("Nen MagicBlock Program - Working Tests", () => {
         expect(config.compressionLevel).to.be.at.least(0);      // Min compression
         expect(config.compressionLevel).to.be.at.most(3);       // Max compression
         
-        console.log(`   ✅ Config ${index + 1}: ${config.timeLimitSeconds}s total, ${config.moveTimeLimitSeconds}s per move`);
+        console.log(`   Config ${index + 1}: ${config.timeLimitSeconds}s total, ${config.moveTimeLimitSeconds}s per move`);
       });
 
-      console.log("✅ Session configuration validation works correctly");
+      console.log("Session configuration validation works correctly");
     });
   });
 
@@ -172,10 +172,10 @@ describe("Nen MagicBlock Program - Working Tests", () => {
         expect(region.latencyZone).to.be.at.most(10);
         expect(region.serverCluster).to.match(/^cluster-/);
         
-        console.log(`   ✅ Region ${index + 1}: ${region.regionCode} (Zone: ${region.latencyZone})`);
+        console.log(`   Region ${index + 1}: ${region.regionCode} (Zone: ${region.latencyZone})`);
       });
 
-      console.log("✅ Geographic region validation works correctly");
+      console.log("Geographic region validation works correctly");
     });
 
     it("Should validate performance metrics", () => {
@@ -195,7 +195,7 @@ describe("Nen MagicBlock Program - Working Tests", () => {
       expect(performanceMetrics.networkQuality).to.be.at.least(0.1);
       expect(performanceMetrics.networkQuality).to.be.at.most(1.0);
 
-      console.log("✅ Performance metrics validation works correctly");
+      console.log("Performance metrics validation works correctly");
       console.log(`   Target Latency: ${performanceMetrics.targetLatencyMs}ms`);
       console.log(`   Target Throughput: ${performanceMetrics.targetThroughput} ops/sec`);
       console.log(`   Compression Ratio: ${performanceMetrics.compressionRatio * 100}%`);
@@ -206,7 +206,7 @@ describe("Nen MagicBlock Program - Working Tests", () => {
   describe("MagicBlock Operations Tests", () => {
     it("Should attempt enhanced session creation", async () => {
       if (!program) {
-        console.log("⚠️ MagicBlock program not available, skipping session creation test");
+        console.log("MagicBlock program not available, skipping session creation test");
         return;
       }
 
@@ -247,7 +247,7 @@ describe("Nen MagicBlock Program - Working Tests", () => {
           .instruction();
 
         expect(instruction).to.not.be.null;
-        console.log("✅ Enhanced session creation instruction created");
+        console.log("Enhanced session creation instruction created");
 
         // Try to send the transaction (may fail in test environment)
         try {
@@ -267,18 +267,18 @@ describe("Nen MagicBlock Program - Working Tests", () => {
             .signers([authority])
             .rpc();
           
-          console.log("✅ Enhanced session creation successful:", tx);
+          console.log("Enhanced session creation successful:", tx);
         } catch (txError) {
-          console.log("⚠️ Enhanced session creation transaction failed (expected):", (txError as Error).message.substring(0, 100));
+          console.log("Enhanced session creation transaction failed (expected):", (txError as Error).message.substring(0, 100));
         }
       } catch (error) {
-        console.log("⚠️ Enhanced session creation preparation failed (expected):", (error as Error).message.substring(0, 100));
+        console.log("Enhanced session creation preparation failed (expected):", (error as Error).message.substring(0, 100));
       }
     });
 
     it("Should attempt BOLT ECS move submission", async () => {
       if (!program) {
-        console.log("⚠️ MagicBlock program not available, skipping move submission test");
+        console.log("MagicBlock program not available, skipping move submission test");
         return;
       }
 
@@ -322,7 +322,7 @@ describe("Nen MagicBlock Program - Working Tests", () => {
           .instruction();
 
         expect(instruction).to.not.be.null;
-        console.log("✅ BOLT ECS move submission instruction created");
+        console.log("BOLT ECS move submission instruction created");
 
         // Try to send the transaction (may fail in test environment)
         try {
@@ -335,18 +335,18 @@ describe("Nen MagicBlock Program - Working Tests", () => {
             .signers([player1])
             .rpc();
           
-          console.log("✅ BOLT ECS move submission successful:", tx);
+          console.log("BOLT ECS move submission successful:", tx);
         } catch (txError) {
-          console.log("⚠️ BOLT ECS move submission transaction failed (expected):", (txError as Error).message.substring(0, 100));
+          console.log("BOLT ECS move submission transaction failed (expected):", (txError as Error).message.substring(0, 100));
         }
       } catch (error) {
-        console.log("⚠️ BOLT ECS move submission preparation failed (expected):", (error as Error).message.substring(0, 100));
+        console.log("BOLT ECS move submission preparation failed (expected):", (error as Error).message.substring(0, 100));
       }
     });
 
     it("Should attempt session delegation", async () => {
       if (!program) {
-        console.log("⚠️ MagicBlock program not available, skipping delegation test");
+        console.log("MagicBlock program not available, skipping delegation test");
         return;
       }
 
@@ -371,7 +371,7 @@ describe("Nen MagicBlock Program - Working Tests", () => {
           .instruction();
 
         expect(instruction).to.not.be.null;
-        console.log("✅ Session delegation instruction created");
+        console.log("Session delegation instruction created");
 
         // Try to send the transaction (may fail in test environment)
         try {
@@ -384,12 +384,12 @@ describe("Nen MagicBlock Program - Working Tests", () => {
             .signers([authority])
             .rpc();
           
-          console.log("✅ Session delegation successful:", tx);
+          console.log("Session delegation successful:", tx);
         } catch (txError) {
-          console.log("⚠️ Session delegation transaction failed (expected):", (txError as Error).message.substring(0, 100));
+          console.log("Session delegation transaction failed (expected):", (txError as Error).message.substring(0, 100));
         }
       } catch (error) {
-        console.log("⚠️ Session delegation preparation failed (expected):", (error as Error).message.substring(0, 100));
+        console.log("Session delegation preparation failed (expected):", (error as Error).message.substring(0, 100));
       }
     });
   });
@@ -538,20 +538,20 @@ describe("Nen MagicBlock Program - Working Tests", () => {
       console.log("\n📊 MagicBlock Program Test Summary");
       console.log("===================================");
       console.log(`✅ Tests passed: ${passedTests}/${totalTests} (${successRate}%)`);
-      console.log("\n🔧 Tested Components:");
+      console.log("\nTested Components:");
       Object.entries(testSummary).forEach(([test, passed]) => {
-        console.log(`   ${passed ? '✅' : '❌'} ${test.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+        console.log(`   ${passed ? 'PASS' : 'FAIL'} ${test.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
       });
 
-      console.log("\n🎯 MagicBlock Capabilities Validated:");
-      console.log("   ✅ Enhanced gaming session management");
-      console.log("   ✅ Real-time move processing with BOLT ECS");
-      console.log("   ✅ Geographic clustering and optimization");
-      console.log("   ✅ Performance monitoring and metrics");
-      console.log("   ✅ Session delegation and commit scheduling");
-      console.log("   ✅ Anti-fraud mechanisms and security");
+      console.log("\nMagicBlock Capabilities Validated:");
+      console.log("   Enhanced gaming session management");
+      console.log("   Real-time move processing with BOLT ECS");
+      console.log("   Geographic clustering and optimization");
+      console.log("   Performance monitoring and metrics");
+      console.log("   Session delegation and commit scheduling");
+      console.log("   Anti-fraud mechanisms and security");
 
-      console.log("\n📋 MagicBlock Program Information:");
+      console.log("\nMagicBlock Program Information:");
       console.log(`   Program ID: ${config.programId}`);
       console.log(`   Session Duration: 10 minutes - 2 hours`);
       console.log(`   Move Time Limit: 30 seconds - 5 minutes`);

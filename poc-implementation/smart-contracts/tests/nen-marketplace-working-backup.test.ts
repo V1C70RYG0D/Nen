@@ -57,9 +57,9 @@ describe("Nen Marketplace Program - Working Tests", () => {
       );
       await Promise.all(airdropPromises);
       await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log("✅ Marketplace test accounts funded");
+      console.log("Marketplace test accounts funded");
     } catch (error) {
-      console.log("⚠️ Failed to fund marketplace test accounts (expected in test environment)");
+      console.log("Failed to fund marketplace test accounts (expected in test environment)");
     }
   });
 
@@ -67,7 +67,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
     it("Should have valid marketplace program configuration", () => {
       const programId = new PublicKey(config.programId);
       expect(programId).to.be.instanceOf(PublicKey);
-      console.log("✅ Marketplace Program ID is valid:", programId.toString());
+      console.log("Marketplace Program ID is valid:", programId.toString());
     });
 
     it("Should derive marketplace listing PDAs correctly", () => {
@@ -88,7 +88,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
       expect(listingPda2).to.be.instanceOf(PublicKey);
       expect(listingPda1.toString()).to.not.equal(listingPda2.toString());
       
-      console.log("✅ Marketplace Listing PDAs derived:");
+      console.log("Marketplace Listing PDAs derived:");
       console.log("   Seller Listing PDA:", listingPda1.toString(), "Bump:", bump1);
       console.log("   Buyer Listing PDA:", listingPda2.toString(), "Bump:", bump2);
     });
@@ -109,7 +109,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
       expect(escrowPdas[1].pda).to.be.instanceOf(PublicKey);
       expect(escrowPdas[0].pda.toString()).to.not.equal(escrowPdas[1].pda.toString());
       
-      console.log("✅ Escrow Authority PDAs derived:");
+      console.log("Escrow Authority PDAs derived:");
       escrowPdas.forEach((escrow, index) => {
         console.log(`   Escrow ${index + 1}: ${escrow.pda.toString()} (Bump: ${escrow.bump})`);
       });
@@ -133,7 +133,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
         expect(fee).to.be.greaterThan(maxFeeBps);
       });
       
-      console.log("✅ Marketplace fee validation works correctly");
+      console.log("Marketplace fee validation works correctly");
       console.log(`   Maximum fee: ${maxFeeBps / 100}%`);
       console.log(`   Valid fee range: 0-${maxFeeBps} basis points`);
     });
@@ -142,7 +142,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
   describe("Marketplace Operations Tests", () => {
     it("Should attempt NFT listing creation", async () => {
       if (!program) {
-        console.log("⚠️ Marketplace program not available, skipping listing creation test");
+        console.log("Marketplace program not available, skipping listing creation test");
         return;
       }
 
@@ -191,7 +191,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
           .instruction();
 
         expect(instruction).to.not.be.null;
-        console.log("✅ NFT listing creation instruction created");
+        console.log("NFT listing creation instruction created");
 
         // Try to send the transaction (may fail in test environment)
         try {
@@ -212,18 +212,18 @@ describe("Nen Marketplace Program - Working Tests", () => {
             .signers([seller])
             .rpc();
           
-          console.log("✅ NFT listing creation successful:", tx);
+          console.log("NFT listing creation successful:", tx);
         } catch (txError) {
-          console.log("⚠️ NFT listing creation transaction failed (expected):", (txError as Error).message.substring(0, 100));
+          console.log("NFT listing creation transaction failed (expected):", (txError as Error).message.substring(0, 100));
         }
       } catch (error) {
-        console.log("⚠️ NFT listing creation preparation failed (expected):", (error as Error).message.substring(0, 100));
+        console.log("NFT listing creation preparation failed (expected):", (error as Error).message.substring(0, 100));
       }
     });
 
     it("Should attempt listing cancellation", async () => {
       if (!program) {
-        console.log("⚠️ Marketplace program not available, skipping cancellation test");
+        console.log("Marketplace program not available, skipping cancellation test");
         return;
       }
 
@@ -266,7 +266,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
           .instruction();
 
         expect(instruction).to.not.be.null;
-        console.log("✅ Listing cancellation instruction created");
+        console.log("Listing cancellation instruction created");
 
         // Try to send the transaction (may fail in test environment)
         try {
@@ -284,12 +284,12 @@ describe("Nen Marketplace Program - Working Tests", () => {
             .signers([seller])
             .rpc();
           
-          console.log("✅ Listing cancellation successful:", tx);
+          console.log("Listing cancellation successful:", tx);
         } catch (txError) {
-          console.log("⚠️ Listing cancellation transaction failed (expected):", (txError as Error).message.substring(0, 100));
+          console.log("Listing cancellation transaction failed (expected):", (txError as Error).message.substring(0, 100));
         }
       } catch (error) {
-        console.log("⚠️ Listing cancellation preparation failed (expected):", (error as Error).message.substring(0, 100));
+        console.log("Listing cancellation preparation failed (expected):", (error as Error).message.substring(0, 100));
       }
     });
 
@@ -324,7 +324,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
         expect(isValid).to.be.false;
       });
       
-      console.log("✅ Listing price validation works correctly");
+      console.log("Listing price validation works correctly");
       console.log(`   Minimum: ${minPrice / LAMPORTS_PER_SOL} SOL`);
       console.log(`   Maximum: ${maxPrice / LAMPORTS_PER_SOL} SOL`);
     });
@@ -342,7 +342,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
       // Unauthorized user should not be able to list
       expect(unauthorizedUser.toString()).to.not.equal(seller.publicKey.toString());
       
-      console.log("✅ NFT ownership validation logic verified");
+      console.log("NFT ownership validation logic verified");
       console.log(`   Owner: ${nftOwner.toString()}`);
       console.log(`   Unauthorized: ${unauthorizedUser.toString()}`);
     });
@@ -370,7 +370,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
       
       expect(escrowAuthority.toString()).to.equal(escrowAuthority2.toString());
       
-      console.log("✅ Escrow account security validation works correctly");
+      console.log("Escrow account security validation works correctly");
       console.log(`   Escrow Authority: ${escrowAuthority.toString()}`);
       console.log(`   Bump: ${bump}`);
     });
@@ -386,10 +386,10 @@ describe("Nen Marketplace Program - Working Tests", () => {
       listingTypes.forEach((listingType, index) => {
         expect(listingType).to.be.an('object');
         expect(Object.keys(listingType)).to.have.lengthOf(1);
-        console.log(`   ✅ Listing type ${index + 1}: ${Object.keys(listingType)[0]}`);
+        console.log(`   Listing type ${index + 1}: ${Object.keys(listingType)[0]}`);
       });
       
-      console.log("✅ Listing type validation works correctly");
+      console.log("Listing type validation works correctly");
     });
 
     it("Should validate marketplace state transitions", () => {
@@ -411,7 +411,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
       
       Object.entries(validTransitions).forEach(([fromState, toStates]) => {
         expect(toStates).to.be.an('array');
-        console.log(`   ✅ From ${fromState}: can transition to [${toStates.join(', ')}]`);
+        console.log(`   From ${fromState}: can transition to [${toStates.join(', ')}]`);
       });
       
       console.log("✅ State transition validation works correctly");
@@ -443,7 +443,7 @@ describe("Nen Marketplace Program - Working Tests", () => {
       console.log(`✅ Tests passed: ${passedTests}/${totalTests} (${successRate}%)`);
       console.log("\n🔧 Tested Components:");
       Object.entries(testSummary).forEach(([test, passed]) => {
-        console.log(`   ${passed ? '✅' : '❌'} ${test.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+        console.log(`   ${passed ? 'PASS' : 'FAIL'} ${test.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
       });
 
       console.log("\n🎯 Marketplace Capabilities Validated:");

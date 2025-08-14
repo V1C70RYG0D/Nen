@@ -62,7 +62,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ Betting account creation transaction:", tx);
+      console.log("Betting account creation transaction:", tx);
 
       // Verify betting account was created
       const bettingAccount = await program.account.bettingAccount.fetch(bettingAccount1Pda);
@@ -99,7 +99,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         .signers([user3])
         .rpc();
 
-      console.log("✅ Multiple betting accounts created:", tx2, tx3);
+      console.log("Multiple betting accounts created:", tx2, tx3);
 
       // Verify all accounts were created
       const account2 = await program.account.bettingAccount.fetch(bettingAccount2Pda);
@@ -124,7 +124,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with duplicate account creation");
       } catch (error: any) {
         expect(error.message).to.include("already in use");
-        console.log("✅ Successfully prevented duplicate betting account creation");
+        console.log("Successfully prevented duplicate betting account creation");
       }
     });
   });
@@ -144,7 +144,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ SOL deposit transaction:", tx);
+      console.log("SOL deposit transaction:", tx);
 
       // Verify deposit was recorded in betting account
       const bettingAccount = await program.account.bettingAccount.fetch(bettingAccount1Pda);
@@ -177,7 +177,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ Large SOL deposit transaction:", tx);
+      console.log("Large SOL deposit transaction:", tx);
 
       // Verify deposit was added to existing balance
       const bettingAccount = await program.account.bettingAccount.fetch(bettingAccount1Pda);
@@ -203,7 +203,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with below minimum deposit");
       } catch (error: any) {
         expect(error.message).to.include("BelowMinimumDeposit");
-        console.log("✅ Successfully rejected deposit below minimum");
+        console.log("Successfully rejected deposit below minimum");
       }
     });
 
@@ -224,7 +224,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with above maximum deposit");
       } catch (error: any) {
         expect(error.message).to.include("AboveMaximumDeposit");
-        console.log("✅ Successfully rejected deposit above maximum");
+        console.log("Successfully rejected deposit above maximum");
       }
     });
 
@@ -259,7 +259,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
       expect(bettingAccount.totalDeposited.toNumber()).to.equal(firstDeposit + secondDeposit);
       expect(bettingAccount.depositCount).to.equal(2);
 
-      console.log("✅ Successfully handled multiple deposits from same user");
+      console.log("Successfully handled multiple deposits from same user");
     });
   });
 
@@ -279,7 +279,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ SOL withdrawal transaction:", tx);
+      console.log("SOL withdrawal transaction:", tx);
 
       // Verify withdrawal was recorded
       const bettingAccount = await program.account.bettingAccount.fetch(bettingAccount1Pda);
@@ -309,7 +309,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         expect.fail("Should have failed due to withdrawal cooldown");
       } catch (error: any) {
         expect(error.message).to.include("WithdrawalCooldownActive");
-        console.log("✅ Successfully enforced 24-hour withdrawal cooldown");
+        console.log("Successfully enforced 24-hour withdrawal cooldown");
       }
     });
 
@@ -331,7 +331,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with insufficient balance");
       } catch (error: any) {
         expect(error.message).to.include("InsufficientBalance");
-        console.log("✅ Successfully rejected withdrawal exceeding available balance");
+        console.log("Successfully rejected withdrawal exceeding available balance");
       }
     });
 
@@ -349,7 +349,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with zero withdrawal amount");
       } catch (error: any) {
         expect(error.message).to.include("InvalidWithdrawalAmount");
-        console.log("✅ Successfully rejected zero withdrawal amount");
+        console.log("Successfully rejected zero withdrawal amount");
       }
     });
 
@@ -373,7 +373,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with unauthorized withdrawal");
       } catch (error: any) {
         expect(error.message).to.include("has_one");
-        console.log("✅ Successfully prevented unauthorized withdrawal");
+        console.log("Successfully prevented unauthorized withdrawal");
       }
     });
   });
@@ -393,7 +393,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         .signers([user2])
         .rpc();
 
-      console.log("✅ Funds locking transaction:", tx);
+      console.log("Funds locking transaction:", tx);
 
       // Verify funds were locked
       const bettingAccount = await program.account.bettingAccount.fetch(bettingAccount2Pda);
@@ -414,7 +414,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         .signers([user2])
         .rpc();
 
-      console.log("✅ Funds unlocking transaction:", tx);
+      console.log("Funds unlocking transaction:", tx);
 
       // Verify funds were unlocked
       const bettingAccount = await program.account.bettingAccount.fetch(bettingAccount2Pda);
@@ -439,7 +439,7 @@ describe("Nen Betting Program - Comprehensive Testing", () => {
         expect.fail("Should have failed with insufficient balance for locking");
       } catch (error: any) {
         expect(error.message).to.include("InsufficientBalance");
-        console.log("✅ Successfully rejected excessive funds locking");
+        console.log("Successfully rejected excessive funds locking");
       }
     });
 

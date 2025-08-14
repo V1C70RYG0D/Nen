@@ -50,7 +50,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
     try {
       program = anchor.workspace.NenCore as anchor.Program<any>;
     } catch (error) {
-      console.log("⚠️ Program workspace not available, using mock for testing");
+      console.log("Program workspace not available, using mock for testing");
       // For testing purposes, we'll create a mock program interface
       return;
     }
@@ -72,7 +72,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
       // Wait for airdrops to confirm
       await new Promise(resolve => setTimeout(resolve, 3000));
     } catch (error) {
-      console.log("⚠️ Airdrop failed, using mock balances for testing");
+      console.log("Airdrop failed, using mock balances for testing");
     }
 
     // Derive PDAs
@@ -100,7 +100,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
   describe("Platform Initialization", () => {
     it("Should initialize platform successfully", async () => {
       if (!program) {
-        console.log("⚠️ Program not available, skipping test");
+        console.log("Program not available, skipping test");
         return;
       }
 
@@ -118,14 +118,14 @@ describe("Nen Core Program - Comprehensive Tests", () => {
           .signers([authority])
           .rpc();
 
-        console.log("✅ Platform initialization transaction signature:", tx);
+        console.log("Platform initialization transaction signature:", tx);
 
         // Verify platform config account was created
         const accountInfo = await provider.connection.getAccountInfo(platformConfigPda);
         expect(accountInfo).to.not.be.null;
         expect(accountInfo!.owner.toString()).to.equal(program.programId.toString());
       } catch (error) {
-        console.log("⚠️ Platform initialization test failed (expected in test environment):", error);
+        console.log("Platform initialization test failed (expected in test environment):", error);
       }
     });
 
@@ -148,7 +148,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
       } catch (error: unknown) {
         const anchorError = error as AnchorError;
         expect(anchorError.message).to.include("already initialized");
-        console.log("✅ Successfully prevented duplicate platform initialization");
+        console.log("Successfully prevented duplicate platform initialization");
       }
     });
 
@@ -180,7 +180,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
       } catch (error: unknown) {
         const anchorError = error as AnchorError;
         expect(anchorError.message).to.include("InvalidPlatformFee");
-        console.log("✅ Successfully validated platform fee limits");
+        console.log("Successfully validated platform fee limits");
       }
     });
   });
@@ -200,7 +200,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ User account creation transaction signature:", tx);
+      console.log("User account creation transaction signature:", tx);
 
       // Verify user account was created
       const accountInfo = await provider.connection.getAccountInfo(userAccount1Pda);
@@ -222,7 +222,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
         .signers([user2])
         .rpc();
 
-      console.log("✅ Second user account creation transaction signature:", tx);
+      console.log("Second user account creation transaction signature:", tx);
 
       // Verify second user account was created
       const accountInfo = await provider.connection.getAccountInfo(userAccount2Pda);
@@ -242,7 +242,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ KYC level update transaction signature:", tx);
+      console.log("KYC level update transaction signature:", tx);
 
       // Verify account still exists
       const accountInfo = await provider.connection.getAccountInfo(userAccount1Pda);
@@ -266,7 +266,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
       } catch (error: unknown) {
         const anchorError = error as AnchorError;
         expect(anchorError.message).to.include("InvalidKycLevel");
-        console.log("✅ Successfully rejected invalid KYC level");
+        console.log("Successfully rejected invalid KYC level");
       }
     });
 
@@ -291,7 +291,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
       } catch (error: unknown) {
         const anchorError = error as AnchorError;
         expect(anchorError.message).to.include("Unauthorized");
-        console.log("✅ Successfully prevented unauthorized KYC update");
+        console.log("Successfully prevented unauthorized KYC update");
       }
     });
   });
@@ -319,7 +319,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ Match creation transaction signature:", tx);
+      console.log("Match creation transaction signature:", tx);
 
       // Verify match account was created
       const accountInfo = await provider.connection.getAccountInfo(matchPda);
@@ -345,7 +345,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
         .signers([user2])
         .rpc();
 
-      console.log("✅ Match join transaction signature:", tx);
+      console.log("Match join transaction signature:", tx);
 
       // Verify match account still exists
       const accountInfo = await provider.connection.getAccountInfo(matchPda);
@@ -374,7 +374,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
         .signers([user2])
         .rpc();
 
-      console.log("✅ AI match creation transaction signature:", tx);
+      console.log("AI match creation transaction signature:", tx);
 
       // Verify AI match account was created
       const accountInfo = await provider.connection.getAccountInfo(aiMatchPda);
@@ -409,7 +409,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
       } catch (error: unknown) {
         const anchorError = error as AnchorError;
         expect(anchorError.message).to.include("InvalidMatchParams");
-        console.log("✅ Successfully rejected invalid match parameters");
+        console.log("Successfully rejected invalid match parameters");
       }
     });
   });
@@ -436,7 +436,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ Training session start transaction signature:", tx);
+      console.log("Training session start transaction signature:", tx);
 
       // Verify training session account was created
       const accountInfo = await provider.connection.getAccountInfo(trainingPda);
@@ -464,7 +464,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ Training session completion transaction signature:", tx);
+      console.log("Training session completion transaction signature:", tx);
 
       // Verify training session account still exists
       const accountInfo = await provider.connection.getAccountInfo(trainingPda);
@@ -492,7 +492,7 @@ describe("Nen Core Program - Comprehensive Tests", () => {
         .signers([user2])
         .rpc();
 
-      console.log("✅ Advanced training session start transaction signature:", tx);
+      console.log("Advanced training session start transaction signature:", tx);
 
       // Verify advanced training session account was created
       const accountInfo = await provider.connection.getAccountInfo(advancedTrainingPda);

@@ -66,7 +66,7 @@ describe("Nen Marketplace Program", () => {
         .signers([seller])
         .rpc();
 
-      console.log("✅ Fixed price listing creation transaction signature:", tx);
+      console.log("Fixed price listing creation transaction signature:", tx);
 
       // Verify listing account was created
       const accountInfo = await provider.connection.getAccountInfo(listingPda);
@@ -94,7 +94,7 @@ describe("Nen Marketplace Program", () => {
         .signers([seller])
         .rpc();
 
-      console.log("✅ Second fixed price listing creation transaction signature:", tx);
+      console.log("Second fixed price listing creation transaction signature:", tx);
 
       // Verify second listing account was created
       const accountInfo = await provider.connection.getAccountInfo(listing3Pda);
@@ -120,7 +120,7 @@ describe("Nen Marketplace Program", () => {
         expect.fail("Should have failed with duplicate listing creation");
       } catch (error) {
         expect(error.message).to.include("already initialized");
-        console.log("✅ Successfully prevented duplicate listing creation");
+        console.log("Successfully prevented duplicate listing creation");
       }
     });
 
@@ -148,7 +148,7 @@ describe("Nen Marketplace Program", () => {
         expect.fail("Should have failed with invalid price");
       } catch (error) {
         expect(error.message).to.include("InvalidPrice");
-        console.log("✅ Successfully rejected invalid price listing");
+        console.log("Successfully rejected invalid price listing");
       }
     });
   });
@@ -169,7 +169,7 @@ describe("Nen Marketplace Program", () => {
         .signers([seller])
         .rpc();
 
-      console.log("✅ Auction listing creation transaction signature:", tx);
+      console.log("Auction listing creation transaction signature:", tx);
 
       // Verify auction listing account was created
       const accountInfo = await provider.connection.getAccountInfo(auctionListingPda);
@@ -190,7 +190,7 @@ describe("Nen Marketplace Program", () => {
         .signers([buyer])
         .rpc();
 
-      console.log("✅ Bid placement transaction signature:", tx);
+      console.log("Bid placement transaction signature:", tx);
 
       // Verify the auction listing account still exists
       const accountInfo = await provider.connection.getAccountInfo(auctionListingPda);
@@ -214,7 +214,7 @@ describe("Nen Marketplace Program", () => {
         .signers([secondBidder])
         .rpc();
 
-      console.log("✅ Higher bid placement transaction signature:", tx);
+      console.log("Higher bid placement transaction signature:", tx);
 
       // Verify the auction listing account still exists
       const accountInfo = await provider.connection.getAccountInfo(auctionListingPda);
@@ -238,7 +238,7 @@ describe("Nen Marketplace Program", () => {
         expect.fail("Should have failed with bid too low");
       } catch (error) {
         expect(error.message).to.include("BidTooLow");
-        console.log("✅ Successfully rejected lower bid");
+        console.log("Successfully rejected lower bid");
       }
     });
   });
@@ -256,7 +256,7 @@ describe("Nen Marketplace Program", () => {
         .signers([buyer])
         .rpc();
 
-      console.log("✅ Listing purchase transaction signature:", tx);
+      console.log("Listing purchase transaction signature:", tx);
 
       // Verify the listing account still exists (might be marked as sold)
       const accountInfo = await provider.connection.getAccountInfo(listingPda);
@@ -304,7 +304,7 @@ describe("Nen Marketplace Program", () => {
         expect.fail("Should have failed with insufficient funds");
       } catch (error) {
         expect(error.message).to.include("InsufficientFunds");
-        console.log("✅ Successfully rejected purchase with insufficient funds");
+        console.log("Successfully rejected purchase with insufficient funds");
       }
     });
   });
@@ -341,7 +341,7 @@ describe("Nen Marketplace Program", () => {
         .signers([seller])
         .rpc();
 
-      console.log("✅ Listing cancellation transaction signature:", tx);
+      console.log("Listing cancellation transaction signature:", tx);
 
       // Verify the listing account still exists (might be marked as cancelled)
       const accountInfo = await provider.connection.getAccountInfo(cancelListingPda);
@@ -383,7 +383,7 @@ describe("Nen Marketplace Program", () => {
         expect.fail("Should have failed with unauthorized cancellation");
       } catch (error) {
         expect(error.message).to.include("Unauthorized");
-        console.log("✅ Successfully prevented unauthorized listing cancellation");
+        console.log("Successfully prevented unauthorized listing cancellation");
       }
     });
   });
@@ -427,7 +427,7 @@ describe("Nen Marketplace Program", () => {
         .signers([authority])
         .rpc();
 
-      console.log("✅ Escrow creation transaction signature:", tx);
+      console.log("Escrow creation transaction signature:", tx);
 
       // Verify escrow account was created
       const accountInfo = await provider.connection.getAccountInfo(highValueEscrowPda);
@@ -460,7 +460,7 @@ describe("Nen Marketplace Program", () => {
         .signers([authority])
         .rpc();
 
-      console.log("✅ Escrow release transaction signature:", tx);
+      console.log("Escrow release transaction signature:", tx);
 
       // Verify escrow account still exists
       const accountInfo = await provider.connection.getAccountInfo(releaseEscrowPda);
@@ -500,7 +500,7 @@ describe("Nen Marketplace Program", () => {
       const successCount = results.filter(r => r.status === 'fulfilled').length;
 
       expect(successCount).to.be.greaterThan(0);
-      console.log(`✅ Successfully created ${successCount}/3 concurrent listings`);
+      console.log(`Successfully created ${successCount}/3 concurrent listings`);
     });
 
     it("Should validate PDA derivation security", async () => {

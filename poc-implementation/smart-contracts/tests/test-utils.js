@@ -82,7 +82,7 @@ class TestUtils {
         catch (error) {
             // Only show error if it's not a connection-related issue
             if (!this.isConnectionError(error)) {
-                console.log(`⚠️ ${fallbackMessage}:`, error.message);
+                console.log(`${fallbackMessage}:`, error.message);
             }
             return null;
         }
@@ -100,12 +100,12 @@ class TestUtils {
     }
     logTestEnvironmentStatus() {
         if (!this.environment) {
-            console.log("❌ Test environment not initialized");
+            console.log("Test environment not initialized");
             return;
         }
         console.log("🔧 Test Environment Status:");
-        console.log(`   Validator Running: ${this.environment.isValidatorRunning ? '✅' : '❌'}`);
-        console.log(`   Can Fund Accounts: ${this.environment.canFundAccounts ? '✅' : '❌'}`);
+        console.log(`   Validator Running: ${this.environment.isValidatorRunning ? 'Yes' : 'No'}`);
+        console.log(`   Can Fund Accounts: ${this.environment.canFundAccounts ? 'Yes' : 'No'}`);
         console.log(`   Connection: ${this.environment.connection.rpcEndpoint}`);
         if (!this.environment.isValidatorRunning) {
             console.log("ℹ️  Running in offline test mode - structure validation only");

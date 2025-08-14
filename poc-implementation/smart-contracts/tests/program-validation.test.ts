@@ -7,28 +7,28 @@ describe("Nen Programs - Validation Tests", () => {
       const programId = "Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF";
       const publicKey = new PublicKey(programId);
       expect(PublicKey.isOnCurve(publicKey)).to.be.true;
-      console.log("✅ Nen Core program ID is valid:", programId);
+      console.log("Nen Core program ID is valid:", programId);
     });
 
     it("Should validate nen-betting program ID", () => {
       const programId = "34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5";
       const publicKey = new PublicKey(programId);
       expect(PublicKey.isOnCurve(publicKey)).to.be.true;
-      console.log("✅ Nen Betting program ID is valid:", programId);
+      console.log("Nen Betting program ID is valid:", programId);
     });
 
     it("Should validate nen-marketplace program ID", () => {
       const programId = "8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH";
       const publicKey = new PublicKey(programId);
       expect(PublicKey.isOnCurve(publicKey)).to.be.true;
-      console.log("✅ Nen Marketplace program ID is valid:", programId);
+      console.log("Nen Marketplace program ID is valid:", programId);
     });
 
     it("Should validate nen-magicblock program ID", () => {
       const programId = "AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX";
       const publicKey = new PublicKey(programId);
       expect(PublicKey.isOnCurve(publicKey)).to.be.true;
-      console.log("✅ Nen MagicBlock program ID is valid:", programId);
+      console.log("Nen MagicBlock program ID is valid:", programId);
     });
   });
 
@@ -42,7 +42,7 @@ describe("Nen Programs - Validation Tests", () => {
       expect(platformPda).to.be.instanceOf(PublicKey);
       expect(bump).to.be.a('number');
       expect(bump).to.be.at.least(0).and.at.most(255);
-      console.log("✅ Platform PDA:", platformPda.toString(), "bump:", bump);
+      console.log("Platform PDA:", platformPda.toString(), "bump:", bump);
     });
 
     it("Should derive user account PDAs with different seeds", () => {
@@ -60,7 +60,7 @@ describe("Nen Programs - Validation Tests", () => {
       );
 
       expect(userPda1.toString()).to.not.equal(userPda2.toString());
-      console.log("✅ User PDAs are unique:", userPda1.toString(), userPda2.toString());
+      console.log("User PDAs are unique:", userPda1.toString(), userPda2.toString());
     });
 
     it("Should derive betting account PDAs correctly", () => {
@@ -72,7 +72,7 @@ describe("Nen Programs - Validation Tests", () => {
 
       expect(bettingPda).to.be.instanceOf(PublicKey);
       expect(bump).to.be.a('number');
-      console.log("✅ Betting PDA:", bettingPda.toString());
+      console.log("Betting PDA:", bettingPda.toString());
     });
 
     it("Should derive marketplace listing PDAs correctly", () => {
@@ -86,7 +86,7 @@ describe("Nen Programs - Validation Tests", () => {
 
       expect(listingPda).to.be.instanceOf(PublicKey);
       expect(bump).to.be.a('number');
-      console.log("✅ Marketplace listing PDA:", listingPda.toString());
+      console.log("Marketplace listing PDA:", listingPda.toString());
     });
 
     it("Should derive magicblock session PDAs correctly", () => {
@@ -98,7 +98,7 @@ describe("Nen Programs - Validation Tests", () => {
 
       expect(sessionPda).to.be.instanceOf(PublicKey);
       expect(bump).to.be.a('number');
-      console.log("✅ MagicBlock session PDA:", sessionPda.toString());
+      console.log("MagicBlock session PDA:", sessionPda.toString());
     });
   });
 
@@ -113,7 +113,7 @@ describe("Nen Programs - Validation Tests", () => {
 
       const uniqueIds = new Set(programIds);
       expect(uniqueIds.size).to.equal(programIds.length);
-      console.log("✅ All program IDs are unique");
+      console.log("All program IDs are unique");
     });
 
     it("Should validate PDA seeds are consistent", () => {
@@ -128,7 +128,7 @@ describe("Nen Programs - Validation Tests", () => {
       for (const [name, seed] of Object.entries(seeds)) {
         expect(seed).to.be.a('string');
         expect(seed.length).to.be.greaterThan(0);
-        console.log(`✅ ${name} seed is valid:`, seed);
+        console.log(`${name} seed is valid:`, seed);
       }
     });
   });

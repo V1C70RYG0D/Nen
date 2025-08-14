@@ -36,13 +36,13 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
     user2 = Keypair.generate();
     authority = Keypair.generate();
 
-    console.log("✅ Test setup complete");
+    console.log("Test setup complete");
     console.log(`   User1: ${user1.publicKey.toString()}`);
     console.log(`   User2: ${user2.publicKey.toString()}`);
     console.log(`   Authority: ${authority.publicKey.toString()}`);
   });
 
-  describe("✅ Smart Contract Program Verification", () => {
+  describe("Smart Contract Program Verification", () => {
     it("Should verify all Anchor programs are properly deployed", async () => {
       const programs = [
         { name: "Betting", id: BETTING_PROGRAM_ID },
@@ -57,12 +57,12 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
           if (accountInfo) {
             expect(accountInfo.executable).to.be.true;
             expect(accountInfo.lamports).to.be.greaterThan(0);
-            console.log(`✅ ${program.name} program verified on devnet`);
+            console.log(`${program.name} program verified on devnet`);
             console.log(`   Program ID: ${program.id.toString()}`);
             console.log(`   Lamports: ${accountInfo.lamports}`);
             console.log(`   Data size: ${accountInfo.data.length} bytes`);
           } else {
-            console.log(`⚠️  ${program.name} program not found (may not be deployed yet)`);
+            console.log(`${program.name} program not found (may not be deployed yet)`);
           }
         } catch (error) {
           console.log(`ℹ️  ${program.name} verification: ${error.message}`);
@@ -79,7 +79,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
           if (accountInfo) {
             expect(accountInfo.data.length).to.be.greaterThan(1000); // At least 1KB
             expect(accountInfo.data.length).to.be.lessThan(1024 * 1024); // Less than 1MB
-            console.log(`✅ Program ${programId.toString().slice(0, 8)}... size: ${(accountInfo.data.length / 1024).toFixed(1)}KB`);
+            console.log(`Program ${programId.toString().slice(0, 8)}... size: ${(accountInfo.data.length / 1024).toFixed(1)}KB`);
           }
         } catch (error) {
           console.log(`ℹ️  Program size check: ${error.message}`);
@@ -88,7 +88,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
     });
   });
 
-  describe("✅ IDL Structure and Validation", () => {
+  describe("IDL Structure and Validation", () => {
     it("Should validate betting program IDL structure", () => {
       if (bettingIdl) {
         expect(bettingIdl.name).to.equal("nen_betting");
@@ -97,7 +97,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
         expect(bettingIdl.instructions.length).to.be.greaterThan(0);
         expect(bettingIdl.accounts).to.be.an('array');
         
-        console.log(`✅ Betting IDL validated:`);
+        console.log(`Betting IDL validated:`);
         console.log(`   Instructions: ${bettingIdl.instructions.length}`);
         console.log(`   Accounts: ${bettingIdl.accounts.length}`);
         console.log(`   Program ID: ${bettingIdl.metadata.address}`);
@@ -110,7 +110,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
           console.log(`   - ${instruction.name} (${instruction.accounts.length} accounts, ${instruction.args.length} args)`);
         });
       } else {
-        console.log("⚠️  Betting IDL not loaded");
+        console.log("Betting IDL not loaded");
       }
     });
 
@@ -119,7 +119,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
         expect(coreIdl.name).to.equal("nen_core");
         expect(coreIdl.instructions.length).to.be.greaterThan(0);
         
-        console.log(`✅ Core IDL validated:`);
+        console.log(`Core IDL validated:`);
         console.log(`   Instructions: ${coreIdl.instructions.length}`);
         console.log(`   Accounts: ${coreIdl.accounts.length}`);
         
@@ -127,7 +127,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
           console.log(`   - ${instruction.name}`);
         });
       } else {
-        console.log("⚠️  Core IDL not loaded");
+        console.log("Core IDL not loaded");
       }
     });
 
@@ -136,7 +136,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
         expect(magicblockIdl.name).to.equal("nen_magicblock");
         expect(magicblockIdl.instructions.length).to.be.greaterThan(0);
         
-        console.log(`✅ MagicBlock IDL validated:`);
+        console.log(`MagicBlock IDL validated:`);
         console.log(`   Instructions: ${magicblockIdl.instructions.length}`);
         console.log(`   Accounts: ${magicblockIdl.accounts.length}`);
         
@@ -144,7 +144,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
           console.log(`   - ${instruction.name}`);
         });
       } else {
-        console.log("⚠️  MagicBlock IDL not loaded");
+        console.log("MagicBlock IDL not loaded");
       }
     });
 
@@ -153,7 +153,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
         expect(marketplaceIdl.name).to.equal("nen_marketplace");
         expect(marketplaceIdl.instructions.length).to.be.greaterThan(0);
         
-        console.log(`✅ Marketplace IDL validated:`);
+        console.log(`Marketplace IDL validated:`);
         console.log(`   Instructions: ${marketplaceIdl.instructions.length}`);
         console.log(`   Accounts: ${marketplaceIdl.accounts.length}`);
         
@@ -161,12 +161,12 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
           console.log(`   - ${instruction.name}`);
         });
       } else {
-        console.log("⚠️  Marketplace IDL not loaded");
+        console.log("Marketplace IDL not loaded");
       }
     });
   });
 
-  describe("✅ PDA and Account Management", () => {
+  describe("PDA and Account Management", () => {
     it("Should derive betting account PDAs correctly", () => {
       const [bettingPda1, bump1] = PublicKey.findProgramAddressSync(
         [Buffer.from("betting"), user1.publicKey.toBuffer()],
@@ -182,7 +182,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
       expect(bump1).to.be.a('number');
       expect(bump2).to.be.a('number');
       
-      console.log(`✅ Betting PDAs derived:`);
+      console.log(`Betting PDAs derived:`);
       console.log(`   User1 PDA: ${bettingPda1.toString()}`);
       console.log(`   User2 PDA: ${bettingPda2.toString()}`);
       console.log(`   Bumps: ${bump1}, ${bump2}`);
@@ -201,7 +201,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
 
       expect(userPda1.toString()).to.not.equal(userPda2.toString());
       
-      console.log(`✅ User PDAs derived:`);
+      console.log(`User PDAs derived:`);
       console.log(`   User1 PDA: ${userPda1.toString()}`);
       console.log(`   User2 PDA: ${userPda2.toString()}`);
     });
@@ -222,7 +222,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
 
       expect(sessionPda1.toString()).to.not.equal(sessionPda2.toString());
       
-      console.log(`✅ Game Session PDAs derived:`);
+      console.log(`Game Session PDAs derived:`);
       console.log(`   Game 1 PDA: ${sessionPda1.toString()}`);
       console.log(`   Game 2 PDA: ${sessionPda2.toString()}`);
     });
@@ -243,13 +243,13 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
 
       expect(listingPda1.toString()).to.not.equal(listingPda2.toString());
       
-      console.log(`✅ Marketplace Listing PDAs derived:`);
+      console.log(`Marketplace Listing PDAs derived:`);
       console.log(`   Listing 1 PDA: ${listingPda1.toString()}`);
       console.log(`   Listing 2 PDA: ${listingPda2.toString()}`);
     });
   });
 
-  describe("✅ Instruction Data Validation", () => {
+  describe("Instruction Data Validation", () => {
     it("Should validate instruction discriminators and data sizes", () => {
       const instructionSizes = {
         "Initialize Betting": 16,     // discriminator (8) + amount (8)
@@ -340,7 +340,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
       
       console.log(`✅ Anchor testing capabilities validated:`);
       Object.entries(testingCapabilities).forEach(([capability, enabled]) => {
-        console.log(`   ${enabled ? '✅' : '❌'} ${capability}`);
+        console.log(`   ${enabled ? 'PASS' : 'FAIL'} ${capability}`);
       });
       
       console.log(`📊 Testing readiness: ${enabledCapabilities}/${totalCapabilities} (100%)`);

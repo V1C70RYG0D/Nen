@@ -63,7 +63,7 @@ describe("Anchor Program Testing (Real Implementation)", () => {
     }
   });
 
-  describe("✅ Program Deployment Validation", () => {
+  describe("Program Deployment Validation", () => {
     it("Should verify all programs are deployed on devnet", async () => {
       const programs = [
         { name: "Betting", id: BETTING_PROGRAM_ID },
@@ -77,11 +77,11 @@ describe("Anchor Program Testing (Real Implementation)", () => {
           const accountInfo = await connection.getAccountInfo(program.id);
           expect(accountInfo).to.not.be.null;
           expect(accountInfo.executable).to.be.true;
-          console.log(`✅ ${program.name} program deployed: ${program.id.toString()}`);
+          console.log(`${program.name} program deployed: ${program.id.toString()}`);
           console.log(`   Account lamports: ${accountInfo.lamports}`);
           console.log(`   Data length: ${accountInfo.data.length} bytes`);
         } catch (error) {
-          console.log(`⚠️  ${program.name} program not accessible: ${error.message}`);
+          console.log(`${program.name} program not accessible: ${error.message}`);
         }
       }
     });
@@ -93,14 +93,14 @@ describe("Anchor Program Testing (Real Implementation)", () => {
         const accountInfo = await connection.getAccountInfo(programId);
         if (accountInfo) {
           expect(accountInfo.executable).to.be.true;
-          console.log(`✅ Program ${programId.toString()} is executable`);
+          console.log(`Program ${programId.toString()} is executable`);
           console.log(`   Owner: ${accountInfo.owner.toString()}`);
         }
       }
     });
   });
 
-  describe("✅ PDA Derivation Testing", () => {
+  describe("PDA Derivation Testing", () => {
     it("Should derive PDAs correctly for betting accounts", async () => {
       const [bettingPda, bettingBump] = PublicKey.findProgramAddressSync(
         [Buffer.from("betting"), user1.publicKey.toBuffer()],
@@ -111,7 +111,7 @@ describe("Anchor Program Testing (Real Implementation)", () => {
       expect(bettingBump).to.be.a('number');
       expect(bettingBump).to.be.lessThan(256);
       
-      console.log(`✅ Betting PDA: ${bettingPda.toString()}`);
+      console.log(`Betting PDA: ${bettingPda.toString()}`);
       console.log(`   Bump: ${bettingBump}`);
     });
 
@@ -124,7 +124,7 @@ describe("Anchor Program Testing (Real Implementation)", () => {
       expect(userPda).to.be.instanceOf(PublicKey);
       expect(userBump).to.be.a('number');
       
-      console.log(`✅ User PDA: ${userPda.toString()}`);
+      console.log(`User PDA: ${userPda.toString()}`);
       console.log(`   Bump: ${userBump}`);
     });
 
@@ -138,13 +138,13 @@ describe("Anchor Program Testing (Real Implementation)", () => {
       expect(sessionPda).to.be.instanceOf(PublicKey);
       expect(sessionBump).to.be.a('number');
       
-      console.log(`✅ Game Session PDA: ${sessionPda.toString()}`);
+      console.log(`Game Session PDA: ${sessionPda.toString()}`);
       console.log(`   Game ID: ${gameId}`);
       console.log(`   Bump: ${sessionBump}`);
     });
   });
 
-  describe("✅ Account Size Validation", () => {
+  describe("Account Size Validation", () => {
     it("Should validate expected account sizes for data structures", () => {
       // Based on Rust struct definitions
       const expectedSizes = {
@@ -158,7 +158,7 @@ describe("Anchor Program Testing (Real Implementation)", () => {
         expect(size).to.be.a('number');
         expect(size).to.be.greaterThan(0);
         expect(size).to.be.lessThan(10240); // Solana account size limit
-        console.log(`✅ ${name} expected size: ${size} bytes`);
+        console.log(`${name} expected size: ${size} bytes`);
       });
     });
 
@@ -169,12 +169,12 @@ describe("Anchor Program Testing (Real Implementation)", () => {
         const rentExemption = await connection.getMinimumBalanceForRentExemption(size);
         expect(rentExemption).to.be.a('number');
         expect(rentExemption).to.be.greaterThan(0);
-        console.log(`✅ Size ${size} bytes requires ${rentExemption} lamports for rent exemption`);
+        console.log(`Size ${size} bytes requires ${rentExemption} lamports for rent exemption`);
       }
     });
   });
 
-  describe("✅ Real Implementation Verification", () => {
+  describe("Real Implementation Verification", () => {
     it("Should demonstrate real SOL transfer capabilities", async () => {
       const fromKeypair = authority;
       const toKeypair = user1;
@@ -184,7 +184,7 @@ describe("Anchor Program Testing (Real Implementation)", () => {
         const fromBalance = await connection.getBalance(fromKeypair.publicKey);
         const toBalance = await connection.getBalance(toKeypair.publicKey);
         
-        console.log(`✅ Real balances verified:`);
+        console.log(`Real balances verified:`);
         console.log(`   From: ${fromBalance / LAMPORTS_PER_SOL} SOL`);
         console.log(`   To: ${toBalance / LAMPORTS_PER_SOL} SOL`);
         
@@ -209,7 +209,7 @@ describe("Anchor Program Testing (Real Implementation)", () => {
 
       Object.entries(instructionSizes).forEach(([name, size]) => {
         expect(size).to.be.lessThan(INSTRUCTION_DATA_LIMIT);
-        console.log(`✅ ${name} instruction: ${size} bytes (within ${INSTRUCTION_DATA_LIMIT} limit)`);
+        console.log(`${name} instruction: ${size} bytes (within ${INSTRUCTION_DATA_LIMIT} limit)`);
       });
     });
 
@@ -229,10 +229,10 @@ describe("Anchor Program Testing (Real Implementation)", () => {
       const totalFeatures = Object.keys(features).length;
       
       expect(enabledFeatures).to.equal(totalFeatures);
-      console.log(`✅ Production features enabled: ${enabledFeatures}/${totalFeatures}`);
+      console.log(`Production features enabled: ${enabledFeatures}/${totalFeatures}`);
       
       Object.entries(features).forEach(([feature, enabled]) => {
-        console.log(`   ${enabled ? '✅' : '❌'} ${feature}`);
+        console.log(`   ${enabled ? 'ENABLED' : 'DISABLED'} ${feature}`);
       });
     });
   });

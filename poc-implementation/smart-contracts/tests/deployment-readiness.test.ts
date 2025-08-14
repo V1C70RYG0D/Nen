@@ -8,7 +8,7 @@ describe("Nen Programs - Deployment Readiness Tests", () => {
     it("Should connect to Solana devnet successfully", async () => {
       const version = await connection.getVersion();
       expect(version).to.have.property("solana-core");
-      console.log("✅ Connected to Solana devnet, version:", version["solana-core"]);
+      console.log("Connected to Solana devnet, version:", version["solana-core"]);
     });
 
     it("Should get recent blockhash from devnet", async () => {
@@ -16,8 +16,8 @@ describe("Nen Programs - Deployment Readiness Tests", () => {
       expect(blockhash).to.be.a('string');
       expect(lastValidBlockHeight).to.be.a('number');
       expect(lastValidBlockHeight).to.be.greaterThan(0);
-      console.log("✅ Recent blockhash:", blockhash.substring(0, 8) + "...");
-      console.log("✅ Last valid block height:", lastValidBlockHeight);
+      console.log("Recent blockhash:", blockhash.substring(0, 8) + "...");
+      console.log("Last valid block height:", lastValidBlockHeight);
     });
   });
 
@@ -35,12 +35,12 @@ describe("Nen Programs - Deployment Readiness Tests", () => {
         const accountInfo = await connection.getAccountInfo(publicKey);
         
         if (accountInfo) {
-          console.log(`✅ Program ${programId} exists on devnet`);
+          console.log(`Program ${programId} exists on devnet`);
           console.log(`   Owner: ${accountInfo.owner.toString()}`);
           console.log(`   Executable: ${accountInfo.executable}`);
           console.log(`   Data length: ${accountInfo.data.length} bytes`);
         } else {
-          console.log(`⚠️ Program ${programId} not found on devnet (will be deployed)`);
+          console.log(`Program ${programId} not found on devnet (will be deployed)`);
         }
       }
     });
@@ -55,10 +55,10 @@ describe("Nen Programs - Deployment Readiness Tests", () => {
 
       const accountInfo = await connection.getAccountInfo(platformPda);
       if (accountInfo) {
-        console.log("✅ Platform PDA account exists on devnet");
+        console.log("Platform PDA account exists on devnet");
         console.log(`   Data length: ${accountInfo.data.length} bytes`);
       } else {
-        console.log("⚠️ Platform PDA account not found (will be created during initialization)");
+        console.log("Platform PDA account not found (will be created during initialization)");
       }
     });
 
@@ -74,7 +74,7 @@ describe("Nen Programs - Deployment Readiness Tests", () => {
       for (const [accountType, size] of Object.entries(accountSizes)) {
         const rent = await connection.getMinimumBalanceForRentExemption(size);
         expect(rent).to.be.greaterThan(0);
-        console.log(`✅ ${accountType} account rent: ${rent} lamports (${rent / 1e9} SOL)`);
+        console.log(`${accountType} account rent: ${rent} lamports (${rent / 1e9} SOL)`);
       }
     });
   });
@@ -87,7 +87,7 @@ describe("Nen Programs - Deployment Readiness Tests", () => {
       
       const latency = endTime - startTime;
       expect(latency).to.be.lessThan(5000); // Should be under 5 seconds
-      console.log(`✅ Network latency: ${latency}ms`);
+      console.log(`Network latency: ${latency}ms`);
     });
 
     it("Should check slot progression", async () => {
@@ -96,7 +96,7 @@ describe("Nen Programs - Deployment Readiness Tests", () => {
       const slot2 = await connection.getSlot();
       
       expect(slot2).to.be.greaterThan(slot1);
-      console.log(`✅ Slot progression: ${slot1} -> ${slot2} (${slot2 - slot1} slots)`);
+      console.log(`Slot progression: ${slot1} -> ${slot2} (${slot2 - slot1} slots)`);
     });
   });
 
@@ -117,7 +117,7 @@ describe("Nen Programs - Deployment Readiness Tests", () => {
       const uniqueIds = new Set(programIds);
       expect(uniqueIds.size).to.equal(programIds.length);
       
-      console.log("✅ All program IDs are valid and unique");
+      console.log("All program IDs are valid and unique");
     });
 
     it("Should validate Anchor.toml configuration", () => {
@@ -130,7 +130,7 @@ describe("Nen Programs - Deployment Readiness Tests", () => {
 
       for (const [program, id] of Object.entries(expectedConfig)) {
         expect(() => new PublicKey(id)).to.not.throw();
-        console.log(`✅ ${program}: ${id}`);
+        console.log(`${program}: ${id}`);
       }
     });
   });

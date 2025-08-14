@@ -75,7 +75,7 @@ class AnchorTestRunner {
 
       const funded = await testUtils.fundTestAccounts(testAccounts);
       if (!funded && this.testEnv!.isValidatorRunning) {
-        console.log("⚠️ Account funding failed but validator is running");
+        console.log("Account funding failed but validator is running");
       }
 
       // Program ID (from Anchor.toml)
@@ -86,7 +86,7 @@ class AnchorTestRunner {
       const userAccount1Pda = testUtils.deriveAddress([Buffer.from("user"), user1.publicKey.toBuffer()], coreProgramId);
       const userAccount2Pda = testUtils.deriveAddress([Buffer.from("user"), user2.publicKey.toBuffer()], coreProgramId);
 
-      console.log("✅ Generated test accounts and PDAs");
+      console.log("Generated test accounts and PDAs");
       console.log(`   Platform PDA: ${platformPda.address.toString()}`);
       console.log(`   User1 PDA: ${userAccount1Pda.address.toString()}`);
       console.log(`   User2 PDA: ${userAccount2Pda.address.toString()}`);
@@ -108,7 +108,7 @@ class AnchorTestRunner {
       }, "Platform initialization test");
 
       if (platformInitResult) {
-        console.log("✅ Platform initialized:", platformInitResult);
+        console.log("Platform initialized:", platformInitResult);
       }
 
       // Test 2: User Account Creation
@@ -130,7 +130,7 @@ class AnchorTestRunner {
       }, "User account creation test");
 
       if (userCreationResult) {
-        console.log("✅ User accounts created successfully");
+        console.log("User accounts created successfully");
       }
 
       // Test 3: Enhanced User Creation with Username
@@ -176,11 +176,11 @@ class AnchorTestRunner {
           .rpc();
       }, "Match creation test");
 
-      console.log("\n✅ Core tests completed successfully");
+      console.log("\nCore tests completed successfully");
       return true;
 
     } catch (error) {
-      console.log("❌ Core tests failed:", error);
+      console.log("Core tests failed:", error);
       return false;
     }
   }
@@ -203,7 +203,7 @@ class AnchorTestRunner {
       const bettingAccount1Pda = testUtils.deriveAddress([Buffer.from("betting_account"), user1.publicKey.toBuffer()], bettingProgramId);
       const bettingAccount2Pda = testUtils.deriveAddress([Buffer.from("betting_account"), user2.publicKey.toBuffer()], bettingProgramId);
 
-      console.log("✅ Generated betting test accounts");
+      console.log("Generated betting test accounts");
       console.log(`   Betting Account 1 PDA: ${bettingAccount1Pda.address.toString()}`);
       console.log(`   Betting Account 2 PDA: ${bettingAccount2Pda.address.toString()}`);
 
@@ -269,11 +269,11 @@ class AnchorTestRunner {
           .rpc();
       }, "Fund locking test");
 
-      console.log("\n✅ Betting tests completed successfully");
+      console.log("\nBetting tests completed successfully");
       return true;
 
     } catch (error) {
-      console.log("❌ Betting tests failed:", error);
+      console.log("Betting tests failed:", error);
       return false;
     }
   }
@@ -303,7 +303,7 @@ class AnchorTestRunner {
             null,
             0 // NFT decimals
           );
-          console.log("✅ NFT mint created:", nftMint.toString());
+          console.log("NFT mint created:", nftMint.toString());
         } else {
           throw new Error("Validator not running");
         }
@@ -314,7 +314,7 @@ class AnchorTestRunner {
       // Derive marketplace listing PDA
       const marketplaceListing = testUtils.deriveAddress([Buffer.from("listing"), seller.publicKey.toBuffer(), nftMint.toBuffer()], marketplaceProgramId);
 
-      console.log("✅ Generated marketplace test accounts");
+      console.log("Generated marketplace test accounts");
       console.log(`   NFT Mint: ${nftMint.toString()}`);
       console.log(`   Marketplace Listing PDA: ${marketplaceListing.address.toString()}`);
 
@@ -360,11 +360,11 @@ class AnchorTestRunner {
           .rpc();
       }, "NFT listing creation test");
 
-      console.log("\n✅ Marketplace tests completed successfully");
+      console.log("\nMarketplace tests completed successfully");
       return true;
 
     } catch (error) {
-      console.log("❌ Marketplace tests failed:", error);
+      console.log("Marketplace tests failed:", error);
       return false;
     }
   }
@@ -386,7 +386,7 @@ class AnchorTestRunner {
       // Derive session PDA
       const sessionPda = testUtils.deriveAddress([Buffer.from("session"), authority.publicKey.toBuffer()], magicblockProgramId);
 
-      console.log("✅ Generated MagicBlock test accounts");
+      console.log("Generated MagicBlock test accounts");
       console.log(`   Session PDA: ${sessionPda.address.toString()}`);
 
       // Test 1: Create Enhanced Gaming Session
@@ -425,11 +425,11 @@ class AnchorTestRunner {
           .rpc();
       }, "Enhanced gaming session creation test");
 
-      console.log("\n✅ MagicBlock tests completed successfully");
+      console.log("\nMagicBlock tests completed successfully");
       return true;
 
     } catch (error) {
-      console.log("❌ MagicBlock tests failed:", error);
+      console.log("MagicBlock tests failed:", error);
       return false;
     }
   }
@@ -454,10 +454,10 @@ class AnchorTestRunner {
 
     console.log("\n📊 Test Results Summary");
     console.log("======================");
-    console.log(`✅ Core Program Tests: ${results.core ? 'PASSED' : 'FAILED'}`);
-    console.log(`✅ Betting Program Tests: ${results.betting ? 'PASSED' : 'FAILED'}`);
-    console.log(`✅ Marketplace Program Tests: ${results.marketplace ? 'PASSED' : 'FAILED'}`);
-    console.log(`✅ MagicBlock Program Tests: ${results.magicblock ? 'PASSED' : 'FAILED'}`);
+    console.log(`Core Program Tests: ${results.core ? 'PASSED' : 'FAILED'}`);
+    console.log(`Betting Program Tests: ${results.betting ? 'PASSED' : 'FAILED'}`);
+    console.log(`Marketplace Program Tests: ${results.marketplace ? 'PASSED' : 'FAILED'}`);
+    console.log(`MagicBlock Program Tests: ${results.magicblock ? 'PASSED' : 'FAILED'}`);
 
     const totalPassed = Object.values(results).filter(Boolean).length;
     const totalTests = Object.keys(results).length;
@@ -482,7 +482,7 @@ class AnchorTestRunner {
       console.log("   ✅ Transaction authorization");
       console.log("   ✅ Parameter validation");
     } else {
-      console.log("\n⚠️ Some tests failed - this is expected in a test environment");
+      console.log("\nSome tests failed - this is expected in a test environment");
       console.log("   The test framework validates program structure and logic");
       console.log("   Actual program deployment may require a live validator");
     }

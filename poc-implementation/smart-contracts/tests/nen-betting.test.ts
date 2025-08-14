@@ -136,15 +136,15 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         .signers([admin])
         .rpc();
 
-      console.log("✅ Platform initialization transaction:", tx);
+      console.log("Platform initialization transaction:", tx);
 
       // Verify platform was created with basic account verification
       try {
         const platformAccountInfo = await provider.connection.getAccountInfo(platformPda);
         expect(platformAccountInfo).to.not.be.null;
-        console.log("✅ Platform account created successfully");
+        console.log("Platform account created successfully");
       } catch (error: unknown) {
-        console.log("⚠️ Platform account verification skipped (expected in testing)");
+        console.log("Platform account verification skipped (expected in testing)");
       }
     });
 
@@ -160,7 +160,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ User1 account creation:", tx1);
+      console.log("User1 account creation:", tx1);
 
       // Create enhanced KYC user
       const tx2 = await coreProgram.methods
@@ -173,7 +173,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         .signers([user2])
         .rpc();
 
-      console.log("✅ User2 account creation:", tx2);
+      console.log("User2 account creation:", tx2);
 
       // Verify user accounts with basic verification
       try {
@@ -181,9 +181,9 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         const userAccount2Info = await provider.connection.getAccountInfo(userAccount2Pda);
         expect(userAccount1Info).to.not.be.null;
         expect(userAccount2Info).to.not.be.null;
-        console.log("✅ User accounts created successfully");
+        console.log("User accounts created successfully");
       } catch (error: unknown) {
-        console.log("⚠️ User account verification skipped (expected in testing)");
+        console.log("User account verification skipped (expected in testing)");
       }
     });
 
@@ -203,15 +203,15 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         .signers([user3])
         .rpc();
 
-      console.log("✅ Enhanced user creation:", tx);
+      console.log("Enhanced user creation:", tx);
 
       // Verify enhanced user with basic verification
       try {
         const userAccount3Info = await provider.connection.getAccountInfo(userAccount3Pda);
         expect(userAccount3Info).to.not.be.null;
-        console.log("✅ Enhanced user account created successfully");
+        console.log("Enhanced user account created successfully");
       } catch (error: unknown) {
-        console.log("⚠️ Enhanced user verification skipped (expected in testing)");
+        console.log("Enhanced user verification skipped (expected in testing)");
       }
     });
 
@@ -236,7 +236,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
       } catch (error: unknown) {
         const anchorError = error as AnchorError;
         expect(anchorError.message).to.include("UsernameTooShort");
-        console.log("✅ Correctly rejected short username");
+        console.log("Correctly rejected short username");
       }
 
       // Test username with invalid characters
@@ -254,7 +254,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
       } catch (error: unknown) {
         const anchorError = error as AnchorError;
         expect(anchorError.message).to.include("InvalidUsernameCharacters");
-        console.log("✅ Correctly rejected invalid username characters");
+        console.log("Correctly rejected invalid username characters");
       }
     });
 
@@ -280,7 +280,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ Match creation:", tx);
+      console.log("Match creation:", tx);
 
       const matchAccount = await coreProgram.account.matchAccount.fetch(matchPda);
       expect(matchAccount.player.toString()).to.equal(user1.publicKey.toString());
@@ -314,7 +314,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         expect.fail("Should have failed with minimum bet not met");
       } catch (error: unknown) {
         expect((error as AnchorError).message).to.include("MinimumBetNotMet");
-        console.log("✅ Correctly enforced minimum bet requirement");
+        console.log("Correctly enforced minimum bet requirement");
       }
     });
   });
@@ -331,7 +331,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ Betting account creation transaction signature:", tx);
+      console.log("Betting account creation transaction signature:", tx);
 
       // Verify betting account was created
       const accountInfo = await provider.connection.getAccountInfo(bettingAccount1Pda);
@@ -350,7 +350,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         .signers([user2])
         .rpc();
 
-      console.log("✅ Second betting account creation transaction signature:", tx);
+      console.log("Second betting account creation transaction signature:", tx);
 
       // Verify second betting account was created
       const accountInfo = await provider.connection.getAccountInfo(bettingAccount2Pda);
@@ -373,7 +373,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         expect.fail("Should have failed with duplicate account creation");
       } catch (error: unknown) {
         expect((error as AnchorError).message).to.include("already initialized");
-        console.log("✅ Successfully prevented duplicate betting account creation");
+        console.log("Successfully prevented duplicate betting account creation");
       }
     });
   });
@@ -392,7 +392,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         .signers([user1])
         .rpc();
 
-      console.log("✅ SOL deposit transaction signature:", tx);
+      console.log("SOL deposit transaction signature:", tx);
 
       // Verify the betting account exists
       const accountInfo = await provider.connection.getAccountInfo(bettingAccount1Pda);
@@ -417,7 +417,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
           .signers([user2])
           .rpc();
 
-        console.log(`✅ Deposit ${i + 1} transaction signature:`, tx);
+        console.log(`Deposit ${i + 1} transaction signature:`, tx);
         
         // Small delay between deposits
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -700,7 +700,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
           // Small delay between operations
           await new Promise(resolve => setTimeout(resolve, 100));
         } catch (error: unknown) {
-          console.log(`⚠️ Operation ${i + 1} (${op.type}) failed as expected:`, (error as AnchorError).message);
+          console.log(`Operation ${i + 1} (${op.type}) failed as expected:`, (error as AnchorError).message);
         }
       }
     });
@@ -841,7 +841,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         expect(matchAccount.currentTurn).to.deep.equal({ ai: {} });
       } catch (error: unknown) {
         // Match might not be in progress state - that's expected
-        console.log("⚠️ Move submission expectedly failed (match not active):", (error as AnchorError).message);
+        console.log("Move submission expectedly failed (match not active):", (error as AnchorError).message);
       }
     });
 
@@ -914,7 +914,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         expect(agentNft.personalityTraits.aggression).to.equal(75);
         expect(agentNft.performanceMetrics.winRate).to.equal(6500);
       } catch (error: unknown) {
-        console.log("⚠️ AI Agent NFT minting failed (expected in testing):", (error as AnchorError).message);
+        console.log("AI Agent NFT minting failed (expected in testing):", (error as AnchorError).message);
       }
     });
 
@@ -959,7 +959,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         expect(session.status).to.deep.equal({ initiated: {} });
         expect(session.replayCommitments.length).to.equal(2);
       } catch (error: unknown) {
-        console.log("⚠️ Training session failed (expected in testing):", (error as AnchorError).message);
+        console.log("Training session failed (expected in testing):", (error as AnchorError).message);
       }
     });
 
@@ -1087,7 +1087,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         expect(session.currentTurn).to.deep.equal({ player2: {} });
         expect(session.performanceMetrics.totalMoves).to.equal(1);
       } catch (error: unknown) {
-        console.log("⚠️ Move submission failed (expected behavior):", (error as AnchorError).message);
+        console.log("Move submission failed (expected behavior):", (error as AnchorError).message);
       }
     });
 
@@ -1664,7 +1664,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
         console.log("✅ Near-maximum deposit successful:", tx);
       } catch (error: any) {
         if ((error as AnchorError).message.includes("InsufficientFunds")) {
-          console.log("⚠️ Near-maximum deposit failed due to insufficient test funds (expected)");
+          console.log("Near-maximum deposit failed due to insufficient test funds (expected)");
         } else {
           throw error;
         }
@@ -2125,11 +2125,11 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
             .signers([user1])
             .rpc()
             .catch(err => {
-              console.log(`⚠️ ${piece.name} move validation (expected):`, err.message);
+              console.log(`${piece.name} move validation (expected):`, err.message);
             });
 
         } catch (error: unknown) {
-          console.log(`⚠️ ${piece.name} testing (expected limitations):`, (error as AnchorError).message);
+          console.log(`${piece.name} testing (expected limitations):`, (error as AnchorError).message);
         }
       }
     });
@@ -2166,7 +2166,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
           expect(match.aiDifficulty).to.equal(difficulty);
 
         } catch (error: unknown) {
-          console.log(`⚠️ Difficulty ${difficulty} testing (expected):`, (error as AnchorError).message);
+          console.log(`Difficulty ${difficulty} testing (expected):`, (error as AnchorError).message);
         }
       }
     });
@@ -2219,7 +2219,7 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
           expect(session.trainingParams.focusArea).to.equal(algorithm.focusArea);
 
         } catch (error: unknown) {
-          console.log(`⚠️ ${algorithm.name} training (expected):`, (error as AnchorError).message);
+          console.log(`${algorithm.name} training (expected):`, (error as AnchorError).message);
         }
       }
     });
@@ -2759,14 +2759,14 @@ describe("Comprehensive Nen Platform Smart Contract Tests", () => {
       const readinessChecks = Object.values(productionReadiness);
       const readinessScore = (readinessChecks.filter(Boolean).length / readinessChecks.length) * 100;
 
-      console.log("🚀 Production Readiness Assessment:");
+      console.log("Production Readiness Assessment:");
       Object.entries(productionReadiness).forEach(([key, value]) => {
-        console.log(`   ${value ? '✅' : '❌'} ${key}: ${value ? 'READY' : 'NEEDS WORK'}`);
+        console.log(`   ${value ? 'PASS' : 'FAIL'} ${key}: ${value ? 'READY' : 'NEEDS WORK'}`);
       });
-      console.log(`   📈 Overall Readiness Score: ${readinessScore}%`);
+      console.log(`   Overall Readiness Score: ${readinessScore}%`);
 
       expect(readinessScore).to.equal(100);
-      console.log("🎉 Nen Platform smart contracts are production-ready!");
+      console.log("Nen Platform smart contracts are production-ready!");
     });
   });
 });

@@ -53,7 +53,7 @@ describe("Full Anchor Program Integration Tests", () => {
     console.log(`User2: ${user2.publicKey.toString()}`);
   });
 
-  describe("✅ IDL Structure Validation", () => {
+  describe("IDL Structure Validation", () => {
     it("Should validate betting program IDL structure", () => {
       expect(bettingIdl.name).to.equal("nen_betting");
       expect(bettingIdl.version).to.equal("0.1.0");
@@ -61,7 +61,7 @@ describe("Full Anchor Program Integration Tests", () => {
       expect(bettingIdl.accounts).to.be.an('array');
       expect(bettingIdl.metadata.address).to.be.a('string');
 
-      console.log(`✅ Betting IDL validated:`);
+      console.log(`Betting IDL validated:`);
       console.log(`   Instructions: ${bettingIdl.instructions.length}`);
       console.log(`   Accounts: ${bettingIdl.accounts.length}`);
       console.log(`   Program ID: ${bettingIdl.metadata.address}`);
@@ -71,7 +71,7 @@ describe("Full Anchor Program Integration Tests", () => {
       expect(coreIdl.name).to.equal("nen_core");
       expect(coreIdl.instructions.length).to.be.greaterThan(0);
       
-      console.log(`✅ Core IDL validated:`);
+      console.log(`Core IDL validated:`);
       console.log(`   Instructions: ${coreIdl.instructions.length}`);
       console.log(`   Accounts: ${coreIdl.accounts.length}`);
     });
@@ -80,7 +80,7 @@ describe("Full Anchor Program Integration Tests", () => {
       expect(magicblockIdl.name).to.equal("nen_magicblock");
       expect(magicblockIdl.instructions.length).to.be.greaterThan(0);
       
-      console.log(`✅ MagicBlock IDL validated:`);
+      console.log(`MagicBlock IDL validated:`);
       console.log(`   Instructions: ${magicblockIdl.instructions.length}`);
       console.log(`   Accounts: ${magicblockIdl.accounts.length}`);
     });
@@ -89,13 +89,13 @@ describe("Full Anchor Program Integration Tests", () => {
       expect(marketplaceIdl.name).to.equal("nen_marketplace");
       expect(marketplaceIdl.instructions.length).to.be.greaterThan(0);
       
-      console.log(`✅ Marketplace IDL validated:`);
+      console.log(`Marketplace IDL validated:`);
       console.log(`   Instructions: ${marketplaceIdl.instructions.length}`);
       console.log(`   Accounts: ${marketplaceIdl.accounts.length}`);
     });
   });
 
-  describe("✅ Program Interface Testing", () => {
+  describe("Program Interface Testing", () => {
     it("Should validate betting program interface", () => {
       expect(bettingProgram.programId.toString()).to.equal(BETTING_PROGRAM_ID.toString());
       expect(bettingProgram.provider).to.equal(provider);
@@ -104,11 +104,11 @@ describe("Full Anchor Program Integration Tests", () => {
       const expectedInstructions = ['initializeBetting', 'placeBet', 'withdraw'];
       expectedInstructions.forEach(instruction => {
         if (bettingProgram.methods[instruction]) {
-          console.log(`✅ ${instruction} method available`);
+          console.log(`${instruction} method available`);
         }
       });
       
-      console.log(`✅ Betting program interface validated`);
+      console.log(`Betting program interface validated`);
     });
 
     it("Should validate core program interface", () => {
@@ -117,11 +117,11 @@ describe("Full Anchor Program Integration Tests", () => {
       const expectedInstructions = ['initializePlatform', 'createUser'];
       expectedInstructions.forEach(instruction => {
         if (coreProgram.methods[instruction]) {
-          console.log(`✅ ${instruction} method available`);
+          console.log(`${instruction} method available`);
         }
       });
       
-      console.log(`✅ Core program interface validated`);
+      console.log(`Core program interface validated`);
     });
 
     it("Should validate magicblock program interface", () => {
@@ -130,11 +130,11 @@ describe("Full Anchor Program Integration Tests", () => {
       const expectedInstructions = ['initializeSession', 'makeMove'];
       expectedInstructions.forEach(instruction => {
         if (magicblockProgram.methods[instruction]) {
-          console.log(`✅ ${instruction} method available`);
+          console.log(`${instruction} method available`);
         }
       });
       
-      console.log(`✅ MagicBlock program interface validated`);
+      console.log(`MagicBlock program interface validated`);
     });
 
     it("Should validate marketplace program interface", () => {
@@ -143,15 +143,15 @@ describe("Full Anchor Program Integration Tests", () => {
       const expectedInstructions = ['listItem', 'purchaseItem'];
       expectedInstructions.forEach(instruction => {
         if (marketplaceProgram.methods[instruction]) {
-          console.log(`✅ ${instruction} method available`);
+          console.log(`${instruction} method available`);
         }
       });
       
-      console.log(`✅ Marketplace program interface validated`);
+      console.log(`Marketplace program interface validated`);
     });
   });
 
-  describe("✅ Account Generation and PDA Testing", () => {
+  describe("Account Generation and PDA Testing", () => {
     it("Should generate correct PDAs for betting accounts", () => {
       const [bettingPda, bettingBump] = PublicKey.findProgramAddressSync(
         [Buffer.from("betting"), user1.publicKey.toBuffer()],
@@ -161,7 +161,7 @@ describe("Full Anchor Program Integration Tests", () => {
       expect(bettingPda).to.be.instanceOf(PublicKey);
       expect(bettingBump).to.be.a('number');
       
-      console.log(`✅ Betting PDA generated:`);
+      console.log(`Betting PDA generated:`);
       console.log(`   PDA: ${bettingPda.toString()}`);
       console.log(`   Bump: ${bettingBump}`);
       console.log(`   User: ${user1.publicKey.toString()}`);
@@ -176,7 +176,7 @@ describe("Full Anchor Program Integration Tests", () => {
       expect(userPda).to.be.instanceOf(PublicKey);
       expect(userBump).to.be.a('number');
       
-      console.log(`✅ User PDA generated:`);
+      console.log(`User PDA generated:`);
       console.log(`   PDA: ${userPda.toString()}`);
       console.log(`   Bump: ${userBump}`);
     });
@@ -191,7 +191,7 @@ describe("Full Anchor Program Integration Tests", () => {
       expect(sessionPda).to.be.instanceOf(PublicKey);
       expect(sessionBump).to.be.a('number');
       
-      console.log(`✅ Game Session PDA generated:`);
+      console.log(`Game Session PDA generated:`);
       console.log(`   PDA: ${sessionPda.toString()}`);
       console.log(`   Game ID: ${gameId}`);
       console.log(`   Bump: ${sessionBump}`);
@@ -207,14 +207,14 @@ describe("Full Anchor Program Integration Tests", () => {
       expect(listingPda).to.be.instanceOf(PublicKey);
       expect(listingBump).to.be.a('number');
       
-      console.log(`✅ Marketplace Listing PDA generated:`);
+      console.log(`Marketplace Listing PDA generated:`);
       console.log(`   PDA: ${listingPda.toString()}`);
       console.log(`   Listing ID: ${listingId}`);
       console.log(`   Bump: ${listingBump}`);
     });
   });
 
-  describe("✅ Instruction Building and Simulation", () => {
+  describe("Instruction Building and Simulation", () => {
     it("Should build betting initialization instruction", async () => {
       const [bettingPda, bettingBump] = PublicKey.findProgramAddressSync(
         [Buffer.from("betting"), user1.publicKey.toBuffer()],
@@ -236,7 +236,7 @@ describe("Full Anchor Program Integration Tests", () => {
         expect(instruction.programId.toString()).to.equal(BETTING_PROGRAM_ID.toString());
         expect(instruction.keys.length).to.be.greaterThan(0);
         
-        console.log(`✅ Betting initialization instruction built:`);
+        console.log(`Betting initialization instruction built:`);
         console.log(`   Program ID: ${instruction.programId.toString()}`);
         console.log(`   Accounts: ${instruction.keys.length}`);
         console.log(`   Data length: ${instruction.data.length} bytes`);
@@ -264,7 +264,7 @@ describe("Full Anchor Program Integration Tests", () => {
         expect(instruction).to.have.property('programId');
         expect(instruction.programId.toString()).to.equal(CORE_PROGRAM_ID.toString());
         
-        console.log(`✅ User creation instruction built:`);
+        console.log(`User creation instruction built:`);
         console.log(`   Program ID: ${instruction.programId.toString()}`);
         console.log(`   Accounts: ${instruction.keys.length}`);
         console.log(`   Data length: ${instruction.data.length} bytes`);
@@ -293,7 +293,7 @@ describe("Full Anchor Program Integration Tests", () => {
         expect(instruction).to.have.property('programId');
         expect(instruction.programId.toString()).to.equal(MAGICBLOCK_PROGRAM_ID.toString());
         
-        console.log(`✅ Session initialization instruction built:`);
+        console.log(`Session initialization instruction built:`);
         console.log(`   Program ID: ${instruction.programId.toString()}`);
         console.log(`   Game ID: ${gameId}`);
         console.log(`   Data length: ${instruction.data.length} bytes`);
@@ -303,13 +303,13 @@ describe("Full Anchor Program Integration Tests", () => {
     });
   });
 
-  describe("✅ Anchor Framework Integration", () => {
+  describe("Anchor Framework Integration", () => {
     it("Should validate provider configuration", () => {
       expect(provider.connection).to.equal(connection);
       expect(provider.wallet).to.be.instanceOf(anchor.Wallet);
       expect(provider.opts.commitment).to.equal("confirmed");
       
-      console.log(`✅ Provider configuration validated:`);
+      console.log(`Provider configuration validated:`);
       console.log(`   RPC endpoint: ${connection.rpcEndpoint}`);
       console.log(`   Commitment: ${provider.opts.commitment}`);
       console.log(`   Preflight commitment: ${provider.opts.preflightCommitment}`);
@@ -326,7 +326,7 @@ describe("Full Anchor Program Integration Tests", () => {
       programs.forEach(({ name, program, id }) => {
         expect(program.programId.toString()).to.equal(id.toString());
         expect(program.provider).to.equal(provider);
-        console.log(`✅ ${name} program properly configured`);
+        console.log(`${name} program properly configured`);
       });
     });
 
@@ -344,14 +344,14 @@ describe("Full Anchor Program Integration Tests", () => {
           idl.accounts.forEach(account => {
             expect(account.name).to.be.a('string');
             expect(account.type).to.have.property('kind');
-            console.log(`✅ ${name} account type: ${account.name}`);
+            console.log(`${name} account type: ${account.name}`);
           });
         }
       });
     });
   });
 
-  describe("✅ Real Implementation Proof", () => {
+  describe("Real Implementation Proof", () => {
     it("Should demonstrate actual Anchor framework integration", () => {
       const features = {
         "IDL loading": true,
@@ -367,9 +367,9 @@ describe("Full Anchor Program Integration Tests", () => {
       const enabledFeatures = Object.values(features).filter(Boolean).length;
       expect(enabledFeatures).to.equal(Object.keys(features).length);
       
-      console.log(`✅ Anchor integration features validated:`);
+      console.log(`Anchor integration features validated:`);
       Object.entries(features).forEach(([feature, enabled]) => {
-        console.log(`   ${enabled ? '✅' : '❌'} ${feature}`);
+        console.log(`   ${enabled ? 'PASS' : 'FAIL'} ${feature}`);
       });
     });
 

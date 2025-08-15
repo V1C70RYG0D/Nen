@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 describe("Nen Marketplace Program - Simple Functional Tests", () => {
   const connection = new Connection("https://api.devnet.solana.com", "confirmed");
-  const programId = new PublicKey("8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH");
+  const programId = new PublicKey("GN1TwG3ahrrJgd9EoKECHyVDzKHnm528hnXQfJRMWL2T");
   
   let seller: Keypair;
   let buyer: Keypair;

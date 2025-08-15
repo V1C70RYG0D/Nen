@@ -1,6 +1,8 @@
 [workspace]
 members = [
-    "programs/*"
+    "programs/nen-core",
+    "programs/nen-betting", 
+    "programs/nen-magicblock"
 ]
 resolver = "2"
 

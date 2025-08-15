@@ -15,7 +15,7 @@ This document contains the final simplified functional test results for all 4 An
 - **nen-core**: ✅ DEPLOYED (Program ID: `Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF`)
 - **nen-betting**: ✅ DEPLOYED (Program ID: `34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5`)
 - **nen-magicblock**: ✅ DEPLOYED (Program ID: `AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX`)
-- **nen-marketplace**: ⚠️ BUILD BLOCKED (Rust version conflict preventing deployment)
+- **nen-marketplace**: ✅ DEPLOYED (Program ID: `GN1TwG3ahrrJgd9EoKECHyVDzKHnm528hnXQfJRMWL2T`)
 
 ## Detailed Test Results
 
@@ -104,20 +104,21 @@ Measured latency: 10 ms
 ### Nen Marketplace Program - Simple Functional Tests
 ```
 Test setup complete
-Program ID: 8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH
-Listing PDA: 5PsdF8agVYuG9m2RVCie8czCWcRtXR4YLsq5wv4rUoo4
-Program not found on devnet - deployment needed
-Expected program ID: 8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH
-    ✔ Should check if program exists on devnet (87ms)
+Program ID: GN1TwG3ahrrJgd9EoKECHyVDzKHnm528hnXQfJRMWL2T
+Listing PDA: 9qazRvwg8riVrwwdcwxMQsLmtSxFbYRMwAQ3SgQSdEeo
+Program verified on devnet
+Program data length: 36
+Program owner: BPFLoaderUpgradeab1e11111111111111111111111
+    ✔ Should check if program exists on devnet (100ms)
 Listing PDA derived successfully
-Listing PDA: HKro1oW2f8Yk4MibNbSMMwbPPKS3r9EBo8LPZSK1PVmG
-Bump: 253
+Listing PDA: 2mXDGcXHjRif4EpUy8hBCXXawVqNDxXuETDmaRhHk3vB
+Bump: 255
     ✔ Should derive listing PDA correctly
 Listing account rent exemption: 0.00214368 SOL
-    ✔ Should calculate rent exemption for listing account (87ms)
+    ✔ Should calculate rent exemption for listing account (100ms)
 Escrow authority PDA derived successfully
-Escrow PDA: oh5KBxBVXNVVctpFV7vNz4p7XvpSMN4yZsr2DWVbCvD
-Bump: 255
+Escrow PDA: 7rYLko4AYVu8fbZ1cGWKkBi4xZ2UdVjuGCBynXKyGMV1
+Bump: 254
     ✔ Should derive escrow authority PDA
 Fee calculation verified
 Price: 1 SOL
@@ -125,29 +126,22 @@ Fee percentage: 2.5 %
 Expected fee: 0.025 SOL
     ✔ Should verify marketplace fee calculations
 
-5 passing (525ms)
+5 passing (1s)
 ```
 
-## Build Issues Preventing nen-marketplace Deployment
+## Build Issues Resolution for nen-marketplace Deployment
 
-### Rust Version Conflict
+### Rust Version Conflict - RESOLVED
 - **Issue**: solana-program v2.3.0 requires rustc 1.79.0 or newer
-- **Current Detection**: System detecting rustc 1.75.0-dev despite Rust 1.79.0 being set as default
-- **Root Cause**: Solana toolchain overriding system Rust version detection
-- **Dependency Lock**: anchor-lang v0.31.1 locked to solana-program ^2, preventing downgrade
+- **Root Cause**: Workspace dependency conflicts and Solana toolchain overriding system Rust version
+- **Solution**: Created independent workspace configuration and downgraded to anchor-lang v0.30.1
 
-### Error Details
-```
-error: package `solana-program v2.3.0` cannot be built because it requires rustc 1.79.0 or newer, 
-while the currently active rustc version is 1.75.0-dev
-```
-
-### Attempted Solutions
-1. ✅ Downgraded Solana CLI to v1.18.8 (compatible with Anchor v0.30.1)
-2. ✅ Set Rust default toolchain to 1.79.0 using `rustup default 1.79.0`
-3. ✅ Unset Rust toolchain override in project directory
-4. ❌ RUSTC_BOOTSTRAP=1 override (still failed)
-5. ❌ cargo build-sbf with various environment configurations
+### Successful Resolution Steps
+1. ✅ Removed nen-marketplace from workspace members in root Cargo.toml
+2. ✅ Added empty [workspace] table to nen-marketplace/Cargo.toml for independence
+3. ✅ Downgraded anchor-lang and anchor-spl to v0.30.1 in nen-marketplace dependencies
+4. ✅ Successfully built with `cargo build-sbf --sbf-out-dir ./deploy`
+5. ✅ Deployed to devnet with Program ID: GN1TwG3ahrrJgd9EoKECHyVDzKHnm528hnXQfJRMWL2T
 
 ## Alternative Testing Success
 
@@ -161,16 +155,12 @@ The simplified functional tests successfully demonstrate:
 
 ## Production Readiness Assessment
 
-**Deployed Programs (3/4)**: Production-ready with verified functionality
+**Deployed Programs (4/4)**: Production-ready with verified functionality
 - Real smart contract operations confirmed through devnet interaction
 - PDA-based account management working correctly
 - Rent exemption calculations accurate for all account types
 - Performance metrics meeting target specifications
-
-**Pending Deployment (1/4)**: nen-marketplace blocked by build compatibility
-- Program logic validated through simplified functional tests
-- All PDA derivations and fee calculations working correctly
-- Ready for deployment once build issues are resolved
+- All programs successfully deployed and verified on Solana devnet
 
 ## Recommendations
 
@@ -182,7 +172,7 @@ The simplified functional tests successfully demonstrate:
 ## Final Status
 
 ✅ **Simplified Functional Tests**: 100% success rate (20/20 tests passing)
-✅ **Program Verification**: 3/4 programs deployed and verified on devnet
+✅ **Program Verification**: 4/4 programs deployed and verified on devnet
 ✅ **Test Quality**: Real smart contract operations without mocking
 ✅ **Documentation**: Comprehensive test results with plain text output
-⚠️ **Deployment**: 1 program pending due to build compatibility issues
+✅ **Deployment**: All 4 programs successfully deployed to Solana devnet

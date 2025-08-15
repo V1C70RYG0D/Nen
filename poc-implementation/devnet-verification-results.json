@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-08-11T16:32:06.795Z",
+  "network": "devnet",
+  "programs": {
+    "nen_betting": {
+      "status": "DEPLOYED",
+      "programId": "34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5",
+      "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
+      "executable": true,
+      "dataLength": 36,
+      "balance": 0.00114144
+    },
+    "nen_core": {
+      "status": "DEPLOYED",
+      "programId": "Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF",
+      "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
+      "executable": true,
+      "dataLength": 36,
+      "balance": 0.00114144
+    },
+    "nen_magicblock": {
+      "status": "DEPLOYED",
+      "programId": "AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX",
+      "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
+      "executable": true,
+      "dataLength": 36,
+      "balance": 0.00114144
+    }
+  },
+  "summary": {
+    "totalPrograms": 3,
+    "deployedPrograms": 3,
+    "deploymentRate": "100%",
+    "rpcStatus": "CONNECTED",
+    "pdaStatus": "SUCCESS",
+    "readyForTesting": true
+  },
+  "rpcConnection": {
+    "status": "CONNECTED",
+    "version": "2.3.6",
+    "slot": 400474749,
+    "blockHeight": 388427524
+  },
+  "pdaDerivation": {
+    "status": "SUCCESS",
+    "examples": {
+      "bettingPDA": "AFKHtNnSJEmPRR8gbzRYFjvEtkTcqshBq2ALKzKW8hyG",
+      "userPDA": "HTkjxuqGFBLT5yMKbVfGSwJVP6JvEZvvLT8BJoRmDxqB"
+    }
+  }
+}

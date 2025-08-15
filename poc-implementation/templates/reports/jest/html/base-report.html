@@ -1,0 +1,31 @@
+/* Base template for HTML reports */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${REPORT_TITLE}</title>
+    <link rel="stylesheet" href="../common/styles/main.css">
+</head>
+<body>
+    <header>
+        <img src="${REPORT_LOGO_URL}" alt="Nen Platform">
+        <h1>${PLATFORM_NAME} Test Report</h1>
+        <p>Generated on: ${REPORT_TIMESTAMP}</p>
+    </header>
+    <main>
+        <section id="summary">
+            <h2>Test Summary</h2>
+            <!-- Include summary table here -->
+        </section>
+        <section id="details">
+            <h2>Test Details</h2>
+            <!-- Include detailed test results here -->
+        </section>
+    </main>
+    <footer>
+        <p>&copy; ${COMPANY_NAME}. All rights reserved.</p>
+        <a href="${PLATFORM_URL}">Visit Our Platform</a>
+    </footer>
+</body>
+</html>

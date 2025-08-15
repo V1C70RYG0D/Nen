@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "types": ["mocha", "chai", "node"],
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "removeComments": true,
+    "strict": false,
+    "strict": true,
+    "noImplicitAny": false,
+    "strict": false,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "sourceMap": true,
+    "incremental": true,
+    "noEmitOnError": false,
+    "allowJs": true,
+    "downlevelIteration": true
+  },
+  "include": [
+    "tests/**/*",
+    "scripts/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "target"
+  ],
+  "ts-node": {
+    "esm": false,
+    "experimentalSpecifierResolution": "node",
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "es2020",
+      "strict": false,
+      "noImplicitAny": false
+    }
+  }
+}

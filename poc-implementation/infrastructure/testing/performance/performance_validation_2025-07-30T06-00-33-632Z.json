@@ -1,0 +1,46 @@
+{
+  "api_tests": [
+    {
+      "name": "Health Check",
+      "success": true,
+      "latency": 2.399000000000001,
+      "error": null,
+      "passed": true
+    },
+    {
+      "name": "API Test Endpoint",
+      "success": true,
+      "latency": 5.007400000000018,
+      "error": null,
+      "passed": true
+    },
+    {
+      "name": "Active Games",
+      "success": true,
+      "latency": 3.7334000000000174,
+      "error": null,
+      "passed": true
+    },
+    {
+      "name": "Auth Wallet (POST)",
+      "success": true,
+      "latency": 249.3148,
+      "error": null,
+      "passed": false
+    },
+    {
+      "name": "Game Match Info",
+      "success": true,
+      "latency": 10.33260000000007,
+      "error": null,
+      "passed": true
+    }
+  ],
+  "gaming_tests": [],
+  "summary": {
+    "api_passed": 4,
+    "api_failed": 1,
+    "gaming_passed": 0,
+    "gaming_failed": 1
+  }
+}

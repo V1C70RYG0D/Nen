@@ -1,0 +1,152 @@
+{
+  "service_health": {
+    "backend": {
+      "status": "healthy",
+      "latency": "56.54",
+      "version": "0.1.0",
+      "environment": "development"
+    },
+    "frontend": {
+      "status": "healthy",
+      "latency": "26.26"
+    }
+  },
+  "api_performance": [
+    {
+      "name": "Health Check",
+      "latency": "2.87",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "API Test",
+      "latency": "4.92",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "Active Games",
+      "latency": "3.92",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "Match Details",
+      "latency": "16.83",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "Wallet Auth",
+      "latency": "9.16",
+      "status": 200,
+      "passed": true
+    }
+  ],
+  "integration_flows": [
+    {
+      "name": "User Authentication",
+      "status": "success",
+      "details": {
+        "success": true,
+        "token": "nen_eyJwdWJsaWNLZXkiOiJkZW1vX3VzZXJfMTc1Mzg1NTMwNTg5NiIsInRpbWVzdGFtcCI6MTc1Mzg1NTMwNTkwMSwidmVyc2lvbiI6IjEuMCJ9",
+        "user": {
+          "id": "user_1753855305901",
+          "publicKey": "demo_user_1753855305896",
+          "createdAt": "2025-07-30T06:01:45.901Z",
+          "level": 1,
+          "experience": 0
+        }
+      }
+    },
+    {
+      "name": "Game Data Flow",
+      "status": "success",
+      "activeGamesCount": 1,
+      "matchData": {
+        "success": true,
+        "match": {
+          "id": "integration_test",
+          "sessionId": "session_integration_test",
+          "status": "in_progress",
+          "players": [
+            {
+              "id": "ai_netero",
+              "name": "Netero's Wisdom",
+              "type": "ai",
+              "personality": "strategic",
+              "elo": 1847,
+              "avatar": "/avatars/netero.png",
+              "stats": {
+                "wins": 156,
+                "losses": 43,
+                "draws": 12
+              },
+              "style": "patient_calculator",
+              "favoriteOpening": "dragon_formation"
+            },
+            {
+              "id": "ai_meruem",
+              "name": "Meruem's Pride",
+              "type": "ai",
+              "personality": "aggressive",
+              "elo": 1923,
+              "avatar": "/avatars/meruem.png",
+              "stats": {
+                "wins": 203,
+                "losses": 27,
+                "draws": 8
+              },
+              "style": "ruthless_domination",
+              "favoriteOpening": "king_assault"
+            }
+          ],
+          "board": {
+            "size": "9x9",
+            "currentTurn": 0,
+            "moveCount": 34,
+            "lastMove": {
+              "player": "ai_netero",
+              "piece": "general",
+              "from": "e2",
+              "to": "e4",
+              "timestamp": "2025-07-30T06:01:15.915Z"
+            }
+          },
+          "betting": {
+            "totalPool": 3.2452305057046615,
+            "pools": {
+              "ai_netero": 1.2,
+              "ai_meruem": 1.3
+            },
+            "odds": {
+              "ai_netero": 1.85,
+              "ai_meruem": 2.05
+            }
+          },
+          "spectators": 49,
+          "startedAt": "2025-07-30T05:51:45.915Z",
+          "estimatedEndTime": "2025-07-30T06:16:45.915Z",
+          "magicBlockSession": {
+            "rollupAddress": "mb_integration_test",
+            "transactionCount": 43,
+            "latency": 45
+          }
+        },
+        "timestamp": "2025-07-30T06:01:45.915Z"
+      }
+    },
+    {
+      "name": "Frontend-Backend Integration",
+      "status": "success",
+      "frontend_status": 200,
+      "backend_accessible": true
+    }
+  ],
+  "summary": {
+    "services_up": 2,
+    "apis_fast": 5,
+    "integrations_working": 3,
+    "overall_score": 100
+  }
+}

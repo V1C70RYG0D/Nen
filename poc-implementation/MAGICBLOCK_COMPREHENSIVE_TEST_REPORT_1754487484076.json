@@ -1,0 +1,367 @@
+{
+  "summary": {
+    "totalTests": 38,
+    "passed": 35,
+    "failed": 3,
+    "skipped": 0,
+    "passRate": "92.11%",
+    "duration": "7418ms",
+    "timestamp": "2025-08-06T13:38:04.076Z"
+  },
+  "phases": {
+    "phase1": {
+      "tests": [
+        {
+          "name": "BOLT Position Component Tests",
+          "status": "PASSED",
+          "duration": 5,
+          "timestamp": "2025-08-06T13:37:56.691Z"
+        },
+        {
+          "name": "BOLT Piece Component Tests",
+          "status": "PASSED",
+          "duration": 7,
+          "timestamp": "2025-08-06T13:37:56.717Z"
+        },
+        {
+          "name": "AI Agent Component Tests",
+          "status": "PASSED",
+          "duration": 7,
+          "timestamp": "2025-08-06T13:37:56.726Z"
+        },
+        {
+          "name": "Enhanced Move System Tests",
+          "status": "FAILED",
+          "duration": 9,
+          "error": "Valid move for Major was rejected: {\"from\":{\"x\":4,\"y\":4},\"to\":{\"x\":5,\"y\":4},\"shouldBeValid\":true}",
+          "timestamp": "2025-08-06T13:37:56.740Z"
+        },
+        {
+          "name": "AI Move Calculation Tests",
+          "status": "PASSED",
+          "duration": 477,
+          "timestamp": "2025-08-06T13:37:57.221Z"
+        },
+        {
+          "name": "Session Management Tests",
+          "status": "PASSED",
+          "duration": 227,
+          "timestamp": "2025-08-06T13:37:57.464Z"
+        },
+        {
+          "name": "Geographic Clustering Tests",
+          "status": "PASSED",
+          "duration": 168,
+          "timestamp": "2025-08-06T13:37:57.636Z"
+        }
+      ],
+      "passed": 6,
+      "failed": 1
+    },
+    "phase2": {
+      "tests": [
+        {
+          "name": "MagicBlock BOLT Integration",
+          "status": "PASSED",
+          "duration": 89,
+          "timestamp": "2025-08-06T13:37:57.751Z"
+        },
+        {
+          "name": "WebSocket Real-time Updates",
+          "status": "PASSED",
+          "duration": 41,
+          "timestamp": "2025-08-06T13:37:57.811Z"
+        },
+        {
+          "name": "Frontend UI Integration",
+          "status": "PASSED",
+          "duration": 56,
+          "timestamp": "2025-08-06T13:37:57.872Z"
+        },
+        {
+          "name": "Multi-tier Cache Integration",
+          "status": "FAILED",
+          "duration": 16,
+          "error": "L2 cache latency 13ms exceeds expected 5ms",
+          "timestamp": "2025-08-06T13:37:57.891Z"
+        },
+        {
+          "name": "Database Integration",
+          "status": "PASSED",
+          "duration": 68,
+          "timestamp": "2025-08-06T13:37:58.032Z"
+        },
+        {
+          "name": "Cross-System Communication",
+          "status": "PASSED",
+          "duration": 60,
+          "timestamp": "2025-08-06T13:37:58.093Z"
+        }
+      ],
+      "passed": 5,
+      "failed": 1
+    },
+    "phase3": {
+      "tests": [
+        {
+          "name": "Move Latency Testing",
+          "status": "PASSED",
+          "duration": 3074,
+          "timestamp": "2025-08-06T13:38:01.173Z"
+        },
+        {
+          "name": "WebSocket Latency Testing",
+          "status": "PASSED",
+          "duration": 150,
+          "timestamp": "2025-08-06T13:38:01.324Z"
+        },
+        {
+          "name": "AI Performance Testing",
+          "status": "PASSED",
+          "duration": 475,
+          "timestamp": "2025-08-06T13:38:01.803Z"
+        },
+        {
+          "name": "Load Testing",
+          "status": "PASSED",
+          "duration": 364,
+          "timestamp": "2025-08-06T13:38:02.185Z"
+        },
+        {
+          "name": "Stress Testing",
+          "status": "PASSED",
+          "duration": 43,
+          "timestamp": "2025-08-06T13:38:02.240Z"
+        },
+        {
+          "name": "Geographic Performance",
+          "status": "PASSED",
+          "duration": 145,
+          "timestamp": "2025-08-06T13:38:02.387Z"
+        },
+        {
+          "name": "Caching Performance",
+          "status": "FAILED",
+          "duration": 10,
+          "error": "L1 cache latency 8ms exceeds expected 1ms",
+          "timestamp": "2025-08-06T13:38:02.400Z"
+        }
+      ],
+      "passed": 6,
+      "failed": 1
+    },
+    "phase4": {
+      "tests": [
+        {
+          "name": "Smart Contract Security",
+          "status": "PASSED",
+          "duration": 89,
+          "timestamp": "2025-08-06T13:38:02.512Z"
+        },
+        {
+          "name": "Access Control Testing",
+          "status": "PASSED",
+          "duration": 46,
+          "timestamp": "2025-08-06T13:38:02.563Z"
+        },
+        {
+          "name": "Input Validation Testing",
+          "status": "PASSED",
+          "duration": 27,
+          "timestamp": "2025-08-06T13:38:02.591Z"
+        },
+        {
+          "name": "Network Security Testing",
+          "status": "PASSED",
+          "duration": 25,
+          "timestamp": "2025-08-06T13:38:02.618Z"
+        },
+        {
+          "name": "Anti-Fraud Token Testing",
+          "status": "PASSED",
+          "duration": 42,
+          "timestamp": "2025-08-06T13:38:02.665Z"
+        },
+        {
+          "name": "Authorization Testing",
+          "status": "PASSED",
+          "duration": 64,
+          "timestamp": "2025-08-06T13:38:02.734Z"
+        }
+      ],
+      "passed": 6,
+      "failed": 0
+    },
+    "phase5": {
+      "tests": [
+        {
+          "name": "Complete Gungi Gameplay",
+          "status": "PASSED",
+          "duration": 131,
+          "timestamp": "2025-08-06T13:38:02.888Z"
+        },
+        {
+          "name": "AI Personality Validation",
+          "status": "PASSED",
+          "duration": 312,
+          "timestamp": "2025-08-06T13:38:03.201Z"
+        },
+        {
+          "name": "User Interface Testing",
+          "status": "PASSED",
+          "duration": 89,
+          "timestamp": "2025-08-06T13:38:03.291Z"
+        },
+        {
+          "name": "Game Flow Testing",
+          "status": "PASSED",
+          "duration": 80,
+          "timestamp": "2025-08-06T13:38:03.373Z"
+        },
+        {
+          "name": "Error Handling Testing",
+          "status": "PASSED",
+          "duration": 56,
+          "timestamp": "2025-08-06T13:38:03.432Z"
+        },
+        {
+          "name": "Accessibility Testing",
+          "status": "PASSED",
+          "duration": 94,
+          "timestamp": "2025-08-06T13:38:03.527Z"
+        }
+      ],
+      "passed": 6,
+      "failed": 0
+    },
+    "phase6": {
+      "tests": [
+        {
+          "name": "Environment Testing",
+          "status": "PASSED",
+          "duration": 102,
+          "timestamp": "2025-08-06T13:38:03.633Z"
+        },
+        {
+          "name": "Geographic Distribution",
+          "status": "PASSED",
+          "duration": 87,
+          "timestamp": "2025-08-06T13:38:03.722Z"
+        },
+        {
+          "name": "Settlement to Mainnet",
+          "status": "PASSED",
+          "duration": 136,
+          "timestamp": "2025-08-06T13:38:03.862Z"
+        },
+        {
+          "name": "Monitoring & Metrics",
+          "status": "PASSED",
+          "duration": 64,
+          "timestamp": "2025-08-06T13:38:03.927Z"
+        },
+        {
+          "name": "Rollup Integration",
+          "status": "PASSED",
+          "duration": 104,
+          "timestamp": "2025-08-06T13:38:04.032Z"
+        },
+        {
+          "name": "Configuration Validation",
+          "status": "PASSED",
+          "duration": 43,
+          "timestamp": "2025-08-06T13:38:04.076Z"
+        }
+      ],
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "performanceMetrics": {
+    "moveLatencies": [
+      {
+        "average": 30.58,
+        "maximum": 71,
+        "samples": 100,
+        "timestamp": "2025-08-06T13:38:01.170Z"
+      }
+    ],
+    "websocketLatencies": [
+      {
+        "regionLatencies": [
+          {
+            "region": "us-east-1",
+            "latency": 24
+          },
+          {
+            "region": "eu-west-1",
+            "latency": 71
+          },
+          {
+            "region": "auto",
+            "latency": 40
+          }
+        ],
+        "timestamp": "2025-08-06T13:38:01.323Z"
+      }
+    ],
+    "aiResponseTimes": [
+      {
+        "personality": "Aggressive",
+        "responseTime": 67,
+        "timestamp": "2025-08-06T13:38:01.392Z"
+      },
+      {
+        "personality": "Defensive",
+        "responseTime": 116,
+        "timestamp": "2025-08-06T13:38:01.508Z"
+      },
+      {
+        "personality": "Balanced",
+        "responseTime": 93,
+        "timestamp": "2025-08-06T13:38:01.601Z"
+      },
+      {
+        "personality": "Tactical",
+        "responseTime": 169,
+        "timestamp": "2025-08-06T13:38:01.770Z"
+      },
+      {
+        "personality": "Blitz",
+        "responseTime": 28,
+        "timestamp": "2025-08-06T13:38:01.799Z"
+      }
+    ],
+    "settlementTimes": [],
+    "cacheRetrievalTimes": []
+  },
+  "errors": [
+    {
+      "test": "Enhanced Move System Tests",
+      "phase": "phase1",
+      "error": "Valid move for Major was rejected: {\"from\":{\"x\":4,\"y\":4},\"to\":{\"x\":5,\"y\":4},\"shouldBeValid\":true}",
+      "stack": "Error: Valid move for Major was rejected: {\"from\":{\"x\":4,\"y\":4},\"to\":{\"x\":5,\"y\":4},\"shouldBeValid\":true}\n    at MagicBlockTestRunner.validatePieceMovement (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:944:23)\n    at MagicBlockTestRunner.testEnhancedMoveSystem (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:360:18)\n    at Object.fn (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:148:66)\n    at MagicBlockTestRunner.executeTest (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:258:22)\n    at MagicBlockTestRunner.runPhase1CoreComponents (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:155:24)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async MagicBlockTestRunner.runCompleteTestSuite (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:114:13)\n    at async main (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:1636:9)",
+      "timestamp": "2025-08-06T13:37:56.741Z"
+    },
+    {
+      "test": "Multi-tier Cache Integration",
+      "phase": "phase2",
+      "error": "L2 cache latency 13ms exceeds expected 5ms",
+      "stack": "Error: L2 cache latency 13ms exceeds expected 5ms\n    at MagicBlockTestRunner.validateCachePerformance (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:1210:23)\n    at async MagicBlockTestRunner.validateMultiTierCache (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:1237:9)\n    at async MagicBlockTestRunner.testMultiTierCacheIntegration (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:442:9)\n    at async MagicBlockTestRunner.executeTest (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:257:13)\n    at async MagicBlockTestRunner.runPhase2Integration (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:173:13)\n    at async MagicBlockTestRunner.runCompleteTestSuite (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:117:13)\n    at async main (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:1636:9)",
+      "timestamp": "2025-08-06T13:37:57.891Z"
+    },
+    {
+      "test": "Caching Performance",
+      "phase": "phase3",
+      "error": "L1 cache latency 8ms exceeds expected 1ms",
+      "stack": "Error: L1 cache latency 8ms exceeds expected 1ms\n    at MagicBlockTestRunner.validateCachePerformance (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:1210:23)\n    at async MagicBlockTestRunner.testCachingPerformance (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:602:9)\n    at async MagicBlockTestRunner.executeTest (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:257:13)\n    at async MagicBlockTestRunner.runPhase3Performance (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:192:13)\n    at async MagicBlockTestRunner.runCompleteTestSuite (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:120:13)\n    at async main (A:\\Nen Platform\\Nen\\poc-implementation\\magicblock-complete-test-runner.js:1636:9)",
+      "timestamp": "2025-08-06T13:38:02.400Z"
+    }
+  ],
+  "compliance": {
+    "moveLatencyTarget": "<50ms",
+    "websocketLatencyTarget": "<20ms",
+    "aiResponseTarget": "<2000ms",
+    "settlementTarget": "<5000ms"
+  }
+}

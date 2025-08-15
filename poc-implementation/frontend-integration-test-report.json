@@ -1,0 +1,56 @@
+{
+  "timestamp": "2025-08-08T13:55:09.279Z",
+  "testSuite": "Frontend Integration Test - User Story 2",
+  "environment": "devnet",
+  "results": [
+    {
+      "test": "PDA Generation",
+      "status": "PASSED",
+      "details": "Generated PDA successfully with bump 252"
+    },
+    {
+      "test": "Minimum Deposit Validation",
+      "status": "PASSED",
+      "details": "4/4 test cases passed"
+    },
+    {
+      "test": "Transaction Structure",
+      "status": "PASSED",
+      "details": "All transaction components properly structured"
+    },
+    {
+      "test": "Event Emission",
+      "status": "PASSED",
+      "details": "Event structure meets User Story 2 requirements"
+    },
+    {
+      "test": "Devnet Integration",
+      "status": "PASSED",
+      "details": "Connected to devnet, program found"
+    },
+    {
+      "test": "Implementation Compliance",
+      "status": "PASSED",
+      "details": "2/2 required files found"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "total": 6,
+    "passRate": "100.0%",
+    "status": "READY"
+  },
+  "userStory2Requirements": [
+    "Create/access user's betting account PDA on devnet",
+    "Transfer real SOL from user wallet to betting PDA via devnet transaction",
+    "Update user's on-chain balance record with actual data",
+    "Emit deposit event for tracking, verifiable on devnet",
+    "Enforce minimum deposit (0.1 SOL); use real devnet SOL for testing"
+  ],
+  "nextSteps": [
+    "Test with real wallet (Phantom/Solflare)",
+    "Verify actual SOL deposits on devnet",
+    "Monitor transaction confirmations",
+    "Validate event tracking in production"
+  ]
+}

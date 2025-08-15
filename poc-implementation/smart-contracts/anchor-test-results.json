@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-08-14T09:38:28.178Z",
+  "testResults": {
+    "passed": 12,
+    "failed": 0,
+    "errors": [],
+    "details": [
+      "✅ Nen Core - Platform PDA derivation",
+      "✅ Nen Core - User PDA derivation",
+      "✅ Nen Core - Account info retrieval",
+      "✅ Nen Betting - Betting PDA derivation",
+      "✅ Nen Betting - Rent calculation",
+      "✅ Nen Betting - Account info retrieval",
+      "✅ Nen Marketplace - Listing PDA derivation",
+      "✅ Nen Marketplace - Escrow PDA derivation",
+      "✅ Nen Marketplace - Rent calculation",
+      "✅ Nen Magicblock - Session PDA derivation",
+      "✅ Nen Magicblock - Rent calculation",
+      "✅ Nen Magicblock - Program info retrieval"
+    ]
+  },
+  "programIds": {
+    "nenCore": "Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF",
+    "nenBetting": "34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5",
+    "nenMarketplace": "FgevpRTWnwu1UV6mxmD6nXPxqdmHnUK1Hjfdp3h8QK3E",
+    "nenMagicblock": "AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX"
+  },
+  "network": "devnet"
+}

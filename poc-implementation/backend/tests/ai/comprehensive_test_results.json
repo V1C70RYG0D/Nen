@@ -1,0 +1,172 @@
+{
+  "timestamp": "2025-08-06T19:12:41.026143",
+  "overall_status": "failed",
+  "summary": {
+    "total_test_phases": 6,
+    "passed_phases": 5,
+    "failed_phases": 1,
+    "success_rate": 83.33333333333334
+  },
+  "detailed_results": {
+    "basic_functionality": {
+      "status": "passed",
+      "tests": {
+        "easy": {
+          "status": "passed",
+          "move": "{'from': [4, 4], 'to': [4, 3], 'piece': {'type': 'general', 'player': 1}, 'captured': {'type': 'pawn', 'player': 2}, 'isCapture': True, 'moveType': 'capture'}"
+        },
+        "medium": {
+          "status": "passed",
+          "move": "{'from': [2, 4], 'to': [2, 3], 'piece': {'type': 'general', 'player': 1}, 'captured': {'type': 'pawn', 'player': 2}, 'isCapture': True, 'moveType': 'capture'}"
+        },
+        "hard": {
+          "status": "passed",
+          "move": "{'from': [2, 4], 'to': [2, 3], 'piece': {'type': 'general', 'player': 1}, 'captured': {'type': 'pawn', 'player': 2}, 'isCapture': True, 'moveType': 'capture'}"
+        }
+      }
+    },
+    "performance": {
+      "status": "passed",
+      "performance_data": {
+        "easy": {
+          "avg_time_ms": 1.0507774353027344,
+          "max_time_ms": 4.285097122192383,
+          "p95_time_ms": 2.756953239440918,
+          "total_tests": 100,
+          "target_time_ms": 10.0,
+          "max_allowed_ms": 25.0
+        },
+        "medium": {
+          "avg_time_ms": 1.019740104675293,
+          "max_time_ms": 2.5615692138671875,
+          "p95_time_ms": 2.0035505294799805,
+          "total_tests": 50,
+          "target_time_ms": 50.0,
+          "max_allowed_ms": 80.0
+        },
+        "hard": {
+          "avg_time_ms": 1.0223706563313801,
+          "max_time_ms": 2.177715301513672,
+          "p95_time_ms": 1.8087148666381836,
+          "total_tests": 30,
+          "target_time_ms": 90.0,
+          "max_allowed_ms": 100.0
+        }
+      }
+    },
+    "personality": {
+      "status": "failed",
+      "personality_tests": {
+        "balanced": {
+          "status": "passed",
+          "traits": {
+            "aggression": 0.5,
+            "risk_tolerance": 0.5,
+            "patience": 0.5,
+            "adaptability": 0.75
+          }
+        }
+      }
+    },
+    "fraud_detection": {
+      "status": "passed",
+      "fraud_tests": {
+        "normal_operation": {
+          "status": "passed",
+          "fraud_score": 0.010000000000000002
+        },
+        "fast_decisions": {
+          "status": "passed",
+          "fraud_score": 0.016110000000000003
+        }
+      }
+    },
+    "stress": {
+      "status": "passed",
+      "stress_tests": {
+        "concurrent": {
+          "status": "passed",
+          "results": [
+            {
+              "agent_id": 0,
+              "moves": 10,
+              "avg_time": 3.5359859466552734,
+              "max_time": 5.0048828125
+            },
+            {
+              "agent_id": 2,
+              "moves": 10,
+              "avg_time": 3.435063362121582,
+              "max_time": 5.003690719604492
+            },
+            {
+              "agent_id": 3,
+              "moves": 10,
+              "avg_time": 3.29587459564209,
+              "max_time": 4.00090217590332
+            },
+            {
+              "agent_id": 1,
+              "moves": 10,
+              "avg_time": 3.6565303802490234,
+              "max_time": 5.0048828125
+            },
+            {
+              "agent_id": 4,
+              "moves": 10,
+              "avg_time": 3.4450769424438477,
+              "max_time": 4.956960678100586
+            }
+          ]
+        }
+      }
+    },
+    "magicblock": {
+      "status": "passed",
+      "magicblock_tests": {
+        "easy": {
+          "status": "passed",
+          "max_time_ms": 2.0058155059814453,
+          "avg_time_ms": 0.8034372329711914,
+          "p99_time_ms": 2.0058155059814453,
+          "magicblock_target_ms": 100.0,
+          "compliant": true
+        },
+        "medium": {
+          "status": "passed",
+          "max_time_ms": 2.2950172424316406,
+          "avg_time_ms": 0.8751296997070312,
+          "p99_time_ms": 2.2950172424316406,
+          "magicblock_target_ms": 100.0,
+          "compliant": true
+        },
+        "hard": {
+          "status": "passed",
+          "max_time_ms": 5.998849868774414,
+          "avg_time_ms": 1.3614273071289062,
+          "p99_time_ms": 5.998849868774414,
+          "magicblock_target_ms": 100.0,
+          "compliant": true
+        }
+      }
+    },
+    "capture_preference": {
+      "status": "failed",
+      "capture_preference": {
+        "status": "failed",
+        "capture_rate": 0.87,
+        "target_rate": 0.7,
+        "within_tolerance": false
+      }
+    }
+  },
+  "recommendations": [
+    "All tests passed - system ready for production deployment"
+  ],
+  "compliance_status": {
+    "gi_md_compliance": false,
+    "magicblock_compliance": true,
+    "performance_compliance": true,
+    "fraud_detection_operational": true
+  }
+}

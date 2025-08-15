@@ -1,0 +1,50 @@
+{
+  "test_run_info": {
+    "timestamp": "2025-08-01T12:26:20.202893",
+    "total_duration": 2.8990426063537598,
+    "overall_success": true
+  },
+  "summary": {
+    "test_suites": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "individual_tests": {
+      "total": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0
+    },
+    "success_rate": {
+      "suites": 1.0,
+      "tests": 1.0
+    }
+  },
+  "detailed_results": [
+    {
+      "test_file": "standalone_ai_manager_test.py",
+      "description": "Standalone AI Manager Test Suite",
+      "success": true,
+      "duration": 0.9347207546234131,
+      "total_tests": 7,
+      "passed_tests": 7,
+      "failed_tests": 0,
+      "skipped_tests": 0,
+      "output": "============================================================\nAI MANAGER COMPREHENSIVE TEST SUITE\n============================================================\nTesting agent loading...\n\u2713 Successfully loaded 12 unique agents\n\nTesting agent retrieval...\n\u2713 Agent retrieval working correctly\n\nTesting random agent selection...\n\u2713 Random agent selection working, got 16 unique agents from 20 requests\n\nTesting agent matchmaking...\n\u2713 Matchmaking successful, created game 5921ec12-ecc6-42bd-aeb4-d2a385ee8ff9\n\nStarting 100 concurrent AI games test...\n\u2713 100 concurrent games test passed:\n  - Completed: 100/100 games\n  - Success rate: 100.0%\n  - Average duration: 0.03s\n  - Range: 0.02s - 0.08s\n  - Total time: 0.43s\n\nTesting agent pool efficiency...\n\u2713 Agent pool efficiency test passed:\n  - Total agents: 70\n  - Games completed: 10\n\nTesting thread safety...\n\u2713 Thread safety test passed with 50 games across 5 threads\n\n============================================================\nTEST RESULTS: 7/7 tests passed\n\ud83c\udf89 ALL TESTS PASSED! AI Manager is working correctly.\n",
+      "return_code": 0
+    },
+    {
+      "test_file": "test_ai_manager_production.py",
+      "description": "Production AI Manager Test Suite",
+      "success": true,
+      "duration": 1.9643218517303467,
+      "total_tests": 15,
+      "passed_tests": 15,
+      "failed_tests": 0,
+      "skipped_tests": 0,
+      "output": "============================= test session starts ==============================\nplatform linux -- Python 3.12.1, pytest-8.4.1, pluggy-1.6.0 -- /home/codespace/.python/current/bin/python\ncachedir: .pytest_cache\nrootdir: /workspaces/Nen/backend/tests\nconfigfile: pytest.ini\nplugins: anyio-4.9.0, asyncio-1.1.0, timeout-2.4.0, cov-6.2.1, mock-3.14.1\nasyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected 15 items\n\ntest_ai_manager_production.py::TestAIManager::test_all_agents_load_successfully PASSED [  6%]\ntest_ai_manager_production.py::TestAIManager::test_agent_retrieval_by_difficulty_personality PASSED [ 13%]\ntest_ai_manager_production.py::TestAIManager::test_random_agent_selection PASSED [ 20%]\ntest_ai_manager_production.py::TestAIManager::test_agent_instance_isolation PASSED [ 26%]\ntest_ai_manager_production.py::TestAIManager::test_agent_matchmaking PASSED [ 33%]\ntest_ai_manager_production.py::TestAIManager::test_concurrent_matches PASSED [ 40%]\ntest_ai_manager_production.py::TestAIManager::test_match_state_persistence PASSED [ 46%]\ntest_ai_manager_production.py::TestAIManager::test_match_cleanup PASSED  [ 53%]\ntest_ai_manager_production.py::TestAIManager::test_100_concurrent_ai_games PASSED [ 60%]\ntest_ai_manager_production.py::TestAIManager::test_agent_pool_efficiency PASSED [ 66%]\ntest_ai_manager_production.py::TestAIManager::test_memory_scaling PASSED [ 73%]\ntest_ai_manager_production.py::TestAIManager::test_thread_safety PASSED  [ 80%]\ntest_ai_manager_production.py::TestAIManager::test_error_handling_and_recovery PASSED [ 86%]\ntest_ai_manager_production.py::TestAIManager::test_performance_metrics_accuracy PASSED [ 93%]\ntest_ai_manager_production.py::TestAIManager::test_cleanup_and_shutdown PASSED [100%]\n\n============================== 15 passed in 1.58s ==============================\n",
+      "return_code": 0
+    }
+  ]
+}

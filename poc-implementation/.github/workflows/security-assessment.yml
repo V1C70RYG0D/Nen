@@ -1,0 +1,218 @@
+name: Quarterly Security Assessment
+on:
+  schedule:
+    # Quarterly security assessments - 1st day of Jan, Apr, Jul, Oct at 1 AM UTC
+    - cron: '0 1 1 1,4,7,10 *'
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  NODE_VERSION: '22.x'
+  
+jobs:
+  comprehensive-security-scan:
+    name: 'Comprehensive Security Scan'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for better analysis
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      # Dependency Vulnerability Scanning
+      - name: NPM Security Audit - Frontend
+        run: |
+          cd frontend
+          npm audit --audit-level high --json > ../reports/security/frontend-audit.json || true
+          npm audit --audit-level critical
+      
+      - name: NPM Security Audit - Backend
+        run: |
+          cd backend
+          npm audit --audit-level high --json > ../reports/security/backend-audit.json || true
+          npm audit --audit-level critical
+      
+      # Container Security Scanning
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+      
+      - name: Upload Trivy Results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+      
+      # Code Security Analysis
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: 'javascript,typescript,python'
+          queries: security-extended
+      
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+      
+      # Smart Contract Security
+      - name: Setup Rust for Smart Contract Analysis
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: clippy
+      
+      - name: Smart Contract Security Audit
+        run: |
+          cd smart-contracts
+          cargo clippy -- -D warnings
+          # Add smart contract specific security tools here
+          # cargo audit (if Cargo.toml includes audit dependencies)
+      
+      # Infrastructure Security
+      - name: Docker Security Scan
+        run: |
+          # Scan Docker configurations for security issues
+          find . -name "Dockerfile" -o -name "docker-compose*.yml" | xargs -I {} \
+            docker run --rm -v "$PWD:/project" aquasec/trivy config /project/{}
+      
+      # API Security Testing
+      - name: API Security Testing
+        run: |
+          cd tests/security
+          npm install
+          npm run test:api-security
+          npm run test:authentication
+          npm run test:authorization
+      
+      # Generate Security Report
+      - name: Generate Security Assessment Report
+        run: |
+          mkdir -p reports/security
+          node scripts/generate-security-report.js
+        env:
+          REPORT_OUTPUT_DIR: './reports/security'
+          SCAN_RESULTS_DIR: './security-scan-results'
+      
+      - name: Upload Security Assessment Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-assessment-${{ github.run_number }}
+          path: ./reports/security/
+          retention-days: 365 # Keep security reports for a year
+      
+      # Notify Security Team
+      - name: Create Security Assessment Issue
+        if: github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let securitySummary = '';
+            try {
+              const summaryPath = './reports/security/summary.json';
+              if (fs.existsSync(summaryPath)) {
+                const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+                securitySummary = `
+                **Security Assessment Summary:**
+                - Critical Issues: ${summary.critical || 0}
+                - High Issues: ${summary.high || 0}
+                - Medium Issues: ${summary.medium || 0}
+                - Low Issues: ${summary.low || 0}
+                
+                **Components Scanned:**
+                - Frontend Dependencies: ✅
+                - Backend Dependencies: ✅
+                - Smart Contracts: ✅
+                - Docker Configurations: ✅
+                - API Security: ✅
+                `;
+              }
+            } catch (error) {
+              securitySummary = 'Security scan completed. Check artifacts for detailed results.';
+            }
+            
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🔒 Quarterly Security Assessment - ${new Date().toISOString().split('T')[0]}`,
+              body: `## Quarterly Security Assessment Report
+              
+              This is an automated quarterly security assessment of the Nen Platform.
+              
+              ${securitySummary}
+              
+              **Next Steps:**
+              1. Review the detailed security report in the artifacts
+              2. Address any critical or high-severity issues
+              3. Update security documentation if needed
+              4. Plan remediation for medium/low issues
+              
+              **Artifacts:** Check the workflow artifacts for detailed scan results.
+              
+              ---
+              *This issue was automatically created by the quarterly security assessment workflow.*`,
+              labels: ['security', 'quarterly-assessment', 'audit']
+            });
+
+  penetration-testing:
+    name: 'Penetration Testing'
+    runs-on: ubuntu-latest
+    needs: comprehensive-security-scan
+    if: github.event_name == 'schedule'
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python for Security Tools
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      
+      - name: Install Security Testing Tools
+        run: |
+          pip install requests python-owasp-zap-v2.4 sqlmap
+          # Add other penetration testing tools as needed
+      
+      - name: API Penetration Testing
+        run: |
+          cd tests/security
+          python scripts/api-penetration-test.py
+        env:
+          TARGET_API_URL: ${{ secrets.STAGING_API_URL }}
+          API_KEY: ${{ secrets.SECURITY_TEST_API_KEY }}
+      
+      - name: Web Application Security Testing
+        run: |
+          # Run OWASP ZAP baseline scan
+          docker run -v $(pwd):/zap/wrk/:rw -t \
+            owasp/zap2docker-stable zap-baseline.py \
+            -t ${{ secrets.STAGING_FRONTEND_URL }} \
+            -J zap-report.json || true
+      
+      - name: Upload Penetration Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: penetration-test-results-${{ github.run_number }}
+          path: |
+            tests/security/results/
+            zap-report.json
+          retention-days: 365

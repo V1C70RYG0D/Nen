@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "paths": {
+      "@/*": ["./*"],
+      "@components/*": ["./components/*"],
+      "@hooks/*": ["./hooks/*"],
+      "@utils/*": ["./utils/*"],
+      "@styles/*": ["./styles/*"],
+      "@contexts/*": ["./contexts/*"],
+      "@lib/*": ["./lib/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": [
+    "node_modules",
+    "components/WithdrawalInterface.tsx",
+  "lib/solana-betting-client-backup.ts",
+  "lib/production-solana-betting-client-fixed.ts",
+  "lib/production-solana-betting-client-fixed.disabled.ts",
+  "lib/solana-betting-client-fixed.ts",
+    "components/RealDevnetBettingApp.tsx",
+  "__tests__/**",
+  "tests/**",
+  "pages/training-fixed.tsx"
+  ]
+} 

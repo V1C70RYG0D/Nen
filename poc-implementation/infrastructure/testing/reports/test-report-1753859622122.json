@@ -1,0 +1,94 @@
+{
+  "timestamp": "2025-07-30T07:13:41.992Z",
+  "environment": "development",
+  "services": {
+    "Backend API": {
+      "status": "online",
+      "code": 200
+    },
+    "Frontend App": {
+      "status": "offline",
+      "error": "connect ECONNREFUSED 127.0.0.1:3000"
+    },
+    "Game API": {
+      "status": "warning",
+      "code": 404
+    },
+    "Betting API": {
+      "status": "warning",
+      "code": 404
+    },
+    "AI Service": {
+      "status": "warning",
+      "code": 404
+    },
+    "WebSocket": {
+      "status": "offline",
+      "error": "Unexpected server response: 200"
+    }
+  },
+  "performance": {
+    "Health Check": {
+      "latency": "1.56",
+      "status": "success"
+    },
+    "Game Matches": {
+      "latency": "1.82",
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "AI Agents": {
+      "latency": "1.62",
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "Betting Status": {
+      "latency": "2.57",
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "Load Test": {
+      "concurrent_requests": 50,
+      "successful": 50,
+      "failed": 0,
+      "total_time": "57.11",
+      "average_per_request": "1.14"
+    }
+  },
+  "functionality": {
+    "Create Game Match": {
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "AI Agent Generation": {
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "Betting System": {
+      "status": "error",
+      "error": "Request failed with status code 404"
+    },
+    "Real-time Updates": {
+      "status": "error",
+      "error": "Unexpected server response: 200"
+    }
+  },
+  "security": {
+    "Rate Limiting": {
+      "status": "secure"
+    },
+    "CORS Headers": {
+      "status": "warning",
+      "issue": "CORS headers not configured"
+    },
+    "Security Headers": {
+      "status": "secure"
+    }
+  },
+  "summary": {
+    "total_tests": 18,
+    "passed": 5,
+    "failed": 9,
+    "warnings": 4
+  }
+}

@@ -1,0 +1,38 @@
+=== EasyAgent Test Validation ===
+Python version: 3.12.1 (main, Jul 10 2025, 11:57:50) [GCC 13.3.0]
+Working directory: /workspaces/Nen/backend/tests/ai
+Agents path: /workspaces/Nen/backend/ai-services/agents
+
+--- Test 1: Module Imports ---
+✅ numpy imported successfully
+✅ loguru imported successfully
+✅ basic_ai_agents imported successfully
+✅ easy_agent imported successfully
+
+--- Test 2: Agent Creation ---
+✅ EasyAgent created successfully
+Agent personality: AIPersonality.BALANCED
+
+--- Test 3: Move Selection ---
+Move selected: True
+Move type: <class 'dict'>
+Move has 'from': True
+Move has 'to': True
+
+--- Test 4: Performance Stats ---
+Stats retrieved: True
+Stats type: <class 'dict'>
+Stats keys: ['total_moves', 'average_time_ms', 'max_time_ms', 'min_time_ms', 'capture_preference_rate', 'moves_under_10ms', 'performance_compliance', 'personality']
+
+--- Test 5: Personality Variations ---
+✅ aggressive personality works
+✅ defensive personality works
+✅ balanced personality works
+✅ tactical personality works
+
+--- Test 6: Factory Function ---
+Factory function works: True
+
+=== Test Summary ===
+✅ All basic tests completed successfully
+EasyAgent is functional and ready for comprehensive testing

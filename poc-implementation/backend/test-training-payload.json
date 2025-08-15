@@ -1,0 +1,14 @@
+{
+  "walletPubkey": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+  "agentMint": "H4o5x8s4A3pYsG47yPCsGMe4GzLDXdbdJPQ7VHG89FzY",
+  "sessionId": "test-12345678-1234-1234-1234-123456789012",
+  "replayCommitments": ["abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"],
+  "trainingParams": {
+    "focusArea": "all",
+    "intensity": "medium",
+    "maxMatches": 1,
+    "learningRate": 0.001,
+    "epochs": 10,
+    "batchSize": 32
+  }
+}

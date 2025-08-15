@@ -1,0 +1,12 @@
+[workspace]
+members = [
+  "programs/nen-marketplace"
+]
+resolver = "2"
+
+[workspace.dependencies]
+anchor-lang = "0.31.1"
+anchor-spl = "0.31.1"
+solana-program = "1.18.22"
+spl-token = "4.0.0"
+spl-associated-token-account = "2.3.0"

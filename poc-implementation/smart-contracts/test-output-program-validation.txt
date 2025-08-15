@@ -1,0 +1,38 @@
+(node:39219) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+  Nen Programs - Validation Tests
+    Program ID Validation
+Nen Core program ID is valid: Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF
+      ✔ Should validate nen-core program ID
+Nen Betting program ID is valid: 34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5
+      ✔ Should validate nen-betting program ID
+Nen Marketplace program ID is valid: 8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH
+      ✔ Should validate nen-marketplace program ID
+Nen MagicBlock program ID is valid: AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX
+      ✔ Should validate nen-magicblock program ID
+    PDA Derivation Validation
+Platform PDA: 2y4jzbXAf878Lh2o76bpL5jntPXkJYKign4Sxjw38fQn bump: 253
+      ✔ Should derive platform PDA correctly
+User PDAs are unique: ARaTkfycsv5aqSJbSgyQZ4FsEEHhubVu2QqsD5gaVWoJ HFLnhW1CXzHepDJqfjhHqSdKDev5zzqbMXTTKbfpgQP9
+      ✔ Should derive user account PDAs with different seeds
+Betting PDA: ETbm3jW4LfD4EparreBu4wGyZcNhLMd88CR2VZMyZJij
+      ✔ Should derive betting account PDAs correctly
+Marketplace listing PDA: ASbqNyMa7vM7WshLArRbwPpSf9Ehm6fC3P8465XgBtLB
+      ✔ Should derive marketplace listing PDAs correctly
+MagicBlock session PDA: 7e3EwKQ3bCwpc2S2oUMBSLqZwmtKtB63mkV8DQrph1nb
+      ✔ Should derive magicblock session PDAs correctly
+    Program Structure Validation
+All program IDs are unique
+      ✔ Should validate all program IDs are different
+platform seed is valid: platform
+user seed is valid: user
+bettingAccount seed is valid: betting_account
+listing seed is valid: listing
+session seed is valid: session
+      ✔ Should validate PDA seeds are consistent
+
+
+  11 passing (19ms)
+

@@ -1,0 +1,140 @@
+{
+  "version": "0.1.0",
+  "name": "nen_betting",
+  "instructions": [
+    {
+      "name": "createBettingAccount",
+      "accounts": [
+        { "name": "bettingAccount", "isMut": true, "isSigner": false },
+        { "name": "user", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "depositSol",
+      "accounts": [
+        { "name": "bettingAccount", "isMut": true, "isSigner": false },
+        { "name": "user", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "amount", "type": "u64" }
+      ]
+    },
+    {
+      "name": "withdrawSol",
+      "accounts": [
+        { "name": "bettingAccount", "isMut": true, "isSigner": false },
+        { "name": "user", "isMut": true, "isSigner": true }
+      ],
+      "args": [
+        { "name": "amount", "type": "u64" }
+      ]
+    },
+    {
+      "name": "lockFunds",
+      "accounts": [
+        { "name": "bettingAccount", "isMut": true, "isSigner": false },
+        { "name": "user", "isMut": false, "isSigner": true }
+      ],
+      "args": [
+        { "name": "amount", "type": "u64" }
+      ]
+    },
+    {
+      "name": "unlockFunds",
+      "accounts": [
+        { "name": "bettingAccount", "isMut": true, "isSigner": false },
+        { "name": "user", "isMut": false, "isSigner": true }
+      ],
+      "args": [
+        { "name": "amount", "type": "u64" }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "BettingAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "user", "type": "publicKey" },
+          { "name": "balance", "type": "u64" },
+          { "name": "totalDeposited", "type": "u64" },
+          { "name": "totalWithdrawn", "type": "u64" },
+          { "name": "lockedBalance", "type": "u64" },
+          { "name": "depositCount", "type": "u32" },
+          { "name": "withdrawalCount", "type": "u32" },
+          { "name": "createdAt", "type": "i64" },
+          { "name": "lastUpdated", "type": "i64" },
+          { "name": "lastWithdrawalTime", "type": "i64" },
+          { "name": "bump", "type": "u8" }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "BettingAccountCreated",
+      "fields": [
+        { "name": "user", "type": "publicKey", "index": false },
+        { "name": "pdaAddress", "type": "publicKey", "index": false },
+        { "name": "timestamp", "type": "i64", "index": false }
+      ]
+    },
+    {
+      "name": "DepositCompleted",
+      "fields": [
+        { "name": "user", "type": "publicKey", "index": false },
+        { "name": "pdaAddress", "type": "publicKey", "index": false },
+        { "name": "amount", "type": "u64", "index": false },
+        { "name": "previousBalance", "type": "u64", "index": false },
+        { "name": "newBalance", "type": "u64", "index": false },
+        { "name": "transactionCount", "type": "u32", "index": false },
+        { "name": "timestamp", "type": "i64", "index": false }
+      ]
+    },
+    {
+      "name": "WithdrawalCompleted",
+      "fields": [
+        { "name": "user", "type": "publicKey", "index": false },
+        { "name": "pdaAddress", "type": "publicKey", "index": false },
+        { "name": "amount", "type": "u64", "index": false },
+        { "name": "previousBalance", "type": "u64", "index": false },
+        { "name": "newBalance", "type": "u64", "index": false },
+        { "name": "transactionCount", "type": "u32", "index": false },
+        { "name": "timestamp", "type": "i64", "index": false }
+      ]
+    },
+    {
+      "name": "FundsLocked",
+      "fields": [
+        { "name": "user", "type": "publicKey", "index": false },
+        { "name": "account", "type": "publicKey", "index": false },
+        { "name": "amount", "type": "u64", "index": false },
+        { "name": "totalLocked", "type": "u64", "index": false },
+        { "name": "timestamp", "type": "i64", "index": false }
+      ]
+    },
+    {
+      "name": "FundsUnlocked",
+      "fields": [
+        { "name": "user", "type": "publicKey", "index": false },
+        { "name": "account", "type": "publicKey", "index": false },
+        { "name": "amount", "type": "u64", "index": false },
+        { "name": "totalLocked", "type": "u64", "index": false },
+        { "name": "timestamp", "type": "i64", "index": false }
+      ]
+    }
+  ],
+  "errors": [
+    { "code": 6000, "name": "BelowMinimumDeposit", "msg": "Deposit amount below minimum required" },
+    { "code": 6001, "name": "AboveMaximumDeposit", "msg": "Deposit amount above maximum allowed" },
+    { "code": 6002, "name": "InvalidWithdrawalAmount", "msg": "Invalid withdrawal amount" },
+    { "code": 6003, "name": "InsufficientBalance", "msg": "Insufficient balance for this operation" },
+    { "code": 6004, "name": "InsufficientLockedFunds", "msg": "Insufficient locked funds for this operation" },
+    { "code": 6005, "name": "WithdrawalCooldownActive", "msg": "24-hour withdrawal cooldown is active" },
+    { "code": 6006, "name": "Unauthorized", "msg": "Unauthorized access" }
+  ]
+}

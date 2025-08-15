@@ -1,0 +1,292 @@
+{
+  "summary": {
+    "total": 46,
+    "passed": 42,
+    "failed": 4,
+    "successRate": 91.30434782608695,
+    "timestamp": "2025-08-06T11:10:38.228Z"
+  },
+  "tests": [
+    {
+      "name": "File: package.json",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.207Z"
+    },
+    {
+      "name": "File: main.js",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.210Z"
+    },
+    {
+      "name": "File: config/.env",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.210Z"
+    },
+    {
+      "name": "File: backend/package.json",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.210Z"
+    },
+    {
+      "name": "File: backend/simple-server.js",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.211Z"
+    },
+    {
+      "name": "File: backend/dist/main.js",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.211Z"
+    },
+    {
+      "name": "File: ai/app.py",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.211Z"
+    },
+    {
+      "name": "File: ai/requirements.txt",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.211Z"
+    },
+    {
+      "name": "File: test-working-services.js",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.211Z"
+    },
+    {
+      "name": "Directory: backend",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.212Z"
+    },
+    {
+      "name": "Directory: frontend",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.212Z"
+    },
+    {
+      "name": "Directory: ai",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.213Z"
+    },
+    {
+      "name": "Directory: config",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.213Z"
+    },
+    {
+      "name": "Directory: docs",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.213Z"
+    },
+    {
+      "name": "Directory: tests",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.213Z"
+    },
+    {
+      "name": "Directory: tools",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.213Z"
+    },
+    {
+      "name": "Clean Root Directory (< 10 JS files)",
+      "passed": false,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.214Z"
+    },
+    {
+      "name": "Environment Variable: NODE_ENV",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.216Z"
+    },
+    {
+      "name": "Environment Variable: FRONTEND_URL",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.216Z"
+    },
+    {
+      "name": "Environment Variable: API_BASE_URL",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.216Z"
+    },
+    {
+      "name": "Environment Variable: AI_SERVICE_URL",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.216Z"
+    },
+    {
+      "name": "Environment Variable: BACKEND_PORT",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.216Z"
+    },
+    {
+      "name": "Environment Variable: AI_SERVICE_PORT",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.216Z"
+    },
+    {
+      "name": "No Hardcoded Values (GI-3)",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.216Z"
+    },
+    {
+      "name": "Root Package Valid JSON",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.217Z"
+    },
+    {
+      "name": "Root Package Has Scripts",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.217Z"
+    },
+    {
+      "name": "Root Package Has Dependencies",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.217Z"
+    },
+    {
+      "name": "Backend Package Valid JSON",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.218Z"
+    },
+    {
+      "name": "Backend Package Has Scripts",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.218Z"
+    },
+    {
+      "name": "Backend Package Has Dependencies",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.218Z"
+    },
+    {
+      "name": "AI Requirements File",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.218Z"
+    },
+    {
+      "name": "Flask Dependency",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.218Z"
+    },
+    {
+      "name": "Main.js Error Handling",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.220Z"
+    },
+    {
+      "name": "Main.js Environment Loading",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.220Z"
+    },
+    {
+      "name": "Main.js No Hardcoded Values",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.220Z"
+    },
+    {
+      "name": "Backend CORS Headers",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.221Z"
+    },
+    {
+      "name": "Backend Error Handling",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.221Z"
+    },
+    {
+      "name": "Backend Environment Usage",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.221Z"
+    },
+    {
+      "name": "AI Service Error Handling",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.221Z"
+    },
+    {
+      "name": "AI Service Environment Usage",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.221Z"
+    },
+    {
+      "name": "AI Service CORS",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.221Z"
+    },
+    {
+      "name": "GI-3: No Hardcoding",
+      "passed": false,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.224Z"
+    },
+    {
+      "name": "GI-6: Error Handling",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.225Z"
+    },
+    {
+      "name": "GI-18: External Configuration",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-06T11:10:38.225Z"
+    },
+    {
+      "name": "Node.js Module Loading",
+      "passed": false,
+      "details": "Cannot find module './main.js'\nRequire stack:\n- A:\\Nen Platform\\Nen\\poc-implementation\\tools\\testing\\simple-test-validator.js",
+      "timestamp": "2025-08-06T11:10:38.226Z"
+    },
+    {
+      "name": "Backend Simple Server",
+      "passed": false,
+      "details": "Cannot find module './backend/simple-server.js'\nRequire stack:\n- A:\\Nen Platform\\Nen\\poc-implementation\\tools\\testing\\simple-test-validator.js",
+      "timestamp": "2025-08-06T11:10:38.227Z"
+    }
+  ],
+  "environment": {
+    "nodeVersion": "v22.12.0",
+    "platform": "win32",
+    "workingDirectory": "A:\\Nen Platform\\Nen\\poc-implementation"
+  }
+}

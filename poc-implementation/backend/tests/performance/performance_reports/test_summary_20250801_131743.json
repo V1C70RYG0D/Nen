@@ -1,0 +1,31 @@
+{
+  "test_run_summary": {
+    "timestamp": "2025-08-01T13:17:43.657618",
+    "total_duration_seconds": 0.6304008960723877,
+    "all_tests_passed": false,
+    "environment": "local",
+    "configuration": {
+      "easy_target_ms": 10,
+      "medium_target_ms": 50,
+      "hard_target_ms": 90,
+      "test_position_count": 50
+    }
+  },
+  "test_results": {
+    "latency": {
+      "return_code": 5,
+      "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.1, pytest-8.4.1, pluggy-1.6.0 -- /home/codespace/.python/current/bin/python\ncachedir: .pytest_cache\nrootdir: /workspaces/Nen/backend/tests/performance\nconfigfile: pytest.ini\nplugins: anyio-4.9.0, asyncio-1.1.0, timeout-2.4.0, cov-6.2.1, mock-3.14.1\nasyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected 0 items\n\n=============================== warnings summary ===============================\ntest_latency.py:310\n  /workspaces/Nen/backend/tests/performance/test_latency.py:310: PytestCollectionWarning: cannot collect test class 'TestLatencyRequirements' because it has a __init__ constructor (from: test_latency.py)\n    class TestLatencyRequirements:\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n- generated xml file: /workspaces/Nen/backend/tests/performance/performance_reports/junit_results_latency.xml -\n============================== 1 warning in 0.16s ==============================\n",
+      "stderr": "",
+      "duration": 0.6304008960723877,
+      "success": false
+    }
+  },
+  "magicblock_compliance": true,
+  "ci_configuration": {
+    "is_ci_environment": false,
+    "ci_timeout_multiplier": 2.0,
+    "ci_reduced_load": true,
+    "ci_skip_long_tests": false,
+    "parallel_test_workers": 4
+  }
+}

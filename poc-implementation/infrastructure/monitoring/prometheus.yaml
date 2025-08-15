@@ -1,0 +1,316 @@
+# Prometheus Configuration for Nen Platform POC
+# Phase 4.2: Production Deployment - Comprehensive Observability Stack
+# 
+# Monitors API latency (<100ms target), game move performance (<50ms target),
+# system health, and business metrics
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: nen-production
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+      external_labels:
+        cluster: 'nen-production'
+        environment: 'production'
+
+    rule_files:
+      - "/etc/prometheus/rules/*.yml"
+
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+              - alertmanager:9093
+
+    scrape_configs:
+      # Nen Backend API Metrics
+      - job_name: 'nen-backend'
+        static_configs:
+          - targets: ['nen-backend:9090']
+        metrics_path: /metrics
+        scrape_interval: 5s
+        scrape_timeout: 3s
+
+      # Nen AI Service Metrics
+      - job_name: 'nen-ai'
+        static_configs:
+          - targets: ['nen-ai:9091']
+        metrics_path: /metrics
+        scrape_interval: 10s
+        scrape_timeout: 5s
+
+      # Kubernetes API Server
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+          - role: endpoints
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: default;kubernetes;https
+
+      # Kubernetes Nodes
+      - job_name: 'kubernetes-nodes'
+        kubernetes_sd_configs:
+          - role: node
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+
+      # Kubernetes Pods
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: nen-production
+data:
+  nen-platform.yml: |
+    groups:
+      - name: nen-platform-performance
+        rules:
+          # API Latency Rules - Target <100ms
+          - alert: HighAPILatency
+            expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="nen-backend"}[5m])) > 0.1
+            for: 2m
+            labels:
+              severity: warning
+              component: backend
+            annotations:
+              summary: "High API latency detected"
+              description: "95th percentile API latency is {{ $value }}s, above 100ms target"
+
+          - alert: CriticalAPILatency
+            expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="nen-backend"}[5m])) > 0.2
+            for: 1m
+            labels:
+              severity: critical
+              component: backend
+            annotations:
+              summary: "Critical API latency detected"
+              description: "95th percentile API latency is {{ $value }}s, severely above target"
+
+          # Game Move Performance - Target <50ms
+          - alert: SlowGameMoves
+            expr: histogram_quantile(0.95, rate(game_move_duration_seconds_bucket[5m])) > 0.05
+            for: 2m
+            labels:
+              severity: warning
+              component: ai-service
+            annotations:
+              summary: "Slow game move generation"
+              description: "95th percentile game move time is {{ $value }}s, above 50ms target"
+
+          - alert: CriticalGameMoveLatency
+            expr: histogram_quantile(0.95, rate(game_move_duration_seconds_bucket[5m])) > 0.1
+            for: 1m
+            labels:
+              severity: critical
+              component: ai-service
+            annotations:
+              summary: "Critical game move latency"
+              description: "Game moves taking {{ $value }}s, far above 50ms target"
+
+          # Error Rate Monitoring
+          - alert: HighErrorRate
+            expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.01
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High error rate detected"
+              description: "Error rate is {{ $value | humanizePercentage }}"
+
+          # Resource Utilization
+          - alert: HighCPUUsage
+            expr: rate(container_cpu_usage_seconds_total{pod=~"nen-.*"}[5m]) > 0.8
+            for: 10m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High CPU usage"
+              description: "CPU usage is {{ $value | humanizePercentage }}"
+
+          - alert: HighMemoryUsage
+            expr: container_memory_usage_bytes{pod=~"nen-.*"} / container_spec_memory_limit_bytes > 0.9
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "High memory usage"
+              description: "Memory usage is {{ $value | humanizePercentage }}"
+
+          # Business Metrics
+          - alert: LowActiveUsers
+            expr: nen_active_users < 10
+            for: 15m
+            labels:
+              severity: info
+            annotations:
+              summary: "Low active user count"
+              description: "Only {{ $value }} active users in the last 15 minutes"
+
+          - alert: GameSessionFailures
+            expr: rate(nen_game_sessions_failed_total[5m]) > 0.1
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High game session failure rate"
+              description: "{{ $value }} game sessions failing per second"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: nen-production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus
+      containers:
+      - name: prometheus
+        image: prom/prometheus:v2.45.0
+        args:
+          - '--config.file=/etc/prometheus/prometheus.yml'
+          - '--storage.tsdb.path=/prometheus/'
+          - '--web.console.libraries=/etc/prometheus/console_libraries'
+          - '--web.console.templates=/etc/prometheus/consoles'
+          - '--storage.tsdb.retention.time=30d'
+          - '--web.enable-lifecycle'
+          - '--web.enable-admin-api'
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: config
+          mountPath: /etc/prometheus/
+        - name: rules
+          mountPath: /etc/prometheus/rules/
+        - name: storage
+          mountPath: /prometheus/
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "1"
+      volumes:
+      - name: config
+        configMap:
+          name: prometheus-config
+      - name: rules
+        configMap:
+          name: prometheus-rules
+      - name: storage
+        persistentVolumeClaim:
+          claimName: prometheus-storage
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: nen-production
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+  selector:
+    app: prometheus
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-storage
+  namespace: nen-production
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: nen-production
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+- apiGroups: [""]
+  resources:
+  - nodes
+  - nodes/proxy
+  - services
+  - endpoints
+  - pods
+  verbs: ["get", "list", "watch"]
+- apiGroups:
+  - extensions
+  resources:
+  - ingresses
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+- kind: ServiceAccount
+  name: prometheus
+  namespace: nen-production

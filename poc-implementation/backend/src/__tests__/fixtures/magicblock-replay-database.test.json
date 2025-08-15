@@ -1,0 +1,27 @@
+{
+  "wallet": "DemoWallet111111111111111111111111111111111",
+  "agents": [
+    {
+      "mint": "DemoAgentMint1111111111111111111111111111111",
+      "name": "Demo Agent One"
+    }
+  ],
+  "replays": [
+    {
+      "id": "replay-aaa",
+      "commitmentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "agentMint": "DemoAgentMint1111111111111111111111111111111",
+      "walletAddress": "DemoWallet111111111111111111111111111111111",
+      "gameData": { "opponent": { "name": "Opponent X", "elo": 1800 }, "result": "Victory", "opening": "Queen's Gambit", "moveCount": 42, "gameDuration": 900 },
+      "metadata": { "recordedAt": "2025-08-01T00:00:00.000Z", "verificationStatus": "verified", "finalStateHash": "deadbeef", "rollupSlot": 123 }
+    },
+    {
+      "id": "replay-bbb",
+      "commitmentHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "agentMint": "DemoAgentMint1111111111111111111111111111111",
+      "walletAddress": "DemoWallet111111111111111111111111111111111",
+      "gameData": { "opponent": { "name": "Opponent Y", "elo": 1750 }, "result": "Loss", "opening": "Sicilian Defense", "moveCount": 55, "gameDuration": 1200 },
+      "metadata": { "recordedAt": "2025-08-02T00:00:00.000Z", "verificationStatus": "verified", "finalStateHash": "cafebabe", "rollupSlot": 456 }
+    }
+  ]
+}

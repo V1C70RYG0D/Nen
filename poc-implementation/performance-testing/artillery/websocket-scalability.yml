@@ -1,0 +1,247 @@
+config:
+  target: 'ws://localhost:3001'
+  phases:
+    # WebSocket connection scalability test
+    - duration: 30
+      arrivalCount: 10
+      name: "Ramp up WebSocket connections"
+    - duration: 120
+      arrivalCount: 100
+      name: "Moderate concurrent WebSocket load"
+    - duration: 60
+      arrivalCount: 500
+      name: "High concurrent WebSocket load"
+    - duration: 30
+      arrivalCount: 1000
+      name: "Peak WebSocket connections"
+    - duration: 120
+      arrivalCount: 100
+      name: "Scale down to moderate load"
+
+  # Custom variables for dynamic testing
+  variables:
+    gameTypes:
+      - "gungi"
+      - "chess"
+      - "tournament"
+    difficulties:
+      - "easy"
+      - "medium" 
+      - "hard"
+    messageTypes:
+      - "move"
+      - "chat"
+      - "heartbeat"
+      - "game_state"
+
+  # WebSocket specific configuration
+  ws:
+    # Connection timeout
+    timeout: 30
+    # Reconnection configuration
+    reconnect: true
+    maxReconnects: 3
+    reconnectInterval: 1000
+
+  # Performance monitoring
+  metrics:
+    - name: "connection_time"
+      unit: "ms"
+    - name: "message_latency" 
+      unit: "ms"
+    - name: "concurrent_connections"
+      unit: "count"
+    - name: "message_throughput"
+      unit: "messages/sec"
+
+  # Resource limits and timeouts
+  http:
+    timeout: 30
+    pool: 50  # Connection pool size
+
+  # Artillery plugins for enhanced metrics
+  plugins:
+    metrics-by-endpoint:
+      useOnlyRequestNames: true
+    hdrhistogram:
+      enable: true
+
+scenarios:
+  # Scenario 1: Basic WebSocket Connection Test
+  - name: "Basic WebSocket Connection"
+    weight: 20
+    engine: ws
+    flow:
+      - connect:
+          url: "/socket.io/?EIO=4&transport=websocket"
+          headers:
+            Authorization: "Bearer {{ $randomString() }}"
+          subprotocols:
+            - "socket.io"
+      
+      - think: 1
+      
+      # Join game room
+      - send:
+          payload: '42["join_game","{{ $randomString() }}"]'
+          
+      - think: 2
+      
+      # Send heartbeat messages
+      - loop:
+          count: 10
+          over:
+            - send:
+                payload: '42["heartbeat",{"timestamp":"{{ $timestamp }}", "userId":"{{ $randomString() }}"}]'
+            - think: 1
+      
+      # Disconnect gracefully
+      - send:
+          payload: '41'
+
+  # Scenario 2: Intensive Gaming Session
+  - name: "Intensive Gaming Session"
+    weight: 30
+    engine: ws
+    flow:
+      - connect:
+          url: "/socket.io/?EIO=4&transport=websocket"
+          headers:
+            Authorization: "Bearer {{ $randomString() }}"
+            
+      - think: 0.5
+      
+      # Create or join game
+      - send:
+          payload: '42["create_game",{"gameType":"{{ gameTypes }}","difficulty":"{{ difficulties }}","timeControl":"10+5"}]'
+      
+      - think: 1
+      
+      # Simulate active gameplay with multiple moves
+      - loop:
+          count: 20
+          over:
+            - send:
+                payload: '42["make_move",{"gameId":"{{ $randomString() }}","move":{"from":"a2","to":"a4","piece":"pawn"},"timestamp":"{{ $timestamp }}"}]'
+            - think: 
+                min: 2
+                max: 8  # Random thinking time between moves
+            
+            # Occasional chat messages
+            - ifTrue: "{{ $randomInt(1, 100) <= 30 }}"  # 30% chance
+              then:
+                - send:
+                    payload: '42["chat_message",{"gameId":"{{ $randomString() }}","message":"Good move!","timestamp":"{{ $timestamp }}"}]'
+      
+      # Request game state updates
+      - loop:
+          count: 5
+          over:
+            - send:
+                payload: '42["get_game_state","{{ $randomString() }}"]'
+            - think: 3
+
+  # Scenario 3: Spectator Mode (High Message Throughput)
+  - name: "Spectator Mode"
+    weight: 25
+    engine: ws
+    flow:
+      - connect:
+          url: "/socket.io/?EIO=4&transport=websocket"
+          
+      # Join as spectator to multiple games
+      - loop:
+          count: 5
+          over:
+            - send:
+                payload: '42["spectate_game","game_{{ $randomInt(1, 1000) }}"]'
+            - think: 0.5
+      
+      # Listen mode - occasional interactions
+      - loop:
+          count: 50
+          over:
+            - think: 
+                min: 1
+                max: 5
+            - send:
+                payload: '42["spectator_reaction",{"gameId":"game_{{ $randomInt(1, 1000) }}","reaction":"👍","timestamp":"{{ $timestamp }}"}]'
+
+  # Scenario 4: Real-time Tournament
+  - name: "Tournament Participation"
+    weight: 15
+    engine: ws
+    flow:
+      - connect:
+          url: "/socket.io/?EIO=4&transport=websocket"
+          headers:
+            Authorization: "Bearer tournament_{{ $randomString() }}"
+      
+      # Join tournament
+      - send:
+          payload: '42["join_tournament",{"tournamentId":"tournament_{{ $randomInt(1, 10) }}","userId":"{{ $randomString() }}"}]'
+      
+      - think: 2
+      
+      # Tournament gameplay with time pressure
+      - loop:
+          count: 30
+          over:
+            - send:
+                payload: '42["tournament_move",{"tournamentId":"tournament_{{ $randomInt(1, 10) }}","round":{{ $randomInt(1, 5) }},"move":{"from":"{{ $randomString() }}","to":"{{ $randomString() }}"},"timeRemaining":{{ $randomInt(30, 600) }}}]'
+            - think:
+                min: 0.5
+                max: 3  # Faster moves in tournament
+      
+      # Tournament status updates
+      - loop:
+          count: 10
+          over:
+            - send:
+                payload: '42["tournament_status","tournament_{{ $randomInt(1, 10) }}"]'
+            - think: 5
+
+  # Scenario 5: AI Training/Analysis
+  - name: "AI Analysis Session"
+    weight: 10
+    engine: ws
+    flow:
+      - connect:
+          url: "/socket.io/?EIO=4&transport=websocket"
+          headers:
+            Authorization: "Bearer ai_user_{{ $randomString() }}"
+      
+      # Request AI analysis
+      - send:
+          payload: '42["request_ai_analysis",{"gameId":"{{ $randomString() }}","position":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR","depth":{{ $randomInt(5, 15) }}}]'
+      
+      - think: 3
+      
+      # AI training session
+      - loop:
+          count: 15
+          over:
+            - send:
+                payload: '42["ai_training_move",{"trainingId":"{{ $randomString() }}","position":"{{ $randomString() }}","expectedMove":"{{ $randomString() }}","difficulty":"{{ difficulties }}"}]'
+            - think: 
+                min: 1
+                max: 4
+      
+      # Request move suggestions
+      - loop:
+          count: 8
+          over:
+            - send:
+                payload: '42["get_move_suggestion",{"gameId":"{{ $randomString() }}","position":"{{ $randomString() }}","timeLimit":{{ $randomInt(1000, 10000) }}}]'
+            - think: 2
+
+# Before and after hooks for setup and cleanup
+before:
+  flow:
+    - log: "Starting WebSocket scalability test"
+    - log: "Target: {{ target }}"
+
+after:
+  flow:
+    - log: "WebSocket scalability test completed"
+    - log: "Check reports for detailed metrics"

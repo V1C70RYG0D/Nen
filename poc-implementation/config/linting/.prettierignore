@@ -1,0 +1,83 @@
+# Prettier ignore file
+# Following GI Guidelines: Proper code formatting exclusions
+
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+build/
+.next/
+target/
+coverage/
+
+# Logs
+logs/
+*.log
+
+# Environment files
+.env*
+!.env.example
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.pdf
+*.zip
+*.tar.gz
+
+# Minified files
+*.min.js
+*.min.css
+
+# Generated documentation
+docs/api/
+**/generated/
+
+# Test outputs
+test-results/
+*.lcov
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+
+# Kubernetes
+*.yaml
+*.yml
+
+# License and legal files
+LICENSE*
+COPYING*
+
+# Markdown with specific formatting requirements
+CHANGELOG.md
+AUTHORS.md

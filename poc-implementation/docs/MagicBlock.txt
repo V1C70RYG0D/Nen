@@ -1,0 +1,1510 @@
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+Why MagicBlock?
+Built on Solana’s Ecosystem and Performance
+Overcoming Limitations in Scaling and Cost
+Where do I start?
+MagicBlock Engine
+Why MagicBlock?
+The high-performance engine for real-time applications on Solana
+
+
+MagicBlock is an extension of the Solana network designed for high-performance decentralized applications. It enhances Solana’s capabilities while preserving its composability and integrity.
+​
+Why MagicBlock?
+While blockchain technology is revolutionizing decentralized applications, it still faces fundamental challenges in:
+Latency – Blockchain transaction speeds are too slow for real-time applications.
+Cost – Even “low-fee” blockchains can become expensive at scale.
+Scalability – Current architectures struggle to handle high-throughput applications.
+MagicBlock solves these issues with an ephemeral rollup, enabling developers to build dApps that require 10 ms state transitions, gasless transactions, and horizontal scaling. Here’s how:
+​
+Built on Solana’s Ecosystem and Performance
+MagicBlock operates as a specialized Solana Virtual Machine (SVM) runtime, seamlessly integrating with Solana’s base layer. Developers deploying programs on Solana are fully compatible with the ephemeral rollup down to the bytecode, benefiting from the SVM’s high performance and robust ecosystem.
+
+​
+Overcoming Limitations in Scaling and Cost
+Traditional rollups and Solana’s current execution model have inherent constraints when handling resource-intensive applications. MagicBlock removes these limitations by enabling:
+Ultra-Low Latency (10 ms Block Time): Solana’s default 400 ms block time is too slow for real-time applications. MagicBlock allows developers to customize execution environments while maintaining full compatibility.
+State Integrity Without Fragmentation: Traditional rollups fragment application states across multiple environments, making interoperability difficult. MagicBlock prevents this by utilizing specialized RPC providers that route and process transactions in parallel between Solana’s base layer and ephemeral rollups.
+Near-Zero Transaction Fees: Even Solana’s low fees (~$0.01 per transaction) can be expensive at scale. MagicBlock drastically reduces costs, enabling minimal or zero-fee transactions.
+Horizontal Scalability: Standard rollups struggle to scale efficiently. MagicBlock enables horizontal auto-scaling, seamlessly spinning up multiple ephemeral rollups to process millions of transactions per second.
+​
+Where do I start?
+Ephemeral Rollup
+Learn how Ephemeral Rollups works
+Magic Router
+Learn how Magic Router works
+Build
+Try out with Rust, Anchor, and Typescript
+Use Cases
+Discover new ideas from examples
+Frameworks and SDKs
+Dive into Frameworks and SDKs
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Ephemeral Rollup
+twitter
+github
+linkedin
+Powered by Mintlify
+Why MagicBlock? - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+How It Works
+Capabilities of Ephemeral Rollups
+How are Transaction executed?
+Additional Resources
+Where to continue?
+MagicBlock Engine
+Ephemeral Rollup
+Scaling solution for performant, composable applications
+
+
+Magicblock’s core idea leverages the Solana Virtual Machine (SVM)’s account-based structure and parallel execution to optimize state management. By structuring the state into clusters, users can lock one or multiple accounts and temporarily shift state execution to a dedicated auxiliary layer—which we define as the “ephemeral rollup” (ER).
+​
+How It Works
+State Delegation – Users lock state accounts to an ephemeral rollup, enabling a configurable runtime that operates independently.
+Sequencer Control – The sequencer temporarily modifies the state in this rollup. If constraints are violated, the state is forcefully reverted and unlocked on the L1.
+Parallel Read Access – Even as accounts are delegated, transactions on the base layer can still read their state, ensuring compatibility. Non-delegated accounts remain fully modifiable and unaffected.
+​
+Capabilities of Ephemeral Rollups
+The ephemeral rollup functions as a specialized SVM runtime, significantly enhancing transaction throughput. This runtime can be customized to include:
+✅ Gasless Transactions – Enable scalability and mass adoption.
+✅ Faster Block Times – Enables real-time interactions for seamless UX.
+✅ Integrated Scheduling (Ticking Mechanism) – Built-in automation, like Clockwork, to execute transactions on schedule.
+Programs and assets reside directly on the base layer and are fully compatible. Any improvements or advancements at the base layer are immediately available, without the need to modify or re-deploy programs.
+✅ Program and States Synchronization – No fragementation. States and programs can interact with any existing protocol and assets.
+✅ Horizontal Scaling – Launch multiple rollups on-demand and perform millions of transactions.
+✅ Familiar Tooling – Reuse any existing and familiar programming language, libraries and testing tools.
+Seamless User Experience
+All of this happens transparently to the end user. A specialized RPC provider dynamically routes transactions to both the base layer and the ephemeral rollup(s) in parallel—optimizing execution.
+The white paper describes the architecture and the scalability solution in detail.
+​
+How are Transaction executed?
+
+Once transactions are submitted via specialized RPCs, the provisioner detects delegation events and manages runtime provisioning based on configuration.Below is a high-level overview of the process of executing transactions in the ephemeral rollup:
+1
+Delegation
+
+State accounts are delegated to the Ephemeral Rollup via the Delegation Program, specifying parameters like lifetime and update frequency.
+2
+Transaction Execution
+
+Transactions are routed to the appropriate execution layer (base or Ephemeral) via an RPC router.
+3
+State Commitment
+
+The operator periodically commits the ephemeral state to the base layer, including new state and relevant pointers. The state is finalized using a fraud-proof mechanism as detailed in the paper.
+4
+Continued Transaction Execution
+
+Transactions are continuously routed to the appropriate execution layer (base or Ephemeral) via an RPC router.
+5
+Final Commitment and Undelegation
+
+Ephemeral states are committed to the base layer and accounts are undelegated via the Delegation Program to the original owner.
+​
+Additional Resources
+• Whitepaper
+• Presentation at Breakpoint 2023
+• a16z CSX Demo Day
+​
+Where to continue?
+Why MagicBlock?
+Find out why building with MagicBlock
+Magic Router
+Learn how Magic Router works
+Build
+Try out with Rust, Anchor, and Typescript
+Use Cases
+Discover new ideas from examples
+Frameworks and SDKs
+Dive into Frameworks and SDKs
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Why MagicBlock?
+Pricing
+twitter
+github
+linkedin
+Powered by Mintlify
+Ephemeral Rollup - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+Fees
+Public Nodes
+Dedicated Nodes
+MagicBlock Engine
+Pricing
+MagicBlock Protocol Fees
+
+​
+Fees
+MagicBlock pricing is similar to a decentralized cloud-infrastructure. The protocol is designed to keep computing costs predictable for application developers, while at the same time offering the flexibility to run your own nodes and enforce fees for priority access if desired. There are two types of pricing available for Public nodes or Dedicated nodes.
+​
+Public Nodes
+Public nodes enable everyone to start building on MagicBlock with free transactions and without friction. Session fees are charged per ER session and are enforced at undelegation. Commit fees are enforced every time you commit an account to Solana.
+Fee type	Amount (SOL)	Description
+Base fee	0	per Tx
+Session fee	0.0003	per ER Session
+Commit fee	0.0001	per Commit
+​
+Dedicated Nodes
+Dedicated nodes provide maximum reliability and quality of service for enterprises and teams at scale. Prevent MEV and benefit from predictable costs with your own dedicated nodes.
+Fee type	Amount (SOL)	Description
+Base fee	0.0000005	per Tx
+Session fee	0.0003	per ER Session
+Commit fee	0.0001	per Commit
+For volume-based discounts or to run your own nodes, reach out at development@magicblock.xyz
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Ephemeral Rollup
+Quickstart
+twitter
+github
+linkedin
+Powered by Mintlify
+Pricing - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+Fees
+Public Nodes
+Dedicated Nodes
+MagicBlock Engine
+Pricing
+MagicBlock Protocol Fees
+
+​
+Fees
+MagicBlock pricing is similar to a decentralized cloud-infrastructure. The protocol is designed to keep computing costs predictable for application developers, while at the same time offering the flexibility to run your own nodes and enforce fees for priority access if desired. There are two types of pricing available for Public nodes or Dedicated nodes.
+​
+Public Nodes
+Public nodes enable everyone to start building on MagicBlock with free transactions and without friction. Session fees are charged per ER session and are enforced at undelegation. Commit fees are enforced every time you commit an account to Solana.
+Fee type	Amount (SOL)	Description
+Base fee	0	per Tx
+Session fee	0.0003	per ER Session
+Commit fee	0.0001	per Commit
+​
+Dedicated Nodes
+Dedicated nodes provide maximum reliability and quality of service for enterprises and teams at scale. Prevent MEV and benefit from predictable costs with your own dedicated nodes.
+Fee type	Amount (SOL)	Description
+Base fee	0.0000005	per Tx
+Session fee	0.0003	per ER Session
+Commit fee	0.0001	per Commit
+For volume-based discounts or to run your own nodes, reach out at development@magicblock.xyz
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Ephemeral Rollup
+Quickstart
+twitter
+github
+linkedin
+Powered by Mintlify
+Pricing - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+Lifecycle of the Integration
+Add delegation and undelegation hooks
+Delegation
+Undelegation
+Frontend
+How to Integrate Your Program
+Quickstart
+How to integrate Ephemeral Rollups in your Solana Program
+
+From an integration perspective, using Ephemeral Rollups is similar to writing a multi-threaded program. Programs can offload work to an Ephemeral Rollup session to process transactions in a low-latency, high-throughput SVM runtime. The SVM runtime is provisioned just-in-time, and transactions are processed by nodes from the decentralized networks of ephemeral validators.
+Ephemeral Rollups can be used with any program that targets the Solana blockchain. We maintain a library of common integrations for:
+Anchor
+Integrate with an Anchor program
+Native Rust
+Integrate with an Native Rust program
+​
+Lifecycle of the Integration
+The lifecycle of integrating Ephemeral Rollups in your program is as follows:
+1
+Write your program
+
+Write your Solana program as you normally would, using Anchor, native Rust, Bolt, C, or even assembly.
+2
+Add delegation and undelegation hooks
+
+Accounts that are delegated can be used as writable in an Ephemeral Rollup session.
+3
+Deploy your program on Solana
+
+Deploy your program directly on Solana.
+4
+Execute transactions
+
+Execute transactions on-chain or off-chain using any SDKs that complies with the SVM RPC specification (web3.js, Solana Rust SDK, Unity SDK, or others).
+​
+Add delegation and undelegation hooks
+Empower your program with ultra-latency transactions by adding delegation and undelegation hooks. Simply add two functions from the native Rust SDK to your program.
+​
+Delegation
+Delegation is the process of transferring ownership of one or more of your program’s PDAs to the delegation program. Ephemeral Validators will then be able to use the PDAs to perform transactions in the SVM runtime and commit the state.
+In Rust programs, you can use the ephemeral_rollups_sdk crate to delegate accounts.
+Install it with:
+
+Copy
+
+Ask AI
+cargo add ephemeral_rollups_sdk
+Then use the delegate_account function to delegate an account to the delegation program.
+Delegation
+
+Copy
+
+Ask AI
+use ephemeral_rollups_sdk::cpi::delegate_account;
+
+delegate_account(
+    &ctx.accounts.payer, // The account that will pay for opening the session
+    &ctx.accounts.pda, // The PDA to delegate
+    &ctx.accounts.owner_program, // Owner program of the PDA
+    ...
+    pda_seeds, // Seeds to make the PDA signer
+    0, // 0 means no time limit for the delegation
+    3_000, // Update frequency on the base layer in milliseconds
+)?;
+Both delegation and undelegation are CPIs that can be integrated in existing instructions of your program
+​
+Undelegation
+Undelegation is the process of transferring ownership of the PDAs back to your program. On undelegation, the state is committed and it trigger the finalization process. Once state it validated, the PDAs are unlocked and can be used as normal on mainnet
+Delegation
+
+Copy
+
+Ask AI
+use ephemeral_rollups_sdk::ephem::commit_and_undelegate_accounts;
+
+pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    commit_and_undelegate_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.pda.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+Additionally, custom CPI can instruct the ephemeral validators to commit and finalize a state or close a session.
+Note that commit and undelegation accept a list of accounts. These accounts are committed atomically to the base layer which allows to maintain state consistency of dependent accounts
+​
+Frontend
+To make it easier to integrate via the frontend, we created the Magic Router. You send transactions directly to the magic router, and we can determine for you whether it should be routed to the Ephemeral Rollup or base layer.
+Frontend
+
+Copy
+
+Ask AI
+import { sendMagicTransaction } from "magic-router-sdk";
+
+const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+
+// Construct a standard Solana transaction
+const transaction = await exampleClient.current?.methods
+  .exampleMethod(0)
+  .accounts({
+      user: userPda,
+      user: userKeypair.current.publicKey,
+  }).transaction() as Transaction;
+
+const noopInstruction = new TransactionInstruction({
+      programId: new PublicKey('11111111111111111111111'),
+      keys: [],
+      data: Buffer.from(crypto.getRandomValues(new Uint8Array(5))),
+  });
+transaction.add(noopInstruction);
+
+// Send the transaction
+const signature = await sendMagicTransaction(
+  routerConnection,
+  tx,
+  [userKeypair]
+)
+These public RPC endpoints are currently free and supported for development:
+Magic Router Devnet: https://devnet-router.magicblock.app
+Solana Devnet: https://api.devnet.solana.com
+ER Devnet: https://devnet.magicblock.app
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Pricing
+Magic Router
+twitter
+github
+linkedin
+Powered by Mintlify
+Quickstart - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+Standard Program Instruction
+Delegate Transaction
+Undelegate Transaction
+Commit Transaction
+Learn how to build with Native Rust and Anchor!
+How to Integrate Your Program
+Transaction Flow
+How Different Transactions Flow Through an Ephemeral Rollup
+
+Once deployed with delegation and undelgeation hooks, any instruction which is part of your program can be executed with ultra-low latency without changes. The transaction will be processed by Base Layer (Solana) or Ephemeral Rollup (ER) validators depending on the account’s delegation status.
+Standard Program Instruction
+Delegate Transaction
+Undelegate Transaction
+Commit Transaction
+​
+Standard Program Instruction
+When executing any of your program instructions through a specialized RPC router, the transaction list of accounts is checked:
+Ultra-low Latency: If all writable accounts are delegated, the transaction is executed with low-latency on ER.
+If account is newly delegated, the newly delegated account is cloned from Base Layer to ER with its original owner .
+If account is delegated and already cloned from Base Layer to ER with its original owner, existing delegated account on ER is utilized.
+If account is undelegated and non-writable, undelegated account is cloned from Base Layer to ER.
+Normal: If all writable accounts are undelegated, the transaction is executed on Base Layer.
+Error: If writable accounts are delegated and undelegated, the transaction fails.
+​
+Delegate Transaction
+Before executing ultra-low latency transactions on ER, the state account must be delegated through the delegation hook of your program. This is what happens when delegating state account(s) from Base Layer to ER:
+Base Layer: Account owner is locked and set to MagicBlock’s Delegation Program.
+ER: No account is created during delegation on ER yet, but afterwards upon any transaction to ER.
+Transaction fails if account is already delegated.
+
+​
+Undelegate Transaction
+You can commit and undelegate the account from ER to Base Layer through the undelegation hook. This is what happens when undelegating state accounts:
+ER: Commit for account(s) is scheduled. Account(s) are undelegated i.e. owner changes from original program to Delegation Program.
+Base Layer: CPI callback is called to get, finalize and recreate account from ER to Base Layer with its original program as owner.
+Transaction fails if account is already undelegated.
+
+​
+Commit Transaction
+You can also sync the state from ER to Base Layer without changing delegation by committing the account state through a commit hook. This is what happens when committing states from ER to Base Layer:
+ER: Commit for account(s) is scheduled.
+Base Layer: CPI callback is called to get, finalize and update account from ER to Base Layer with Delegation Program as owner.
+Transaction fails if account is already undelegated.
+
+​
+Learn how to build with Native Rust and Anchor!
+Anchor
+Integrate with an Anchor program
+Native Rust
+Integrate with an Native Rust program
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Magic Router
+Anchor Example
+twitter
+github
+linkedin
+Powered by Mintlify
+Transaction Flow - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+Software Packages
+Quick Access to Source Code
+Writing the Anchor Program
+Core Functionality
+Delegating the Counter PDA
+Committing while the PDA is delegated
+Undelegating the PDA
+Connecting the React Client
+Ephemeral Endpoint Configuration
+How to Integrate Your Program
+Anchor Example
+Learn how to write a simple Anchor program that increments a counter on Solana
+
+
+This guide will walk you through the process of writing a simple Anchor program that increments a counter. You’ll learn how to deploy this program on Solana and interact with it using a React client.
+​
+Software Packages
+This program is developed and tested with the following software packages. Other sofware may also be compatible.
+Software	Version	Installation Guide
+Solana	2.1.21	Install Solana
+Rust	1.82.0	Install Rust
+Anchor	0.31.1	Install Anchor
+​
+Quick Access to Source Code
+If you prefer to dive straight into the code:
+Source Code: Anchor Counter Program
+Source Code: React Client
+​
+Writing the Anchor Program
+Let’s break down the key components of our counter program:
+​
+Core Functionality
+The program implements two main instructions:
+initialize: Sets the counter to 0
+increment: Increments the counter by 1
+Here’s the core structure of our program:
+
+Copy
+
+Ask AI
+#[ephemeral]
+#[program]
+pub mod anchor_counter {
+    use super::*;
+
+    /// Initialize the counter.
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count = 0;
+        Ok(())
+    }
+
+    /// Increment the counter.
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count += 1;
+        Ok(())
+    }
+
+    // ... Additional instructions will be added here
+}
+Nothing special here, just a simple Anchor program that increments a counter. The only difference is that we’re adding the delegate macro to inject some useful logic to interact with the delegation program.
+​
+Delegating the Counter PDA
+In order to delegate the counter PDA, and make it writable in an Ephemeral Rollup session, we need to add an instruction which internally calls the delegate_account function. delegate_account will CPI to the delegation program, which upon validation will gain ownership of the account. After this step, an ephemeral validator can start processing transactions on the counter PDA and propose state diff trough the delegation program.
+Transaction (Base Layer): Delegate
+Inspect transactions details on Solana Explorer
+
+Copy
+
+Ask AI
+/// Delegate the account to the delegation program
+pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
+    ctx.accounts.delegate_pda(
+        &ctx.accounts.payer,
+        &[TEST_PDA_SEED],
+        DelegateConfig::default(),
+    )?;
+    Ok(())
+}
+​
+Committing while the PDA is delegated
+The ephemeral runtime allow to commit the state of the PDA while it is delegated. This is done by calling the commit_accounts function.
+Transaction (ER): Commit
+Inspect transaction details on Solana Explorer
+Transaction (Base layer): Commit
+Inspect transaction details on Solana Explorer
+
+Copy
+
+Ask AI
+/// Increment the counter and manually commit the account in the Ephemeral Rollup session.
+pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    let counter = &mut ctx.accounts.counter;
+    counter.count += 1;
+    commit_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.counter.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+​
+Undelegating the PDA
+Undelegating the PDA is done by calling the commit_and_undelegate_accounts as part of some instruction. Undelegation commit the latest state and give back the ownership of the PDA to the owner program.
+Transaction (ER): Undelegate
+Inspect transaction details on Solana Explorer
+Transaction (Base layer): Undelegate
+Inspect transaction details on Solana Explorer
+
+Copy
+
+Ask AI
+/// Undelegate the account from the delegation program
+pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    commit_and_undelegate_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.counter.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+​
+Connecting the React Client
+The React client is a simple interface that allows you to interact with the Anchor program. It uses the Anchor bindings to interact with the program and the MagicBlock SDK to interact with the Ephemeral Rollup session.
+Source Code: React Client
+
+Iframes only work with some wallets (e.g. Backpack). Alternatively, try the deployed demo here: https://main—ephemeral-counter.netlify.app/
+​
+Ephemeral Endpoint Configuration
+To interact with the Ephemeral Rollup session, you need to configure the appropriate endpoint:
+For devnet, use the following ephemeral endpoint: https://devnet.magicblock.app
+For mainnet, please reach out to the MagicBlock team to receive the appropriate endpoint.
+For localhost, download, install, and run the ephemeral validator locally with the appropriate environment variables:
+
+Copy
+
+Ask AI
+# 1. Install the Local Validator
+npm install -g @magicblock-labs/ephemeral-validator
+
+# 2. Start the Local Validator
+ACCOUNTS_REMOTE=https://rpc.magicblock.app/devnet ACCOUNTS_LIFECYCLE=ephemeral ephemeral-validator
+
+# 3. Run the Tests with the Local Validator
+PROVIDER_ENDPOINT=http://localhost:8899 WS_ENDPOINT=ws://localhost:8900 anchor test --skip-build --skip-deploy --skip-local-validator
+
+Make sure to update your client configuration to use the correct endpoint based on your development or production environment.
+These public RPC endpoints are currently free and supported for development:
+Magic Router Devnet: https://devnet-router.magicblock.app
+Solana Devnet: https://api.devnet.solana.com
+ER Devnet: https://devnet.magicblock.app
+Source Code: Anchor Counter Program
+Source Code: React Client
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Transaction Flow
+Rust Example
+twitter
+github
+linkedin
+Powered by Mintlify
+Anchor Example - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+Software Packages
+Quick Access to Source Code
+Writing the Anchor Program
+Core Functionality
+Delegating the Counter PDA
+Committing while the PDA is delegated
+Undelegating the PDA
+Connecting the React Client
+Ephemeral Endpoint Configuration
+How to Integrate Your Program
+Anchor Example
+Learn how to write a simple Anchor program that increments a counter on Solana
+
+
+This guide will walk you through the process of writing a simple Anchor program that increments a counter. You’ll learn how to deploy this program on Solana and interact with it using a React client.
+​
+Software Packages
+This program is developed and tested with the following software packages. Other sofware may also be compatible.
+Software	Version	Installation Guide
+Solana	2.1.21	Install Solana
+Rust	1.82.0	Install Rust
+Anchor	0.31.1	Install Anchor
+​
+Quick Access to Source Code
+If you prefer to dive straight into the code:
+Source Code: Anchor Counter Program
+Source Code: React Client
+​
+Writing the Anchor Program
+Let’s break down the key components of our counter program:
+​
+Core Functionality
+The program implements two main instructions:
+initialize: Sets the counter to 0
+increment: Increments the counter by 1
+Here’s the core structure of our program:
+
+Copy
+
+Ask AI
+#[ephemeral]
+#[program]
+pub mod anchor_counter {
+    use super::*;
+
+    /// Initialize the counter.
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count = 0;
+        Ok(())
+    }
+
+    /// Increment the counter.
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count += 1;
+        Ok(())
+    }
+
+    // ... Additional instructions will be added here
+}
+Nothing special here, just a simple Anchor program that increments a counter. The only difference is that we’re adding the delegate macro to inject some useful logic to interact with the delegation program.
+​
+Delegating the Counter PDA
+In order to delegate the counter PDA, and make it writable in an Ephemeral Rollup session, we need to add an instruction which internally calls the delegate_account function. delegate_account will CPI to the delegation program, which upon validation will gain ownership of the account. After this step, an ephemeral validator can start processing transactions on the counter PDA and propose state diff trough the delegation program.
+Transaction (Base Layer): Delegate
+Inspect transactions details on Solana Explorer
+
+Copy
+
+Ask AI
+/// Delegate the account to the delegation program
+pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
+    ctx.accounts.delegate_pda(
+        &ctx.accounts.payer,
+        &[TEST_PDA_SEED],
+        DelegateConfig::default(),
+    )?;
+    Ok(())
+}
+​
+Committing while the PDA is delegated
+The ephemeral runtime allow to commit the state of the PDA while it is delegated. This is done by calling the commit_accounts function.
+Transaction (ER): Commit
+Inspect transaction details on Solana Explorer
+Transaction (Base layer): Commit
+Inspect transaction details on Solana Explorer
+
+Copy
+
+Ask AI
+/// Increment the counter and manually commit the account in the Ephemeral Rollup session.
+pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    let counter = &mut ctx.accounts.counter;
+    counter.count += 1;
+    commit_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.counter.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+​
+Undelegating the PDA
+Undelegating the PDA is done by calling the commit_and_undelegate_accounts as part of some instruction. Undelegation commit the latest state and give back the ownership of the PDA to the owner program.
+Transaction (ER): Undelegate
+Inspect transaction details on Solana Explorer
+Transaction (Base layer): Undelegate
+Inspect transaction details on Solana Explorer
+
+Copy
+
+Ask AI
+/// Undelegate the account from the delegation program
+pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    commit_and_undelegate_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.counter.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+​
+Connecting the React Client
+The React client is a simple interface that allows you to interact with the Anchor program. It uses the Anchor bindings to interact with the program and the MagicBlock SDK to interact with the Ephemeral Rollup session.
+Source Code: React Client
+
+Iframes only work with some wallets (e.g. Backpack). Alternatively, try the deployed demo here: https://main—ephemeral-counter.netlify.app/
+​
+Ephemeral Endpoint Configuration
+To interact with the Ephemeral Rollup session, you need to configure the appropriate endpoint:
+For devnet, use the following ephemeral endpoint: https://devnet.magicblock.app
+For mainnet, please reach out to the MagicBlock team to receive the appropriate endpoint.
+For localhost, download, install, and run the ephemeral validator locally with the appropriate environment variables:
+
+Copy
+
+Ask AI
+# 1. Install the Local Validator
+npm install -g @magicblock-labs/ephemeral-validator
+
+# 2. Start the Local Validator
+ACCOUNTS_REMOTE=https://rpc.magicblock.app/devnet ACCOUNTS_LIFECYCLE=ephemeral ephemeral-validator
+
+# 3. Run the Tests with the Local Validator
+PROVIDER_ENDPOINT=http://localhost:8899 WS_ENDPOINT=ws://localhost:8900 anchor test --skip-build --skip-deploy --skip-local-validator
+
+Make sure to update your client configuration to use the correct endpoint based on your development or production environment.
+These public RPC endpoints are currently free and supported for development:
+Magic Router Devnet: https://devnet-router.magicblock.app
+Solana Devnet: https://api.devnet.solana.com
+ER Devnet: https://devnet.magicblock.app
+Source Code: Anchor Counter Program
+Source Code: React Client
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Transaction Flow
+Rust Example
+twitter
+github
+linkedin
+Powered by Mintlify
+Anchor Example - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+Explore and learn from use cases
+Use Cases
+Introduction
+Discover Use Cases of Unstoppable Applications
+
+We are entering an era where centralized servers are no longer needed—everything can be built permanently on real-time, composable, decentralized blockchains. The time is over with:
+⏳ Delays in transaction finality
+💰 High fees for execution.
+⚖️ Bottlenecks limiting adoption
+MagicBlock accelerates the benefits of Solana’s speed and efficiency, enabling real-time zero-cost on-chain applications that were previously impossible, while maintaining composability and verifiability.
+With its innovative approach, MagicBlock unlocks new use cases in:
+Finance & Payments – Instant transactions with minimal fees.
+AI & Automation – On-chain machine learning and data processing.
+Gaming & Metaverse – Seamless, real-time interactions with full transparency.
+DePIN – Enabling zero-cost coordination of real-world assets, from wireless networks to energy grids and sensor data.
+With fast, scalable, and secure on-chain execution, industries can redefine what’s possible—and MagicBlock is leading the way.
+🚀 Let’s build the future—real-time, verifiable, and unstoppable!
+​
+Explore and learn from use cases
+Finance
+Build real-time DeFi apps!
+Games
+Build real-time games!
+AI
+Build fast responsive AI agents!
+Payments
+Build real-time payment!
+DePIN
+Build real-time zero-cost infrastructure!
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Rust Example
+Finance
+twitter
+github
+linkedin
+Powered by Mintlify
+Introduction - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+🔴 Problems with Finance
+⛓️ Current Blockchain Limitations
+⚡ MagicBlock’s Solution
+Example: Ultra-Low Latency DeFi
+Use Cases
+Finance
+Unlock the next era of real-time decentralized finance
+
+
+​
+🔴 Problems with Finance
+Slow Settlement – Transactions take days to finalize due to intermediaries.
+Opaque Systems – Users rely on centralized entities with limited visibility.
+Limited Composability – Financial platforms operate in silos, restricting innovation.
+​
+⛓️ Current Blockchain Limitations
+High Latency – Transactions take seconds or minutes to confirm.
+Scalability Issues – Congestion leads to high gas fees and slow execution.
+Off-Chain Dependencies – Many DeFi platforms rely on centralized price oracles.
+​
+⚡ MagicBlock’s Solution
+Real-Time Settlement – Transactions finalize instantly with low latency.
+Fully Transparent – Programs provide auditable, tamper-proof execution.
+Seamless Composability – Financial applications interconnect permissionlessly.
+​
+Example: Ultra-Low Latency DeFi
+Source Code: Real-Time Pricing Oracle
+Learn more about building and integrating DeFi with MagicBlock!
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Introduction
+Games
+twitter
+github
+linkedin
+Powered by Mintlify
+Finance - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+🔴 Problems with Gaming
+⛓️ Current Blockchain Limitations
+⚡ MagicBlock’s Solution
+Example: MagicBlock Labs - Generals
+Abstract
+Architechture
+Important processes
+When the user creates a new game
+When a player joins the game
+Recap
+Use Cases
+Games
+Unlock the next era of real-time on-chain gaming
+
+​
+🔴 Problems with Gaming
+Lack of True Ownership – Game assets are controlled by companies.
+Shut Down Risk – Servers go offline, and players lose progress.
+Closed Ecosystems – No interoperability between game economies.
+​
+⛓️ Current Blockchain Limitations
+Slow Gameplay – High latency prevents real-time interactions.
+High Gas Costs – Transactions are expensive for frequent in-game actions.
+Limited Developer Tooling – Complex blockchain development.
+​
+⚡ MagicBlock’s Solution
+True Digital Ownership – Players own and trade assets without restrictions.
+Real-Time Gameplay – Instant, gas-efficient transactions for smooth experiences.
+Composable Worlds – Game logic and economies can be extended by anyone.
+​
+Example: MagicBlock Labs - Generals
+​
+Abstract
+In order to get a full birds eye view of all moving pieces involved with using MagicBlock, we provide a real-life example of a fully-fledged game accelerated by the MagicBlock Engine.
+
+Source Code: MagicBlock Labs - Generals
+Learn more about building and integrating games with MagicBlock!
+Bolt
+Simplify on-chain game development with BOLT
+More Tools
+Steamline your workflow with BOLT, Solana Unity SDK, SOAR, Session Keys …
+​
+Architechture
+There are a few main components involved when building with MagicBlock:
+Solana, this will be mainnet-beta or devnet solana public chain’s RPC
+This is where the smart contracts will be deployed and fetched from
+This is where the final and partial state of your game will be settled on
+Ephemeral Rollups, this is the MagicBlock validator RPC
+This is where the transactions for your game will be run on
+This is already deployed by MagicBlock and node operators (you can just use it as-is)
+The Backend, this is the source code for the smart contract of the game
+In this example the smart contracts are written using the BOLT framework
+Those smart contracts will then be deployed on the regular solana’s chain
+Source code is available: HERE
+The Frontend, this is the User Interface of the game
+The UI will be fetching state from both the chain and the ephemeral
+The UI will be sending transaction to both the chain and the ephemeral
+Source code is available: HERE
+​
+Important processes
+Browsing through the codebase will help understanding the high-level logic for setting up the ephemeral games.
+​
+When the user creates a new game
+When the user opens the “Create” page, we run create a new game: HERE
+We first create a new account on chain, like a regular solana smart contract
+We then delegate this new account to our ephemeral validator
+We can then send all our game transactions directly to the ephemeral’s RPC after that
+We generate the map (using a transaction sent to the ephemeral’s RPC)
+Wait for the players to join
+Start the game when all player joined
+​
+When a player joins the game
+When the user opens the main page, we fetch the list of existing games from the chain: HERE
+When the user joined the game’s page, we start listening to the game’s state inside the ephemeral: HERE
+We update the UI to display the map every time the game changes inside of the ephemeral, you can find the code for the page logic: HERE
+When the user executes a move on the map, we send the command transaction through directly in the ephemeral: HERE
+This will update the state of the game inside of the ephemeral, notifying all players and updating the UI immediately
+​
+Recap
+Making a game using MagicBlock is very similar to making a game on Solana.
+The only difference is the delegation process:
+Once you setup the accounts on Solana, you can delegate the accounts so that they can be used inside of MagicBlock Engine
+Once the accounts are delegated, you can send all transactions involving those accounts to the Ephemeral Rollups
+Those transactions running inside of the Ephemeral session run in real time and can be free
+Once you’re done with the game’s session, you can undelegate the accounts you need to use on Solana again
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Finance
+AI Agents
+twitter
+github
+linkedin
+Powered by Mintlify
+Games - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+🔴 Problems with AI
+⛓️ Current Blockchain Limitations
+⚡ MagicBlock’s Solution
+Example: Ultra-Low Latency Decentralized AI Agent
+Use Cases
+AI Agents
+Unlock the next era of real-time on-chain AI
+
+​
+🔴 Problems with AI
+Centralized Control – AI models are closed-source and biased.
+Opaque Decision-Making – Users cannot verify AI logic or data.
+Monopoly on AI Access – Only big tech controls AI resources.
+​
+⛓️ Current Blockchain Limitations
+Computational Cost – On-chain AI execution is expensive.
+Data Availability – Limited high-speed on-chain data for AI.
+Scalability – AI models struggle with real-time blockchain inference.
+​
+⚡ MagicBlock’s Solution
+Decentralized AI Models – Open-source, auditable AI with trustless execution.
+Real-Time On-Chain Data – AI can interact with verifiable blockchain state.
+Scalable AI Execution – Optimized engine for fast, low-cost inference.
+​
+Example: Ultra-Low Latency Decentralized AI Agent
+Source Code
+Learn more about building and integrating Decentralized AI with MagicBlock!
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Games
+Payments
+twitter
+github
+linkedin
+Powered by Mintlify
+AI Agents - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+🔴 Problems with Payments
+⛓️ Current Blockchain Limitations
+⚡ MagicBlock’s Solution
+Example: Ultra-Low Latency On-Chain Payments
+Use Cases
+Payments
+Unlock the next era of real-time on-chain payments
+
+​
+🔴 Problems with Payments
+High Fees & Delays – Cross-border payments are expensive and slow.
+Censorship & Restrictions – Payment networks can block transactions.
+Lack of Programmability – No automation for conditional payments.
+​
+⛓️ Current Blockchain Limitations
+Transaction Bottlenecks – Network congestion causes delays.
+High Costs – Fees can spike unpredictably.
+Merchant Adoption – Crypto payments lack seamless merchant integration.
+​
+⚡ MagicBlock’s Solution
+Instant, Low-Cost Transfers – No middlemen, real-time finality.
+Censorship-Resistant – Payments cannot be blocked or reversed.
+Programmable Money – Programs automate payments, escrow, and subscriptions.
+​
+Example: Ultra-Low Latency On-Chain Payments
+Source Code
+Learn more about building and integrating on-chain payments with MagicBlock!
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+AI Agents
+DePIN
+twitter
+github
+linkedin
+Powered by Mintlify
+Payments - MagicBlock Documentation
+
+MagicBlock Documentation home pagedark logo
+
+Search...
+Ctrl K
+
+Ask AI
+Github
+
+MagicBlock Engine
+Tools
+Tutorials
+Community
+MagicBlock Engine
+Why MagicBlock?
+Ephemeral Rollup
+Pricing
+How to Integrate Your Program
+Quickstart
+Magic Router
+Transaction Flow
+Anchor Example
+Rust Example
+Use Cases
+Introduction
+Finance
+Games
+AI Agents
+Payments
+DePIN
+On this page
+🔴 Problems with Infrastructure
+⛓️ Current Blockchain Limitations
+⚡ MagicBlock’s Solution
+Example: Ultra-Low Latency On-Chain Payments
+Use Cases
+DePIN
+Unlock the next era of real-time on-chain payments
+
+​
+🔴 Problems with Infrastructure
+Centralized Control & Single Points of Failure – Networks, supply chains, and financial systems rely on centralized entities, making them vulnerable to outages, corruption, or censorship.
+High Costs & Inefficiencies – Multiple intermediaries slow down operations, increase costs, and introduce human errors.
+Lack of Transparency & Trust – Data manipulation and fraud thrive in closed systems, making it hard to verify authenticity.
+​
+⛓️ Current Blockchain Limitations
+Scalability Challenges – Most blockchains struggle with high transaction loads, limiting their use for real-time infrastructure needs.
+High Costs – Rising gas fees make microtransactions and IoT integrations impractical.
+Latency & Finality Delays – Many blockchains require multiple confirmations, preventing instant execution in critical applications.
+​
+⚡ MagicBlock’s Solution
+Real-Time, Low-Cost Transactions – Eliminates bottlenecks, enabling seamless on-chain infrastructure.
+Scalable & Efficient – Optimized for high throughput and low fees, making microtransactions viable.
+Verifiable & Trustless – Provides a tamper-proof, open ledger for transparent and decentralized infrastructure.
+​
+Example: Ultra-Low Latency On-Chain Payments
+Source Code
+Learn more about building and integrating on-chain payments with MagicBlock!
+Was this page helpful?
+
+
+Yes
+
+No
+Suggest edits
+Raise issue
+Payments
+twitter
+github
+linkedin
+Powered by Mintlify
+DePIN - MagicBlock Documentation

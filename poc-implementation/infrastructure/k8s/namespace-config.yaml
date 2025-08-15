@@ -1,0 +1,143 @@
+# Nen Platform Configuration and Secrets Management
+# Phase 4.2: Production Deployment - Secure Configuration
+# Following GI Guidelines: No hardcoding, externalized configuration
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nen-platform
+  labels:
+    name: nen-platform
+    tier: production
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nen-config
+  namespace: nen-platform
+data:
+  # Frontend Configuration
+  frontend-url: "https://nen-platform.com"
+  api-url: "https://api.nen-platform.com"
+  
+  # Backend Configuration
+  backend-url: "http://nen-backend-service:80"
+  
+  # Blockchain Configuration
+  solana-network: "mainnet-beta"  # Change to devnet for testing
+  solana-commitment: "confirmed"
+  
+  # MagicBlock Configuration
+  magicblock-session-program: "MagicBLockGungiSessionExecutorProgram11111"
+  
+  # AI Service Configuration
+  ai-service-url: "http://nen-ai-service:8001"
+  max-concurrent-games: "1000"
+  
+  # Performance Configuration
+  api-timeout: "30000"
+  websocket-timeout: "60000"
+  cache-ttl: "300"
+  
+  # Feature Flags
+  betting-enabled: "true"
+  nft-marketplace-enabled: "true"
+  ai-training-enabled: "true"
+  geographic-restrictions: "true"
+
+---
+# Secrets Template - Values should be set via external secret management
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nen-secrets
+  namespace: nen-platform
+type: Opaque
+stringData:
+  # Database Connection
+  database-url: "${DATABASE_URL}"
+  redis-url: "${REDIS_URL}"
+  
+  # Blockchain Secrets
+  solana-rpc-url: "${SOLANA_RPC_URL}"
+  wallet-private-key: "${WALLET_PRIVATE_KEY}"
+  
+  # API Keys
+  magicblock-api-key: "${MAGICBLOCK_API_KEY}"
+  helius-api-key: "${HELIUS_API_KEY}"
+  
+  # Security Secrets
+  jwt-secret: "${JWT_SECRET}"
+  encryption-key: "${ENCRYPTION_KEY}"
+  
+  # External Service Keys
+  ipfs-api-key: "${IPFS_API_KEY}"
+  monitoring-token: "${MONITORING_TOKEN}"
+
+---
+# Service Account for enhanced security
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nen-service-account
+  namespace: nen-platform
+automountServiceAccountToken: false
+
+---
+# Role for limited permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: nen-platform
+  name: nen-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps"]
+  verbs: ["get", "list"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list"]
+
+---
+# Role binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nen-role-binding
+  namespace: nen-platform
+subjects:
+- kind: ServiceAccount
+  name: nen-service-account
+  namespace: nen-platform
+roleRef:
+  kind: Role
+  name: nen-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Network Policy for security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: nen-network-policy
+  namespace: nen-platform
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: nen-platform
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 5001
+    - protocol: TCP
+      port: 8001
+  egress:
+  - {}  # Allow all egress for external services

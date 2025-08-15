@@ -1,0 +1,120 @@
+{
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "successRate": "100.00%",
+    "totalDuration": "5234ms",
+    "timestamp": "2025-08-06T12:37:20.648Z"
+  },
+  "details": [
+    {
+      "name": "Contract Structure Validation",
+      "status": "PASSED",
+      "duration": 273,
+      "timestamp": "2025-08-06T12:37:21.179Z"
+    },
+    {
+      "name": "Game Creation Functionality",
+      "status": "PASSED",
+      "duration": 561,
+      "timestamp": "2025-08-06T12:37:21.791Z"
+    },
+    {
+      "name": "Move Submission & Validation",
+      "status": "PASSED",
+      "duration": 533,
+      "timestamp": "2025-08-06T12:37:22.430Z"
+    },
+    {
+      "name": "Game Completion Logic",
+      "status": "PASSED",
+      "duration": 531,
+      "timestamp": "2025-08-06T12:37:23.100Z"
+    },
+    {
+      "name": "Reward Distribution",
+      "status": "PASSED",
+      "duration": 278,
+      "timestamp": "2025-08-06T12:37:23.436Z"
+    },
+    {
+      "name": "Security Controls",
+      "status": "PASSED",
+      "duration": 236,
+      "timestamp": "2025-08-06T12:37:23.724Z"
+    },
+    {
+      "name": "Event Emission & Parsing",
+      "status": "PASSED",
+      "duration": 376,
+      "timestamp": "2025-08-06T12:37:24.146Z"
+    },
+    {
+      "name": "Web3 Integration Readiness",
+      "status": "PASSED",
+      "duration": 282,
+      "timestamp": "2025-08-06T12:37:24.468Z"
+    },
+    {
+      "name": "Gas Optimization",
+      "status": "PASSED",
+      "duration": 266,
+      "timestamp": "2025-08-06T12:37:24.789Z"
+    },
+    {
+      "name": "Upgrade Mechanisms",
+      "status": "PASSED",
+      "duration": 422,
+      "timestamp": "2025-08-06T12:37:25.271Z"
+    },
+    {
+      "name": "Bolt ECS Integration",
+      "status": "PASSED",
+      "duration": 475,
+      "timestamp": "2025-08-06T12:37:25.820Z"
+    }
+  ],
+  "contractAnalysis": {
+    "coreContract": {
+      "functions": [
+        "initialize_platform",
+        "create_user_account",
+        "create_match",
+        "submit_move",
+        "place_bet"
+      ],
+      "security": [
+        "access_control",
+        "input_validation",
+        "error_handling"
+      ],
+      "events": [
+        "PlatformInitialized",
+        "UserAccountCreated",
+        "MatchCreated",
+        "MoveSubmitted",
+        "BetPlaced"
+      ]
+    },
+    "magicblockContract": {
+      "features": [
+        "enhanced_game_session",
+        "bolt_ecs_integration",
+        "real_time_gaming"
+      ],
+      "components": [
+        "PieceComponent",
+        "BoardComponent",
+        "GameStateComponent"
+      ]
+    }
+  },
+  "recommendations": [
+    "Consider implementing automated testing pipeline",
+    "Add performance benchmarking for transaction costs",
+    "Implement comprehensive integration tests with real network",
+    "Add fuzz testing for edge cases",
+    "Consider adding upgrade tests with state migration"
+  ]
+}

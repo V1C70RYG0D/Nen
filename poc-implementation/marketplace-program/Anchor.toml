@@ -1,0 +1,17 @@
+[features]
+seeds = true
+skip-lint = false
+
+[programs.devnet]
+nen_marketplace = "8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[toolchain]
+anchor_version = "0.31.1"
+
+[scripts]
+build = "anchor build"
+deploy = "anchor deploy -p nen-marketplace"

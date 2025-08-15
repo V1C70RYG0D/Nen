@@ -1,0 +1,93 @@
+{
+  "name": "nen-smart-contracts-tests",
+  "version": "1.0.0",
+  "description": "Comprehensive testing suite for Nen Platform smart contracts",
+  "main": "index.js",
+  "scripts": {
+    "test": "anchor test",
+    "test:anchor": "ts-mocha -p ./tsconfig.json -t 1000000 tests/anchor/*.ts",
+    "test:anchor:coverage": "nyc --include 'tests/anchor/**/*.ts' --all npm run test:anchor",
+    "verify:user-story-2": "node scripts/verify-user-story-2-onchain.js",
+    "test:unit": "mocha --require ts-node/register tests/unit/**/*.test.ts",
+    "test:integration": "mocha --require ts-node/register tests/integration/**/*.test.ts",
+    "test:security": "mocha --require ts-node/register tests/security/**/*.test.ts",
+    "test:performance": "mocha --require ts-node/register tests/performance/**/*.test.ts",
+    "test:stress": "mocha --require ts-node/register tests/stress/**/*.test.ts --timeout 600000",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:security && npm run test:performance",
+    "test:coverage": "nyc npm run test:all",
+    "test:comprehensive": "bash tests/run-comprehensive-tests.sh",
+    "test:ci": "bash tests/run-comprehensive-tests.sh --env devnet --coverage 95 --fail-fast",
+    "test:validate-env": "ts-node tests/config/environment-validator.ts",
+    "test:generate-report": "ts-node scripts/generate-test-report.ts",
+    "demo:testing-infrastructure": "ts-node tests/demo-testing-infrastructure.ts",
+    "validate:testing-setup": "ts-node tests/config/comprehensive-test-runner.ts",
+    "build": "anchor build",
+    "build:verify": "anchor build && anchor verify",
+    "deploy:localnet": "anchor deploy --provider.cluster localnet",
+    "deploy:devnet": "anchor deploy --provider.cluster devnet",
+    "deploy:testnet": "anchor deploy --provider.cluster testnet",
+    "clean": "anchor clean && rm -rf coverage test-ledger *.log",
+    "setup": "bash setup-testing-environment.sh",
+    "setup:quick": "node scripts/setup-test-environment.js",
+    "setup:keypairs": "ts-node scripts/generate-keypairs.ts",
+    "validate": "node scripts/validate-deployment.js",
+    "start:validator": "solana-test-validator --ledger test-ledger --reset --quiet",
+    "stop:validator": "pkill -f solana-test-validator",
+    "logs:validator": "tail -f test-ledger/validator.log",
+    "lint": "eslint tests/**/*.ts --fix",
+    "format": "prettier --write tests/**/*.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "solana",
+    "anchor",
+    "smart-contracts",
+    "testing",
+    "blockchain",
+    "gaming",
+    "betting"
+  ],
+  "author": "Nen Platform",
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.0",
+    "@magicblock-labs/bolt-sdk": "^0.2.4",
+    "@solana/spl-token": "^0.4.8",
+    "@solana/web3.js": "^1.95.0",
+    "bn.js": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.5",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.19.10",
+    "chai": "^4.4.1",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
+    "ts-mocha": "^11.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "tests/**/*.test.ts",
+      "node_modules/**/*"
+    ],
+    "include": [
+      "tests/**/*.ts"
+    ],
+    "reporter": [
+      "text",
+      "html",
+      "lcov"
+    ],
+    "all": true
+  }
+}

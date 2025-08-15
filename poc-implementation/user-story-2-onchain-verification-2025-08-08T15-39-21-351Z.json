@@ -1,0 +1,80 @@
+{
+  "steps": [
+    {
+      "step": "airdrop",
+      "lamports": 2000000000
+    },
+    {
+      "step": "created_account",
+      "parsed": {
+        "owner": "CUSmpoqHNM3rQ9wAPpEQMmxTM2t8z8UHBcj7QpytJFza",
+        "balance": 0,
+        "totalDeposited": 0,
+        "totalWithdrawn": 0,
+        "lockedFunds": 0,
+        "lastActivity": 1754667556,
+        "lastWithdrawal": 0,
+        "withdrawalCount": 0
+      }
+    },
+    {
+      "step": "min_enforced",
+      "belowMin": 50000000,
+      "ok": true,
+      "error": "Simulation failed. \nMessage: Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1770. \nLogs: \n[\n  \"Program 34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5 invoke [1]\",\n  \"Program log: Instruction: DepositSol\",\n  \"Program log: AnchorError thrown in programs/nen-betting/src/lib.rs:30. Error Code: DepositTooSmall. Error Number: 6000. Error Message: Deposit amount too small (minimum 0.1 SOL).\",\n  \"Program 34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5 consumed 6347 of 200000 compute units\",\n  \"Program 34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5 failed: custom program error: 0x1770\"\n]. \nCatch the `SendTransactionError` and call `getLogs()` on it for full details."
+    },
+    {
+      "step": "post_deposit_state",
+      "pdaLamports": 201559040,
+      "parsed": {
+        "owner": "CUSmpoqHNM3rQ9wAPpEQMmxTM2t8z8UHBcj7QpytJFza",
+        "balance": 200000000,
+        "totalDeposited": 200000000,
+        "totalWithdrawn": 0,
+        "lockedFunds": 0,
+        "lastActivity": 1754667558,
+        "lastWithdrawal": 0,
+        "withdrawalCount": 0
+      }
+    },
+    {
+      "step": "logs_scanned",
+      "eventDetected": true,
+      "logsSample": [
+        "Program 34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5 invoke [1]",
+        "Program log: Instruction: DepositSol",
+        "Program 11111111111111111111111111111111 invoke [2]",
+        "Program 11111111111111111111111111111111 success",
+        "Program data: b0ketW8iyAaqeGEk4/PZQt1JwKa8SKMD/2xJcKthuyE3RcpccRDUG12Y7cpqF8MzQXxwmJ6LeIkQrk5yjNLRtqUMpLPSLfdAAMLrCwAAAAAAwusLAAAAACYalmgAAAAA",
+        "Program 34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5 consumed 7942 of 200000 compute units",
+        "Program 34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5 success"
+      ]
+    }
+  ],
+  "txs": [
+    {
+      "type": "create_betting_account",
+      "sig": "23HvoGhaTu7xfgjuiAfkjeWMxapZv7tMwXQaGyvA5NhdfVTA82NbihgYLxqXnQoWmoJY7EnhZBFx6ooqzy8Bw3uF"
+    },
+    {
+      "type": "deposit_sol",
+      "sig": "2yMfU3wTh9xhLWSbnQYAEj4Cb1i57cyzwUu1XbsoF6MtyZQ1yGChws7DvcPvc2QpyUpbprY6twYMDmcPTKio8hQQ"
+    }
+  ],
+  "pda": "7JNAgep2QLFygEBUfVXr3uLTZifs7eZqL1yz95WVmS5M",
+  "ok": true,
+  "errors": [],
+  "summary": {
+    "programId": "34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5",
+    "pda": "7JNAgep2QLFygEBUfVXr3uLTZifs7eZqL1yz95WVmS5M",
+    "minDepositEnforced": true,
+    "depositExecuted": true,
+    "recordUpdated": true,
+    "eventObservedInLogs": true,
+    "explorer": {
+      "program": "https://explorer.solana.com/address/34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5?cluster=devnet",
+      "pda": "https://explorer.solana.com/address/7JNAgep2QLFygEBUfVXr3uLTZifs7eZqL1yz95WVmS5M?cluster=devnet",
+      "lastDepositTx": "https://explorer.solana.com/tx/2yMfU3wTh9xhLWSbnQYAEj4Cb1i57cyzwUu1XbsoF6MtyZQ1yGChws7DvcPvc2QpyUpbprY6twYMDmcPTKio8hQQ?cluster=devnet"
+    }
+  }
+}

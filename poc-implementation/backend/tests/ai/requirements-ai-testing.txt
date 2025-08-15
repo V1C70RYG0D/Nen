@@ -1,0 +1,37 @@
+# AI Manager Testing Requirements
+# Following GI.md guidelines for dependency management
+
+# Core testing framework
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-timeout>=2.1.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+
+# Performance and system monitoring
+psutil>=5.9.0
+
+# Async and concurrent testing
+asyncio>=3.4.3
+
+# Data analysis for test metrics
+statistics
+
+# Type hints and validation
+typing-extensions>=4.0.0
+
+# Development tools (optional)
+pytest-xvfb  # For headless testing
+pytest-benchmark  # For performance benchmarking
+pytest-html  # For HTML test reports
+
+# AI and ML dependencies (if testing real AI components)
+torch>=1.13.0
+tensorboard>=2.10.0
+
+# Mock and testing utilities
+mock>=4.0.3
+
+# Configuration management
+pydantic>=1.10.0  # For test config validation
+python-dotenv>=0.19.0  # For environment variable management

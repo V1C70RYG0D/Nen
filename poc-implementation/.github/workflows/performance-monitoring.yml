@@ -1,0 +1,139 @@
+name: Performance Monitoring & Audits
+on:
+  schedule:
+    # Monthly performance audits - 1st of each month at 2 AM UTC
+    - cron: '0 2 1 * *'
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  NODE_VERSION: '22.x'
+  PERFORMANCE_THRESHOLD: 85
+
+jobs:
+  performance-audit:
+    name: 'Monthly Performance Audit'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install Dependencies
+        run: |
+          cd frontend && npm ci
+          cd ../backend && npm ci
+      
+      - name: Start Test Environment
+        run: |
+          # Start backend services for testing
+          cd backend && npm run dev &
+          cd ../frontend && npm run dev &
+          sleep 30 # Wait for services to start
+      
+      - name: Lighthouse Performance Audit
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          configPath: './config/lighthouse/lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+      
+      - name: Performance Regression Detection
+        run: |
+          # Compare current performance with baseline
+          node scripts/performance-regression-check.js
+        env:
+          PERFORMANCE_BASELINE_URL: ${{ secrets.PERFORMANCE_BASELINE_URL }}
+      
+      - name: API Performance Tests
+        run: |
+          cd tests/performance
+          npm run test:api-performance
+          npm run test:websocket-performance
+      
+      - name: Database Performance Tests
+        run: |
+          cd tests/performance
+          npm run test:database-performance
+      
+      - name: Generate Performance Report
+        run: |
+          node scripts/generate-performance-report.js
+        env:
+          REPORT_OUTPUT_DIR: './reports/performance'
+      
+      - name: Upload Performance Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-audit-report-${{ github.run_number }}
+          path: ./reports/performance/
+          retention-days: 90
+      
+      - name: Comment Performance Results
+        if: github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = './reports/performance/summary.json';
+            if (fs.existsSync(path)) {
+              const summary = JSON.parse(fs.readFileSync(path, 'utf8'));
+              const comment = `## 📊 Monthly Performance Audit Results
+              
+              **Overall Score:** ${summary.overallScore}/100
+              **Performance:** ${summary.performance}/100
+              **Accessibility:** ${summary.accessibility}/100
+              **Best Practices:** ${summary.bestPractices}/100
+              **SEO:** ${summary.seo}/100
+              
+              View detailed report in artifacts.`;
+              
+              github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Monthly Performance Audit - ${new Date().toISOString().split('T')[0]}`,
+                body: comment,
+                labels: ['performance', 'audit', 'monthly-report']
+              });
+            }
+
+  load-testing:
+    name: 'Load Testing'
+    runs-on: ubuntu-latest
+    needs: performance-audit
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install Artillery
+        run: npm install -g artillery@latest
+      
+      - name: Run Load Tests
+        run: |
+          cd tests/performance
+          artillery run config/load-test-config.yml --output load-test-results.json
+      
+      - name: Generate Load Test Report
+        run: |
+          cd tests/performance
+          artillery report load-test-results.json --output load-test-report.html
+      
+      - name: Upload Load Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-results-${{ github.run_number }}
+          path: tests/performance/load-test-*
+          retention-days: 90

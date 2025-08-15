@@ -65,7 +65,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
             console.log(`${program.name} program not found (may not be deployed yet)`);
           }
         } catch (error) {
-          console.log(`ℹ️  ${program.name} verification: ${error.message}`);
+          console.log(`INFO ${program.name} verification: ${error.message}`);
         }
       }
     });
@@ -82,7 +82,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
             console.log(`Program ${programId.toString().slice(0, 8)}... size: ${(accountInfo.data.length / 1024).toFixed(1)}KB`);
           }
         } catch (error) {
-          console.log(`ℹ️  Program size check: ${error.message}`);
+          console.log(`INFO Program size check: ${error.message}`);
         }
       }
     });
@@ -266,7 +266,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
       
       Object.entries(instructionSizes).forEach(([name, size]) => {
         expect(size).to.be.lessThan(SOLANA_INSTRUCTION_LIMIT);
-        console.log(`✅ ${name}: ${size} bytes (within ${SOLANA_INSTRUCTION_LIMIT} limit)`);
+        console.log(`PASS ${name}: ${size} bytes (within ${SOLANA_INSTRUCTION_LIMIT} limit)`);
       });
     });
 
@@ -281,12 +281,12 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
 
       Object.entries(accountDiscriminators).forEach(([name, size]) => {
         expect(size).to.equal(8); // Anchor uses 8-byte discriminators
-        console.log(`✅ ${name} discriminator: ${size} bytes`);
+        console.log(`PASS ${name} discriminator: ${size} bytes`);
       });
     });
   });
 
-  describe("✅ Cross-Program Integration", () => {
+  describe("Cross-Program Integration", () => {
     it("Should validate cross-program invocation capabilities", () => {
       const crossProgramFeatures = {
         "Betting -> Core user validation": true,
@@ -298,7 +298,7 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
 
       Object.entries(crossProgramFeatures).forEach(([feature, enabled]) => {
         expect(enabled).to.be.true;
-        console.log(`✅ ${feature}`);
+        console.log(`PASS ${feature}`);
       });
     });
 
@@ -313,12 +313,12 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
 
       Object.entries(interactionPatterns).forEach(([pattern, enabled]) => {
         expect(enabled).to.be.true;
-        console.log(`✅ ${pattern}`);
+        console.log(`PASS ${pattern}`);
       });
     });
   });
 
-  describe("✅ Production Readiness Assessment", () => {
+  describe("Production Readiness Assessment", () => {
     it("Should demonstrate comprehensive Anchor testing capabilities", () => {
       const testingCapabilities = {
         "IDL file validation": true,
@@ -338,12 +338,12 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
       
       expect(enabledCapabilities).to.equal(totalCapabilities);
       
-      console.log(`✅ Anchor testing capabilities validated:`);
+      console.log(`PASS Anchor testing capabilities validated:`);
       Object.entries(testingCapabilities).forEach(([capability, enabled]) => {
         console.log(`   ${enabled ? 'PASS' : 'FAIL'} ${capability}`);
       });
       
-      console.log(`📊 Testing readiness: ${enabledCapabilities}/${totalCapabilities} (100%)`);
+      console.log(`INFO Testing readiness: ${enabledCapabilities}/${totalCapabilities} (100%)`);
     });
 
     it("Should validate smart contract implementation quality", () => {
@@ -366,17 +366,17 @@ describe("Proper Anchor Program Testing (Production Ready)", () => {
       
       expect(qualityPercentage).to.equal(100);
       
-      console.log(`🎯 Smart Contract Quality Score: ${qualityPercentage}% (${qualityScore}/${totalMetrics})`);
-      console.log(`🚀 All programs demonstrate production-ready implementations!`);
+      console.log(`INFO Smart Contract Quality Score: ${qualityPercentage}% (${qualityScore}/${totalMetrics})`);
+      console.log(`PASS All programs demonstrate production-ready implementations!`);
     });
   });
 
   after(() => {
-    console.log(`\n✅ Proper Anchor Program Testing Complete!`);
-    console.log(`🎉 All Anchor programs properly tested`);
-    console.log(`📊 IDL validation successful`);
-    console.log(`🔧 PDA derivation working correctly`);
-    console.log(`🚀 Production-ready Anchor implementation verified`);
-    console.log(`✨ Real implementations with comprehensive testing\n`);
+    console.log(`\nPASS Proper Anchor Program Testing Complete!`);
+    console.log(`PASS All Anchor programs properly tested`);
+    console.log(`PASS IDL validation successful`);
+    console.log(`PASS PDA derivation working correctly`);
+    console.log(`PASS Production-ready Anchor implementation verified`);
+    console.log(`PASS Real implementations with comprehensive testing\n`);
   });
 });

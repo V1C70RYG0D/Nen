@@ -1,12 +1,100 @@
 import * as anchor from "@coral-xyz/anchor";
 import { expect } from "chai";
-import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL, Connection } from "@solana/web3.js";
 
 describe("Nen Betting Program - Functional Tests", () => {
-  const provider = anchor.AnchorProvider.env();
+  const config = {
+    rpcUrl: process.env.ANCHOR_PROVIDER_URL || "https://api.devnet.solana.com",
+    programId: "34RNydfkFZmhvUupbW1qHBG5LmASc6zeS3tuUsw6PwC5",
+  };
+
+  const connection = new Connection(config.rpcUrl, "confirmed");
+  const provider = new anchor.AnchorProvider(connection, anchor.AnchorProvider.env().wallet, {});
   anchor.setProvider(provider);
 
-  const program = anchor.workspace.NenBetting;
+  const programId = new PublicKey(config.programId);
+  
+  const idl = {
+    version: "0.1.0",
+    name: "nen_betting",
+    instructions: [
+      {
+        name: "createBettingAccount",
+        accounts: [
+          { name: "bettingAccount", isMut: true, isSigner: false },
+          { name: "user", isMut: true, isSigner: true },
+          { name: "systemProgram", isMut: false, isSigner: false }
+        ],
+        args: []
+      },
+      {
+        name: "depositSol",
+        accounts: [
+          { name: "bettingAccount", isMut: true, isSigner: false },
+          { name: "user", isMut: true, isSigner: true },
+          { name: "systemProgram", isMut: false, isSigner: false }
+        ],
+        args: [
+          { name: "amount", type: "u64" }
+        ]
+      },
+      {
+        name: "withdrawSol",
+        accounts: [
+          { name: "bettingAccount", isMut: true, isSigner: false },
+          { name: "user", isMut: true, isSigner: true }
+        ],
+        args: [
+          { name: "amount", type: "u64" }
+        ]
+      },
+      {
+        name: "lockFunds",
+        accounts: [
+          { name: "bettingAccount", isMut: true, isSigner: false },
+          { name: "user", isMut: false, isSigner: true }
+        ],
+        args: [
+          { name: "amount", type: "u64" }
+        ]
+      },
+      {
+        name: "unlockFunds",
+        accounts: [
+          { name: "bettingAccount", isMut: true, isSigner: false },
+          { name: "user", isMut: false, isSigner: true }
+        ],
+        args: [
+          { name: "amount", type: "u64" }
+        ]
+      }
+    ],
+    accounts: [
+      {
+        name: "BettingAccount",
+        type: {
+          kind: "struct",
+          fields: [
+            { name: "user", type: "publicKey" },
+            { name: "balance", type: "u64" },
+            { name: "totalDeposited", type: "u64" },
+            { name: "totalWithdrawn", type: "u64" },
+            { name: "lockedBalance", type: "u64" },
+            { name: "depositCount", type: "u32" },
+            { name: "withdrawalCount", type: "u32" },
+            { name: "lastWithdrawalTime", type: "i64" }
+          ]
+        }
+      }
+    ],
+    errors: [
+      { code: 6000, name: "BelowMinimumDeposit", msg: "Deposit amount is below minimum" },
+      { code: 6001, name: "InsufficientBalance", msg: "Insufficient balance for withdrawal" },
+      { code: 6002, name: "WithdrawalCooldownActive", msg: "24-hour withdrawal cooldown is active" }
+    ]
+  };
+
+  const program = new anchor.Program(idl, programId, provider);
   let user1: Keypair;
   let user2: Keypair;
   let bettingPda1: PublicKey;

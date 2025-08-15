@@ -1,12 +1,92 @@
 import * as anchor from "@coral-xyz/anchor";
 import { expect } from "chai";
-import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL, Connection } from "@solana/web3.js";
 
 describe("Nen MagicBlock Program - Functional Tests", () => {
-  const provider = anchor.AnchorProvider.env();
+  const config = {
+    rpcUrl: process.env.ANCHOR_PROVIDER_URL || "https://api.devnet.solana.com",
+    programId: "AhGXiWjzKjd8T7J3FccYk51y4D97jGkZ7d7NJfmb3aFX",
+  };
+
+  const connection = new Connection(config.rpcUrl, "confirmed");
+  const provider = new anchor.AnchorProvider(connection, anchor.AnchorProvider.env().wallet, {});
   anchor.setProvider(provider);
 
-  const program = anchor.workspace.NenMagicblock;
+  const programId = new PublicKey(config.programId);
+  
+  const idl = {
+    version: "0.1.0",
+    name: "nen_magicblock",
+    instructions: [
+      {
+        name: "initializeSession",
+        accounts: [
+          { name: "gameSession", isMut: true, isSigner: false },
+          { name: "player", isMut: true, isSigner: true },
+          { name: "systemProgram", isMut: false, isSigner: false }
+        ],
+        args: [
+          { name: "sessionId", type: { array: ["u8", 32] } },
+          { name: "rollupAddress", type: "publicKey" },
+          { name: "maxPlayers", type: "u8" }
+        ]
+      },
+      {
+        name: "makeMove",
+        accounts: [
+          { name: "gameSession", isMut: true, isSigner: false },
+          { name: "player", isMut: false, isSigner: true }
+        ],
+        args: [
+          { name: "moveData", type: { array: ["u8", 64] } },
+          { name: "timestamp", type: "u64" }
+        ]
+      },
+      {
+        name: "settleSession",
+        accounts: [
+          { name: "gameSession", isMut: true, isSigner: false },
+          { name: "authority", isMut: false, isSigner: true }
+        ],
+        args: [
+          { name: "finalState", type: { array: ["u8", 256] } },
+          { name: "winner", type: { option: "publicKey" } }
+        ]
+      },
+      {
+        name: "updateLatencyMetrics",
+        accounts: [
+          { name: "gameSession", isMut: true, isSigner: false },
+          { name: "authority", isMut: false, isSigner: true }
+        ],
+        args: [
+          { name: "averageLatency", type: "u32" },
+          { name: "peakLatency", type: "u32" }
+        ]
+      }
+    ],
+    accounts: [
+      {
+        name: "GameSession",
+        type: {
+          kind: "struct",
+          fields: [
+            { name: "sessionId", type: { array: ["u8", 32] } },
+            { name: "rollupAddress", type: "publicKey" },
+            { name: "players", type: { vec: "publicKey" } },
+            { name: "maxPlayers", type: "u8" },
+            { name: "isActive", type: "bool" },
+            { name: "moveCount", type: "u32" },
+            { name: "averageLatency", type: "u32" },
+            { name: "peakLatency", type: "u32" },
+            { name: "createdAt", type: "i64" }
+          ]
+        }
+      }
+    ]
+  };
+
+  const program = new anchor.Program(idl, programId, provider);
   let player1: Keypair;
   let player2: Keypair;
   let sessionPda: PublicKey;
@@ -68,7 +148,7 @@ describe("Nen MagicBlock Program - Functional Tests", () => {
         .signers([player1])
         .rpc();
 
-      const session = await program.account.enhancedGameSession.fetch(sessionPda);
+      const session = await program.account.gameSession.fetch(sessionPda);
       expect(session.sessionId.toNumber()).to.equal(sessionId);
       expect(session.player1.toString()).to.equal(player1.publicKey.toString());
       expect(session.player2.toString()).to.equal(player2.publicKey.toString());
@@ -113,7 +193,7 @@ describe("Nen MagicBlock Program - Functional Tests", () => {
         .signers([player1])
         .rpc();
 
-      const session = await program.account.enhancedGameSession.fetch(sessionPda);
+      const session = await program.account.gameSession.fetch(sessionPda);
       expect(session.sessionConfig.timeLimitSeconds).to.equal(2400);
       expect(session.sessionConfig.moveTimeLimitSeconds).to.equal(45);
       expect(session.sessionConfig.enableAnalysis).to.be.true;
@@ -148,7 +228,7 @@ describe("Nen MagicBlock Program - Functional Tests", () => {
         .signers([player1])
         .rpc();
 
-      const session = await program.account.enhancedGameSession.fetch(sessionPda);
+      const session = await program.account.gameSession.fetch(sessionPda);
       expect(session.geographicRegion.regionCode).to.equal("EU-CENTRAL");
       expect(session.geographicRegion.latencyZone).to.equal(2);
       expect(session.geographicRegion.serverCluster).to.equal("cluster-fra-02");
@@ -194,7 +274,7 @@ describe("Nen MagicBlock Program - Functional Tests", () => {
         .signers([player1])
         .rpc();
 
-      const session = await program.account.enhancedGameSession.fetch(sessionPda);
+      const session = await program.account.gameSession.fetch(sessionPda);
       expect(session.moveNumber).to.equal(1);
       expect(session.currentTurn).to.deep.equal({ player2: {} }); // Turn switched
       expect(session.performanceMetrics.totalMoves).to.equal(1);
@@ -270,7 +350,7 @@ describe("Nen MagicBlock Program - Functional Tests", () => {
         .signers([player1])
         .rpc();
 
-      const session = await program.account.enhancedGameSession.fetch(sessionPda);
+      const session = await program.account.gameSession.fetch(sessionPda);
       expect(session.moveNumber).to.equal(3);
       expect(session.performanceMetrics.totalMoves).to.equal(3);
       expect(session.performanceMetrics.averageMoveLatency).to.be.greaterThan(0);
@@ -379,7 +459,7 @@ describe("Nen MagicBlock Program - Functional Tests", () => {
 
   describe("Gaming Session State Verification", () => {
     it("Should verify final session state and performance metrics", async () => {
-      const session = await program.account.enhancedGameSession.fetch(sessionPda);
+      const session = await program.account.gameSession.fetch(sessionPda);
 
       console.log("Final session state verification:");
       console.log("Session details:");

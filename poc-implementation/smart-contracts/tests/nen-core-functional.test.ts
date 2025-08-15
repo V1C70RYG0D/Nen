@@ -1,12 +1,236 @@
 import * as anchor from "@coral-xyz/anchor";
 import { expect } from "chai";
-import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL, Connection } from "@solana/web3.js";
 
 describe("Nen Core Program - Functional Tests", () => {
-  const provider = anchor.AnchorProvider.env();
+  const config = {
+    rpcUrl: process.env.ANCHOR_PROVIDER_URL || "https://api.devnet.solana.com",
+    programId: "Xs4PKxWNyY1C7i5bdqMh5tNhwPbDbxMXf4YcJAreJcF",
+  };
+
+  const connection = new Connection(config.rpcUrl, "confirmed");
+  const provider = new anchor.AnchorProvider(connection, anchor.AnchorProvider.env().wallet, {});
   anchor.setProvider(provider);
 
-  const program = anchor.workspace.NenCore;
+  const programId = new PublicKey(config.programId);
+  
+  const idl = {
+    version: "0.1.0",
+    name: "nen_core",
+    instructions: [
+      {
+        name: "initializePlatform",
+        accounts: [
+          { name: "platform", isMut: true, isSigner: false },
+          { name: "admin", isMut: true, isSigner: true },
+          { name: "systemProgram", isMut: false, isSigner: false }
+        ],
+        args: [
+          { name: "adminAuthority", type: "publicKey" },
+          { name: "platformFeePercentage", type: "u16" }
+        ]
+      },
+      {
+        name: "createUserAccount",
+        accounts: [
+          { name: "userAccount", isMut: true, isSigner: false },
+          { name: "user", isMut: true, isSigner: true },
+          { name: "systemProgram", isMut: false, isSigner: false }
+        ],
+        args: [
+          { name: "kycLevel", type: "u8" },
+          { name: "complianceFlags", type: "u32" }
+        ]
+      },
+      {
+        name: "createEnhancedUser",
+        accounts: [
+          { name: "userAccount", isMut: true, isSigner: false },
+          { name: "user", isMut: true, isSigner: true },
+          { name: "systemProgram", isMut: false, isSigner: false }
+        ],
+        args: [
+          { name: "username", type: "string" },
+          { name: "kycLevel", type: "u8" },
+          { name: "region", type: "u32" }
+        ]
+      },
+      {
+        name: "createMatch",
+        accounts: [
+          { name: "matchAccount", isMut: true, isSigner: false },
+          { name: "platform", isMut: true, isSigner: false },
+          { name: "player", isMut: true, isSigner: true },
+          { name: "systemProgram", isMut: false, isSigner: false }
+        ],
+        args: [
+          { name: "matchType", type: { defined: "MatchType" } },
+          { name: "betAmount", type: "u64" },
+          { name: "timeLimitSeconds", type: "u32" },
+          { name: "aiDifficulty", type: "u8" }
+        ]
+      },
+      {
+        name: "submitMove",
+        accounts: [
+          { name: "matchAccount", isMut: true, isSigner: false },
+          { name: "player", isMut: false, isSigner: true }
+        ],
+        args: [
+          { name: "fromX", type: "u8" },
+          { name: "fromY", type: "u8" },
+          { name: "toX", type: "u8" },
+          { name: "toY", type: "u8" },
+          { name: "pieceType", type: "u8" },
+          { name: "moveTimestamp", type: "u64" }
+        ]
+      },
+      {
+        name: "mintAiAgentNft",
+        accounts: [
+          { name: "nftAccount", isMut: true, isSigner: false },
+          { name: "mint", isMut: true, isSigner: true },
+          { name: "owner", isMut: true, isSigner: true },
+          { name: "systemProgram", isMut: false, isSigner: false }
+        ],
+        args: [
+          { name: "agentName", type: "string" },
+          { name: "personalityTraits", type: { defined: "PersonalityTraits" } },
+          { name: "performanceMetrics", type: { defined: "PerformanceMetrics" } }
+        ]
+      },
+      {
+        name: "startTrainingSessionLight",
+        accounts: [
+          { name: "trainingSession", isMut: true, isSigner: false },
+          { name: "mint", isMut: false, isSigner: false },
+          { name: "owner", isMut: true, isSigner: true },
+          { name: "systemProgram", isMut: false, isSigner: false }
+        ],
+        args: [
+          { name: "sessionId", type: { array: ["u8", 16] } },
+          { name: "replayCommitments", type: { vec: { array: ["u8", 32] } } },
+          { name: "params", type: { defined: "TrainingParams" } }
+        ]
+      }
+    ],
+    accounts: [
+      {
+        name: "Platform",
+        type: {
+          kind: "struct",
+          fields: [
+            { name: "adminAuthority", type: "publicKey" },
+            { name: "platformFeePercentage", type: "u16" },
+            { name: "totalMatches", type: "u64" },
+            { name: "isPaused", type: "bool" }
+          ]
+        }
+      },
+      {
+        name: "UserAccount",
+        type: {
+          kind: "struct",
+          fields: [
+            { name: "authority", type: "publicKey" },
+            { name: "kycLevel", type: "u8" },
+            { name: "totalMatches", type: "u64" },
+            { name: "reputationScore", type: "u32" },
+            { name: "isActive", type: "bool" },
+            { name: "complianceFlags", type: "u32" }
+          ]
+        }
+      },
+      {
+        name: "MatchAccount",
+        type: {
+          kind: "struct",
+          fields: [
+            { name: "matchId", type: "u64" },
+            { name: "player", type: "publicKey" },
+            { name: "betAmount", type: "u64" },
+            { name: "timeLimitSeconds", type: "u32" },
+            { name: "aiDifficulty", type: "u8" },
+            { name: "movesCount", type: "u32" }
+          ]
+        }
+      },
+      {
+        name: "AiAgentNft",
+        type: {
+          kind: "struct",
+          fields: [
+            { name: "owner", type: "publicKey" },
+            { name: "agentName", type: "string" },
+            { name: "personalityTraits", type: { defined: "PersonalityTraits" } },
+            { name: "performanceMetrics", type: { defined: "PerformanceMetrics" } }
+          ]
+        }
+      },
+      {
+        name: "TrainingSession",
+        type: {
+          kind: "struct",
+          fields: [
+            { name: "owner", type: "publicKey" },
+            { name: "agentMint", type: "publicKey" },
+            { name: "replayCommitments", type: { vec: { array: ["u8", 32] } } },
+            { name: "params", type: { defined: "TrainingParams" } }
+          ]
+        }
+      }
+    ],
+    types: [
+      {
+        name: "PersonalityTraits",
+        type: {
+          kind: "struct",
+          fields: [
+            { name: "aggression", type: "u8" },
+            { name: "patience", type: "u8" },
+            { name: "creativity", type: "u8" },
+            { name: "analytical", type: "u8" }
+          ]
+        }
+      },
+      {
+        name: "PerformanceMetrics",
+        type: {
+          kind: "struct",
+          fields: [
+            { name: "winRate", type: "f32" },
+            { name: "averageGameLength", type: "u32" },
+            { name: "totalGames", type: "u32" },
+            { name: "rating", type: "u32" }
+          ]
+        }
+      },
+      {
+        name: "TrainingParams",
+        type: {
+          kind: "struct",
+          fields: [
+            { name: "learningRate", type: "f32" },
+            { name: "batchSize", type: "u32" },
+            { name: "epochs", type: "u32" },
+            { name: "validationSplit", type: "f32" }
+          ]
+        }
+      },
+      {
+        name: "MatchType",
+        type: {
+          kind: "enum",
+          variants: [
+            { name: "pvp" },
+            { name: "pve" }
+          ]
+        }
+      }
+    ]
+  };
+
+  const program = new anchor.Program(idl, programId, provider);
   let platformPda: PublicKey;
   let platformBump: number;
   let admin: Keypair;
@@ -159,7 +383,7 @@ describe("Nen Core Program - Functional Tests", () => {
       expect(matchAccount.aiDifficulty).to.equal(aiDifficulty);
       expect(matchAccount.movesCount).to.equal(0);
 
-      const updatedPlatform = await program.account.platform.fetch(platformPda);
+      const updatedPlatform = await program.account.Platform.fetch(platformPda);
       expect(updatedPlatform.totalMatches).to.equal(1);
 
       console.log("Match created successfully");

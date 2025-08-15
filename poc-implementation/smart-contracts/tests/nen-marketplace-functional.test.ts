@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { expect } from "chai";
-import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL, Connection } from "@solana/web3.js";
 import { 
   createMint, 
   createAssociatedTokenAccount, 
@@ -11,10 +11,87 @@ import {
 } from "@solana/spl-token";
 
 describe("Nen Marketplace Program - Functional Tests", () => {
-  const provider = anchor.AnchorProvider.env();
+  const config = {
+    rpcUrl: process.env.ANCHOR_PROVIDER_URL || "https://api.devnet.solana.com",
+    programId: "8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH",
+  };
+
+  const connection = new Connection(config.rpcUrl, "confirmed");
+  const provider = new anchor.AnchorProvider(connection, anchor.AnchorProvider.env().wallet, {});
   anchor.setProvider(provider);
 
-  const program = anchor.workspace.NenMarketplace;
+  const programId = new PublicKey(config.programId);
+  
+  const idl = {
+    version: "0.1.0",
+    name: "nen_marketplace",
+    instructions: [
+      {
+        name: "createListing",
+        accounts: [
+          { name: "listing", isMut: true, isSigner: false },
+          { name: "seller", isMut: true, isSigner: true },
+          { name: "nftMint", isMut: false, isSigner: false },
+          { name: "systemProgram", isMut: false, isSigner: false }
+        ],
+        args: [
+          { name: "price", type: "u64" },
+          { name: "royaltyPercentage", type: "u16" }
+        ]
+      },
+      {
+        name: "purchaseItem",
+        accounts: [
+          { name: "listing", isMut: true, isSigner: false },
+          { name: "buyer", isMut: true, isSigner: true },
+          { name: "seller", isMut: true, isSigner: false },
+          { name: "systemProgram", isMut: false, isSigner: false }
+        ],
+        args: []
+      },
+      {
+        name: "cancelListing",
+        accounts: [
+          { name: "listing", isMut: true, isSigner: false },
+          { name: "seller", isMut: false, isSigner: true }
+        ],
+        args: []
+      },
+      {
+        name: "updatePrice",
+        accounts: [
+          { name: "listing", isMut: true, isSigner: false },
+          { name: "seller", isMut: false, isSigner: true }
+        ],
+        args: [
+          { name: "newPrice", type: "u64" }
+        ]
+      }
+    ],
+    accounts: [
+      {
+        name: "Listing",
+        type: {
+          kind: "struct",
+          fields: [
+            { name: "seller", type: "publicKey" },
+            { name: "nftMint", type: "publicKey" },
+            { name: "price", type: "u64" },
+            { name: "royaltyPercentage", type: "u16" },
+            { name: "isActive", type: "bool" },
+            { name: "createdAt", type: "i64" }
+          ]
+        }
+      }
+    ],
+    errors: [
+      { code: 6000, name: "ListingNotActive", msg: "Listing is not active" },
+      { code: 6001, name: "InsufficientFunds", msg: "Insufficient funds for purchase" },
+      { code: 6002, name: "InvalidRoyalty", msg: "Invalid royalty percentage" }
+    ]
+  };
+
+  const program = new anchor.Program(idl, programId, provider);
   let seller: Keypair;
   let buyer: Keypair;
   let mint: PublicKey;

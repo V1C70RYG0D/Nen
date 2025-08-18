@@ -105,7 +105,19 @@ export const useBetting = (matchId: string) => {
           };
         }
         
-        // Final fallback: return empty pools
+        // Final fallback: return demo data for live match or empty pools for others
+        if (matchId === 'live-match-1' || matchId === 'demo-live-1') {
+          console.log('Using demo betting pool data (fallback) for match:', matchId);
+          return {
+            pools: { 
+              total: 45.7 * LAMPORTS_PER_SOL, 
+              agent1: 18.34 * LAMPORTS_PER_SOL, 
+              agent2: 27.36 * LAMPORTS_PER_SOL 
+            },
+            userBets: []
+          };
+        }
+        
         console.warn('Could not load betting data for match:', matchId);
         return {
           pools: { total: 0, agent1: 0, agent2: 0 },
@@ -129,6 +141,20 @@ export const useBetting = (matchId: string) => {
             })) : [];
           }
         } catch {}
+        
+        // Return demo data for live match
+        if (matchId === 'live-match-1' || matchId === 'demo-live-1') {
+          console.log('Using demo betting pool data for match:', matchId);
+          return {
+            pools: { 
+              total: 45.7 * LAMPORTS_PER_SOL, 
+              agent1: 18.34 * LAMPORTS_PER_SOL, 
+              agent2: 27.36 * LAMPORTS_PER_SOL 
+            },
+            userBets
+          };
+        }
+        
         return {
           pools: { total: 0, agent1: 0, agent2: 0 },
           userBets
@@ -142,19 +168,58 @@ export const useBetting = (matchId: string) => {
     }
   );
 
-  // Place bet mutation
+  // Place bet mutation - supports both demo and production betting
   const placeBetMutation = useMutation(
     async (params: { matchId: string; agent: 1 | 2; amount: number }) => {
       if (!wallet.publicKey) {
         throw new Error('Wallet not connected');
       }
 
+      // For demo matches, use the demo betting API
+      if (params.matchId === 'live-match-1' || params.matchId === 'demo-live-1') {
+        try {
+          const agentId = params.agent === 1 ? 'netero_ai' : 'meruem_ai';
+          const amountSol = params.amount / LAMPORTS_PER_SOL;
+          
+          const response = await fetch('/api/betting/place', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              matchId: params.matchId,
+              agentId,
+              amount: amountSol,
+              walletAddress: wallet.publicKey.toBase58(),
+            }),
+          });
+
+          const result = await response.json();
+          
+          if (!result.success) {
+            throw new Error(result.error || 'Failed to place demo bet');
+          }
+
+          return { 
+            success: true, 
+            txId: result.data.transaction_id,
+            betId: result.data.betId,
+            odds: result.data.odds,
+            potentialPayout: result.data.potential_payout
+          };
+        } catch (error) {
+          console.error('Error placing demo bet:', error);
+          throw error;
+        }
+      }
+
+      // For production matches, use Solana transactions
       try {
         const amountSol = params.amount / LAMPORTS_PER_SOL;
         const result = await placeBetProd({ matchId: params.matchId, agent: params.agent, amountSol });
         return { success: true, txId: result.signature };
       } catch (error) {
-        console.error('Error placing bet:', error);
+        console.error('Error placing production bet:', error);
         throw error;
       }
     },

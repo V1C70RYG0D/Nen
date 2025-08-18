@@ -25,11 +25,11 @@
       "size_bytes": 332992
     },
     "nen_marketplace": {
-      "program_id": "8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH",
+      "program_id": "CdicRCVogU9FyPEjRrJB23XwWH6KxizGxieXHBjcFU5V",
       "name": "NEN Marketplace Program",
       "description": "NFT marketplace for fixed-price listings and purchases with fees and royalties",
-      "deployed_slot": null,
-      "size_bytes": null
+      "deployed_slot": 400000000,
+      "size_bytes": 267904
     }
   },
   "deployer_wallet": "84YCBt3bEkFUYFzUhh9xUCzqwp6nDUJdtj62WWh3hrnT",

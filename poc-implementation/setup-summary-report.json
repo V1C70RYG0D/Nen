@@ -1,0 +1,80 @@
+{
+  "setup_completed_at": "2025-08-17T06:23:40.348Z",
+  "wallet": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+  "statistics": {
+    "total_agents_created": 5,
+    "agents_in_marketplace": 3,
+    "total_marketplace_value": "5.8999999999999995 SOL",
+    "match_histories_generated": 65,
+    "average_agent_elo": 2150,
+    "total_portfolio_value": "13.599999999999998 SOL"
+  },
+  "agents_overview": [
+    {
+      "name": "Netero Strategic AI",
+      "mint": "CBE84teu...",
+      "elo": 2450,
+      "tier": "Legendary",
+      "market_status": "Not listed"
+    },
+    {
+      "name": "Phantom AI Specialist",
+      "mint": "ABxEw3rt...",
+      "elo": 2120,
+      "tier": "Epic",
+      "market_status": "Listed for 2.8 SOL"
+    },
+    {
+      "name": "Zoldyck Assassin AI",
+      "mint": "Hybfg23d...",
+      "elo": 1980,
+      "tier": "Rare",
+      "market_status": "Listed for 1.9 SOL"
+    },
+    {
+      "name": "Chrollo Strategy AI",
+      "mint": "Aob41QhK...",
+      "elo": 2350,
+      "tier": "Legendary",
+      "market_status": "Not listed"
+    },
+    {
+      "name": "Gon Determination AI",
+      "mint": "3YQWVX76...",
+      "elo": 1850,
+      "tier": "Uncommon",
+      "market_status": "Listed for 1.2 SOL"
+    }
+  ],
+  "marketplace_listings": [
+    {
+      "agent_name": "Phantom AI Specialist",
+      "price": "2.8 SOL",
+      "tier": "Epic",
+      "elo": 2120,
+      "win_rate": "83.0%"
+    },
+    {
+      "agent_name": "Zoldyck Assassin AI",
+      "price": "1.9 SOL",
+      "tier": "Rare",
+      "elo": 1980,
+      "win_rate": "79.0%"
+    },
+    {
+      "agent_name": "Gon Determination AI",
+      "price": "1.2 SOL",
+      "tier": "Uncommon",
+      "elo": 1850,
+      "win_rate": "75.0%"
+    }
+  ],
+  "training_data_ready": true,
+  "next_steps": [
+    "Start the backend server to serve the API endpoints",
+    "Use the frontend training page to view owned agents",
+    "Browse the marketplace to see listed agents",
+    "View match histories for training workflow demonstration",
+    "Test agent training with the generated replay data"
+  ]
+}

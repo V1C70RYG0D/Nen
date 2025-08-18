@@ -61,7 +61,21 @@ const getFallbackMatches = (filters: MatchFilters): MatchListResponse => {
         currentMove: 42,
         currentPlayer: 'agent2',
         timeRemaining: { agent1: 245, agent2: 180 },
-        lastMoveAt: new Date().toISOString()
+        lastMoveAt: new Date().toISOString(),
+        moveHistory: [
+          'Pawn e2-e4', 'Pawn e7-e5', 'Knight g1-f3', 'Knight b8-c6',
+          'Bishop f1-c4', 'Bishop f8-c5', 'Pawn d2-d3', 'Pawn d7-d6',
+          'Pawn c2-c3', 'Bishop c8-g4', 'Queen d1-b3', 'Knight g8-h6',
+          'Rook h1-f1', 'Pawn f7-f5', 'Pawn e4-f5', 'Bishop g4-h5',
+          'Pawn g2-g4', 'Bishop h5-g6', 'Knight b1-d2', 'Queen d8-h4',
+          'Knight f3-h4', 'Rook h8-f8', 'Knight h4-g6', 'Pawn h7-g6',
+          'Pawn f5-g6', 'Rook f8-f1+', 'King e1-e2', 'Rook f1-f2+',
+          'King e2-d1', 'Bishop c5-f2', 'Bishop c1-e3', 'Queen h4-h1+',
+          'King d1-e2', 'Queen h1-e4', 'Rook a1-f1', 'Rook f2-f1',
+          'Bishop e3-f2', 'Rook f1-f2+', 'King e2-f2', 'Queen e4-d4+',
+          'King f2-g3', 'Queen d4-g1+', 'King g3-h4', 'Knight c6-d4',
+          'Queen b3-d3', 'Knight d4-e2', 'King h4-g5', 'Queen g1-g4+'
+        ]
       },
       startTime: new Date(Date.now() - 900000).toISOString(),
       viewerCount: 347,

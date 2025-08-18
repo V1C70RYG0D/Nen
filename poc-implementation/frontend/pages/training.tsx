@@ -273,7 +273,7 @@ const TrainingPage: React.FC = () => {
     setIsLoadingAgents(true);
     try {
       const response = await axios.get(`${apiConfig.baseUrl}/api/training/owned-agents`, {
-        params: { walletAddress: publicKey.toString() },
+        params: { wallet: publicKey.toString() },
         timeout: 10000,
         headers: { 'Accept': 'application/json' }
       });
@@ -312,7 +312,7 @@ const TrainingPage: React.FC = () => {
     setIsLoadingReplays(true);
     try {
       const response = await axios.get(`${apiConfig.baseUrl}/api/training/match-replays`, {
-        params: { agentMint, walletAddress: publicKey?.toString(), limit: 50 },
+        params: { agentMint, wallet: publicKey?.toString(), limit: 50 },
         timeout: 15000,
         headers: { 'Accept': 'application/json' }
       });

@@ -1,0 +1,74 @@
+{
+  "listings": [
+    {
+      "id": "listing_ABxEw3rt",
+      "agentMint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+      "seller": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 2.8,
+      "currency": "SOL",
+      "status": "active",
+      "created_at": "2025-08-17T06:23:22.715Z",
+      "expires_at": "2025-09-16T06:23:22.715Z",
+      "metadata": {
+        "name": "Phantom AI Specialist",
+        "description": "Advanced AI specializing in unpredictable gameplay",
+        "tier": "Epic",
+        "elo": 2120,
+        "winRate": 0.83
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": false,
+        "reserved": false
+      }
+    },
+    {
+      "id": "listing_Hybfg23d",
+      "agentMint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+      "seller": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 1.9,
+      "currency": "SOL",
+      "status": "active",
+      "created_at": "2025-08-17T06:23:25.286Z",
+      "expires_at": "2025-09-16T06:23:25.286Z",
+      "metadata": {
+        "name": "Zoldyck Assassin AI",
+        "description": "Lightning-fast AI trained on elimination tactics",
+        "tier": "Rare",
+        "elo": 1980,
+        "winRate": 0.79
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": false,
+        "reserved": false
+      }
+    },
+    {
+      "id": "listing_3YQWVX76",
+      "agentMint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+      "seller": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 1.2,
+      "currency": "SOL",
+      "status": "active",
+      "created_at": "2025-08-17T06:23:31.113Z",
+      "expires_at": "2025-09-16T06:23:31.113Z",
+      "metadata": {
+        "name": "Gon Determination AI",
+        "description": "Persistent AI agent excelling in comebacks",
+        "tier": "Uncommon",
+        "elo": 1850,
+        "winRate": 0.75
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": false,
+        "reserved": false
+      }
+    }
+  ],
+  "total_listings": 3,
+  "total_value": 5.8999999999999995,
+  "created_at": "2025-08-17T06:23:31.116Z",
+  "network": "devnet"
+}

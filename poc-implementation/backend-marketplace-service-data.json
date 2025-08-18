@@ -1,0 +1,224 @@
+{
+  "listings": [
+    {
+      "id": "listing_ABxEw3rt",
+      "agentId": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+      "sellerId": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 2800000000,
+      "currency": "SOL",
+      "status": "active",
+      "createdAt": "2025-08-17T06:23:22.715Z",
+      "expiresAt": "2025-09-16T06:23:22.715Z",
+      "metadata": {
+        "name": "Phantom AI Specialist",
+        "description": "Advanced AI specializing in unpredictable gameplay",
+        "tier": "Epic",
+        "elo": 2120,
+        "winRate": 0.83
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": false,
+        "reserved": false
+      }
+    },
+    {
+      "id": "listing_Hybfg23d",
+      "agentId": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+      "sellerId": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 1900000000,
+      "currency": "SOL",
+      "status": "active",
+      "createdAt": "2025-08-17T06:23:25.286Z",
+      "expiresAt": "2025-09-16T06:23:25.286Z",
+      "metadata": {
+        "name": "Zoldyck Assassin AI",
+        "description": "Lightning-fast AI trained on elimination tactics",
+        "tier": "Rare",
+        "elo": 1980,
+        "winRate": 0.79
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": false,
+        "reserved": false
+      }
+    },
+    {
+      "id": "listing_3YQWVX76",
+      "agentId": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+      "sellerId": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 1200000000,
+      "currency": "SOL",
+      "status": "active",
+      "createdAt": "2025-08-17T06:23:31.113Z",
+      "expiresAt": "2025-09-16T06:23:31.113Z",
+      "metadata": {
+        "name": "Gon Determination AI",
+        "description": "Persistent AI agent excelling in comebacks",
+        "tier": "Uncommon",
+        "elo": 1850,
+        "winRate": 0.75
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": false,
+        "reserved": false
+      }
+    },
+    {
+      "id": "listing_KurapkChain",
+      "agentId": "KurapkChain1m6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwKqD",
+      "sellerId": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 3500000000,
+      "currency": "SOL",
+      "status": "active",
+      "createdAt": "2025-08-18T08:15:30.000Z",
+      "expiresAt": "2025-09-17T08:15:30.000Z",
+      "metadata": {
+        "name": "Kurapika Chain Master",
+        "description": "Elite AI trained in strategic binding techniques and defensive play",
+        "tier": "Legendary",
+        "elo": 2380,
+        "winRate": 0.91
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": true,
+        "reserved": false
+      }
+    },
+    {
+      "id": "listing_HisokaMagic",
+      "agentId": "HisokaMagic2m6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwMqD",
+      "sellerId": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 4200000000,
+      "currency": "SOL",
+      "status": "active",
+      "createdAt": "2025-08-18T09:22:15.000Z",
+      "expiresAt": "2025-09-17T09:22:15.000Z",
+      "metadata": {
+        "name": "Hisoka Bungee Gum AI",
+        "description": "Unpredictable genius AI with adaptive tactics and mind games",
+        "tier": "Legendary",
+        "elo": 2450,
+        "winRate": 0.88
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": false,
+        "reserved": false
+      }
+    },
+    {
+      "id": "listing_MeruemKing",
+      "agentId": "MeruemKing3m6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwKqD",
+      "sellerId": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 5800000000,
+      "currency": "SOL",
+      "status": "active",
+      "createdAt": "2025-08-18T10:45:20.000Z",
+      "expiresAt": "2025-09-17T10:45:20.000Z",
+      "metadata": {
+        "name": "Meruem King AI",
+        "description": "The ultimate AI agent - learns and adapts mid-game with supreme intelligence",
+        "tier": "Mythic",
+        "elo": 2650,
+        "winRate": 0.94
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": false,
+        "reserved": true
+      }
+    },
+    {
+      "id": "listing_KilluaSpeed",
+      "agentId": "KilluaSpeed4m6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwKqD",
+      "sellerId": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 2600000000,
+      "currency": "SOL",
+      "status": "active",
+      "createdAt": "2025-08-18T11:30:45.000Z",
+      "expiresAt": "2025-09-17T11:30:45.000Z",
+      "metadata": {
+        "name": "Killua Lightning AI",
+        "description": "Lightning-fast AI with godspeed reactions and precise calculations",
+        "tier": "Epic",
+        "elo": 2290,
+        "winRate": 0.86
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": true,
+        "reserved": false
+      }
+    },
+    {
+      "id": "listing_LeorioHealer",
+      "agentId": "LeorioHealer5m6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwKqD",
+      "sellerId": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 950000000,
+      "currency": "SOL",
+      "status": "active",
+      "createdAt": "2025-08-18T12:15:30.000Z",
+      "expiresAt": "2025-09-17T12:15:30.000Z",
+      "metadata": {
+        "name": "Leorio Support AI",
+        "description": "Defensive specialist AI focused on long-term strategic positioning",
+        "tier": "Common",
+        "elo": 1650,
+        "winRate": 0.68
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": true,
+        "reserved": false
+      }
+    },
+    {
+      "id": "listing_BiskyTrainer",
+      "agentId": "BiskyTrainer6m6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwKqD",
+      "sellerId": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 3100000000,
+      "currency": "SOL",
+      "status": "active",
+      "createdAt": "2025-08-18T13:45:15.000Z",
+      "expiresAt": "2025-09-17T13:45:15.000Z",
+      "metadata": {
+        "name": "Bisky Training AI",
+        "description": "Experienced AI master specialized in teaching and adaptive gameplay",
+        "tier": "Epic",
+        "elo": 2180,
+        "winRate": 0.82
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": false,
+        "reserved": false
+      }
+    },
+    {
+      "id": "listing_PalmSiberia",
+      "agentId": "PalmSiberia7m6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwKqD",
+      "sellerId": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "price": 1750000000,
+      "currency": "SOL",
+      "status": "active",
+      "createdAt": "2025-08-18T14:20:45.000Z",
+      "expiresAt": "2025-09-17T14:20:45.000Z",
+      "metadata": {
+        "name": "Palm Siberia AI",
+        "description": "Balanced AI agent with solid fundamentals and reliable performance",
+        "tier": "Rare",
+        "elo": 1920,
+        "winRate": 0.77
+      },
+      "features": {
+        "instant_buy": true,
+        "negotiable": true,
+        "reserved": false
+      }
+    }
+  ]
+}

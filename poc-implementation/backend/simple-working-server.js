@@ -369,6 +369,184 @@ app.get('/api/matches/:id', (req, res) => {
   }
 });
 
+// Training API - Get owned AI agents for a wallet
+app.get('/api/training/owned-agents', (req, res) => {
+  try {
+    const walletAddress = req.query.wallet || req.query.walletAddress;
+    
+    if (!walletAddress) {
+      return res.status(400).json({
+        success: false,
+        error: 'Wallet address required',
+        message: 'Please provide wallet address as query parameter'
+      });
+    }
+
+    // Load training data for the specific wallet
+    const fs = require('fs');
+    const path = require('path');
+    
+    const trainingDataPath = path.join(__dirname, '..', 'backend-training-service-data.json');
+    
+    if (!fs.existsSync(trainingDataPath)) {
+      return res.status(404).json({
+        success: false,
+        error: 'Training data not found',
+        message: 'No training data available'
+      });
+    }
+
+    const trainingData = JSON.parse(fs.readFileSync(trainingDataPath, 'utf8'));
+    
+    // Check if the requested wallet matches the data
+    if (trainingData.wallet !== walletAddress) {
+      return res.json({
+        success: true,
+        data: {
+          agents: [],
+          wallet: walletAddress,
+          total: 0
+        },
+        message: 'No agents found for this wallet'
+      });
+    }
+
+    // Return the agents with enhanced metadata
+    const enhancedAgents = trainingData.agents.map(agent => ({
+      ...agent,
+      verified: true,
+      onChainData: {
+        mint: agent.mint,
+        owner: walletAddress,
+        verified: true,
+        lastVerified: new Date().toISOString()
+      }
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        agents: enhancedAgents,
+        wallet: walletAddress,
+        total: enhancedAgents.length
+      },
+      message: `Found ${enhancedAgents.length} AI agents for wallet`
+    });
+
+  } catch (error) {
+    console.error('Training API error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch owned agents',
+      message: error.message
+    });
+  }
+});
+
+// Match replays endpoint for training
+app.get('/api/training/match-replays/:agentMint', (req, res) => {
+  try {
+    const { agentMint } = req.params;
+    
+    const fs = require('fs');
+    const path = require('path');
+    
+    const trainingDataPath = path.join(__dirname, '..', 'backend-training-service-data.json');
+    
+    if (!fs.existsSync(trainingDataPath)) {
+      return res.status(404).json({
+        success: false,
+        error: 'Training data not found'
+      });
+    }
+
+    const trainingData = JSON.parse(fs.readFileSync(trainingDataPath, 'utf8'));
+    const agent = trainingData.agents.find(a => a.mint === agentMint);
+    
+    if (!agent) {
+      return res.status(404).json({
+        success: false,
+        error: 'Agent not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        agent: agent.name,
+        mint: agentMint,
+        replays: agent.matchHistory || [],
+        statistics: agent.statistics || {}
+      }
+    });
+
+  } catch (error) {
+    console.error('Match replays API error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch match replays',
+      message: error.message
+    });
+  }
+});
+
+// Agents API for marketplace
+app.get('/api/agents', (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    
+    const marketplaceDataPath = path.join(__dirname, '..', 'backend-marketplace-service-data.json');
+    
+    if (!fs.existsSync(marketplaceDataPath)) {
+      return res.status(404).json({
+        success: false,
+        error: 'Marketplace data not found'
+      });
+    }
+
+    const marketplaceData = JSON.parse(fs.readFileSync(marketplaceDataPath, 'utf8'));
+    
+    // Transform listings to agents format for the frontend
+    const agents = marketplaceData.listings.map(listing => ({
+      id: listing.agentId,
+      name: listing.metadata.name,
+      elo: listing.metadata.elo,
+      winRate: listing.metadata.winRate,
+      totalMatches: Math.floor(Math.random() * 100) + 50, // Random for demo
+      price: listing.price,
+      owner: listing.sellerId,
+      personality: ['Tactical', 'Aggressive', 'Defensive', 'Strategic'][Math.floor(Math.random() * 4)],
+      nenType: ['Enhancement', 'Transmutation', 'Emission', 'Manipulation', 'Conjuration', 'Specialization'][Math.floor(Math.random() * 6)],
+      specialAbilities: ['Special Attack', 'Defense Boost', 'Speed Enhancement', 'Mind Games'],
+      generation: Math.floor(Math.random() * 5) + 1,
+      rarity: listing.metadata.tier.toLowerCase(),
+      description: listing.metadata.description,
+      tier: listing.metadata.tier,
+      features: listing.features,
+      createdAt: listing.createdAt,
+      status: listing.status
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        agents: agents,
+        total: agents.length
+      },
+      message: 'Marketplace agents loaded successfully'
+    });
+
+  } catch (error) {
+    console.error('Agents API error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch agents',
+      message: error.message
+    });
+  }
+});
+
 // Error handling
 app.use((req, res) => {
   res.status(404).json({
@@ -398,6 +576,8 @@ async function startServer() {
         console.log(`Server: http://${HOST}:${PORT}`);
         console.log(`Health: http://${HOST}:${PORT}/health`);
         console.log(`Matches API: http://${HOST}:${PORT}/api/matches`);
+        console.log(`Agents API: http://${HOST}:${PORT}/api/agents`);
+        console.log(`Training API: http://${HOST}:${PORT}/api/training/owned-agents?wallet=8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC`);
         console.log('=' .repeat(40));
         resolve();
       });

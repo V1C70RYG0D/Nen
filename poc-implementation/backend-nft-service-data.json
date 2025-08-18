@@ -1,7 +1,7 @@
 {
-  "wallet": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
   "agents": [
     {
+      "id": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
       "mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
       "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
       "name": "Netero Strategic AI",
@@ -33,23 +33,24 @@
           "value": "Legendary"
         }
       ],
-      "properties": {
-        "category": "AI Agent",
-        "collection": "Nen Platform AI Agents",
-        "tier": "Legendary",
-        "stats": {
-          "elo": 2450,
-          "winRate": 0.89,
-          "totalMatches": 234
-        }
-      },
-      "tokenAccount": "BRBxbwT7RRsownoSD2Xr7g79qFdPgLZ4CbKYnabeLcRm",
-      "created_at": "2025-08-17T06:23:19.989Z",
-      "network": "devnet",
-      "marketPrice": 3.5,
-      "isListed": false
+      "elo": 2450,
+      "winRate": 0.89,
+      "totalMatches": 234,
+      "tier": "Legendary",
+      "isListed": false,
+      "listPrice": null,
+      "lastUpdated": "2025-08-17T06:23:19.989Z",
+      "tradingHistory": [],
+      "onChainData": {
+        "mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+        "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+        "verified": true,
+        "lastVerified": "2025-08-17T06:23:19.989Z",
+        "tokenAccount": "BRBxbwT7RRsownoSD2Xr7g79qFdPgLZ4CbKYnabeLcRm"
+      }
     },
     {
+      "id": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
       "mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
       "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
       "name": "Phantom AI Specialist",
@@ -81,23 +82,24 @@
           "value": "Epic"
         }
       ],
-      "properties": {
-        "category": "AI Agent",
-        "collection": "Nen Platform AI Agents",
-        "tier": "Epic",
-        "stats": {
-          "elo": 2120,
-          "winRate": 0.83,
-          "totalMatches": 187
-        }
-      },
-      "tokenAccount": "7q5bTu8Z5e2tzS3a6iYmvkJqq6KsgR696fXu6nHc9z1n",
-      "created_at": "2025-08-17T06:23:22.715Z",
-      "network": "devnet",
-      "marketPrice": 2.8,
-      "isListed": true
+      "elo": 2120,
+      "winRate": 0.83,
+      "totalMatches": 187,
+      "tier": "Epic",
+      "isListed": true,
+      "listPrice": 2800000000,
+      "lastUpdated": "2025-08-17T06:23:22.715Z",
+      "tradingHistory": [],
+      "onChainData": {
+        "mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+        "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+        "verified": true,
+        "lastVerified": "2025-08-17T06:23:22.715Z",
+        "tokenAccount": "7q5bTu8Z5e2tzS3a6iYmvkJqq6KsgR696fXu6nHc9z1n"
+      }
     },
     {
+      "id": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
       "mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
       "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
       "name": "Zoldyck Assassin AI",
@@ -129,23 +131,24 @@
           "value": "Rare"
         }
       ],
-      "properties": {
-        "category": "AI Agent",
-        "collection": "Nen Platform AI Agents",
-        "tier": "Rare",
-        "stats": {
-          "elo": 1980,
-          "winRate": 0.79,
-          "totalMatches": 156
-        }
-      },
-      "tokenAccount": "EKvv5jNdX1kFzefoGnzN4EGBXDwngQJfWhyWLQyxmT24",
-      "created_at": "2025-08-17T06:23:25.286Z",
-      "network": "devnet",
-      "marketPrice": 1.9,
-      "isListed": true
+      "elo": 1980,
+      "winRate": 0.79,
+      "totalMatches": 156,
+      "tier": "Rare",
+      "isListed": true,
+      "listPrice": 1900000000,
+      "lastUpdated": "2025-08-17T06:23:25.286Z",
+      "tradingHistory": [],
+      "onChainData": {
+        "mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+        "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+        "verified": true,
+        "lastVerified": "2025-08-17T06:23:25.286Z",
+        "tokenAccount": "EKvv5jNdX1kFzefoGnzN4EGBXDwngQJfWhyWLQyxmT24"
+      }
     },
     {
+      "id": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
       "mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
       "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
       "name": "Chrollo Strategy AI",
@@ -177,23 +180,24 @@
           "value": "Legendary"
         }
       ],
-      "properties": {
-        "category": "AI Agent",
-        "collection": "Nen Platform AI Agents",
-        "tier": "Legendary",
-        "stats": {
-          "elo": 2350,
-          "winRate": 0.87,
-          "totalMatches": 298
-        }
-      },
-      "tokenAccount": "FHsvsbwVdPiCp3iNvQ2KP1dZNuwzaYi91hog8nCTAnnD",
-      "created_at": "2025-08-17T06:23:28.372Z",
-      "network": "devnet",
-      "marketPrice": 4.2,
-      "isListed": false
+      "elo": 2350,
+      "winRate": 0.87,
+      "totalMatches": 298,
+      "tier": "Legendary",
+      "isListed": false,
+      "listPrice": null,
+      "lastUpdated": "2025-08-17T06:23:28.372Z",
+      "tradingHistory": [],
+      "onChainData": {
+        "mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+        "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+        "verified": true,
+        "lastVerified": "2025-08-17T06:23:28.372Z",
+        "tokenAccount": "FHsvsbwVdPiCp3iNvQ2KP1dZNuwzaYi91hog8nCTAnnD"
+      }
     },
     {
+      "id": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
       "mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
       "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
       "name": "Gon Determination AI",
@@ -225,29 +229,21 @@
           "value": "Uncommon"
         }
       ],
-      "properties": {
-        "category": "AI Agent",
-        "collection": "Nen Platform AI Agents",
-        "tier": "Uncommon",
-        "stats": {
-          "elo": 1850,
-          "winRate": 0.75,
-          "totalMatches": 203
-        }
-      },
-      "tokenAccount": "53N1FNkcrUY443ps17b3ejDiUEfojb4YUBArvrA8ADaQ",
-      "created_at": "2025-08-17T06:23:31.113Z",
-      "network": "devnet",
-      "marketPrice": 1.2,
-      "isListed": true
+      "elo": 1850,
+      "winRate": 0.75,
+      "totalMatches": 203,
+      "tier": "Uncommon",
+      "isListed": true,
+      "listPrice": 1200000000,
+      "lastUpdated": "2025-08-17T06:23:31.113Z",
+      "tradingHistory": [],
+      "onChainData": {
+        "mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+        "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+        "verified": true,
+        "lastVerified": "2025-08-17T06:23:31.113Z",
+        "tokenAccount": "53N1FNkcrUY443ps17b3ejDiUEfojb4YUBArvrA8ADaQ"
+      }
     }
-  ],
-  "total_agents": 5,
-  "created_at": "2025-08-17T06:23:31.116Z",
-  "network": "devnet",
-  "statistics": {
-    "total_value": 13.599999999999998,
-    "listed_count": 3,
-    "average_elo": 2150
-  }
+  ]
 }

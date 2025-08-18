@@ -52,22 +52,18 @@ router.get('/owned-agents', async (req, res) => {
     if (walletAddress === '8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC') {
       const ownedAgents = agentRegistry.agents.map(agent => ({
         mint: agent.mint,
-        name: agent.metadata.name,
-        image: `/avatars/${agent.metadata.name.toLowerCase().replace(/\s+/g, '-')}.png`,
-        attributes: [
-          { trait_type: 'Elo Rating', value: agent.metadata.elo.toString() },
-          { trait_type: 'Nen Type', value: agent.metadata.nenType },
-          { trait_type: 'Personality', value: agent.metadata.personality },
-          { trait_type: 'Win Rate', value: (agent.metadata.winRate * 100).toFixed(1) + '%' },
-          { trait_type: 'Total Matches', value: agent.metadata.totalMatches.toString() }
-        ],
-        description: agent.metadata.description,
+        name: agent.name,
+        image: agent.image,
+        attributes: agent.attributes,
+        description: agent.description,
         verified: true,
         onChainData: {
           mint: agent.mint,
           owner: agent.owner,
           verified: true,
-          lastVerified: new Date().toISOString()
+          lastVerified: agent.created_at,
+          isLocked: false,
+          currentTrainingSession: null
         }
       }));
 

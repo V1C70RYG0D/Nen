@@ -3,7 +3,7 @@ use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
 // Devnet deployed program id
-declare_id!("8FbcrTGS9wQCyC99h5jbHx2bzZjYfkGERSMCjmYBDisH");
+declare_id!("CdicRCVogU9FyPEjRrJB23XwWH6KxizGxieXHBjcFU5V");
 
 #[program]
 pub mod nen_marketplace {

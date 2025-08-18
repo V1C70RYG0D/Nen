@@ -25,6 +25,10 @@ const DEVNET_AI_AGENTS = [
     specialization: 'hundred_type_guanyin',
     powerLevel: 'chairman',
     recentForm: [1, 1, 0, 1, 1], // last 5 matches (1=win, 0=loss)
+    price: 3200000000,
+    rarity: 'legendary',
+    generation: 2,
+    specialAbilities: ['Prayer Stance', 'Speed of Light', 'Bodhisattva']
   },
   {
     id: 'meruem_ai_v2',
@@ -38,6 +42,10 @@ const DEVNET_AI_AGENTS = [
     specialization: 'photographic_evolution',
     powerLevel: 'king',
     recentForm: [1, 1, 1, 0, 1],
+    price: 5800000000,
+    rarity: 'mythic',
+    generation: 1,
+    specialAbilities: ['Aura Synthesis', 'Metamorphosis', 'Perfect Memory']
   },
   {
     id: 'komugi_ai_v2',
@@ -51,6 +59,10 @@ const DEVNET_AI_AGENTS = [
     specialization: 'gungi_mastery',
     powerLevel: 'grandmaster',
     recentForm: [1, 1, 1, 1, 1],
+    price: 6500000000,
+    rarity: 'mythic',
+    generation: 1,
+    specialAbilities: ['Intuitive Prediction', 'Board Visualization', 'Pattern Recognition']
   },
   {
     id: 'ging_ai_v2',
@@ -64,6 +76,10 @@ const DEVNET_AI_AGENTS = [
     specialization: 'copy_abilities',
     powerLevel: 'hunter',
     recentForm: [1, 0, 1, 1, 0],
+    price: 4100000000,
+    rarity: 'legendary',
+    generation: 1,
+    specialAbilities: ['Ability Mimicry', 'Strategic Genius', 'Unpredictable Moves']
   },
   {
     id: 'hisoka_ai_v2',
@@ -77,6 +93,10 @@ const DEVNET_AI_AGENTS = [
     specialization: 'bungee_gum',
     powerLevel: 'magician',
     recentForm: [1, 1, 0, 1, 1],
+    price: 4200000000,
+    rarity: 'legendary',
+    generation: 1,
+    specialAbilities: ['Elastic Strategy', 'Deceptive Tactics', 'Mind Games']
   },
   {
     id: 'illumi_ai_v2',
@@ -90,6 +110,10 @@ const DEVNET_AI_AGENTS = [
     specialization: 'needle_control',
     powerLevel: 'assassin',
     recentForm: [1, 0, 1, 1, 0],
+    price: 2900000000,
+    rarity: 'epic',
+    generation: 2,
+    specialAbilities: ['Precision Control', 'Emotional Manipulation', 'Silent Strike']
   },
   {
     id: 'kurapika_ai_v2',
@@ -103,6 +127,10 @@ const DEVNET_AI_AGENTS = [
     specialization: 'chain_jail',
     powerLevel: 'kurta_survivor',
     recentForm: [1, 1, 0, 1, 0],
+    price: 3500000000,
+    rarity: 'legendary',
+    generation: 2,
+    specialAbilities: ['Chain Prison', 'Dowsing Chain', 'Emperor Time']
   },
   {
     id: 'killua_ai_v2',
@@ -116,6 +144,10 @@ const DEVNET_AI_AGENTS = [
     specialization: 'godspeed',
     powerLevel: 'prodigy',
     recentForm: [1, 1, 1, 0, 1],
+    price: 2600000000,
+    rarity: 'epic',
+    generation: 3,
+    specialAbilities: ['Lightning Speed', 'Whirlwind', 'Thunderbolt']
   },
   {
     id: 'gon_ai_v2',
@@ -129,6 +161,10 @@ const DEVNET_AI_AGENTS = [
     specialization: 'jajanken',
     powerLevel: 'potential',
     recentForm: [0, 1, 1, 0, 1],
+    price: 1800000000,
+    rarity: 'rare',
+    generation: 3,
+    specialAbilities: ['Rock', 'Paper', 'Scissors Enhancement']
   },
   {
     id: 'chrollo_ai_v2',
@@ -142,7 +178,164 @@ const DEVNET_AI_AGENTS = [
     specialization: 'skill_hunter',
     powerLevel: 'troupe_leader',
     recentForm: [1, 1, 0, 1, 1],
+    price: 4800000000,
+    rarity: 'legendary',
+    generation: 1,
+    specialAbilities: ['Skill Hunter', 'Bookmark', 'Convert Hands']
   },
+  {
+    id: 'bisky_ai_v2',
+    name: 'Biscuit Krueger',
+    elo: 1890,
+    nenType: 'transmutation',
+    personality: 'balanced',
+    avatar: '/avatars/bisky.png',
+    winRate: 0.82,
+    totalMatches: 298,
+    specialization: 'cookie_chan',
+    powerLevel: 'master_trainer',
+    recentForm: [1, 1, 0, 1, 1],
+    price: 3100000000,
+    rarity: 'epic',
+    generation: 2,
+    specialAbilities: ['Magical Esthetician', 'Piano Man', 'True Form']
+  },
+  {
+    id: 'feitan_ai_v2',
+    name: 'Feitan Portor',
+    elo: 1920,
+    nenType: 'transmutation',
+    personality: 'aggressive',
+    avatar: '/avatars/feitan.png',
+    winRate: 0.84,
+    totalMatches: 187,
+    specialization: 'pain_packer',
+    powerLevel: 'troupe_torture',
+    recentForm: [1, 1, 1, 0, 1],
+    price: 3300000000,
+    rarity: 'epic',
+    generation: 2,
+    specialAbilities: ['Rising Sun', 'Pain Amplification', 'Speed Boost']
+  },
+  {
+    id: 'razor_ai_v2',
+    name: 'Razor',
+    elo: 1860,
+    nenType: 'emission',
+    personality: 'tactical',
+    avatar: '/avatars/razor.png',
+    winRate: 0.79,
+    totalMatches: 165,
+    specialization: 'fourteen_devils',
+    powerLevel: 'game_master',
+    recentForm: [1, 0, 1, 1, 0],
+    price: 2800000000,
+    rarity: 'epic',
+    generation: 2,
+    specialAbilities: ['Emission Control', 'Aura Ball', 'Devil Minions']
+  },
+  {
+    id: 'silva_ai_v2',
+    name: 'Silva Zoldyck',
+    elo: 1970,
+    nenType: 'transmutation',
+    personality: 'tactical',
+    avatar: '/avatars/silva.png',
+    winRate: 0.86,
+    totalMatches: 142,
+    specialization: 'explosive_orbs',
+    powerLevel: 'family_head',
+    recentForm: [1, 1, 1, 1, 0],
+    price: 3700000000,
+    rarity: 'legendary',
+    generation: 1,
+    specialAbilities: ['Explosive Aura', 'Assassination Arts', 'Leadership']
+  },
+  {
+    id: 'leorio_ai_v2',
+    name: 'Leorio Paradinight',
+    elo: 1620,
+    nenType: 'emission',
+    personality: 'supportive',
+    avatar: '/avatars/leorio.png',
+    winRate: 0.68,
+    totalMatches: 98,
+    specialization: 'remote_punch',
+    powerLevel: 'doctor_hunter',
+    recentForm: [0, 1, 0, 1, 1],
+    price: 950000000,
+    rarity: 'common',
+    generation: 3,
+    specialAbilities: ['Remote Strike', 'Medical Knowledge', 'Team Support']
+  },
+  {
+    id: 'palm_ai_v2',
+    name: 'Palm Siberia',
+    elo: 1720,
+    nenType: 'enhancement',
+    personality: 'balanced',
+    avatar: '/avatars/palm.png',
+    winRate: 0.77,
+    totalMatches: 123,
+    specialization: 'wink_blue',
+    powerLevel: 'specialist_hunter',
+    recentForm: [1, 0, 1, 1, 0],
+    price: 1750000000,
+    rarity: 'rare',
+    generation: 3,
+    specialAbilities: ['Clairvoyance', 'Enhanced Strength', 'Intelligence Gathering']
+  },
+  {
+    id: 'morel_ai_v2',
+    name: 'Morel Mackernasey',
+    elo: 1840,
+    nenType: 'manipulation',
+    personality: 'strategic',
+    avatar: '/avatars/morel.png',
+    winRate: 0.81,
+    totalMatches: 156,
+    specialization: 'deep_purple',
+    powerLevel: 'sea_hunter',
+    recentForm: [1, 1, 0, 1, 1],
+    price: 2400000000,
+    rarity: 'rare',
+    generation: 2,
+    specialAbilities: ['Smoke Control', 'Prison', 'Strategy Master']
+  },
+  {
+    id: 'knov_ai_v2',
+    name: 'Knov',
+    elo: 1790,
+    nenType: 'conjuration',
+    personality: 'tactical',
+    avatar: '/avatars/knov.png',
+    winRate: 0.78,
+    totalMatches: 134,
+    specialization: 'hide_and_seek',
+    powerLevel: 'infiltration_hunter',
+    recentForm: [1, 0, 1, 0, 1],
+    price: 2100000000,
+    rarity: 'rare',
+    generation: 2,
+    specialAbilities: ['Portal Creation', 'Dimension Cut', 'Stealth Master']
+  },
+  {
+    id: 'kite_ai_v2',
+    name: 'Kite',
+    elo: 1880,
+    nenType: 'conjuration',
+    personality: 'adaptive',
+    avatar: '/avatars/kite.png',
+    winRate: 0.80,
+    totalMatches: 167,
+    specialization: 'crazy_slots',
+    powerLevel: 'reborn_hunter',
+    recentForm: [1, 1, 0, 1, 0],
+    price: 2700000000,
+    rarity: 'epic',
+    generation: 2,
+    specialAbilities: ['Random Weapon', 'Adaptability', 'Survival Instinct']
+  }
 ];
 
 // Generate realistic devnet matches with proper variety for filtering

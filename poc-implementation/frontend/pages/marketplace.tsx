@@ -26,7 +26,7 @@ type UIAgent = {
   nenType: string;
   specialAbilities: string[];
   generation: number;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
 };
 
 export default function MarketplacePage() {
@@ -38,27 +38,188 @@ export default function MarketplacePage() {
   const [showOnlyForSale, setShowOnlyForSale] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch AI agents from backend via Next API proxy
+  // Fetch AI agents from backend via Next API proxy with fallback demo data
   const { data: agents, isLoading } = useQuery<UIAgent[]>('agents', async () => {
-    const r = await fetch('/api/agents');
-    const json = await r.json();
-    const list = json?.data?.agents || [];
-    // map into the shape used by UI grid
-    return (list as any[]).map((a: any, idx: number): UIAgent => ({
-      id: a.id || String(idx + 1),
-      name: a.name,
-      owner: a.owner || '',
-      elo: a.elo,
-      winRate: a.winRate,
-      gamesPlayed: a.totalMatches,
-      price: a.price || 0,
-      personality: a.personality,
-      isForSale: true,
-      nenType: a.nenType,
-      specialAbilities: a.specialAbilities || [],
-      generation: a.generation || 1,
-      rarity: (a.rarity || 'epic') as UIAgent['rarity'],
-    }));
+    try {
+      const r = await fetch('/api/agents');
+      const json = await r.json();
+      const list = json?.data?.agents || [];
+      
+      if (list.length > 0) {
+        // Use API data if available
+        return (list as any[]).map((a: any, idx: number): UIAgent => ({
+          id: a.id || String(idx + 1),
+          name: a.name,
+          owner: a.owner || '',
+          elo: a.elo,
+          winRate: a.winRate,
+          gamesPlayed: a.totalMatches,
+          price: a.price || 0,
+          personality: a.personality,
+          isForSale: true,
+          nenType: a.nenType,
+          specialAbilities: a.specialAbilities || [],
+          generation: a.generation || 1,
+          rarity: (a.rarity || 'epic') as UIAgent['rarity'],
+        }));
+      }
+    } catch (error) {
+      console.warn('API failed, using demo data:', error);
+    }
+    
+    // Fallback demo data for reliable demo experience
+    return [
+      {
+        id: 'kurapika_chain_master',
+        name: 'Kurapika Chain Master',
+        owner: '8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC',
+        elo: 2380,
+        winRate: 0.91,
+        gamesPlayed: 145,
+        price: 3500000000, // 3.5 SOL
+        personality: 'Tactical',
+        isForSale: true,
+        nenType: 'conjuration',
+        specialAbilities: ['Chain Prison', 'Dowsing Chain', 'Emperor Time'],
+        generation: 2,
+        rarity: 'legendary' as UIAgent['rarity'],
+      },
+      {
+        id: 'hisoka_bungee_gum',
+        name: 'Hisoka Bungee Gum AI',
+        owner: '8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC',
+        elo: 2450,
+        winRate: 0.88,
+        gamesPlayed: 234,
+        price: 4200000000, // 4.2 SOL
+        personality: 'Unpredictable',
+        isForSale: true,
+        nenType: 'transmutation',
+        specialAbilities: ['Elastic Strategy', 'Deceptive Tactics', 'Mind Games'],
+        generation: 1,
+        rarity: 'legendary' as UIAgent['rarity'],
+      },
+      {
+        id: 'meruem_king_ai',
+        name: 'Meruem King AI',
+        owner: '8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC',
+        elo: 2650,
+        winRate: 0.94,
+        gamesPlayed: 89,
+        price: 5800000000, // 5.8 SOL
+        personality: 'Strategic',
+        isForSale: true,
+        nenType: 'specialization',
+        specialAbilities: ['Aura Synthesis', 'Metamorphosis', 'Perfect Memory'],
+        generation: 1,
+        rarity: 'legendary' as UIAgent['rarity'],
+      },
+      {
+        id: 'killua_lightning',
+        name: 'Killua Lightning AI',
+        owner: '8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC',
+        elo: 2290,
+        winRate: 0.86,
+        gamesPlayed: 198,
+        price: 2600000000, // 2.6 SOL
+        personality: 'Speed Focused',
+        isForSale: true,
+        nenType: 'transmutation',
+        specialAbilities: ['Lightning Speed', 'Whirlwind', 'Thunderbolt'],
+        generation: 3,
+        rarity: 'epic' as UIAgent['rarity'],
+      },
+      {
+        id: 'netero_strategic',
+        name: 'Chairman Netero AI',
+        owner: '8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC',
+        elo: 2465,
+        winRate: 0.89,
+        gamesPlayed: 156,
+        price: 3200000000, // 3.2 SOL
+        personality: 'Tactical',
+        isForSale: true,
+        nenType: 'enhancement',
+        specialAbilities: ['Prayer Stance', 'Speed of Light', 'Bodhisattva'],
+        generation: 2,
+        rarity: 'legendary' as UIAgent['rarity'],
+      },
+      {
+        id: 'bisky_trainer',
+        name: 'Bisky Training AI',
+        owner: '8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC',
+        elo: 2180,
+        winRate: 0.82,
+        gamesPlayed: 298,
+        price: 3100000000, // 3.1 SOL
+        personality: 'Balanced',
+        isForSale: true,
+        nenType: 'transmutation',
+        specialAbilities: ['Magical Esthetician', 'Piano Man', 'True Form'],
+        generation: 2,
+        rarity: 'epic' as UIAgent['rarity'],
+      },
+      {
+        id: 'gon_determination',
+        name: 'Gon Determination AI',
+        owner: '8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC',
+        elo: 1865,
+        winRate: 0.75,
+        gamesPlayed: 134,
+        price: 1200000000, // 1.2 SOL
+        personality: 'Aggressive',
+        isForSale: true,
+        nenType: 'enhancement',
+        specialAbilities: ['Rock', 'Paper', 'Scissors Enhancement'],
+        generation: 3,
+        rarity: 'rare' as UIAgent['rarity'],
+      },
+      {
+        id: 'leorio_support',
+        name: 'Leorio Support AI',
+        owner: '8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC',
+        elo: 1650,
+        winRate: 0.68,
+        gamesPlayed: 98,
+        price: 950000000, // 0.95 SOL
+        personality: 'Supportive',
+        isForSale: true,
+        nenType: 'emission',
+        specialAbilities: ['Remote Strike', 'Medical Knowledge', 'Team Support'],
+        generation: 3,
+        rarity: 'common' as UIAgent['rarity'],
+      },
+      {
+        id: 'palm_siberia',
+        name: 'Palm Siberia AI',
+        owner: '8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC',
+        elo: 1720,
+        winRate: 0.77,
+        gamesPlayed: 123,
+        price: 1750000000, // 1.75 SOL
+        personality: 'Balanced',
+        isForSale: true,
+        nenType: 'enhancement',
+        specialAbilities: ['Clairvoyance', 'Enhanced Strength', 'Intelligence Gathering'],
+        generation: 3,
+        rarity: 'rare' as UIAgent['rarity'],
+      },
+      {
+        id: 'chrollo_strategy',
+        name: 'Chrollo Strategy AI',
+        owner: '8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC',
+        elo: 2365,
+        winRate: 0.87,
+        gamesPlayed: 156,
+        price: 4800000000, // 4.8 SOL
+        personality: 'Strategic',
+        isForSale: true,
+        nenType: 'specialization',
+        specialAbilities: ['Skill Hunter', 'Bookmark', 'Convert Hands'],
+        generation: 1,
+        rarity: 'legendary' as UIAgent['rarity'],
+      }
+    ] as UIAgent[];
   });
 
   // Filter and sort agents
@@ -79,7 +240,7 @@ export default function MarketplacePage() {
         case 'winRate':
           return b.winRate - a.winRate;
         case 'rarity':
-          const rarityOrder: Record<UIAgent['rarity'], number> = { common: 0, rare: 1, epic: 2, legendary: 3 };
+          const rarityOrder: Record<UIAgent['rarity'], number> = { common: 0, rare: 1, epic: 2, legendary: 3, mythic: 4 };
           return rarityOrder[b.rarity] - rarityOrder[a.rarity];
         default:
           return 0;

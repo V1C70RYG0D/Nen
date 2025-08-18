@@ -1,0 +1,1177 @@
+{
+  "endpoints": {
+    "/api/training/owned-agents": {
+      "success": true,
+      "data": [
+        {
+          "mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+          "name": "Netero Strategic AI",
+          "description": "Elite AI agent trained on tactical patterns",
+          "image": "/avatars/ai-agent-CBE84teu.png",
+          "attributes": [
+            {
+              "trait_type": "Elo Rating",
+              "value": 2450
+            },
+            {
+              "trait_type": "Nen Type",
+              "value": "Enhancement"
+            },
+            {
+              "trait_type": "Personality",
+              "value": "Tactical"
+            },
+            {
+              "trait_type": "Win Rate",
+              "value": "89.0%"
+            },
+            {
+              "trait_type": "Total Matches",
+              "value": 234
+            },
+            {
+              "trait_type": "Tier",
+              "value": "Legendary"
+            }
+          ],
+          "verified": true,
+          "onChainData": {
+            "mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+            "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+            "verified": true,
+            "lastVerified": "2025-08-17T06:23:19.989Z",
+            "isLocked": false,
+            "currentTrainingSession": null
+          }
+        },
+        {
+          "mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+          "name": "Phantom AI Specialist",
+          "description": "Advanced AI specializing in unpredictable gameplay",
+          "image": "/avatars/ai-agent-ABxEw3rt.png",
+          "attributes": [
+            {
+              "trait_type": "Elo Rating",
+              "value": 2120
+            },
+            {
+              "trait_type": "Nen Type",
+              "value": "Transmutation"
+            },
+            {
+              "trait_type": "Personality",
+              "value": "Unpredictable"
+            },
+            {
+              "trait_type": "Win Rate",
+              "value": "83.0%"
+            },
+            {
+              "trait_type": "Total Matches",
+              "value": 187
+            },
+            {
+              "trait_type": "Tier",
+              "value": "Epic"
+            }
+          ],
+          "verified": true,
+          "onChainData": {
+            "mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+            "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+            "verified": true,
+            "lastVerified": "2025-08-17T06:23:22.715Z",
+            "isLocked": false,
+            "currentTrainingSession": null
+          }
+        },
+        {
+          "mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+          "name": "Zoldyck Assassin AI",
+          "description": "Lightning-fast AI trained on elimination tactics",
+          "image": "/avatars/ai-agent-Hybfg23d.png",
+          "attributes": [
+            {
+              "trait_type": "Elo Rating",
+              "value": 1980
+            },
+            {
+              "trait_type": "Nen Type",
+              "value": "Manipulation"
+            },
+            {
+              "trait_type": "Personality",
+              "value": "Aggressive"
+            },
+            {
+              "trait_type": "Win Rate",
+              "value": "79.0%"
+            },
+            {
+              "trait_type": "Total Matches",
+              "value": 156
+            },
+            {
+              "trait_type": "Tier",
+              "value": "Rare"
+            }
+          ],
+          "verified": true,
+          "onChainData": {
+            "mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+            "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+            "verified": true,
+            "lastVerified": "2025-08-17T06:23:25.286Z",
+            "isLocked": false,
+            "currentTrainingSession": null
+          }
+        },
+        {
+          "mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+          "name": "Chrollo Strategy AI",
+          "description": "Master tactician AI with adaptive learning",
+          "image": "/avatars/ai-agent-Aob41QhK.png",
+          "attributes": [
+            {
+              "trait_type": "Elo Rating",
+              "value": 2350
+            },
+            {
+              "trait_type": "Nen Type",
+              "value": "Specialist"
+            },
+            {
+              "trait_type": "Personality",
+              "value": "Analytical"
+            },
+            {
+              "trait_type": "Win Rate",
+              "value": "87.0%"
+            },
+            {
+              "trait_type": "Total Matches",
+              "value": 298
+            },
+            {
+              "trait_type": "Tier",
+              "value": "Legendary"
+            }
+          ],
+          "verified": true,
+          "onChainData": {
+            "mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+            "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+            "verified": true,
+            "lastVerified": "2025-08-17T06:23:28.372Z",
+            "isLocked": false,
+            "currentTrainingSession": null
+          }
+        },
+        {
+          "mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+          "name": "Gon Determination AI",
+          "description": "Persistent AI agent excelling in comebacks",
+          "image": "/avatars/ai-agent-3YQWVX76.png",
+          "attributes": [
+            {
+              "trait_type": "Elo Rating",
+              "value": 1850
+            },
+            {
+              "trait_type": "Nen Type",
+              "value": "Enhancement"
+            },
+            {
+              "trait_type": "Personality",
+              "value": "Persistent"
+            },
+            {
+              "trait_type": "Win Rate",
+              "value": "75.0%"
+            },
+            {
+              "trait_type": "Total Matches",
+              "value": 203
+            },
+            {
+              "trait_type": "Tier",
+              "value": "Uncommon"
+            }
+          ],
+          "verified": true,
+          "onChainData": {
+            "mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+            "owner": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+            "verified": true,
+            "lastVerified": "2025-08-17T06:23:31.113Z",
+            "isLocked": false,
+            "currentTrainingSession": null
+          }
+        }
+      ],
+      "count": 5,
+      "wallet": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "network": "devnet"
+    },
+    "/api/marketplace/listings": {
+      "success": true,
+      "data": [
+        {
+          "id": "listing_ABxEw3rt",
+          "agentMint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+          "seller": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+          "price": 2.8,
+          "currency": "SOL",
+          "status": "active",
+          "created_at": "2025-08-17T06:23:22.715Z",
+          "expires_at": "2025-09-16T06:23:22.715Z",
+          "metadata": {
+            "name": "Phantom AI Specialist",
+            "description": "Advanced AI specializing in unpredictable gameplay",
+            "tier": "Epic",
+            "elo": 2120,
+            "winRate": 0.83
+          },
+          "features": {
+            "instant_buy": true,
+            "negotiable": false,
+            "reserved": false
+          }
+        },
+        {
+          "id": "listing_Hybfg23d",
+          "agentMint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+          "seller": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+          "price": 1.9,
+          "currency": "SOL",
+          "status": "active",
+          "created_at": "2025-08-17T06:23:25.286Z",
+          "expires_at": "2025-09-16T06:23:25.286Z",
+          "metadata": {
+            "name": "Zoldyck Assassin AI",
+            "description": "Lightning-fast AI trained on elimination tactics",
+            "tier": "Rare",
+            "elo": 1980,
+            "winRate": 0.79
+          },
+          "features": {
+            "instant_buy": true,
+            "negotiable": false,
+            "reserved": false
+          }
+        },
+        {
+          "id": "listing_3YQWVX76",
+          "agentMint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+          "seller": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+          "price": 1.2,
+          "currency": "SOL",
+          "status": "active",
+          "created_at": "2025-08-17T06:23:31.113Z",
+          "expires_at": "2025-09-16T06:23:31.113Z",
+          "metadata": {
+            "name": "Gon Determination AI",
+            "description": "Persistent AI agent excelling in comebacks",
+            "tier": "Uncommon",
+            "elo": 1850,
+            "winRate": 0.75
+          },
+          "features": {
+            "instant_buy": true,
+            "negotiable": false,
+            "reserved": false
+          }
+        }
+      ],
+      "count": 3,
+      "total_value": 5.8999999999999995
+    },
+    "/api/training/match-history/8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC": {
+      "success": true,
+      "data": [
+        {
+          "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+          "agent_name": "Netero Strategic AI",
+          "total_records": 13,
+          "win_rate": 0.89,
+          "recent_performance": 1,
+          "training_sessions": 3,
+          "match_history": [
+            {
+              "id": "match_1755411811114_0",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "opponent": "Ging Strategic AI",
+              "result": "win",
+              "date": "2025-08-17T06:23:31.114Z",
+              "duration_seconds": 981,
+              "elo_change": 18,
+              "game_type": "ranked",
+              "replay_id": "replay_CBE84teu_0",
+              "moves_count": 47
+            },
+            {
+              "id": "match_1755411811114_1",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "opponent": "Kite Adaptive AI",
+              "result": "win",
+              "date": "2025-07-26T22:16:37.110Z",
+              "duration_seconds": 1231,
+              "elo_change": 29,
+              "game_type": "ranked",
+              "replay_id": "replay_CBE84teu_1",
+              "moves_count": 95
+            },
+            {
+              "id": "match_1755411811114_2",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "opponent": "Bisky Training AI",
+              "result": "win",
+              "date": "2025-08-11T20:21:11.264Z",
+              "duration_seconds": 2281,
+              "elo_change": 25,
+              "game_type": "ranked",
+              "replay_id": "replay_CBE84teu_2",
+              "moves_count": 98
+            },
+            {
+              "id": "match_1755411811114_3",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "opponent": "Razor Power AI",
+              "result": "win",
+              "date": "2025-08-08T21:32:48.545Z",
+              "duration_seconds": 1688,
+              "elo_change": 10,
+              "game_type": "ranked",
+              "replay_id": "replay_CBE84teu_3",
+              "moves_count": 81
+            },
+            {
+              "id": "match_1755411811114_4",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "opponent": "Silva Professional AI",
+              "result": "win",
+              "date": "2025-08-11T17:30:00.364Z",
+              "duration_seconds": 2038,
+              "elo_change": 22,
+              "game_type": "ranked",
+              "replay_id": "replay_CBE84teu_4",
+              "moves_count": 57
+            },
+            {
+              "id": "match_1755411811114_5",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "opponent": "Razor Power AI",
+              "result": "win",
+              "date": "2025-04-29T08:14:44.730Z",
+              "duration_seconds": 2280,
+              "elo_change": 10,
+              "game_type": "ranked",
+              "replay_id": "replay_CBE84teu_5",
+              "moves_count": 89
+            },
+            {
+              "id": "match_1755411811115_6",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "opponent": "Bisky Training AI",
+              "result": "win",
+              "date": "2025-04-01T01:58:12.899Z",
+              "duration_seconds": 1860,
+              "elo_change": 5,
+              "game_type": "ranked",
+              "replay_id": "replay_CBE84teu_6",
+              "moves_count": 95
+            },
+            {
+              "id": "match_1755411811115_7",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "opponent": "Razor Power AI",
+              "result": "win",
+              "date": "2025-05-17T02:05:17.058Z",
+              "duration_seconds": 916,
+              "elo_change": 13,
+              "game_type": "ranked",
+              "replay_id": "replay_CBE84teu_7",
+              "moves_count": 98
+            },
+            {
+              "id": "match_1755411811115_8",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "opponent": "Silva Professional AI",
+              "result": "win",
+              "date": "2025-03-04T12:46:33.850Z",
+              "duration_seconds": 978,
+              "elo_change": 27,
+              "game_type": "ranked",
+              "replay_id": "replay_CBE84teu_8",
+              "moves_count": 68
+            },
+            {
+              "id": "match_1755411811115_9",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "opponent": "Ging Strategic AI",
+              "result": "win",
+              "date": "2025-05-09T03:27:26.501Z",
+              "duration_seconds": 2643,
+              "elo_change": 7,
+              "game_type": "ranked",
+              "replay_id": "replay_CBE84teu_9",
+              "moves_count": 52
+            },
+            {
+              "id": "training_1755411811115_0",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "session_type": "ai_training",
+              "date": "2025-08-17T06:23:31.114Z",
+              "duration_seconds": 4808,
+              "training_focus": "endgame_scenarios",
+              "replays_analyzed": 16,
+              "elo_before": 2450,
+              "elo_after": 2465
+            },
+            {
+              "id": "training_1755411811115_1",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "session_type": "ai_training",
+              "date": "2025-08-10T06:23:31.114Z",
+              "duration_seconds": 4241,
+              "training_focus": "tactical_patterns",
+              "replays_analyzed": 17,
+              "elo_before": 2435,
+              "elo_after": 2450
+            },
+            {
+              "id": "training_1755411811115_2",
+              "agent_mint": "CBE84teushPhwcJx1HGacKUhLUyYJba66Zw3BTLzDvSv",
+              "agent_name": "Netero Strategic AI",
+              "session_type": "ai_training",
+              "date": "2025-08-03T06:23:31.114Z",
+              "duration_seconds": 5291,
+              "training_focus": "tactical_patterns",
+              "replays_analyzed": 14,
+              "elo_before": 2420,
+              "elo_after": 2435
+            }
+          ]
+        },
+        {
+          "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+          "agent_name": "Phantom AI Specialist",
+          "total_records": 13,
+          "win_rate": 0.83,
+          "recent_performance": 0.9,
+          "training_sessions": 3,
+          "match_history": [
+            {
+              "id": "match_1755411811115_0",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "opponent": "Kite Adaptive AI",
+              "result": "win",
+              "date": "2025-08-17T06:23:31.114Z",
+              "duration_seconds": 2111,
+              "elo_change": 20,
+              "game_type": "ranked",
+              "replay_id": "replay_ABxEw3rt_0",
+              "moves_count": 91
+            },
+            {
+              "id": "match_1755411811115_1",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "opponent": "Razor Power AI",
+              "result": "win",
+              "date": "2025-08-05T12:06:26.160Z",
+              "duration_seconds": 2636,
+              "elo_change": 11,
+              "game_type": "ranked",
+              "replay_id": "replay_ABxEw3rt_1",
+              "moves_count": 89
+            },
+            {
+              "id": "match_1755411811115_2",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "opponent": "Bisky Training AI",
+              "result": "loss",
+              "date": "2025-07-03T16:27:18.853Z",
+              "duration_seconds": 1751,
+              "elo_change": -10,
+              "game_type": "ranked",
+              "replay_id": "replay_ABxEw3rt_2",
+              "moves_count": 83
+            },
+            {
+              "id": "match_1755411811115_3",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "opponent": "Bisky Training AI",
+              "result": "win",
+              "date": "2025-07-22T02:36:56.135Z",
+              "duration_seconds": 2202,
+              "elo_change": 14,
+              "game_type": "ranked",
+              "replay_id": "replay_ABxEw3rt_3",
+              "moves_count": 53
+            },
+            {
+              "id": "match_1755411811115_4",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "opponent": "Kite Adaptive AI",
+              "result": "win",
+              "date": "2025-05-03T19:51:26.108Z",
+              "duration_seconds": 2393,
+              "elo_change": 6,
+              "game_type": "ranked",
+              "replay_id": "replay_ABxEw3rt_4",
+              "moves_count": 54
+            },
+            {
+              "id": "match_1755411811115_5",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "opponent": "Meruem AI Elite",
+              "result": "win",
+              "date": "2025-05-20T11:28:34.275Z",
+              "duration_seconds": 2370,
+              "elo_change": 11,
+              "game_type": "ranked",
+              "replay_id": "replay_ABxEw3rt_5",
+              "moves_count": 62
+            },
+            {
+              "id": "match_1755411811115_6",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "opponent": "Razor Power AI",
+              "result": "win",
+              "date": "2025-03-12T23:19:17.385Z",
+              "duration_seconds": 1086,
+              "elo_change": 28,
+              "game_type": "ranked",
+              "replay_id": "replay_ABxEw3rt_6",
+              "moves_count": 70
+            },
+            {
+              "id": "match_1755411811116_7",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "opponent": "Silva Professional AI",
+              "result": "win",
+              "date": "2025-03-27T21:17:54.314Z",
+              "duration_seconds": 2385,
+              "elo_change": 12,
+              "game_type": "ranked",
+              "replay_id": "replay_ABxEw3rt_7",
+              "moves_count": 51
+            },
+            {
+              "id": "match_1755411811116_8",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "opponent": "Razor Power AI",
+              "result": "win",
+              "date": "2025-05-02T02:56:04.804Z",
+              "duration_seconds": 2082,
+              "elo_change": 20,
+              "game_type": "ranked",
+              "replay_id": "replay_ABxEw3rt_8",
+              "moves_count": 48
+            },
+            {
+              "id": "match_1755411811116_9",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "opponent": "Meruem AI Elite",
+              "result": "win",
+              "date": "2025-04-07T23:24:43.881Z",
+              "duration_seconds": 2012,
+              "elo_change": 15,
+              "game_type": "ranked",
+              "replay_id": "replay_ABxEw3rt_9",
+              "moves_count": 85
+            },
+            {
+              "id": "training_1755411811116_0",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "session_type": "ai_training",
+              "date": "2025-08-17T06:23:31.114Z",
+              "duration_seconds": 4764,
+              "training_focus": "endgame_scenarios",
+              "replays_analyzed": 11,
+              "elo_before": 2120,
+              "elo_after": 2135
+            },
+            {
+              "id": "training_1755411811116_1",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "session_type": "ai_training",
+              "date": "2025-08-10T06:23:31.114Z",
+              "duration_seconds": 5136,
+              "training_focus": "tactical_patterns",
+              "replays_analyzed": 18,
+              "elo_before": 2105,
+              "elo_after": 2120
+            },
+            {
+              "id": "training_1755411811116_2",
+              "agent_mint": "ABxEw3rtm6gHJwQ1nVEsZCdpAnTnFx2qoVvuYahwFqqd",
+              "agent_name": "Phantom AI Specialist",
+              "session_type": "ai_training",
+              "date": "2025-08-03T06:23:31.114Z",
+              "duration_seconds": 4305,
+              "training_focus": "endgame_scenarios",
+              "replays_analyzed": 20,
+              "elo_before": 2090,
+              "elo_after": 2105
+            }
+          ]
+        },
+        {
+          "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+          "agent_name": "Zoldyck Assassin AI",
+          "total_records": 13,
+          "win_rate": 0.79,
+          "recent_performance": 0.6,
+          "training_sessions": 3,
+          "match_history": [
+            {
+              "id": "match_1755411811116_0",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "opponent": "Kite Adaptive AI",
+              "result": "win",
+              "date": "2025-08-17T06:23:31.114Z",
+              "duration_seconds": 911,
+              "elo_change": 28,
+              "game_type": "ranked",
+              "replay_id": "replay_Hybfg23d_0",
+              "moves_count": 77
+            },
+            {
+              "id": "match_1755411811116_1",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "opponent": "Meruem AI Elite",
+              "result": "loss",
+              "date": "2025-07-31T12:55:05.690Z",
+              "duration_seconds": 1175,
+              "elo_change": -7,
+              "game_type": "ranked",
+              "replay_id": "replay_Hybfg23d_1",
+              "moves_count": 52
+            },
+            {
+              "id": "match_1755411811116_2",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "opponent": "Ging Strategic AI",
+              "result": "loss",
+              "date": "2025-06-27T22:42:12.268Z",
+              "duration_seconds": 2673,
+              "elo_change": -12,
+              "game_type": "ranked",
+              "replay_id": "replay_Hybfg23d_2",
+              "moves_count": 96
+            },
+            {
+              "id": "match_1755411811116_3",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "opponent": "Kite Adaptive AI",
+              "result": "win",
+              "date": "2025-08-12T22:01:57.277Z",
+              "duration_seconds": 2037,
+              "elo_change": 12,
+              "game_type": "ranked",
+              "replay_id": "replay_Hybfg23d_3",
+              "moves_count": 75
+            },
+            {
+              "id": "match_1755411811116_4",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "opponent": "Meruem AI Elite",
+              "result": "loss",
+              "date": "2025-07-19T09:51:45.413Z",
+              "duration_seconds": 2587,
+              "elo_change": -19,
+              "game_type": "ranked",
+              "replay_id": "replay_Hybfg23d_4",
+              "moves_count": 56
+            },
+            {
+              "id": "match_1755411811116_5",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "opponent": "Razor Power AI",
+              "result": "win",
+              "date": "2025-07-25T05:35:33.690Z",
+              "duration_seconds": 901,
+              "elo_change": 29,
+              "game_type": "ranked",
+              "replay_id": "replay_Hybfg23d_5",
+              "moves_count": 59
+            },
+            {
+              "id": "match_1755411811116_6",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "opponent": "Bisky Training AI",
+              "result": "win",
+              "date": "2025-02-26T06:30:18.558Z",
+              "duration_seconds": 2041,
+              "elo_change": 9,
+              "game_type": "ranked",
+              "replay_id": "replay_Hybfg23d_6",
+              "moves_count": 57
+            },
+            {
+              "id": "match_1755411811116_7",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "opponent": "Silva Professional AI",
+              "result": "loss",
+              "date": "2025-03-13T15:00:09.150Z",
+              "duration_seconds": 2339,
+              "elo_change": -16,
+              "game_type": "ranked",
+              "replay_id": "replay_Hybfg23d_7",
+              "moves_count": 46
+            },
+            {
+              "id": "match_1755411811116_8",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "opponent": "Meruem AI Elite",
+              "result": "win",
+              "date": "2025-03-20T12:55:33.829Z",
+              "duration_seconds": 2635,
+              "elo_change": 21,
+              "game_type": "ranked",
+              "replay_id": "replay_Hybfg23d_8",
+              "moves_count": 66
+            },
+            {
+              "id": "match_1755411811116_9",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "opponent": "Kite Adaptive AI",
+              "result": "win",
+              "date": "2025-07-13T17:34:36.868Z",
+              "duration_seconds": 2056,
+              "elo_change": 11,
+              "game_type": "ranked",
+              "replay_id": "replay_Hybfg23d_9",
+              "moves_count": 46
+            },
+            {
+              "id": "training_1755411811116_0",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "session_type": "ai_training",
+              "date": "2025-08-17T06:23:31.114Z",
+              "duration_seconds": 4602,
+              "training_focus": "opening_theory",
+              "replays_analyzed": 12,
+              "elo_before": 1980,
+              "elo_after": 1995
+            },
+            {
+              "id": "training_1755411811116_1",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "session_type": "ai_training",
+              "date": "2025-08-10T06:23:31.114Z",
+              "duration_seconds": 4315,
+              "training_focus": "opening_theory",
+              "replays_analyzed": 25,
+              "elo_before": 1965,
+              "elo_after": 1980
+            },
+            {
+              "id": "training_1755411811116_2",
+              "agent_mint": "Hybfg23dzYKqSWDbiF28mGNBncwT8JbUzTum8t8diR8r",
+              "agent_name": "Zoldyck Assassin AI",
+              "session_type": "ai_training",
+              "date": "2025-08-03T06:23:31.114Z",
+              "duration_seconds": 4363,
+              "training_focus": "opening_theory",
+              "replays_analyzed": 24,
+              "elo_before": 1950,
+              "elo_after": 1965
+            }
+          ]
+        },
+        {
+          "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+          "agent_name": "Chrollo Strategy AI",
+          "total_records": 13,
+          "win_rate": 0.87,
+          "recent_performance": 0.9,
+          "training_sessions": 3,
+          "match_history": [
+            {
+              "id": "match_1755411811116_0",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "opponent": "Ging Strategic AI",
+              "result": "win",
+              "date": "2025-08-17T06:23:31.114Z",
+              "duration_seconds": 2573,
+              "elo_change": 17,
+              "game_type": "ranked",
+              "replay_id": "replay_Aob41QhK_0",
+              "moves_count": 46
+            },
+            {
+              "id": "match_1755411811116_1",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "opponent": "Silva Professional AI",
+              "result": "win",
+              "date": "2025-07-19T05:57:18.749Z",
+              "duration_seconds": 2381,
+              "elo_change": 12,
+              "game_type": "ranked",
+              "replay_id": "replay_Aob41QhK_1",
+              "moves_count": 94
+            },
+            {
+              "id": "match_1755411811116_2",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "opponent": "Razor Power AI",
+              "result": "win",
+              "date": "2025-08-09T03:48:40.595Z",
+              "duration_seconds": 1498,
+              "elo_change": 23,
+              "game_type": "ranked",
+              "replay_id": "replay_Aob41QhK_2",
+              "moves_count": 65
+            },
+            {
+              "id": "match_1755411811116_3",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "opponent": "Bisky Training AI",
+              "result": "win",
+              "date": "2025-05-24T06:33:35.637Z",
+              "duration_seconds": 1810,
+              "elo_change": 12,
+              "game_type": "ranked",
+              "replay_id": "replay_Aob41QhK_3",
+              "moves_count": 76
+            },
+            {
+              "id": "match_1755411811116_4",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "opponent": "Silva Professional AI",
+              "result": "win",
+              "date": "2025-06-13T00:07:33.582Z",
+              "duration_seconds": 1016,
+              "elo_change": 28,
+              "game_type": "ranked",
+              "replay_id": "replay_Aob41QhK_4",
+              "moves_count": 72
+            },
+            {
+              "id": "match_1755411811116_5",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "opponent": "Meruem AI Elite",
+              "result": "win",
+              "date": "2025-08-13T03:36:57.903Z",
+              "duration_seconds": 2191,
+              "elo_change": 24,
+              "game_type": "ranked",
+              "replay_id": "replay_Aob41QhK_5",
+              "moves_count": 87
+            },
+            {
+              "id": "match_1755411811116_6",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "opponent": "Razor Power AI",
+              "result": "loss",
+              "date": "2025-07-20T00:41:48.835Z",
+              "duration_seconds": 1954,
+              "elo_change": -15,
+              "game_type": "ranked",
+              "replay_id": "replay_Aob41QhK_6",
+              "moves_count": 83
+            },
+            {
+              "id": "match_1755411811116_7",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "opponent": "Razor Power AI",
+              "result": "win",
+              "date": "2025-06-17T08:19:54.126Z",
+              "duration_seconds": 2529,
+              "elo_change": 14,
+              "game_type": "ranked",
+              "replay_id": "replay_Aob41QhK_7",
+              "moves_count": 100
+            },
+            {
+              "id": "match_1755411811116_8",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "opponent": "Ging Strategic AI",
+              "result": "win",
+              "date": "2025-04-17T03:57:18.934Z",
+              "duration_seconds": 1039,
+              "elo_change": 14,
+              "game_type": "ranked",
+              "replay_id": "replay_Aob41QhK_8",
+              "moves_count": 83
+            },
+            {
+              "id": "match_1755411811116_9",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "opponent": "Meruem AI Elite",
+              "result": "win",
+              "date": "2024-12-14T04:13:02.508Z",
+              "duration_seconds": 1972,
+              "elo_change": 14,
+              "game_type": "ranked",
+              "replay_id": "replay_Aob41QhK_9",
+              "moves_count": 77
+            },
+            {
+              "id": "training_1755411811116_0",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "session_type": "ai_training",
+              "date": "2025-08-17T06:23:31.114Z",
+              "duration_seconds": 3995,
+              "training_focus": "endgame_scenarios",
+              "replays_analyzed": 19,
+              "elo_before": 2350,
+              "elo_after": 2365
+            },
+            {
+              "id": "training_1755411811116_1",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "session_type": "ai_training",
+              "date": "2025-08-10T06:23:31.114Z",
+              "duration_seconds": 4722,
+              "training_focus": "tactical_patterns",
+              "replays_analyzed": 18,
+              "elo_before": 2335,
+              "elo_after": 2350
+            },
+            {
+              "id": "training_1755411811116_2",
+              "agent_mint": "Aob41QhKyTjaGGaQq4apbm9nWNH7Kmq1R744djyVPXJJ",
+              "agent_name": "Chrollo Strategy AI",
+              "session_type": "ai_training",
+              "date": "2025-08-03T06:23:31.114Z",
+              "duration_seconds": 4058,
+              "training_focus": "tactical_patterns",
+              "replays_analyzed": 12,
+              "elo_before": 2320,
+              "elo_after": 2335
+            }
+          ]
+        },
+        {
+          "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+          "agent_name": "Gon Determination AI",
+          "total_records": 13,
+          "win_rate": 0.75,
+          "recent_performance": 0.7,
+          "training_sessions": 3,
+          "match_history": [
+            {
+              "id": "match_1755411811116_0",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "opponent": "Silva Professional AI",
+              "result": "win",
+              "date": "2025-08-17T06:23:31.114Z",
+              "duration_seconds": 909,
+              "elo_change": 11,
+              "game_type": "ranked",
+              "replay_id": "replay_3YQWVX76_0",
+              "moves_count": 68
+            },
+            {
+              "id": "match_1755411811116_1",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "opponent": "Bisky Training AI",
+              "result": "loss",
+              "date": "2025-07-26T18:27:35.265Z",
+              "duration_seconds": 1541,
+              "elo_change": -12,
+              "game_type": "ranked",
+              "replay_id": "replay_3YQWVX76_1",
+              "moves_count": 87
+            },
+            {
+              "id": "match_1755411811116_2",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "opponent": "Ging Strategic AI",
+              "result": "loss",
+              "date": "2025-08-09T15:50:53.374Z",
+              "duration_seconds": 2529,
+              "elo_change": -18,
+              "game_type": "ranked",
+              "replay_id": "replay_3YQWVX76_2",
+              "moves_count": 77
+            },
+            {
+              "id": "match_1755411811116_3",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "opponent": "Meruem AI Elite",
+              "result": "win",
+              "date": "2025-07-16T22:47:50.132Z",
+              "duration_seconds": 2380,
+              "elo_change": 9,
+              "game_type": "ranked",
+              "replay_id": "replay_3YQWVX76_3",
+              "moves_count": 89
+            },
+            {
+              "id": "match_1755411811116_4",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "opponent": "Bisky Training AI",
+              "result": "loss",
+              "date": "2025-06-22T08:05:02.860Z",
+              "duration_seconds": 978,
+              "elo_change": -17,
+              "game_type": "ranked",
+              "replay_id": "replay_3YQWVX76_4",
+              "moves_count": 86
+            },
+            {
+              "id": "match_1755411811116_5",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "opponent": "Ging Strategic AI",
+              "result": "win",
+              "date": "2025-04-15T07:00:46.075Z",
+              "duration_seconds": 2615,
+              "elo_change": 16,
+              "game_type": "ranked",
+              "replay_id": "replay_3YQWVX76_5",
+              "moves_count": 72
+            },
+            {
+              "id": "match_1755411811116_6",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "opponent": "Razor Power AI",
+              "result": "win",
+              "date": "2025-07-02T03:35:42.553Z",
+              "duration_seconds": 1901,
+              "elo_change": 23,
+              "game_type": "ranked",
+              "replay_id": "replay_3YQWVX76_6",
+              "moves_count": 67
+            },
+            {
+              "id": "match_1755411811116_7",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "opponent": "Meruem AI Elite",
+              "result": "win",
+              "date": "2025-08-05T07:05:53.044Z",
+              "duration_seconds": 2582,
+              "elo_change": 20,
+              "game_type": "ranked",
+              "replay_id": "replay_3YQWVX76_7",
+              "moves_count": 93
+            },
+            {
+              "id": "match_1755411811116_8",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "opponent": "Ging Strategic AI",
+              "result": "win",
+              "date": "2025-07-10T18:48:23.104Z",
+              "duration_seconds": 1825,
+              "elo_change": 11,
+              "game_type": "ranked",
+              "replay_id": "replay_3YQWVX76_8",
+              "moves_count": 79
+            },
+            {
+              "id": "match_1755411811116_9",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "opponent": "Bisky Training AI",
+              "result": "win",
+              "date": "2024-12-01T11:50:54.161Z",
+              "duration_seconds": 2611,
+              "elo_change": 26,
+              "game_type": "ranked",
+              "replay_id": "replay_3YQWVX76_9",
+              "moves_count": 95
+            },
+            {
+              "id": "training_1755411811116_0",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "session_type": "ai_training",
+              "date": "2025-08-17T06:23:31.114Z",
+              "duration_seconds": 5222,
+              "training_focus": "tactical_patterns",
+              "replays_analyzed": 11,
+              "elo_before": 1850,
+              "elo_after": 1865
+            },
+            {
+              "id": "training_1755411811116_1",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "session_type": "ai_training",
+              "date": "2025-08-10T06:23:31.114Z",
+              "duration_seconds": 3851,
+              "training_focus": "opening_theory",
+              "replays_analyzed": 12,
+              "elo_before": 1835,
+              "elo_after": 1850
+            },
+            {
+              "id": "training_1755411811116_2",
+              "agent_mint": "3YQWVX76eRBg7JKJxykK3JvfMDSbuvQUtT2dfR9G7H8v",
+              "agent_name": "Gon Determination AI",
+              "session_type": "ai_training",
+              "date": "2025-08-03T06:23:31.114Z",
+              "duration_seconds": 5169,
+              "training_focus": "opening_theory",
+              "replays_analyzed": 29,
+              "elo_before": 1820,
+              "elo_after": 1835
+            }
+          ]
+        }
+      ],
+      "wallet": "8SRwaR9wr4n7a3tCWMgejAV5DAJnky8NXQTS8qWgsEyC",
+      "total_matches": 65
+    }
+  }
+}
